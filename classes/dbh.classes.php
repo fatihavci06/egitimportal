@@ -2,7 +2,7 @@
 
 class Dbh {
 
-	protected function connect(){
+	public function connect(){
 		try {
 			$host = "localhost";
 			$user = "root";

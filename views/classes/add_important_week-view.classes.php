@@ -2,7 +2,7 @@
 if (!defined('GUARD')) {
     die('Erişim yasak!');
 }
-?>	
+?>
 <div class="modal fade" id="kt_modal_add_customer" tabindex="-1" aria-hidden="true">
     <!--begin::Modal dialog-->
     <div class="modal-dialog modal-dialog-centered mw-650px">
@@ -13,7 +13,7 @@ if (!defined('GUARD')) {
                 <!--begin::Modal header-->
                 <div class="modal-header" id="kt_modal_add_customer_header">
                     <!--begin::Modal title-->
-                    <h2 class="fw-bold">Önemli Hafta Ekleyin</h2> 
+                    <h2 class="fw-bold">Önemli Hafta Ekleyin</h2>
                     <!--end::Modal title-->
                     <!--begin::Close-->
                     <div id="kt_modal_add_customer_close" class="btn btn-icon btn-sm btn-active-icon-primary">
@@ -43,10 +43,21 @@ if (!defined('GUARD')) {
                         </div>
                         <div class="fv-row mb-7">
                             <!--begin::Label-->
-                            <label class="required fs-6 fw-semibold mb-2">Tarih Aralığı</label>
+                            <label class="required fs-6 fw-semibold mb-2">Başlangıç Tarihi</label>
                             <!--end::Label-->
                             <!--begin::Input-->
-                            <input type="text" id="onemli_hafta" class="form-control" />
+                            <div class="col">
+                                <input type="date" class="form-control" name="startDate"  id="startDate" placeholder="Başlangıç Tarihi">
+                            </div>
+                            
+                        </div>
+                        <div class="fv-row mb-7">
+                            <!--begin::Label-->
+                            <label class="required fs-6 fw-semibold mb-2">Bitiş Tarihi</label>
+                           
+                            <div class="col">
+                                <input type="date" class="form-control" name="endDate" id="endDate" placeholder="Bitiş Tarihi">
+                            </div>
                         </div>
                         <!--end::Input group-->
                         <!--end::Scroll-->
@@ -71,4 +82,3 @@ if (!defined('GUARD')) {
         </div>
     </div>
 </div>
-

@@ -4,11 +4,15 @@ class AddClassesContr extends AddClasses
 {
 
 	private $name;
+	private $endDate;
+	private $startDate;
 	private $table;
 
-	public function __construct($name,$table='classes_lnp')
+	public function __construct($name,$table='classes_lnp',$startDate=null,$endDate=null)
 	{
 		$this->name = $name;
+		$this->startDate=$startDate;
+		$this->endDate=$endDate;
 		$this->table = $table;
 	}
 
@@ -34,7 +38,7 @@ class AddClassesContr extends AddClasses
 		} else {
 			$slug = $slug;
 		}
-
-		$this->setClass($slug, $this->name,$this->table);
+		
+		$this->setClass($slug, $this->name,$this->table,$this->startDate,$this->endDate);
 	}
 }
