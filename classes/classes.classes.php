@@ -1,0 +1,162 @@
+<?php
+
+class Classes extends Dbh
+{
+
+	protected function getClassesList()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT id, name, slug FROM classes_lnp');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
+	protected function getMainSchoolClassesList()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT id, name, slug FROM main_school_classes_lnp where school_id = 1');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
+	public function getWeekList()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT id, name, slug FROM important_weeks_lnp where school_id = 1');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
+	public function getCategoryTitleList()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM category_titles_lnp where school_id = 1');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
+	public function getMainSchoolContentList()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM main_school_content_lnp where school_id = 1');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
+	public function getRoles()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM userroles_lnp ');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $data;
+	}
+	public function getTitleList($type = 1)
+	{
+		$stmt = $this->connect()->prepare('SELECT * FROM category_titles_lnp WHERE type = ?');
+
+		if (!$stmt->execute([$type])) {
+			$stmt = null;
+			exit();
+		}
+
+		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $data;
+	}
+	public function getMainSchoolContentById($id)
+	{
+		$stmt = $this->connect()->prepare('SELECT * FROM main_school_content_lnp WHERE id = ?');
+
+		if (!$stmt->execute([$id])) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetch(PDO::FETCH_ASSOC); // sadece tek satır döner
+
+		return $classData;
+	}
+
+
+	public function getOneClass($slug)
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM classes_lnp WHERE slug = ?');
+
+		if (!$stmt->execute(array($slug))) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
+
+	public function getClasses()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM classes_lnp');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
+
+	public function getClassByLesson($classValue)
+	{
+
+		$stmt = $this->connect()->prepare('SELECT id ,name FROM classes_lnp WHERE id = ?');
+
+		if (!$stmt->execute(array($classValue))) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
+}

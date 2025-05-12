@@ -1,0 +1,88 @@
+//
+// Variables
+//
+
+// Custom
+$app-separator-border: 1px solid $gray-300;
+$app-separator-border-dark: 1px solid $gray-300-dark;
+
+// Reboot
+$app-bg-color: #F8F2EC;
+$app-bg-color-dark: $coal-400; 
+
+// General
+$app-general-root-font-size-desktop: 13px;
+$app-general-root-font-size-tablet: 12px;
+$app-general-root-font-size-mobile: 12px;
+
+// Container
+$app-container-padding-x: 35px;
+$app-container-padding-x-mobile: 20px;
+
+// Content
+$app-content-border-radius: 12px;
+$app-content-top-offset: 10px;
+$app-content-end-offset: 20px;
+$app-content-padding-y: 35px;
+$app-content-padding-y-mobile: 20px;
+$app-content-bg-color: $body-bg;
+$app-content-bg-color-dark: $body-bg-dark;
+
+// Toolbar
+$app-toolbar-base-bg-color: $body-bg;
+$app-toolbar-base-bg-color-dark: $body-bg-dark;
+
+// Header base
+$app-header-base-height: 90px;
+$app-header-base-height-mobile: 60px;
+$app-header-base-bg-color:#F8F2EC;
+$app-header-base-bg-color-dark: $coal-400;
+
+// Sidebar base
+$app-sidebar-base-width: 280px;
+$app-sidebar-base-width-mobile: 280px;
+$app-sidebar-base-px: 5px;
+$app-sidebar-base-separator-color: 1px solid rgba(217, 219, 228, 0.6);
+$app-sidebar-base-bg-color: #F8F2EC;
+$app-sidebar-base-bg-color-dark: $coal-400;
+$app-sidebar-base-box-shadow: none;
+$app-sidebar-base-box-shadow-dark: none;
+$app-sidebar-base-menu-link-title: #9BA0B8;
+$app-sidebar-base-menu-link-icon: #A1A5B7;
+$app-sidebar-base-menu-link-icon-dark: $white;
+$app-sidebar-base-menu-link-active: #1E1F27;  
+$app-sidebar-base-menu-link-height: 45px;
+$app-sidebar-base-menu-link-bg-color: #F1EAE2;
+$app-sidebar-base-menu-link-bg-color-dark: $gray-100-dark;
+
+// Sidebar minimize
+$app-sidebar-minimize-width: 100px;
+$app-sidebar-minimize-bg-color: $app-sidebar-base-bg-color;
+$app-sidebar-minimize-bg-color-dark: $app-sidebar-base-bg-color-dark;
+$app-sidebar-minimize-menu-link-width: 45px;
+$app-sidebar-minimize-px: 7px;
+
+// Aside base
+$app-aside-base-width: 80px;
+$app-aside-base-width-mobile: 80px;
+$app-aside-base-bg-color: #F8F2EC;
+$app-aside-base-bg-color-dark: $coal-400;
+$app-aside-base-box-shadow: none;
+$app-aside-base-box-shadow-dark: none;
+
+// Footer
+$app-footer-height: auto;
+$app-footer-height-mobile: auto;
+
+// Scrolltop
+$scrolltop-bottom: 43px;
+$scrolltop-bottom-mobile: 23px;
+$scrolltop-end: 7px;
+$scrolltop-end-mobile: 5px;
+
+// Layout builder toggle(used for Demo purposes only)
+$app-layout-builder-toggle-bg-color: $body-bg;
+$app-layout-builder-toggle-end: 50px;
+$app-layout-builder-toggle-end-mobile: 40px;
+$app-layout-builder-toggle-bottom: 40px;
+$app-layout-builder-toggle-bottom-mobile: 20px;

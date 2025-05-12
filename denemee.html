@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Checkbox İşaretlendiğinde Input Değerini Değiştir</title>
+</head>
+<body>
+  <h1>Test Sayfası</h1>
+  <script>
+      window.addEventListener('beforeunload', function(event) {
+          event.preventDefault();
+          event.returnValue = '';
+      });
+  </script>
+</body>
+</html>

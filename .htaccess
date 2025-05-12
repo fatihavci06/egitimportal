@@ -1,0 +1,29 @@
+<IfModule mod_rewrite.c>
+
+#turn on url rewriting 
+RewriteEngine on
+
+
+
+#remove the need for .php extention 
+RewriteCond %{REQUEST_FILENAME} !-d 
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}\.php -f 
+RewriteRule ^(.*)$ $1.php
+
+
+RewriteRule ^okul-detay/([A-Za-z0-9_-]+)    ./okul-detay.php?q=$1     [L,QSA]
+
+RewriteRule ^ders/([A-Za-z0-9_-]+)    ./ders.php?q=$1     [L,QSA]
+RewriteRule ^unite/([A-Za-z0-9_-]+)    ./unite.php?q=$1     [L,QSA]
+RewriteRule ^konu/([A-Za-z0-9_-]+)    ./konu.php?q=$1     [L,QSA]
+RewriteRule ^alt-konu/([A-Za-z0-9_-]+)    ./alt-konu.php?q=$1     [L,QSA]
+RewriteRule ^oyun-oyna/([A-Za-z0-9_-]+)    ./oyun-oyna.php?q=$1     [L,QSA]
+RewriteRule ^sesli-kitap-dinle/([A-Za-z0-9_-]+)    ./sesli-kitap-dinle.php?q=$1     [L,QSA]
+RewriteRule ^test-detay/([A-Za-z0-9_-]+)    ./test-detay.php?q=$1     [L,QSA]
+RewriteRule ^test-detay-ogrenci/([A-Za-z0-9_-]+)    ./test-detay-ogrenci.php?q=$1     [L,QSA]
+RewriteRule ^duyuru/([A-Za-z0-9_-]+)    ./duyuru.php?q=$1     [L,QSA]
+
+
+
+</Ifmodule>

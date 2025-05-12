@@ -1,0 +1,11 @@
+//
+// Main
+// 
+
+
+// Engage toolbar
+.engage-toolbar {
+	[data-kt-app-aside-enabled="true"] & {
+		z-index: #{$app-aside-fixed-z-index + 1} !important;
+	}		
+}

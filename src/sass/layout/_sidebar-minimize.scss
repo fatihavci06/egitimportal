@@ -1,0 +1,63 @@
+//
+// Sidebar Minimize
+//
+ 
+// Desktop sidebar minimize mode
+@include app-layout-minimize(app-sidebar) {
+    .app-sidebar-wrapper {
+        width: var(--#{$prefix}app-sidebar-width-actual); 
+    }
+
+    .app-sidebar-project-default {
+        display: none !important;
+    }
+
+    .app-sidebar-project-minimize {
+        display: none !important;                         
+    }    
+
+    .menu {
+        //padding: 0 $app-sidebar-minimize-px;
+        .menu-labels {
+            margin: 0 auto;
+
+            .menu-btn {
+                order: 1;    
+            }
+
+            .menu-heading {
+                order: 2;    
+            }
+        }
+
+        > .menu-item > .menu-link {
+            margin: 0 auto;
+            padding: 0 9.3px; 
+            width: $app-sidebar-minimize-menu-link-width;
+            height: $app-sidebar-minimize-menu-link-width;             
+        }
+
+        .menu-heading,
+        .separator,
+        .menu-arrow,
+        .menu-badge,
+        .menu-title {
+            opacity: 0;
+            text-indent: -9999px;
+        }
+
+        .menu-item.show > .menu-sub {
+            height: 0;
+            overflow: hidden;
+            @include app-layout-transition(height);
+        }
+    }
+
+    .menu.app-sidebar-menu-secondary {
+        > .menu-item {
+            .menu-heading {
+                margin-left: 0;
+            }
+        }
+    }
+}

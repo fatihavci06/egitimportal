@@ -1,0 +1,25 @@
+//
+// Root
+//
+
+@include color-mode(light) {
+    // Sidebar
+    --#{$prefix}app-sidebar-link-bg-color: #{$app-sidebar-base-menu-link-bg-color};
+
+    // Separator
+    --#{$prefix}app-separator-border: #{$app-separator-border};
+
+    // Content
+    --#{$prefix}app-content-bg-color: #{$app-content-bg-color};
+}
+
+@include color-mode(dark) {
+    // Sidebar
+    --#{$prefix}app-sidebar-link-bg-color: #{$app-sidebar-base-menu-link-bg-color-dark};
+
+	// Separator
+    --#{$prefix}app-separator-border: #{$app-separator-border-dark};
+
+    // Content
+    --#{$prefix}app-content-bg-color: #{$app-content-bg-color-dark};
+}
