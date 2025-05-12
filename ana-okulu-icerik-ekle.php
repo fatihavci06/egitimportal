@@ -97,7 +97,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                                     </select>
                                                 </div>
                                                 <div class="col-lg-6">
-                                                    <label class=" fs-6 fw-semibold mb-2" for="week">Özel Hafta Seçimi </label>
+                                                    <label class="fs-6 fw-semibold mb-2" for="week">Özel Hafta Seçimi </label>
                                                     <?php
                                                     $class = new Classes();
                                                     $weekList = $class->getWeekList();
@@ -107,8 +107,6 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                                         <?php foreach ($weekList as $week) { ?>
                                                             <option value="<?= $week['id'] ?>"><?= $week['name'] ?></option>
                                                         <?php } ?>
-
-
                                                     </select>
                                                 </div>
                                             </div>
@@ -404,6 +402,28 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                         }
                     });
                 });
+            });
+        </script>
+        <script>
+            $(document).ready(function() {
+                $('#week').select2({
+                    placeholder: "Seçiniz",
+                    allowClear: true
+                });
+                $('#activity_title').select2({
+                    placeholder: "Seçiniz",
+                    allowClear: true
+                });
+                $('#content_title').select2({
+                    placeholder: "Seçiniz",
+                    allowClear: true
+                });
+                $('#concept_title').select2({
+                    placeholder: "Seçiniz",
+                    allowClear: true
+                });
+                
+
             });
         </script>
         <!--end::Custom Javascript-->

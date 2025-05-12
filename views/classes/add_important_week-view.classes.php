@@ -13,7 +13,7 @@ if (!defined('GUARD')) {
                 <!--begin::Modal header-->
                 <div class="modal-header" id="kt_modal_add_customer_header">
                     <!--begin::Modal title-->
-                    <h2 class="fw-bold">Önemli Hafta Ekleyin</h2>
+                    <h2 class="fw-bold">Önemli Hafta Ekleyin</h2> 
                     <!--end::Modal title-->
                     <!--begin::Close-->
                     <div id="kt_modal_add_customer_close" class="btn btn-icon btn-sm btn-active-icon-primary">
@@ -41,6 +41,13 @@ if (!defined('GUARD')) {
                             <input type="text" id="name" class="form-control form-control-solid" placeholder="Önemli Hafta" name="name" />
                             <!--end::Input-->
                         </div>
+                        <div class="fv-row mb-7">
+                            <!--begin::Label-->
+                            <label class="required fs-6 fw-semibold mb-2">Tarih Aralığı</label>
+                            <!--end::Label-->
+                            <!--begin::Input-->
+                            <input type="text" id="onemli_hafta" class="form-control" />
+                        </div>
                         <!--end::Input group-->
                         <!--end::Scroll-->
                     </div>
@@ -64,3 +71,4 @@ if (!defined('GUARD')) {
         </div>
     </div>
 </div>
+

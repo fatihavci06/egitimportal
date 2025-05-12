@@ -11,7 +11,7 @@ var KTModalCustomersAdd = function () {
 	var handleForm = function () {
 		// Init form validation rules. For more info check the FormValidation plugin's official documentation:https://formvalidation.io/
 		validator = FormValidation.formValidation(
-			
+
 			form,
 			{
 				fields: {
@@ -78,41 +78,42 @@ var KTModalCustomersAdd = function () {
 
 		$(form.querySelector('[name="classes"]')).on('change', function () {
 			$('#units').select2('destroy');
-      		$('#units').html('<option value="">Ünite Yok</option>');
+			$('#units').html('<option value="">Ünite Yok</option>');
 		});
-		
+
 
 		// Revalidate country field. For more info, plase visit the official plugin site: https://select2.org/
 		$(form.querySelector('[name="lessons"]')).on('change', function () {
 			$('#units').empty().trigger('change');
 			// Revalidate the field when an option is chosen
 			validator.revalidateField('lessons');
-			
+
 			var classChoose = $("#classes").val();
 
 			var lessonsChoose = $("#lessons").val();
-			
 
-			  // AJAX isteği gönder
-			  $.ajax({
+
+			// AJAX isteği gönder
+			$.ajax({
 				allowClear: true,
 				type: "POST",
 				url: "includes/select_for_unit.inc.php",
-				data: { class: classChoose,
-						lesson: lessonsChoose
-				 },
+				data: {
+					class: classChoose,
+					lesson: lessonsChoose
+				},
 				dataType: "json",
-				success: function(data) {
-				  // İkinci Select2'nin içeriğini güncelle
+				success: function (data) {
+					// İkinci Select2'nin içeriğini güncelle
 
-				  if (data.length > 0) {
-					$('#units').select2({ data: data });
-				  } else {
-					//$('#units').select2('destroy');
-					$('#units').html('<option value="">Ünite Yok</option>');
-				  }
+					if (data.length > 0) {
+						$('#units').select2({ data: data });
+					} else {
+						//$('#units').select2('destroy');
+						$('#units').html('<option value="">Ünite Yok</option>');
+					}
 
-				},error: function(xhr, status, error, response) {
+				}, error: function (xhr, status, error, response) {
 					Swal.fire({
 						text: error,
 						icon: "error",
@@ -131,13 +132,13 @@ var KTModalCustomersAdd = function () {
 					//alert(status + "0");
 
 				}
-			  });
+			});
 		});
 
 		// Action buttons
 		submitButton.addEventListener('click', function (e) {
 			e.preventDefault();
-			
+
 			// Validate form before submit
 			if (validator) {
 				validator.validate().then(function (status) {
@@ -215,7 +216,7 @@ var KTModalCustomersAdd = function () {
 										});
 									}
 								},
-								error: function(xhr, status, error, response) {
+								error: function (xhr, status, error, response) {
 									Swal.fire({
 										text: "Bir sorun oldu!" + xhr.responseText,
 										icon: "error",
@@ -253,14 +254,22 @@ var KTModalCustomersAdd = function () {
 
 	}
 
-	var initForm = function(element) {
-	
+	var initForm = function (element) {
+
 		// Due date. For more info, please visit the official plugin site: https://flatpickr.js.org/
 		var dueDate = $(form.querySelector('[name="tarihi"]'));
 		dueDate.flatpickr({
 			enableTime: false,
 			dateFormat: "d.m.Y",
 			mode: "range",
+			firstDayOfWeek: 0,
+			weekNumbers: true,
+		});
+		var teslimDate = $(form.querySelector('[name="onemli_hafta"]'));
+		teslimDate.flatpickr({
+			enableTime: false,
+			dateFormat: "d.m.Y",
+			mode: "single", // Eğer tek bir tarih istenecekse
 			firstDayOfWeek: 0,
 			weekNumbers: true,
 		});
@@ -276,7 +285,7 @@ var KTModalCustomersAdd = function () {
 			submitButton = form.querySelector('#kt_modal_add_customer_submit');
 
 			handleForm();
-            initForm();
+			initForm();
 		}
 	};
 }();
