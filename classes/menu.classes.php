@@ -21,15 +21,15 @@ class Menus extends Dbh {
 		
 	}
 
-	protected function getTopMenuNumber($role=1){
-		$stmt = $this->connect()->prepare('SELECT * FROM menusparent_lnp where role like "%'.$role.'%"  ORDER BY accordion ');
+	protected function getTopMenuNumber(){
+		$stmt = $this->connect()->prepare('SELECT accordion FROM menusparent_lnp ORDER BY accordion DESC LIMIT 1');
 
 		if(!$stmt->execute(array())){
 			$stmt = null;
 			exit();
 		}
 
-        $menuData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $menuData = $stmt->fetch(PDO::FETCH_ASSOC);
 
         return $menuData;
 	}

@@ -80,7 +80,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                                     <label class="required fs-6 fw-semibold mb-2" for="month">Ay </label>
 
                                                     <select class="form-select" id="month" required aria-label="Default select example">
-                                                        <option value="">Seçiniz2</option>
+                                                        <option value="">Seçiniz</option>
                                                         <option value="Ocak">Ocak</option>
                                                         <option value="Şubat">Şubat</option>
                                                         <option value="Mart">Mart</option>
