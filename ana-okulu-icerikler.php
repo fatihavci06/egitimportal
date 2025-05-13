@@ -286,6 +286,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             data: 'subject',
                                             title: 'Konu'
                                         },
+                                         {
+                                            data: 'month',
+                                            title: 'Ay'
+                                        },
                                         {
                                             data: 'id',
                                             title: 'İşlemler',
