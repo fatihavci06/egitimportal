@@ -22,22 +22,7 @@ var KTModalCustomersAdd = function () {
 								message: 'Hafta  Adı zorunlu'
 							}
 						}
-					},
-					'startDate': {
-						validators: {
-							notEmpty: {
-								message: 'Başlangıç  Tarihi zorunlu'
-							}
-						}
-					},
-					'endDate': {
-						validators: {
-							notEmpty: {
-								message: 'Başlangıç  Tarihi zorunlu'
-							}
-						}
-					},
-
+					}
 				},
 				plugins: {
 					trigger: new FormValidation.plugins.Trigger(),
@@ -54,7 +39,6 @@ var KTModalCustomersAdd = function () {
 		// Action buttons
 		submitButton.addEventListener('click', function (e) {
 			e.preventDefault();
-			
 
 			// Validate form before submit
 			if (validator) {
@@ -71,16 +55,16 @@ var KTModalCustomersAdd = function () {
 							submitButton.removeAttribute('data-kt-indicator');
 
 							var name = $("#name").val();
-							var startDate = $("#startDate").val();
-							var endDate = $("#endDate").val();
-
+							const startDate = document.getElementById('startDateCreate').value;
+							const endDate = document.getElementById('endDateCreate').value;
+							
 							$.ajax({
 								type: "POST",
 								url: "includes/addweekclasses.inc.php",
 								data: {
 									name: name,
-									startDate:startDate,
-									endDate:endDate
+									endDate:endDate,
+									startDate:startDate
 
 								},
 								dataType: "json",

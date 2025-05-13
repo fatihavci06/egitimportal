@@ -3,7 +3,7 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001)) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
     include "classes/main-school-classes-view.classes.php";

@@ -132,7 +132,7 @@ switch ($service) {
 
         try {
             // Silme işlemi
-            $stmt = $pdo->prepare("Select name FROM important_weeks_lnp WHERE id = ?");
+            $stmt = $pdo->prepare("Select name,start_date,end_date FROM important_weeks_lnp WHERE id = ?");
             $stmt->execute([$id]);
 
             if ($stmt->rowCount()) {
@@ -180,7 +180,7 @@ switch ($service) {
         try {
             // Silme işlemi
             $updateStmt = $pdo->prepare("UPDATE category_titles_lnp SET type = ? , title=? WHERE id = ?");
-            $updateStmt->execute([$type,$title, $id]);
+            $updateStmt->execute([$type, $title, $id]);
             echo json_encode(['status' => 'success', 'message' => 'Kayıt başarıyla güncellendi.']);
         } catch (PDOException $e) {
             echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası: ' . $e->getMessage()]);
@@ -191,15 +191,38 @@ switch ($service) {
     case 'weekUpdate':
         $id = $_POST['id'] ?? null;
         $name = $_POST['name'] ?? null;
+        $endDate = $_POST['endDate'] ?? null;
+        $startDate = $_POST['startDate'] ?? null;
+
+
+        $start = DateTime::createFromFormat('Y-m-d', $startDate);
+        $end = DateTime::createFromFormat('Y-m-d', $endDate);
+
+        // Tarihlerin geçerli olup olmadığını kontrol et
+        if ($start && $end) {
+            // endDate'in startDate'ten büyük olup olmadığını kontrol et
+            if ($start>$end  ) {
+                  echo json_encode(['status' => 'error', 'message' => 'Hata: End Date, Start Dateten büyük olmalı!']);
+                  exit;
+            } 
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Hata: Tarihler geçerli değil!']);
+            exit;
+            echo "Hata: Tarihler geçerli değil!";
+        }
+
+      
+
         if (!$id || !is_numeric($id)) {
-            echo json_encode(['status' => 'error', 'message' => 'Geçersiz IwD' . $id]);
+            echo json_encode(['status' => 'error', 'message' => 'Geçersiz ID' . $id]);
             exit;
         }
 
         try {
+
             // Silme işlemi
-            $updateStmt = $pdo->prepare("UPDATE important_weeks_lnp SET name = ? WHERE id = ?");
-            $updateStmt->execute([$name, $id]);
+            $updateStmt = $pdo->prepare("UPDATE important_weeks_lnp SET name = ?,start_date =?, end_date=? WHERE id = ?");
+            $updateStmt->execute([$name, $startDate, $endDate, $id]);
             echo json_encode(['status' => 'success', 'message' => 'Kayıt başarıyla güncellendi.']);
         } catch (PDOException $e) {
             echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası: ' . $e->getMessage()]);

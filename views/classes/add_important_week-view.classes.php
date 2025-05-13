@@ -47,7 +47,7 @@ if (!defined('GUARD')) {
                             <!--end::Label-->
                             <!--begin::Input-->
                             <div class="col">
-                                <input type="date" class="form-control" name="startDate"  id="startDate" placeholder="Başlangıç Tarihi">
+                                <input type="date" class="form-control" name="startDateCreate"  id="startDateCreate" placeholder="Başlangıç Tarihi">
                             </div>
                             
                         </div>
@@ -56,7 +56,7 @@ if (!defined('GUARD')) {
                             <label class="required fs-6 fw-semibold mb-2">Bitiş Tarihi</label>
                            
                             <div class="col">
-                                <input type="date" class="form-control" name="endDate" id="endDate" placeholder="Bitiş Tarihi">
+                                <input type="date" class="form-control" name="endDateCreate" id="endDateCreate" placeholder="Bitiş Tarihi">
                             </div>
                         </div>
                         <!--end::Input group-->

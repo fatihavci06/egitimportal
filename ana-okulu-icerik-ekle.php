@@ -3,7 +3,7 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001  )) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
 
@@ -166,7 +166,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                             <div class="row mt-4">
                                                 <div class="col-lg-12">
                                                     <label class=" fs-6 fw-semibold mb-2" for="content_description">İçerik Açıklaması</label>
-                                                    <textarea class="form-control" name="content_description" id="content_description" rows="4"><?= $data['content_description'] ?></textarea>
+                                                    <textarea class="form-control" name="content_description" id="content_description" rows="4"></textarea>
                                                 </div>
                                             </div>
                                             <div class="row mt-4">
