@@ -309,7 +309,7 @@ switch ($service) {
             $whereClauses[] = 'concept_title_id = :concept_title';
             $params[':concept_title'] = $concept_title;
         }
-         if ($main_school_class_id !== null && $main_school_class_id !== '') {
+        if ($main_school_class_id !== null && $main_school_class_id !== '') {
             $whereClauses[] = 'main_school_class_id = :main_school_class_id';
             $params[':main_school_class_id'] = $main_school_class_id;
         }
@@ -321,7 +321,17 @@ switch ($service) {
         }
 
         // Sorguyu hazırla ve çalıştır
-        $sql = "SELECT * FROM main_school_content_lnp $whereSQL";
+        $sql = "
+    SELECT 
+        main_school_content_lnp.*, 
+        main_school_classes_lnp.name as class_name 
+    FROM 
+        main_school_content_lnp
+    INNER JOIN 
+        main_school_classes_lnp 
+        ON main_school_content_lnp.main_school_class_id = main_school_classes_lnp.id
+    $whereSQL
+";
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);

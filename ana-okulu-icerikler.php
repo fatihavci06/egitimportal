@@ -291,6 +291,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             title: 'Ay'
                                         },
                                         {
+                                            data: 'class_name',
+                                            title: 'Yaş Grubu'
+                                        },
+                                        {
                                             data: 'id',
                                             title: 'İşlemler',
                                             render: function(data, type, row, meta) {
