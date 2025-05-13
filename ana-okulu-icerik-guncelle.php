@@ -193,7 +193,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                                     <label for="file_path">Dosya Yükle:</label>
                                                     <input type="file" class="form-control" name="file_path[]" id="file_path" multiple accept=".xls,.xlsx,.doc,.docx,.ppt,.pptx,.png,.jpeg,.jpg,.svg">
                                                     <div id="fileDescriptions"></div>
-                                                    <div class="container mt-4">
+                                                    <div class="row mt-4">
                                                         <div class="row">
                                                             <?php foreach ($data['files'] as $file): ?>
                                                                 <div class="col-md-12 mb-4">
@@ -320,7 +320,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                     // Seçime göre ilgili inputu göster
                     if (selected === 'video_link') {
                         $('#videoInput').show();
-                    } else if (selected === 'file_path') {
+                    } else if (selected === 'files') {
                         $('#fileInput').show();
                     } else if (selected === 'content') {
                         $('#textInput').show();
