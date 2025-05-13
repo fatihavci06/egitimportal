@@ -3,7 +3,7 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001  )) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
 
@@ -115,8 +115,35 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                                         </div>
                                                         <div class="modal-body">
                                                             <!-- Başlangıçta input alana yer ayırıyoruz -->
-                                                            <input type="text" class="form-control" id="weekNameInput" placeholder="Week Name">
+                                                            <div class="fv-row mb-7">
+                                                                <!--begin::Label-->
+                                                                <label class="required fs-6 fw-semibold mb-2">Hafta İsmi</label>
+
+                                                                <div class="col">
+                                                                <input type="text" class="form-control" id="weekNameInput" placeholder="Week Name">
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div class="fv-row mb-7">
+                                                                <!--begin::Label-->
+                                                                <label class="required fs-6 fw-semibold mb-2">Başlangıç Tarihi</label>
+                                                                <!--end::Label-->
+                                                                <!--begin::Input-->
+                                                                <div class="col">
+                                                                    <input type="date" class="form-control" name="startDate" id="startDate" placeholder="Başlangıç Tarihi">
+                                                                </div>
+
+                                                            </div>
+                                                            <div class="fv-row mb-7">
+                                                                <!--begin::Label-->
+                                                                <label class="required fs-6 fw-semibold mb-2">Bitiş Tarihi</label>
+
+                                                                <div class="col">
+                                                                    <input type="date" class="form-control" name="endDate" id="endDate" placeholder="Bitiş Tarihi">
+                                                                </div>
+                                                            </div>
                                                         </div>
+
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
                                                             <!-- onClick ile fonksiyona id ile yönlendirme -->
@@ -142,6 +169,11 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                                             if (data.status === 'success' && data.data) {
                                                                 const name = data.data.name; // JSON verisinden name değerini alıyoruz
                                                                 document.getElementById('weekNameInput').value = name; // Input alanına gelen name değerini yazıyoruz
+
+                                                                const endDate = data.data.end_date; // JSON verisinden name değerini alıyoruz
+                                                                document.getElementById('endDate').value = endDate; // Input alanına gelen name değerini yazıyoruz
+                                                                const startDate = data.data.start_date; // JSON verisinden name değerini alıyoruz
+                                                                document.getElementById('startDate').value = startDate;
                                                             } else {
                                                                 document.getElementById('weekNameInput').value = 'Veri alınamadı veya geçersiz.';
                                                             }
@@ -173,7 +205,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                                 <tbody class="fw-semibold text-gray-600">
                                                     <?php $class = new Classes();
                                                     $weekList = $class->getWeekList();
-                                                   foreach ($weekList as $key => $value): ?>
+                                                    foreach ($weekList as $key => $value): ?>
                                                         <tr>
                                                             <td>
                                                                 <div class="form-check form-check-sm form-check-custom form-check-solid">
@@ -187,35 +219,35 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                                             </td>
                                                             <td class="text-end">
                                                                 <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
-                                                                   data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
+                                                                    data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
                                                                     <i class="ki-duotone ki-down fs-5 ms-1"></i>
                                                                 </a>
-                                                    
+
                                                                 <!--begin::Menu-->
                                                                 <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
-                                                                     data-kt-menu="true">
-                                                    
+                                                                    data-kt-menu="true">
+
                                                                     <!--begin::Menu item-->
                                                                     <div class="menu-item px-3">
                                                                         <a href="./ana-okul-detay/<?= htmlspecialchars($value['id']) ?>" class="menu-link px-3">Görüntüle</a>
                                                                     </div>
-                                                    
+
                                                                     <!--begin::Menu item-->
                                                                     <div class="menu-item px-3">
                                                                         <a href="javascript:void(0);"
-                                                                           class="menu-link px-3"
-                                                                           data-bs-toggle="modal" data-bs-target="#weekModalUpdate"
-                                                                           data-id="<?= htmlspecialchars($value['id']) ?>">
+                                                                            class="menu-link px-3"
+                                                                            data-bs-toggle="modal" data-bs-target="#weekModalUpdate"
+                                                                            data-id="<?= htmlspecialchars($value['id']) ?>">
                                                                             Güncelle
                                                                         </a>
                                                                     </div>
-                                                    
+
                                                                     <!--begin::Menu item-->
                                                                     <div class="menu-item px-3">
                                                                         <a href="javascript:void(0);"
-                                                                           class="menu-link px-3"
-                                                                           data-kt-customer-table-filter="delete_row"
-                                                                           onclick="handleDelete({ id: '<?= htmlspecialchars($value['id']) ?>', url: 'includes/ajax.php?service=deleteImportantWeek' })">
+                                                                            class="menu-link px-3"
+                                                                            data-kt-customer-table-filter="delete_row"
+                                                                            onclick="handleDelete({ id: '<?= htmlspecialchars($value['id']) ?>', url: 'includes/ajax.php?service=deleteImportantWeek' })">
                                                                             Pasif Yap
                                                                         </a>
                                                                     </div>
@@ -224,8 +256,8 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                                                 <!--end::Menu-->
                                                             </td>
                                                         </tr>
-                                                    <?php endforeach; 
-                                                    
+                                                    <?php endforeach;
+
                                                     ?>
                                                 </tbody>
                                             </table>
@@ -389,8 +421,8 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
         <!--begin::Custom Javascript(used for this page only)-->
         <script src="assets/js/custom/apps/class/list/export.js"></script>
         <script src="assets/js/custom/apps/class/list/list.js"></script>
-        <script src="assets/js/custom/apps/class/add_week.js"></script>
         
+
         <script src="assets/js/widgets.bundle.js"></script>
         <script src="assets/js/custom/widgets.js"></script>
         <script src="assets/js/custom/apps/chat/chat.js"></script>
@@ -398,7 +430,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
         <script src="assets/js/custom/utilities/modals/create-account.js"></script>
         <script src="assets/js/custom/utilities/modals/create-app.js"></script>
         <script src="assets/js/custom/utilities/modals/users-search.js"></script>
-        
+        <script src="assets/js/custom/apps/class/add_week.js"></script>
         <script src="assets/js/fatih.js"></script>
 
         <!--end::Custom Javascript-->

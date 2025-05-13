@@ -3,7 +3,7 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001  )) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
 
@@ -76,7 +76,20 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                                 </div>
                                             </div>
                                             <div class="row mt-4">
-                                                <div class="col-lg-6">
+                                                <div class="col-lg-4">
+                                                <label class="fs-6 fw-semibold mb-2" for="main_school_class_id">Yaş Grubu  </label>
+                                                <?php
+                                                $class = new Classes();
+                                                $mainSchoolClasses= $class->getAgeGroup();
+                                                ?>
+                                                <select class="form-select" id="main_school_class_id" required aria-label="Default select example">
+                                                    <option value="">Seçiniz</option>
+                                                    <?php foreach ($mainSchoolClasses as $c) { ?>
+                                                        <option value="<?= $c['id'] ?>"><?= $c['name'] ?></option>
+                                                    <?php } ?>
+                                                </select>
+                                            </div>
+                                                <div class="col-lg-4">
                                                     <label class="required fs-6 fw-semibold mb-2" for="month">Ay </label>
 
                                                     <select class="form-select" id="month" required aria-label="Default select example">
@@ -96,7 +109,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 
                                                     </select>
                                                 </div>
-                                                <div class="col-lg-6">
+                                                <div class="col-lg-4">
                                                     <label class="fs-6 fw-semibold mb-2" for="week">Özel Hafta Seçimi </label>
                                                     <?php
                                                     $class = new Classes();
@@ -192,47 +205,51 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                                 <!-- File upload input -->
                                                 <div id="fileInput" class="mb-4" style="display:none;">
                                                     <label for="file_path">Dosya Yükle:</label>
-                                                    <input type="file" class="form-control" name="file_path" id="file_path">
+                                                    <input type="file" class="form-control" name="file_path[]" id="file_path" multiple accept=".xls,.xlsx,.doc,.docx,.ppt,.pptx,.png,.jpeg,.jpg,.svg">
                                                 </div>
 
-                                                <!-- Textarea input -->
-                                                <div id="textInput" class="mb-4" style="display:none;">
-                                                    <label for="content">Metin İçeriği:</label>
-                                                    <textarea class="form-control" name="content" id="content" rows="4"></textarea>
-                                                </div>
+                                                <!-- Açıklama alanlarının ekleneceği yer -->
+                                                <div id="fileDescriptions"></div>
                                             </div>
 
-
-                                            <div class="row mt-5">
-                                                <div class="col-lg-11"></div>
-                                                <div class="col-lg-1">
-                                                    <button type="button" id="submitForm" class="btn btn-primary">Kaydet</button>
-
-                                                </div>
+                                            <!-- Textarea input -->
+                                            <div id="textInput" class="mb-4" style="display:none;">
+                                                <label for="content">Metin İçeriği:</label>
+                                                <textarea class="form-control" name="content" id="content" rows="4"></textarea>
                                             </div>
-                                        </form>
-
-
                                     </div>
-                                    <!--end::Card-->
+
+
+                                    <div class="row mt-5">
+                                        <div class="col-lg-11"></div>
+                                        <div class="col-lg-1">
+                                            <button type="button" id="submitForm" class="btn btn-primary">Kaydet</button>
+
+                                        </div>
+                                    </div>
+                                    </form>
+
+
                                 </div>
-                                <!--end::Content container-->
+                                <!--end::Card-->
                             </div>
-                            <!--end::Content-->
+                            <!--end::Content container-->
                         </div>
-                        <!--end::Content wrapper-->
-                        <!--begin::Footer-->
-                        <?php include_once "views/footer.php"; ?>
-                        <!--end::Footer-->
+                        <!--end::Content-->
                     </div>
-                    <!--end:::Main-->
-                    <!--begin::aside-->
-                    <?php include_once "views/aside.php"; ?>
-                    <!--end::aside-->
+                    <!--end::Content wrapper-->
+                    <!--begin::Footer-->
+                    <?php include_once "views/footer.php"; ?>
+                    <!--end::Footer-->
                 </div>
-                <!--end::Wrapper-->
+                <!--end:::Main-->
+                <!--begin::aside-->
+                <?php include_once "views/aside.php"; ?>
+                <!--end::aside-->
             </div>
-            <!--end::Page-->
+            <!--end::Wrapper-->
+        </div>
+        <!--end::Page-->
         </div>
         <!--end::App-->
         <!--begin::Scrolltop-->
@@ -270,6 +287,22 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
         <script src="assets/js/custom/utilities/modals/users-search.js"></script>
         <script>
             $(document).ready(function() {
+                $('#file_path').on('change', function() {
+                    const files = this.files;
+                    const container = $('#fileDescriptions');
+                    container.empty(); // Önceki açıklamaları temizle
+
+                    for (let i = 0; i < files.length; i++) {
+                        const fileName = files[i].name;
+                        const descriptionField = `
+            <div class="mb-3">
+                <label for="description_${i}" class="form-label">"${fileName}" dosyası için açıklama:</label>
+                <textarea class="form-control" name="descriptions[]" id="description_${i}" rows="2"></textarea>
+            </div>
+        `;
+                        container.append(descriptionField);
+                    }
+                });
                 $('input[name="secim"]').on('change', function() {
                     let selected = $(this).val();
 
@@ -349,13 +382,23 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                     formData.append('concept_title', $('#concept_title').val());
                     formData.append('subject', $('#subject').val());
                     formData.append('content_description', $('#content_description').val());
+                    formData.append('main_school_class_id', $('#main_school_class_id').val());
                     let selectedType = $('input[name="secim"]:checked').val();
                     formData.append('secim', selectedType);
 
                     if (selectedType === 'video_link') {
                         formData.append('video_url', $('#video_url').val());
                     } else if (selectedType === 'file_path') {
-                        formData.append('file_path', $('#file_path')[0].files[0]); // dosya
+                        const files = $('#file_path')[0].files;
+                        $("textarea[name='descriptions[]']").each(function() {
+                            formData.append('descriptions[]', $(this).val());
+                        }); // .get() ile jQuery nesnesinden normal diziye çevir
+
+
+
+                        for (let i = 0; i < files.length; i++) {
+                            formData.append('file_path[]', files[i]);
+                        }
                     } else if (selectedType === 'content') {
 
                         formData.append('content', tinymce.get('content').getContent());
@@ -379,7 +422,8 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                     text: 'Form başarıyla gönderildi!',
                                     confirmButtonText: 'Tamam'
                                 }).then(() => {
-                                    $('#ContentForm')[0].reset(); // Sayfayı yenile
+                                    location.reload();
+                                    // Sayfayı yenile
                                 });
                             } else {
                                 Swal.fire({
@@ -422,7 +466,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                     placeholder: "Seçiniz",
                     allowClear: true
                 });
-                
+
 
             });
         </script>

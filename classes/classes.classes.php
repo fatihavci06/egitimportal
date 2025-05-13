@@ -31,6 +31,20 @@ class Classes extends Dbh
 
 		return $classData;
 	}
+	public function getAgeGroup()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT id, name, slug FROM main_school_classes_lnp where school_id = 1');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
 	public function getWeekList()
 	{
 
@@ -102,14 +116,24 @@ class Classes extends Dbh
 	}
 	public function getMainSchoolContentById($id)
 	{
+		// İçerik verisini al
 		$stmt = $this->connect()->prepare('SELECT * FROM main_school_content_lnp WHERE id = ?');
-
 		if (!$stmt->execute([$id])) {
-			$stmt = null;
-			exit();
+			return null;
 		}
 
-		$classData = $stmt->fetch(PDO::FETCH_ASSOC); // sadece tek satır döner
+		$classData = $stmt->fetch(PDO::FETCH_ASSOC);
+		
+		
+		$stmt = $this->connect()->prepare('SELECT * FROM mainschool_content_file_lnp WHERE main_id = ?');
+		if (!$stmt->execute([$id])) {
+			return null;
+		}
+
+		$files = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		// İçeriğe dosya listesini ekle
+		$classData['files'] = $files;
 
 		return $classData;
 	}

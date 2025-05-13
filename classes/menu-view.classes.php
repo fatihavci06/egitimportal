@@ -103,7 +103,7 @@ class ShowMenu extends Menus
                                 </span>
                                 <!--end:Menu link-->
                                 <!--begin:Menu sub-->
-                                <div class="menu-sub menu-sub-accordion">';
+                                <div class="menu-sub menu-sub-accordion show" style="display: block">';
 
 
 

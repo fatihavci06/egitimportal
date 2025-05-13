@@ -125,13 +125,16 @@ function updateGroup(id) {
 }
 function updateWeek(id) {
     const updatedName = document.getElementById('weekNameInput').value; // Input değerini alıyoruz
-
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
     // Ajax isteği gönderme
     fetch('includes/ajax.php?service=weekUpdate', {
         method: 'POST',
         body: new URLSearchParams({
             id: id, // id parametresini gönderiyoruz
-            name: updatedName
+            name: updatedName,
+            endDate:endDate,
+            startDate:startDate
         }),
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -163,8 +166,8 @@ function updateWeek(id) {
             }
         })
         .catch(error => {
-            console.error('Hata oluştu:', error);
-            alert('Bir hata oluştu.');
+            
+            alert('Bir hata oluştu.'+error.message);
         });
 }
 

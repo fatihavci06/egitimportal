@@ -4,7 +4,7 @@
 
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001  )) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
 
@@ -85,7 +85,21 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                             </div>
 
                                             <div class="row mt-4">
-                                                <div class="col-lg-6">
+                                                <div class="row mt-4">
+                                                <div class="col-lg-4">
+                                                <label class="fs-6 fw-semibold mb-2" for="main_school_class_id">Yaş Grubu  </label>
+                                                <?php
+                                                $class = new Classes();
+                                                $mainSchoolClasses= $class->getAgeGroup();
+                                                ?>
+                                                <select class="form-select" id="main_school_class_id" required aria-label="Default select example">
+                                                    <option value="">Seçiniz</option>
+                                                    <?php foreach ($mainSchoolClasses as $c) { ?>
+                                                        <option value="<?= $c['id'] ?>" <?= $data['main_school_class_id'] == $c['id'] ? 'selected' : '' ?>><?= $c['name']  ?></option>
+                                                    <?php } ?>
+                                                </select>
+                                            </div>
+                                                <div class="col-lg-4">
                                                     <label class="required fs-6 fw-semibold mb-2" for="month">Ay </label>
                                                     <select class="form-select" id="month" required>
                                                         <option value="">Seçiniz</option>
@@ -99,7 +113,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                                 </div>
 
 
-                                                <div class="col-lg-6">
+                                                <div class="col-lg-4">
                                                     <label class="fs-6 fw-semibold mb-2" for="week">Özel Hafta Seçimi </label>
                                                     <select class="form-select" id="week" required>
                                                         <option value="">Seçiniz</option>
@@ -121,7 +135,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                                         $activityTitle = $class->getTitleList(3);
                                                         foreach ($activityTitle as $title) {
                                                         ?>
-                                                            <option value="<?= $title['id'] ?>"   <?= $data['activity_title_id'] == $title['id'] ? 'selected' : '' ?>><?= $title['title'] ?></option>
+                                                            <option value="<?= $title['id'] ?>" <?= $data['activity_title_id'] == $title['id'] ? 'selected' : '' ?>><?= $title['title'] ?></option>
                                                         <?php }  ?>
 
                                                     </select>
@@ -166,7 +180,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                             <div class="row mt-4">
                                                 <div class="col-lg-12">
                                                     <label class=" fs-6 fw-semibold mb-2" for="content_description">İçerik Açıklaması</label>
-                                                    <textarea class="form-control" name="content_description" id="content_description" rows="4"><?=$data['content_description'] ?></textarea>
+                                                    <textarea class="form-control" name="content_description" id="content_description" rows="4"><?= $data['content_description'] ?></textarea>
                                                 </div>
                                             </div>
                                             <div class="row mt-4">
@@ -176,7 +190,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                                         <input class="form-check-input" type="radio" name="secim" value="video_link" <?= !empty($data['video_url']) ? 'checked' : '' ?>> Video URL
                                                     </label>
                                                     <label>
-                                                        <input class="form-check-input" type="radio" name="secim" value="file_path" <?= !empty($data['file_path']) ? 'checked' : '' ?>> Dosya Yükle
+                                                        <input class="form-check-input" type="radio" name="secim" value="files" <?= !empty($data['files']) ? 'checked' : '' ?>> Dosya Yükle
                                                     </label>
                                                     <label>
                                                         <input class="form-check-input" type="radio" name="secim" value="content" <?= !empty($data['content']) ? 'checked' : '' ?>> Text
@@ -188,9 +202,33 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                                     <input type="text" class="form-control" name="video_url" id="video_url" value="<?= htmlspecialchars($data['video_url'] ?? '') ?>">
                                                 </div>
 
-                                                <div id="fileInput" class="mb-4" <?= empty($data['file_path']) ? 'style="display:none;"' : '' ?>>
+                                                <div id="fileInput" class="mb-4" <?= empty($data['files']) ? 'style="display:none;"' : '' ?>>
+
                                                     <label for="file_path">Dosya Yükle:</label>
-                                                    <input type="file" class="form-control" name="file_path" id="file_path">
+                                                    <input type="file" class="form-control" name="file_path[]" id="file_path" multiple accept=".xls,.xlsx,.doc,.docx,.ppt,.pptx,.png,.jpeg,.jpg,.svg">
+                                                    <div id="fileDescriptions"></div>
+                                                    <div class="row mt-4">
+                                                        <div class="row">
+                                                            <?php foreach ($data['files'] as $file): ?>
+                                                                <div class="col-md-12 mb-4">
+                                                                    <div class="card">
+                                                                        <div class="card-body">
+                                                                            <h5 class="card-title">Dosya ID: <?= $file['id'] ?></h5>
+                                                                            <p><strong>Dosya Yolu:</strong> <a href="<?= $file['file_path'] ?>" target="_blank">Dosyayı Görüntüle</a></p>
+                                                                            <div class="mb-3">
+                                                                                <label for="description_<?= $file['id'] ?>" class="form-label">Açıklama</label>
+                                                                                <input type="text" class="form-control" id="description_<?= $file['id'] ?>" data-file-id="<?= $file['id'] ?>" value="<?= htmlspecialchars($file['description']) ?>">
+                                                                            </div>
+                                                                            <button type="button" class="btn btn-primary update-description" data-file-id="<?= $file['id'] ?>">Açıklamayı Güncelle</button>
+                                                                            <button type="button" class="btn btn-danger delete-file" data-file-id="<?= $file['id'] ?>">Dosyayı Sil</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            <?php endforeach; ?>
+                                                        </div>
+                                                    </div>
+
+
                                                 </div>
 
 
@@ -199,7 +237,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                                     <textarea class="form-control" name="content" id="content" rows="4"><?= htmlspecialchars($data['content'] ?? '') ?></textarea>
                                                 </div>
                                             </div>
-                                            
+
 
                                             <div class="row mt-5">
                                                 <div class="col-lg-11"></div>
@@ -271,6 +309,22 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
         <script src="assets/js/custom/utilities/modals/users-search.js"></script>
         <script>
             $(document).ready(function() {
+                $('#file_path').on('change', function() {
+                    const files = this.files;
+                    const container = $('#fileDescriptions');
+                    container.empty(); // Önceki açıklamaları temizle
+
+                    for (let i = 0; i < files.length; i++) {
+                        const fileName = files[i].name;
+                        const descriptionField = `
+            <div class="mb-3">
+                <label for="description_${i}" class="form-label">"${fileName}" dosyası için açıklama:</label>
+                <textarea class="form-control" name="descriptions[]" id="description_${i}" rows="2"></textarea>
+            </div>
+        `;
+                        container.append(descriptionField);
+                    }
+                });
                 $('input[name="secim"]').on('change', function() {
                     let selected = $(this).val();
 
@@ -280,7 +334,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                     // Seçime göre ilgili inputu göster
                     if (selected === 'video_link') {
                         $('#videoInput').show();
-                    } else if (selected === 'file_path') {
+                    } else if (selected === 'files') {
                         $('#fileInput').show();
                     } else if (selected === 'content') {
                         $('#textInput').show();
@@ -350,13 +404,25 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                     formData.append('concept_title', $('#concept_title').val());
                     formData.append('subject', $('#subject').val());
                     formData.append('content_description', $('#content_description').val());
+                    formData.append('main_school_class_id', $('#main_school_class_id').val());
+                    
                     let selectedType = $('input[name="secim"]:checked').val();
                     formData.append('secim', selectedType);
-
+                    console.log(selectedType);
                     if (selectedType === 'video_link') {
                         formData.append('video_url', $('#video_url').val());
-                    } else if (selectedType === 'file_path') {
-                        formData.append('file_path', $('#file_path')[0].files[0]); // dosya
+                    } else if (selectedType === 'files') {
+
+                        const files = $('#file_path')[0].files;
+                        $("textarea[name='descriptions[]']").each(function() {
+                            formData.append('descriptions[]', $(this).val());
+                        }); // .get() ile jQuery nesnesinden normal diziye çevir
+
+
+
+                        for (let i = 0; i < files.length; i++) {
+                            formData.append('file_path[]', files[i]);
+                        }
                     } else if (selectedType === 'content') {
 
                         formData.append('content', tinymce.get('content').getContent());
@@ -372,11 +438,15 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                         processData: false,
                         success: function(response) {
                             Swal.fire({
-                                    icon: 'success',
-                                    title: 'Başarılı',
-                                    text: 'Form başarıyla gönderildi!',
-                                    confirmButtonText: 'Tamam'
-                                })
+                                icon: 'success',
+                                title: 'Başarılı',
+                                text: 'Form başarıyla gönderildi!',
+                                confirmButtonText: 'Tamam'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    location.reload();
+                                }
+                            });
 
                         },
                         error: function(xhr, status, error) {
@@ -391,14 +461,81 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                     });
 
                 });
+                $('.update-description').on('click', function() {
+                    var $button = $(this);
+                    var fileId = $button.data('file-id');
+                    var description = $('#description_' + fileId).val();
+
+                    // AJAX isteği gönder
+                    $.ajax({
+                        url: 'includes/mainschoolfileservices.php?service=update',
+                        method: 'POST',
+                        data: {
+                            id: fileId,
+                            description: description
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Başarılı',
+                                text: 'Güncelleme Başarılı!',
+                                confirmButtonText: 'Tamam'
+                            })
+                        },
+                        error: function(xhr, status, error) {
+                            alert("Bir hata oluştu: " + error);
+                        }
+                    });
+                });
+
+                // "Dosyayı Sil" butonuna tıklanınca
+                $('.delete-file').on('click', function() {
+                    var $button = $(this);
+                    var fileId = $button.data('file-id');
+
+                    Swal.fire({
+                        title: 'Emin misiniz?',
+                        text: "Bu dosyayı silmek istediğinizden emin misiniz?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Evet, sil',
+                        cancelButtonText: 'İptal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: 'includes/mainschoolfileservices.php?service=delete',
+                                method: 'POST',
+                                data: {
+                                    id: fileId
+                                },
+                                success: function(response) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Başarılı',
+                                        text: 'Başarıyla silindi!',
+                                        confirmButtonText: 'Tamam'
+                                    });
+                                    $button.closest('.card').remove();
+                                },
+                                error: function(xhr, status, error) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Hata',
+                                        text: "Bir hata oluştu: " + error,
+                                        confirmButtonText: 'Tamam'
+                                    });
+                                }
+                            });
+                        }
+                    });
+
+                });
             });
         </script>
-        <!--end::Custom Javascript-->
-        <!--end::Javascript-->
-    </body>
-    <!--end::Body-->
 
-</html>
-<?php } else {
-    header("location: index");
-}
+
+
+
+    <?php } ?>
