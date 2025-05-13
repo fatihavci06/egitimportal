@@ -201,17 +201,17 @@ switch ($service) {
         // Tarihlerin geçerli olup olmadığını kontrol et
         if ($start && $end) {
             // endDate'in startDate'ten büyük olup olmadığını kontrol et
-            if ($start>$end  ) {
-                  echo json_encode(['status' => 'error', 'message' => 'Hata: End Date, Start Dateten büyük olmalı!']);
-                  exit;
-            } 
+            if ($start > $end) {
+                echo json_encode(['status' => 'error', 'message' => 'Hata: End Date, Start Dateten büyük olmalı!']);
+                exit;
+            }
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Hata: Tarihler geçerli değil!']);
             exit;
             echo "Hata: Tarihler geçerli değil!";
         }
 
-      
+
 
         if (!$id || !is_numeric($id)) {
             echo json_encode(['status' => 'error', 'message' => 'Geçersiz ID' . $id]);
@@ -272,6 +272,65 @@ switch ($service) {
         } catch (PDOException $e) {
             echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası: ' . $e->getMessage()]);
         }
+        break;
+    case 'filter-main-school-content':
+        $month = isset($_POST['month']) ? $_POST['month'] : null;
+        $week = isset($_POST['week']) ? $_POST['week'] : null;
+        $activity_title = isset($_POST['activity_title']) ? $_POST['activity_title'] : null;
+        $content_title = isset($_POST['content_title']) ? $_POST['content_title'] : null;
+        $concept_title = isset($_POST['concept_title']) ? $_POST['concept_title'] : null;
+        $main_school_class_id = isset($_POST['main_school_class_id']) ? $_POST['main_school_class_id'] : null;
+
+        $whereClauses = [];
+        $params = [];
+
+        // Dinamik filtreleri ekle
+        if ($month !== null && $month !== '') {
+            $whereClauses[] = 'month = :month';
+            $params[':month'] = $month;
+        }
+
+        if ($week !== null && $week !== '') {
+            $whereClauses[] = 'week_id = :week';
+            $params[':week'] = $week;
+        }
+
+        if ($activity_title !== null && $activity_title !== '') {
+            $whereClauses[] = 'activity_title_id = :activity_title';
+            $params[':activity_title'] = $activity_title;
+        }
+
+        if ($content_title !== null && $content_title !== '') {
+            $whereClauses[] = 'content_title_id = :content_title';
+            $params[':content_title'] = $content_title;
+        }
+
+        if ($concept_title !== null && $concept_title !== '') {
+            $whereClauses[] = 'concept_title_id = :concept_title';
+            $params[':concept_title'] = $concept_title;
+        }
+         if ($main_school_class_id !== null && $main_school_class_id !== '') {
+            $whereClauses[] = 'main_school_class_id = :main_school_class_id';
+            $params[':main_school_class_id'] = $main_school_class_id;
+        }
+
+        // WHERE cümlesi oluştur
+        $whereSQL = '';
+        if (count($whereClauses) > 0) {
+            $whereSQL = 'WHERE ' . implode(' AND ', $whereClauses);
+        }
+
+        // Sorguyu hazırla ve çalıştır
+        $sql = "SELECT * FROM main_school_content_lnp $whereSQL";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Sonuçları yazdırmak istersen:
+        echo json_encode([
+            'status' => 'success',
+            'data' => $data
+        ]);
         break;
 
 

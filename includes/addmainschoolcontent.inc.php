@@ -18,6 +18,7 @@ $video_url = $_POST['video_url'] ?? '';
 $content = $_POST['content'] ?? '';
 $id = $_POST['id'] ?? null;
 $content_description = $_POST['content_description'] ?? null;
+$main_school_class_id = $_POST['main_school_class_id'] ?? null;
 
 $file_urls = [];
 
@@ -59,6 +60,7 @@ try {
 			content_title_id = :content_title,
 			concept_title_id = :concept_title,
 			content_description=:content_description,
+            main_school_class_id=:main_school_class_id,
 			subject = :subject,
 			video_url = :video_url,
 			content = :content
@@ -73,6 +75,7 @@ try {
 			':content_title' => $content_title,
 			':content_description'=>$content_description,
 			':concept_title' => $concept_title,
+            ':main_school_class_id'=>$main_school_class_id,
 			':subject' => $subject,
 			':video_url' => $secim === 'video_link' ? $video_url : null,
 			':content' => $secim === 'content' ? $content : null,
@@ -102,15 +105,16 @@ try {
 	}else {
         // Yeni kayıt işlemi
         $sql = "INSERT INTO main_school_content_lnp 
-            (roles, month, week_id, activity_title_id, content_title_id, concept_title_id, subject, video_url, content) 
+            (roles, month, week_id,main_school_class_id, activity_title_id, content_title_id, concept_title_id, subject, video_url, content) 
             VALUES 
-            (:roles, :month, :week_id, :activity_title, :content_title, :concept_title, :subject, :video_url, :content)";
+            (:roles, :month, :week_id,:main_school_class_id, :activity_title, :content_title, :concept_title, :subject, :video_url, :content)";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
             ':roles' => $rolesStr,
             ':month' => $month,
             ':week_id' => $week,
+            ':main_school_class_id'=>$main_school_class_id,
             ':activity_title' => $activity_title,
             ':content_title' => $content_title,
             ':concept_title' => $concept_title,

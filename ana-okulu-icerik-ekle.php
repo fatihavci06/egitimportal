@@ -76,7 +76,20 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 </div>
                                             </div>
                                             <div class="row mt-4">
-                                                <div class="col-lg-6">
+                                                <div class="col-lg-4">
+                                                <label class="fs-6 fw-semibold mb-2" for="main_school_class_id">Yaş Grubu  </label>
+                                                <?php
+                                                $class = new Classes();
+                                                $mainSchoolClasses= $class->getAgeGroup();
+                                                ?>
+                                                <select class="form-select" id="main_school_class_id" required aria-label="Default select example">
+                                                    <option value="">Seçiniz</option>
+                                                    <?php foreach ($mainSchoolClasses as $c) { ?>
+                                                        <option value="<?= $c['id'] ?>"><?= $c['name'] ?></option>
+                                                    <?php } ?>
+                                                </select>
+                                            </div>
+                                                <div class="col-lg-4">
                                                     <label class="required fs-6 fw-semibold mb-2" for="month">Ay </label>
 
                                                     <select class="form-select" id="month" required aria-label="Default select example">
@@ -96,7 +109,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                                     </select>
                                                 </div>
-                                                <div class="col-lg-6">
+                                                <div class="col-lg-4">
                                                     <label class="fs-6 fw-semibold mb-2" for="week">Özel Hafta Seçimi </label>
                                                     <?php
                                                     $class = new Classes();
@@ -369,6 +382,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     formData.append('concept_title', $('#concept_title').val());
                     formData.append('subject', $('#subject').val());
                     formData.append('content_description', $('#content_description').val());
+                    formData.append('main_school_class_id', $('#main_school_class_id').val());
                     let selectedType = $('input[name="secim"]:checked').val();
                     formData.append('secim', selectedType);
 

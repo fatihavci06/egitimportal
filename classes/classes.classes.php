@@ -31,6 +31,20 @@ class Classes extends Dbh
 
 		return $classData;
 	}
+	public function getAgeGroup()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT id, name, slug FROM main_school_classes_lnp where school_id = 1');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
 	public function getWeekList()
 	{
 
