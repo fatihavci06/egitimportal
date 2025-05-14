@@ -30,6 +30,30 @@ var KTModalCustomersAdd = function () {
 							}
 						}
 					},
+					'classes': {
+						validators: {
+						}
+					},
+					'lessons': {
+						validators: {
+
+						}
+					},
+					'units': {
+						validators: {
+
+						}
+					},
+					'topics': {
+						validators: {
+
+						}
+					},
+					'subtopics': {
+						validators: {
+
+						}
+					},
 				},
 				plugins: {
 					trigger: new FormValidation.plugins.Trigger(),
@@ -44,8 +68,8 @@ var KTModalCustomersAdd = function () {
 
 		// Revalidate country field. For more info, plase visit the official plugin site: https://select2.org/
 		//$(form.querySelector('[name="country"]')).on('change', function () {
-			// Revalidate the field when an option is chosen
-			validator.revalidateField('country');
+		// Revalidate the field when an option is chosen
+		validator.revalidateField('country');
 		//});
 
 		// Action buttons
@@ -69,20 +93,6 @@ var KTModalCustomersAdd = function () {
 							const form = document.getElementById('kt_modal_add_customer_form');
 
 							var formData = new FormData(form);
-
-							/*var photo = $('#photo')[0].files[0];
-							var fileName = photo.name;
-							var fileSize = photo.size;
-							var name = $("#name").val();
-							var surname = $("#surname").val();
-							var username = $("#username").val();
-							var gender = $("#gender").val();
-							var birthdate = $("#birthdate").val();
-							var email = $("#email").val();
-							var telephone = $("#telephone").val();
-							var school = $("#school").val();
-							var classAdd = $("#classAdd").val();
-							var password = $("#password").val();*/
 
 							$.ajax({
 								type: "POST",
@@ -132,9 +142,9 @@ var KTModalCustomersAdd = function () {
 										});
 									}
 								},
-								error: function(xhr, status, error, response) {
+								error: function (xhr, status, error, response) {
 									Swal.fire({
-										text: "Bir sorun oldu!" /* + xhr.responseText*/,
+										text: "Bir sorun oldu!",
 										icon: "error",
 										buttonsStyling: false,
 										confirmButtonText: "Tamam, anladım!",
@@ -230,7 +240,213 @@ var KTModalCustomersAdd = function () {
 					});
 				}
 			});
-		})
+		});
+
+		$(form.querySelector('[name="classes"]')).on('change', function () {
+			// Revalidate the field when an option is chosen
+			validator.revalidateField('classes');
+
+			var classChoose = $("#classes").val();
+
+
+			// AJAX isteği gönder
+			$.ajax({
+				allowClear: true,
+				type: "POST",
+				url: "includes/select_for_lesson.inc.php",
+				data: {
+					class: classChoose
+				},
+				dataType: "json",
+				success: function (data) {
+					// İkinci Select2'nin içeriğini güncelle
+
+					if (data.length > 0) {
+						$('#lessons').html('<option value="">Ders Yok</option>');
+						$('#lessons').select2({ data: data });
+						$('#units').html('<option value="">Ünite Yok</option>');
+						$('#topics').html('<option value="">Konu Yok</option>');
+					} else {
+						$('#lessons').html('<option value="">Ders Yok</option>');
+						$('#units').html('<option value="">Ünite Yok</option>');
+						$('#topics').html('<option value="">Konu Yok</option>');
+					}
+
+				}, error: function (xhr, status, error, response) {
+					Swal.fire({
+						text: error.responseText + ' ' + xhr.responseText,
+						icon: "error",
+						buttonsStyling: false,
+						confirmButtonText: "Tamam, anladım!",
+						customClass: {
+							confirmButton: "btn btn-primary"
+						}
+					}).then(function (result) {
+						if (result.isConfirmed) {
+
+							// Enable submit button after loading
+							submitButton.disabled = false;
+						}
+					});
+					//alert(status + "0");
+
+				}
+			});
+		});
+		$(form.querySelector('[name="lessons"]')).on('change', function () {
+			// Revalidate the field when an option is chosen
+			validator.revalidateField('classes');
+			validator.revalidateField('lessons');
+
+			var classChoose = $("#classes").val();
+			var lessonsChoose = $("#lessons").val();
+
+
+			// AJAX isteği gönder
+			$.ajax({
+				allowClear: true,
+				type: "POST",
+				url: "includes/select_for_unit.inc.php",
+				data: {
+					class: classChoose,
+					lesson: lessonsChoose
+				},
+				dataType: "json",
+				success: function (data) {
+					// İkinci Select2'nin içeriğini güncelle
+
+					if (data.length > 0) {
+						$('#units').select2({ data: data });
+					} else {
+						$('#units').html('<option value="">Ünite Yok</option>');
+						$('#topics').html('<option value="">Konu Yok</option>');
+					}
+
+				}, error: function (xhr, status, error, response) {
+					Swal.fire({
+						text: error,
+						icon: "error",
+						buttonsStyling: false,
+						confirmButtonText: "Tamam, anladım!",
+						customClass: {
+							confirmButton: "btn btn-primary"
+						}
+					}).then(function (result) {
+						if (result.isConfirmed) {
+
+							// Enable submit button after loading
+							submitButton.disabled = false;
+						}
+					});
+					//alert(status + "0");
+
+				}
+			});
+		});
+		$(form.querySelector('[name="units"]')).on('change', function () {
+			// Revalidate the field when an option is chosen
+			validator.revalidateField('classes');
+			validator.revalidateField('lessons');
+
+			var classChoose = $("#classes").val();
+			var lessonsChoose = $("#lessons").val();
+			var unitsChoose = $("#units").val();
+
+
+			// AJAX isteği gönder
+			$.ajax({
+				allowClear: true,
+				type: "POST",
+				url: "includes/select_for_topic.inc.php",
+				data: {
+					class: classChoose,
+					lesson: lessonsChoose,
+					unit: unitsChoose
+				},
+				dataType: "json",
+				success: function (data) {
+					// İkinci Select2'nin içeriğini güncelle
+
+					if (data.length > 0) {
+						$('#topics').select2({ data: data });
+					} else {
+						$('#topics').html('<option value="">Konu Yok</option>');
+					}
+
+				}, error: function (xhr, status, error, response) {
+					Swal.fire({
+						text: error,
+						icon: "error",
+						buttonsStyling: false,
+						confirmButtonText: "Tamam, anladım!",
+						customClass: {
+							confirmButton: "btn btn-primary"
+						}
+					}).then(function (result) {
+						if (result.isConfirmed) {
+
+							// Enable submit button after loading
+							submitButton.disabled = false;
+						}
+					});
+					//alert(status + "0");
+
+				}
+			});
+		});
+		$(form.querySelector('[name="topics"]')).on('change', function () {
+			// Revalidate the field when an option is chosen
+			validator.revalidateField('classes');
+			validator.revalidateField('lessons');
+
+			var classChoose = $("#classes").val();
+			var lessonsChoose = $("#lessons").val();
+			var unitsChoose = $("#units").val();
+			var topicsChoose = $("#topics").val();
+
+			// AJAX isteği gönder
+			$.ajax({
+				allowClear: true,
+				type: "POST",
+				url: "includes/select_for_subtopic.inc.php",
+				data: {
+					class: classChoose,
+					lesson: lessonsChoose,
+					unit: unitsChoose,
+					topics: topicsChoose
+
+				},
+				dataType: "json",
+				success: function (data) {
+					// İkinci Select2'nin içeriğini güncelle
+
+					if (data.length > 0) {
+						$('#subtopics').select2({ data: data });
+					} else {
+						$('#subtopics').html('<option value="">Konu Yok</option>');
+					}
+
+				}, error: function (xhr, status, error, response) {
+					Swal.fire({
+						text: error,
+						icon: "error",
+						buttonsStyling: false,
+						confirmButtonText: "Tamam, anladım!",
+						customClass: {
+							confirmButton: "btn btn-primary"
+						}
+					}).then(function (result) {
+						if (result.isConfirmed) {
+
+							// Enable submit button after loading
+							submitButton.disabled = false;
+						}
+					});
+					//alert(status + "0");
+
+				}
+			});
+		});
 	}
 
 	return {

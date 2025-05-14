@@ -21,8 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 	$getPackage->showPackages($class);
 
 	
-
-
 	// Going to back to products page
 	//header("location: ../kategoriler");
 }

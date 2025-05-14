@@ -5,7 +5,27 @@ class Games extends Dbh
 
 	protected function getGamesList()
 	{
-		$stmt = $this->connect()->prepare('SELECT games_lnp.id, games_lnp.name, games_lnp.cover_img, games_lnp.game_url, games_lnp.slug, classes_lnp.name AS className FROM games_lnp INNER JOIN classes_lnp ON games_lnp.class_id = classes_lnp.id');
+		$stmt = $this->connect()->prepare('
+		SELECT 
+		g.id, 
+		g.name AS game_name,
+		g.cover_img,
+		g.game_url,
+		g.slug,
+		g.created_at,
+		g.updated_at,
+		c.name AS class_name,
+		l.name AS lesson_name,
+		u.name AS unit_name,
+		t.name AS topic_name,
+		st.name AS subtopic_name
+		FROM 
+			games_lnp g
+		LEFT JOIN classes_lnp c ON g.class_id = c.id
+		LEFT JOIN lessons_lnp l ON g.lesson_id = l.id
+		LEFT JOIN units_lnp u ON g.unit_id = u.id
+		LEFT JOIN topics_lnp t ON g.topic_id = t.id
+		LEFT JOIN subtopics_lnp st ON g.subtopic_id = st.id;');
 
 		if (!$stmt->execute(array())) {
 			$stmt = null;
@@ -13,6 +33,7 @@ class Games extends Dbh
 		}
 
 		$unitData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 
 		return $unitData;
 

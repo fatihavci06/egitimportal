@@ -9,8 +9,12 @@ class AddGameContr extends AddGame
 	private $name;
 	private $iframe;
 	private $classAdd;
+	private $lesson;
+	private $unite;
+	private $topic;
+	private $subtopic;
 
-	public function __construct($name, $iframe, $photoSize, $photoName, $fileTmpName, $classAdd)
+	public function __construct($name, $iframe, $photoSize, $photoName, $fileTmpName, $classAdd, $lesson, $unit, $topic, $subtopic)
 	{
 		$this->photoSize = $photoSize;
 		$this->photoName = $photoName;
@@ -18,10 +22,16 @@ class AddGameContr extends AddGame
 		$this->name = $name;
 		$this->iframe = $iframe;
 		$this->classAdd = $classAdd;
+		$this->lesson = $lesson;
+		$this->unit = $unit;
+		$this->topic = $topic;
+		$this->subtopic = $subtopic;
+
 	}
 
 	public function addGameDb()
 	{
+
 		$slugName = new Slug($this->name);
 		$slug = $slugName->slugify($this->name);
 
@@ -43,14 +53,14 @@ class AddGameContr extends AddGame
 			$slug = $slug;
 		}
 
-		if($this->fileTmpName != NULL){
+		if ($this->fileTmpName != NULL) {
 			$imageSent = new ImageUpload();
 			$img = $imageSent->gameImage($this->photoName, $this->photoSize, $this->fileTmpName, $slug);
 			$imgName = $img['image'];
-		}else{
+		} else {
 			$imgName = 'gameDefault.jpg';
 		}
 
-		$this->setGame($imgName, $slug, $this->name, $this->iframe, $this->classAdd);
+		$this->setGame($imgName, $slug, $this->name, $this->iframe, $this->classAdd, $this->lesson,$this->unit ,$this->topic, $this->subtopic);
 	}
 }
