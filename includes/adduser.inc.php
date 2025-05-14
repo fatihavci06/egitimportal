@@ -19,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 	$postcode = htmlspecialchars(trim($_POST['postcode']));
 	$city = htmlspecialchars(trim($_POST['city']));
 	$telephone = htmlspecialchars(trim($_POST['telephone']));
+	$couponCode = htmlspecialchars(trim($_POST['coupon_code']));
 
 	// Instantiate AddUserContr class
 	include_once "../classes/dbh.classes.php";
@@ -26,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 	include_once "../classes/adduser-contr.classes.php";
 	include_once "../classes/slug.classes.php";
 
-	$addUser = new AddUserContr($firstName, $lastName, $username, $tckn, $gender, $birth_day, $email, $parentFirstName, $parentLastName, $classes, $pack, $address, $district, $postcode, $city, $telephone);
+	$addUser = new AddUserContr($firstName, $lastName, $username, $tckn, $gender, $birth_day, $email, $parentFirstName, $parentLastName, $classes, $pack, $address, $district, $postcode, $city, $telephone, $couponCode);
 
 	// Running error handlers and school addUser
 	$addUser->addUserDb();

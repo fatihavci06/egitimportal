@@ -1,5 +1,13 @@
 <?php
 
+
+#sessiondan kodu al, veritabanında kodun yüzde mi amount mu olduğunu kontrol edice
+# indirim değeride alıncaak. indirim değerini yüzde veya tl ye göre price 
+
+// foreach ($packInfo as $key => $value) {
+// $price = $value['monthly_fee'] * $value['subscription_period'];
+// } bu kodun içinde yüzdeyse yüzdesi kadar düşer fiyat ise direkt - fiyat olacak zaten 
+
 session_start();
 define('GUARD', true);
 
@@ -14,23 +22,39 @@ $chooseClass = new ShowClass();
 
 $packInfo = $package->getPackagePrice(htmlspecialchars(trim($_SESSION['pack'])));
 
+// $couponCode = $package->checkCoupon($_SESSION['couponCode']);
+
+// if ($couponCode) {
+
+// 	$coupon = $package->checkCoupon($couponCode);
+// 	$discount_value = $coupon['discount_value'];
+// 	$discount_type = $coupon['discount_type'];
+// }
+
 foreach ($packInfo as $key => $value) {
-    $price = $value['monthly_fee'] * $value['subscription_period'];
+	$price = $value['monthly_fee'] * $value['subscription_period'];
+
+	// if ($discount_type === 'amount') {
+	// 	$price -= $discount_value;
+	// } else if ($discount_type === 'percentage') {
+	// 	$price -= $price * ($discount_value / 100);
+	// }
 }
 
 
-$kullanici_ad=$_SESSION['parentFirstName'];
-$kullanici_soyad=$_SESSION['parentLastName'];
-$kullanici_gsm=$_SESSION['telephone'];
-$kullanici_mail=$_SESSION['email'];
+$kullanici_ad = $_SESSION['parentFirstName'];
+$kullanici_soyad = $_SESSION['parentLastName'];
+$kullanici_gsm = $_SESSION['telephone'];
+$kullanici_mail = $_SESSION['email'];
 $kullanici_tckn = $_SESSION['tckn'];
-$kullanici_zaman=date('Y-m-d H:i:s'); 
-$kullanici_adresiyaz=$_SESSION['address'];
-$kullanici_il=$_SESSION['city'];
+$kullanici_zaman = date('Y-m-d H:i:s');
+$kullanici_adresiyaz = $_SESSION['address'];
+$kullanici_il = $_SESSION['city'];
 $postcode = $_SESSION['postcode'];
 $district = $_SESSION['district'];
-$siparis_no=rand().rand();
-$sepettoplam=$price;
+$siparis_no = rand() . rand();
+$sepettoplam = $price;
+$kupon_kodu = $_SESSION['couponCode'];
 
 
 ?>
@@ -101,7 +125,7 @@ include_once "views/pages-head.php";
 					<!--begin::Wrapper-->
 					<div class="w-lg-700px p-10 p-lg-15 mx-auto">
 						<!--begin::Checkout-->
-						<?php include 'iyzico/buyer.php';?>
+						<?php include 'iyzico/buyer.php'; ?>
 						<div id="iyzipay-checkout-form" class="responsive"></div>
 						<!--end::Checkout-->
 					</div>
