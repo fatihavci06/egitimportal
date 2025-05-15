@@ -5,7 +5,6 @@ class AudioBooks extends Dbh
 
 	protected function getAudioBooksList()
 	{
-		$stmt = $this->connect()->prepare('SELECT audio_book_lnp.id, audio_book_lnp.name, audio_book_lnp.cover_img, audio_book_lnp.book_url, audio_book_lnp.slug, classes_lnp.name AS className FROM audio_book_lnp INNER JOIN classes_lnp ON audio_book_lnp.class_id = classes_lnp.id');
 		$stmt = $this->connect()->prepare('
 		SELECT 
 		g.id, 

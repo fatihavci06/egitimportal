@@ -1,14 +1,18 @@
 "use strict";
-
 // Class Definition
-var KTAuthNewPassword = function() {
+var KTAuthNewPassword = function () {
     // Elements
     var form;
     var submitButton;
     var validator;
     var passwordMeter;
+    var token = '';
 
-    var handleForm = function(e) {
+    var handleForm = function (e) {
+        // Extract token from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        token = urlParams.get('token');
+        
         // Init form validation rules. For more info check the FormValidation plugin's official documentation:https://formvalidation.io/
         validator = FormValidation.formValidation(
             form,
@@ -17,11 +21,11 @@ var KTAuthNewPassword = function() {
                     'password': {
                         validators: {
                             notEmpty: {
-                                message: 'The password is required'
+                                message: 'Şifre zorunlu'
                             },
                             callback: {
-                                message: 'Please enter valid password',
-                                callback: function(input) {
+                                message: 'Lütfen geçerli bir şifre girin',
+                                callback: function (input) {
                                     if (input.value.length > 0) {
                                         return validatePassword();
                                     }
@@ -32,20 +36,20 @@ var KTAuthNewPassword = function() {
                     'confirm-password': {
                         validators: {
                             notEmpty: {
-                                message: 'The password confirmation is required'
+                                message: 'Şifre onayı gerekiyor'
                             },
                             identical: {
-                                compare: function() {
+                                compare: function () {
                                     return form.querySelector('[name="password"]').value;
                                 },
-                                message: 'The password and its confirm are not the same'
+                                message: 'Şifre ve onay şifre aynı değil'
                             }
                         }
                     },
                     'toc': {
                         validators: {
                             notEmpty: {
-                                message: 'You must accept the terms and conditions'
+                                message: 'Şartlar ve koşulları kabul etmelisiniz'
                             }
                         }
                     }
@@ -65,74 +69,11 @@ var KTAuthNewPassword = function() {
             }
         );
 
-        form.querySelector('input[name="password"]').addEventListener('input', function() {
+        form.querySelector('input[name="password"]').addEventListener('input', function () {
             if (this.value.length > 0) {
                 validator.updateFieldStatus('password', 'NotValidated');
             }
         });
-    }
-
-
-    var handleSubmitDemo = function (e) {
-        submitButton.addEventListener('click', function (e) {
-            e.preventDefault();
-
-            validator.revalidateField('password');
-
-            validator.validate().then(function(status) {
-                if (status == 'Valid') {
-                    // Show loading indication
-                    submitButton.setAttribute('data-kt-indicator', 'on');
-
-                    // Disable button to avoid multiple click
-                    submitButton.disabled = true;
-
-                    // Simulate ajax request
-                    setTimeout(function() {
-                        // Hide loading indication
-                        submitButton.removeAttribute('data-kt-indicator');
-
-                        // Enable button
-                        submitButton.disabled = false;
-
-                        // Show message popup. For more info check the plugin's official documentation: https://sweetalert2.github.io/
-                        Swal.fire({
-                            text: "You have successfully reset your password!",
-                            icon: "success",
-                            buttonsStyling: false,
-                            confirmButtonText: "Ok, got it!",
-                            customClass: {
-                                confirmButton: "btn btn-primary"
-                            }
-                        }).then(function (result) {
-                            if (result.isConfirmed) {
-                                form.querySelector('[name="password"]').value= "";
-                                form.querySelector('[name="confirm-password"]').value= "";
-                                passwordMeter.reset();  // reset password meter
-                                //form.submit();
-
-                                var redirectUrl = form.getAttribute('data-kt-redirect-url');
-                                if (redirectUrl) {
-                                    location.href = redirectUrl;
-                                }
-                            }
-                        });
-                    }, 1500);
-                } else {
-                    // Show error popup. For more info check the plugin's official documentation: https://sweetalert2.github.io/
-                    Swal.fire({
-                        text: "Sorry, looks like there are some errors detected, please try again.",
-                        icon: "error",
-                        buttonsStyling: false,
-                        confirmButtonText: "Ok, got it!",
-                        customClass: {
-                            confirmButton: "btn btn-primary"
-                        }
-                    });
-                }
-            });
-        });
-
     }
 
     var handleSubmitAjax = function (e) {
@@ -152,39 +93,69 @@ var KTAuthNewPassword = function() {
                     // Disable button to avoid multiple click
                     submitButton.disabled = true;
 
-                    // Check axios library docs: https://axios-http.com/docs/intro
-                    axios.post(submitButton.closest('form').getAttribute('action'), new FormData(form)).then(function (response) {
-                        if (response) {
+                    // Prepare data for POST request
+                    const password = form.querySelector('[name="password"]').value;
+                    const confirmPassword = form.querySelector('[name="confirm-password"]').value;
+                    const postData = {
+                        token: token,
+                        password: password,
+                        'confirm-password': confirmPassword
+                    };
+
+                    // Send POST request with token and password
+                    axios.post("includes/reset-password-complete.inc.php", postData, {
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }
+                    })
+                    .then(function (response) {
+                        // Debug the response
+                    
+                    if (response.data && response.data.success) {
                             form.reset();
 
-                            const redirectUrl = form.getAttribute('data-kt-redirect-url');
-
-                            if (redirectUrl) {
-                                location.href = redirectUrl;
-                            }
-                        } else {
-                            // Show error popup. For more info check the plugin's official documentation: https://sweetalert2.github.io/
+                            // Show success message
                             Swal.fire({
-                                text: "Sorry, the email is incorrect, please try again.",
+                                text: "Şifrenizi başarıyla sıfırladınız!",
+                                icon: "success",
+                                buttonsStyling: false,
+                                confirmButtonText: "Tamam, anladım!",
+                                customClass: {
+                                    confirmButton: "btn btn-primary"
+                                }
+                            }).then(function (result) {
+                                if (result.isConfirmed) {
+                                    const redirectUrl = form.getAttribute('data-kt-redirect-url');
+                                    if (redirectUrl) {
+                                        location.href = redirectUrl;
+                                    }
+                                }
+                            });
+                        } else {
+                            // Show error popup
+                            Swal.fire({
+                                text: response.data.message || "Üzgünüz, isteğiniz işlenirken bir hata oluştu.",
                                 icon: "error",
                                 buttonsStyling: false,
-                                confirmButtonText: "Ok, got it!",
+                                confirmButtonText: "Tamam, anladım!",
                                 customClass: {
                                     confirmButton: "btn btn-primary"
                                 }
                             });
                         }
-                    }).catch(function (error) {
+                    })
+                    .catch(function (error) {
                         Swal.fire({
-                            text: "Sorry, looks like there are some errors detected, please try again.",
+                            text: "Üzgünüz, bazı hatalar tespit edilmiş gibi görünüyor, lütfen tekrar deneyin.",
                             icon: "error",
                             buttonsStyling: false,
-                            confirmButtonText: "Ok, got it!",
+                            confirmButtonText: "Tamam, anladım!",
                             customClass: {
                                 confirmButton: "btn btn-primary"
                             }
                         });
-                    }).then(() => {
+                    })
+                    .finally(() => {
                         // Hide loading indication
                         submitButton.removeAttribute('data-kt-indicator');
 
@@ -192,12 +163,12 @@ var KTAuthNewPassword = function() {
                         submitButton.disabled = false;
                     });
                 } else {
-                    // Show error popup. For more info check the plugin's official documentation: https://sweetalert2.github.io/
+                    // Show error popup
                     Swal.fire({
-                        text: "Sorry, looks like there are some errors detected, please try again.",
+                        text: "Üzgünüz, bazı hatalar tespit edilmiş gibi görünüyor, lütfen tekrar deneyin.",
                         icon: "error",
                         buttonsStyling: false,
-                        confirmButtonText: "Ok, got it!",
+                        confirmButtonText: "Tamam, anladım!",
                         customClass: {
                             confirmButton: "btn btn-primary"
                         }
@@ -207,39 +178,25 @@ var KTAuthNewPassword = function() {
         });
     }
 
-    var validatePassword = function() {
-        return  (passwordMeter.getScore() > 50);
-    }
-
-    var isValidUrl = function(url) {
-        try {
-            new URL(url);
-            return true;
-        } catch (e) {
-            return false;
-        }
+    var validatePassword = function () {
+        return (passwordMeter.getScore() > 50);
     }
 
     // Public Functions
     return {
         // public functions
-        init: function() {
+        init: function () {
             form = document.querySelector('#kt_new_password_form');
             submitButton = document.querySelector('#kt_new_password_submit');
             passwordMeter = KTPasswordMeter.getInstance(form.querySelector('[data-kt-password-meter="true"]'));
 
             handleForm();
-
-            if (isValidUrl(form.getAttribute('action'))) {
-                handleSubmitAjax(); // use for ajax submit
-            } else {
-                handleSubmitDemo(); // used for demo purposes only
-            }
+            handleSubmitAjax();
         }
     };
 }();
 
 // On document ready
-KTUtil.onDOMContentLoaded(function() {
+KTUtil.onDOMContentLoaded(function () {
     KTAuthNewPassword.init();
 });
