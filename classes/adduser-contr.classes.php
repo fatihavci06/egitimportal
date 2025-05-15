@@ -73,14 +73,15 @@ class AddUserContr extends AddUser
 		}
 
 		$packages = new Packages();
+
 		$couponRes = $packages->checkCoupon($this->couponCode);
-		
-		if(!$couponRes){
-			echo json_encode(["status" => "error", "message" => "Kupon bulunamadı!"]);
-			return;
-		}
-		
-		if ($couponRes !== false) {
+
+		if ($this->couponCode) {
+
+			if ($couponRes['coupon_quantity'] == $couponRes['used_coupon_count']) {
+				echo json_encode(["status" => "error", "message" => "Kuponun kullanım hakkı kalmamış!"]);
+				return;
+			}
 
 			$expireDate = new DateTime($couponRes['coupon_expires']);
 			$today = new DateTime();
@@ -93,17 +94,9 @@ class AddUserContr extends AddUser
 				return;
 			}
 
+			$packages->updateUsedCuponCount($this->couponCode);
 		}
 
-		if ($couponRes['coupon_quantity'] <= 0) {
-			echo json_encode(["status" => "error", "message" => "Kuponun kullanım hakkı kalmamış!"]);
-			return;
-		}
-
-		// if (count($couponRes) < 0) {
-		// 	echo json_encode(["status" => "error", "message" => "Hata: Bu kupon kodu daha önce kullanılmış!"]);
-		// 	die();
-		// }
 
 
 		$_SESSION['firstName'] = $this->firstName;

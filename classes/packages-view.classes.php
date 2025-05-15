@@ -43,7 +43,7 @@ class ShowPackage extends Packages
 
         $coupons .= '
 				<div class="fv-row mb-5">
-					<input type="text" class="form-control" name="coupon_code" id="coupon_code" placeholder="Kupon Kodunu Girin">
+					<input type="text" class="form-control" name="coupon_code" id="coupon_code" placeholder="Kupon Kodu">
 				</div>
                 ';
 

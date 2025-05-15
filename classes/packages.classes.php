@@ -37,9 +37,9 @@ class Packages extends Dbh
 
 	public function checkCoupon($couponCode)
 	{
-		$stmt = $this->connect()->prepare('SELECT coupon_code, discount_type, discount_value, coupon_expires, coupon_quantity FROM coupon_lnp WHERE coupon_code = ? ');
+		$stmt = $this->connect()->prepare('SELECT coupon_code, discount_type, discount_value, coupon_expires, coupon_quantity, used_coupon_count FROM coupon_lnp WHERE coupon_code = :coupon_code');
 
-		if (!$stmt->execute(array($couponCode))) {
+		if (!$stmt->execute([':coupon_code' => $couponCode])) {
 			$stmt = null;
 			exit();
 		}
@@ -47,6 +47,16 @@ class Packages extends Dbh
 		$coupon = $stmt->fetch(PDO::FETCH_ASSOC);
 
 		$stmt = null;
+
 		return $coupon;
+	}
+
+	public function updateUsedCuponCount($couponCode)
+	{
+		$stmt = $this->connect()->prepare('UPDATE coupon_lnp SET used_coupon_count = used_coupon_count + 1 WHERE coupon_code = :coupon_code');
+
+		$update = $stmt->execute([':coupon_code' => $couponCode]);
+		$stmt = null;
+		return $update;
 	}
 }

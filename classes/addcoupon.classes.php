@@ -1,24 +1,30 @@
 <?php
 class AddCoupon extends Dbh
 {
+    // private $discount_type;
+    // private $discount_value;
+    // private $coupon_code;
+    // private $coupon_expires;
+    // private $coupon_quantity;
+
+    // public function __construct($discount_type, $discount_value, $coupon_code, $coupon_expires, $coupon_quantity)
+    // {
+    //     $this->discount_type = $discount_type;
+    //     $this->discount_value = $discount_value;
+    //     $this->coupon_code = $coupon_code;
+    //     $this->coupon_expires = $coupon_expires;
+    //     $this->coupon_quantity = $coupon_quantity;
+    // }
 
     protected function setCoupon($discount_type, $discount_value, $coupon_code, $coupon_expires, $coupon_quantity)
     {
-        $checkStmt = $this->connect()->prepare('SELECT COUNT(*) FROM coupon_lnp WHERE coupon_code = ?');
+        $checkStmt = $this->connect()->prepare('SELECT 1 FROM coupon_lnp WHERE coupon_code = ? LIMIT 1');
         $checkStmt->execute([$coupon_code]);
 
-        if ($checkStmt->fetchColumn() > 0) {
+        if ($checkStmt->fetchColumn()) {
             echo json_encode(["status" => "error", "message" => "Bu kupon kodu zaten mevcut!"]);
             return;
         }
-
-        // $expireDate = new DateTime($checkStmt['coupon_expires']);
-        // $today = new DateTime();
-
-        // if ($expireDate < $today) {
-        //     echo json_encode(["status" => "error", "message" => "Kuponun tarihi geçmiş"]);
-        //     return;
-        // }
 
         $stmt = $this->connect()->prepare('INSERT INTO coupon_lnp SET discount_type = ?, discount_value = ?, coupon_code = ?, coupon_expires = ?, coupon_quantity = ?');
 

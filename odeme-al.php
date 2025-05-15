@@ -22,23 +22,19 @@ $chooseClass = new ShowClass();
 
 $packInfo = $package->getPackagePrice(htmlspecialchars(trim($_SESSION['pack'])));
 
-// $couponCode = $package->checkCoupon($_SESSION['couponCode']);
+$coupon = $package->checkCoupon($_SESSION['couponCode']);
 
-// if ($couponCode) {
-
-// 	$coupon = $package->checkCoupon($couponCode);
-// 	$discount_value = $coupon['discount_value'];
-// 	$discount_type = $coupon['discount_type'];
-// }
-
+if ($coupon) {
+	$discount_value = $coupon['discount_value'];
+	$discount_type = $coupon['discount_type'];
+}
 foreach ($packInfo as $key => $value) {
 	$price = $value['monthly_fee'] * $value['subscription_period'];
-
-	// if ($discount_type === 'amount') {
-	// 	$price -= $discount_value;
-	// } else if ($discount_type === 'percentage') {
-	// 	$price -= $price * ($discount_value / 100);
-	// }
+	if ($discount_type === 'amount') {
+		$price -= $discount_value;
+	} else if ($discount_type === 'percentage') {
+		$price -= $price * ($discount_value / 100);
+	}
 }
 
 
