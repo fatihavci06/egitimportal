@@ -99,7 +99,7 @@ class User extends Dbh
 			exit();
 		}
 
-		$getData = $stmt->fetch(PDO::FETCH_ASSOC);
+		$getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 		return $getData;
 
