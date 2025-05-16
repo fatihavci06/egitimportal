@@ -91,6 +91,16 @@ class ShowMenu extends Menus
                         $show = " show";
                         $here = " here";
                     }
+                    $role = $_SESSION['role'] ?? null;
+
+                    // Eğer role 10001 veya 10002 ise gösterilsin
+                    if ($role == 10001 || $role == 10002) {
+                        $show2 = ' show';
+                        $style = 'style="display: block"';
+                    } else {
+                        $show2 = '';
+                        $style = '';
+                    }
 
                     $menuList .= '<div data-kt-menu-trigger="click" class="mb-3 menu-item' . $show . '' . $here . ' menu-accordion">
                                 <!--begin:Menu link-->
@@ -103,7 +113,7 @@ class ShowMenu extends Menus
                                 </span>
                                 <!--end:Menu link-->
                                 <!--begin:Menu sub-->
-                                <div class="menu-sub menu-sub-accordion show" style="display: block">';
+                                <div class="menu-sub menu-sub-accordion '.$show2.'" style="'.$style.'">';
 
 
 
@@ -126,7 +136,7 @@ class ShowMenu extends Menus
 
                         $piecesRoles = explode(",", $subRoles);
 
-                        if ($i == 1 AND !empty($isLesson)) {
+                        if ($i == 1 and !empty($isLesson)) {
 
                             if (in_array($_SESSION['role'], $piecesRoles)) {
 
@@ -151,7 +161,7 @@ class ShowMenu extends Menus
                                     <!--end:Menu item-->
                                     ';
                             }
-                        }elseif($i != 1){
+                        } elseif ($i != 1) {
                             if (in_array($_SESSION['role'], $piecesRoles)) {
 
                                 $active = "";

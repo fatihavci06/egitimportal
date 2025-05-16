@@ -84,7 +84,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                                     <div id="videoContent">
                                                         <?php
-                                                        if (isset($data['video_url'])) {
+                                                        if (!empty($data['video_url'])) {
                                                         ?>
                                                             <iframe title="vimeo-player" width="100%" height="800"  src="https://player.vimeo.com/video/<?= $data['video_url'] ?>" width="640" height="360" frameborder="0" allowfullscreen></iframe>
                                                     </div>
