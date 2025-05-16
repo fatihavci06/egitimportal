@@ -1,11 +1,13 @@
 <?php
 
-class AddUser extends Dbh {
-	
-	protected function setStudent($photo, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $password){
+class AddUser extends Dbh
+{
+
+	protected function setStudent($photo, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $password)
+	{
 		$stmt = $this->connect()->prepare('INSERT INTO users_lnp SET photo = ?, name = ?, surname = ?, username = ?, gender = ?, birth_date = ?, email = ?, telephone = ?, school_id = ?, class_id = ?, password=?, role=?, active = ?');
 
-		if(!$stmt->execute([$photo, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $password, "2", "1"])){
+		if (!$stmt->execute([$photo, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $password, "2", "1"])) {
 			$stmt = null;
 			//header("location: ../admin.php?error=stmtfailed");
 			exit();
@@ -14,11 +16,12 @@ class AddUser extends Dbh {
 		$stmt = null;
 	}
 
-	public function setStudent2($firstName, $lastName, $username, $kullanici_tckn, $gender, $birth_day, $kullanici_mail, $class, $pack, $password, $nowTime, $endTime, $kullanici_gsm, $kullanici_adresiyaz, $district, $postcode, $kullanici_il){
+	public function setStudent2($firstName, $lastName, $username, $kullanici_tckn, $gender, $birth_day, $kullanici_mail, $class, $pack, $password, $nowTime, $endTime, $kullanici_gsm, $kullanici_adresiyaz, $district, $postcode, $kullanici_il)
+	{
 
-		if($gender == "Kız"){
+		if ($gender == "Kız") {
 			$imgName = 'kiz.jpg';
-		}else{
+		} else {
 			$imgName = 'erkek.jpg';
 		}
 
@@ -33,7 +36,8 @@ class AddUser extends Dbh {
 		$stmt = null;
 	}
 
-	public function setParent($kullanici_ad, $kullanici_soyad, $username, $password2){
+	public function setParent($kullanici_ad, $kullanici_soyad, $username, $password2)
+	{
 
 		$stmt2 = $this->connect()->prepare('SELECT id FROM users_lnp ORDER BY id DESC LIMIT 1');
 
@@ -48,13 +52,13 @@ class AddUser extends Dbh {
 
 		$stmt = $this->connect()->prepare('INSERT INTO users_lnp SET name = ?, surname = ?, username = ?, password = ?, role = ?, active = ?, child_id=?');
 
-		if(!$stmt->execute([$kullanici_ad, $kullanici_soyad, $username, $password2, "5", "1", $lastId])){
+		if (!$stmt->execute([$kullanici_ad, $kullanici_soyad, $username, $password2, "5", "1", $lastId])) {
 			$stmt = null;
 			//header("location: ../admin.php?error=stmtfailed");
 			exit();
 		}
 
-	
+
 		$stmt3 = $this->connect()->prepare('SELECT id FROM users_lnp ORDER BY id DESC LIMIT 1');
 
 		if (!$stmt3->execute(array())) {
@@ -80,45 +84,48 @@ class AddUser extends Dbh {
 		$stmt4 = null;
 	}
 
-	public function checkTckn($tckn){
+	public function checkTckn($tckn)
+	{
 		$stmt = $this->connect()->prepare('SELECT identity_id FROM users_lnp WHERE identity_id = ? ORDER BY identity_id ASC');
 
-		if(!$stmt->execute([$tckn])){
+		if (!$stmt->execute([$tckn])) {
 			$stmt = null;
 			header("location: ../admin.php?error=stmtfailed");
 			exit();
 		}
 		$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		$stmt = null;
-		
+
 		return $result;
 	}
 
-	public function checkEmail($email){
+	public function checkEmail($email)
+	{
 		$stmt = $this->connect()->prepare('SELECT email FROM users_lnp WHERE email = ? ORDER BY email ASC');
 
-		if(!$stmt->execute([$email])){
+		if (!$stmt->execute([$email])) {
 			$stmt = null;
 			/*header("location: ../admin.php?error=stmtfailed");*/
 			exit();
 		}
 		$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		$stmt = null;
-		
+
 		return $result;
 	}
 
-	public function checkUsername($username){
+	public function checkUsername($username)
+	{
 		$stmt = $this->connect()->prepare('SELECT username FROM users_lnp WHERE username = ? ORDER BY username ASC');
 
-		if(!$stmt->execute([$username])){
+		if (!$stmt->execute([$username])) {
 			$stmt = null;
 			/*header("location: ../admin.php?error=stmtfailed");*/
 			exit();
 		}
 		$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		$stmt = null;
-		
+
 		return $result;
 	}
 
@@ -136,7 +143,42 @@ class AddUser extends Dbh {
 		return $result;
 	}
 
+
+	// public function checkCoupon($couponCode)
+	// {
+	// 	$stmt = $this->connect()->prepare('SELECT coupon_code, discount_type, coupon_expires, coupon_quantity FROM coupon_lnp WHERE coupon_code = ? ');
+
+	// 	if (!$stmt->execute(array($couponCode))) {
+	// 		$stmt = null;
+	// 		exit();
+	// 	}
+
+	// 	$coupon = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+	// 	$stmt = null;
+
+	// 	return $coupon;
+
+	// 	if ($coupon !== false) {
+
+	// 		$expireDate = new DateTime($coupon['coupon_expires']);
+	// 		$today = new DateTime();
+
+	// 		$expireDateFormatted = $expireDate->format('Y-m-d');
+	// 		$todayFormatted = $today->format('Y-m-d');
+
+	// 		if ($expireDateFormatted < $todayFormatted) {
+	// 			echo json_encode(["status" => "error", "message" => "Kuponun Süresi Dolmuş!"]);
+	// 			return;
+	// 		}
+
+	// 		echo json_encode(["status" => "error", "message" => "Kupon bulunamadı!"]);
+	// 		return;
+	// 	}
+
+	// 	if ($cupon['coupon_quantity' >= 0]) {
+	// 		echo json_encode(["status" => "error", "message" => "Kuponun kullanım hakkı kalmamış!"]);
+	// 		return;
+	// 	}
+	// }
 }
-
-
-

@@ -372,7 +372,7 @@ var KTModalCustomersAdd = function () {
 		// Public functions
 		init: function () {
 			// Elements
-			//modal = new bootstrap.Modal(document.querySelector('#kt_modal_add_customer'));
+			modal = new bootstrap.Modal(document.querySelector('#kt_modal_add_customer'));
 
 			form = document.querySelector('#kt_modal_add_customer_form');
 			submitButton = form.querySelector('#kt_modal_add_customer_submit');

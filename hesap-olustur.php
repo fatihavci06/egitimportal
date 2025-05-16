@@ -76,8 +76,8 @@ include_once "views/pages-head.php";
 					<div class="w-lg-700px p-10 p-lg-15 mx-auto">
 						<!--begin::Form-->
 						<form class="form w-100" novalidate="novalidate" data-kt-redirect-url="odeme-al.php" id="kt_sign_up_form">
-							
-						<!--<form class="form w-100" method="POST" action="odeme-al.php" id="kt_sign_up_form">-->
+
+							<!--<form class="form w-100" method="POST" action="odeme-al.php" id="kt_sign_up_form">-->
 							<!--begin::Heading-->
 							<div class="mb-10 text-center">
 								<!--begin::Title-->
@@ -163,7 +163,7 @@ include_once "views/pages-head.php";
 							<!--end::Input group--><!--begin::Input group-->
                             <div class="d-flex flex-column mb-7 fv-row">
                                 <!--begin::Label-->
-                                <label class="required fs-6 fw-semibold mb-2 required">Adres</label>
+                                <label class="required fs-6 fw-semibold mb-2">Adres</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input class="form-control form-control-solid" name="address" id="address" placeholder="Adres" />
@@ -302,6 +302,7 @@ include_once "views/pages-head.php";
                             </div>
                             <!--end::Input group-->
 
+
 							<!--begin::Input group-->
 							<div class="fv-row mb-7">
 								<label class="form-label fw-bold text-gray-900 fs-6">Öğrencinin Sınıfı</label>
@@ -314,9 +315,10 @@ include_once "views/pages-head.php";
 
 							<!--begin::Input group-->
 							<div id="veriAlani">
-								
+
 
 							</div>
+
 							<!--end::Input group-->
 
 							<!--begin::Input group-->
@@ -332,7 +334,7 @@ include_once "views/pages-head.php";
 							<!--begin::Actions-->
 							<div class="text-center">
 								<button type="button" id="kt_sign_up_submit" class="btn btn-lg btn-primary">
-								<!--<button type="submit" class="btn btn-lg btn-primary">	-->
+									<!--<button type="submit" class="btn btn-lg btn-primary">	-->
 									<span class="indicator-label">Gönder</span>
 									<span class="indicator-progress">Lütfen bekleyiniz...
 										<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>

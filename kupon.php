@@ -60,32 +60,32 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <!--begin::Card(FORM)-->
                                     <form id="coupon_form">
-                                        <div class="fv-row">
-                                            <label>İndirim Türü</label><br>
-                                            <label><input type="radio" name="discount_type" id="discount_type_percent" value="percentage"> Yüzde</label>
-                                            <label><input type="radio" name="discount_type" id="discount_type_amount" value="amount">TL</label>
+                                        <div class="fv-row radios mb-5">
+                                            <label class="form-label fw-bold text-gray-900 fs-6">İndirim Türü</label><br>
+                                            <label class="form-check-label"><input type="radio" class="mx-2 form-check-input" name="discount_type" id="discount_type_percent" value="percentage"> Yüzde</label>
+                                            <label class="form-check-label"><input type="radio" class="mx-2 form-check-input" name="discount_type" id="discount_type_amount" value="amount">TL</label>
                                         </div>
 
-                                        <div class="fv-row">
-                                            <label>İndirim Değeri</label>
+                                        <div class="fv-row mb-2">
+                                            <label class="form-label fw-bold text-gray-900 fs-6">İndirim Değeri</label>
                                             <input type="text" id="discount_value" name="discount_value" class="form-control" />
                                         </div>
-
-                                        <div class="fv-row">
+                                        <div class="fv-row mb-2">
+                                            <label class="form-label fw-bold text-gray-900 fs-6">Kupon Adedi</label>
+                                            <input type="text" id="coupon_quantity" name="coupon_quantity" class="form-control" />
+                                        </div>
+                                        <div class="fv-row mb-2">
+                                            <label class="form-label fw-bold text-gray-900 fs-6">Kupon Tarihi</label>
+                                            <input type="date" id="coupon_expires" name="coupon_expires" id="coupon_expires" class="form-control" />
+                                        </div>
+                                        <div class="fv-row mb-2">
                                             <div id="couponCodeContainer" style="display: none;">
-                                                <label>Kupon Kodu</label>
-                                                <input type="text" id="coupon_code" name="coupon_code" id="coupon_code" class="form-control" readonly />
+                                                <label class="form-label fw-bold text-gray-900 fs-6">Kupon Kodu</label>
+                                                <input type="text" id="coupon_code" name="coupon_code" id="coupon_code" class="form-control" />
                                             </div>
                                         </div>
-                                        <div class="fv-row">
-                                            <div id="couponExpiresContainer" style="display: none;">
-                                                <label>Kupon Tarihi</label>
-                                                <input type="text" id="coupon_expire" name="coupon_expire" id="coupon_expire" class="form-control" readonly />
-                                            </div>
-                                        </div>
-
-                                        <button class="btn btn-primary mt-5 type=" button" id="generate_coupon">Kupon Oluştur</button>
-                                        <button class="btn btn-primary mt-5 type=" button" id="coupon_submit">Kaydet</button>
+                                        <button class="btn btn-primary mt-5 type=" id="generate_coupon">Kupon Oluştur</button>
+                                        <button class="btn btn-primary mt-5 type=" id="coupon_submit">Kaydet</button>
                                     </form>
                                     <!--end::Card(FORM)-->
                                 </div>
@@ -167,6 +167,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 const coupon_code = $('#coupon_code').val(); // Kupon kodu
                 const discount_type = $('input[name="discount_type"]:checked').val();
                 const discount_value = $('#discount_value').val();
+                const coupon_expires = $('#coupon_expires').val();
+                const coupon_quantity = $('#coupon_quantity').val();
 
                 if (!discount_type) {
                     Swal.fire({
@@ -178,7 +180,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     return;
                 }
 
-                if (!coupon_code || !discount_value) {
+                if (!coupon_code && !discount_value && !coupon_quantity) {
                     Swal.fire({
                         icon: 'warning',
                         title: 'Uyarı',
@@ -194,22 +196,34 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     data: {
                         coupon_code: coupon_code,
                         discount_type: discount_type,
-                        discount_value: discount_value
+                        discount_value: discount_value,
+                        coupon_expires: coupon_expires,
+                        coupon_quantity: coupon_quantity,
                     },
                     success: function(response) {
                         const res = JSON.parse(response);
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Başarılı',
-                            text: 'Kupon başarıyla oluşturuldu!',
-                            confirmButtonText: 'Tamam'
-                        });
+
+                        if (res.status === "error") {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Hata',
+                                text: res.message,
+                                confirmButtonText: 'Tamam'
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Başarılı',
+                                text: res.message,
+                                confirmButtonText: 'Tamam'
+                            });
+                        }
                     },
                     error: function(xhr, status, error) {
                         Swal.fire({
                             icon: 'error',
                             title: 'Hata',
-                            text: 'Bir hata oluştu: ' + error,
+                            text: 'Bir hata oluştu: ' + res.error,
                             confirmButtonText: 'Tamam'
                         });
                     }

@@ -9,8 +9,12 @@ class AddAudioBookContr extends AddAudioBook
 	private $name;
 	private $iframe;
 	private $classAdd;
+	private $lesson;
+	private $unit;
+	private $topic;
+	private $subtopic;
 
-	public function __construct($name, $iframe, $photoSize, $photoName, $fileTmpName, $classAdd)
+	public function __construct($name, $iframe, $photoSize, $photoName, $fileTmpName, $classAdd, $lesson, $unit, $topic, $subtopic)
 	{
 		$this->photoSize = $photoSize;
 		$this->photoName = $photoName;
@@ -18,15 +22,23 @@ class AddAudioBookContr extends AddAudioBook
 		$this->name = $name;
 		$this->iframe = $iframe;
 		$this->classAdd = $classAdd;
+		$this->lesson = $lesson;
+		$this->unit = $unit;
+		$this->topic = $topic;
+		$this->subtopic = $subtopic;
 	}
 
 	public function addAudioBookDb()
 	{
+
+	
 		$slugName = new Slug($this->name);
 		$slug = $slugName->slugify($this->name);
+	
 
 		$slugRes = $this->checkSlug($slug);
-
+		
+	
 		if (count($slugRes) > 0) {
 			$ech = end($slugRes);
 
@@ -43,6 +55,7 @@ class AddAudioBookContr extends AddAudioBook
 			$slug = $slug;
 		}
 
+	
 		if($this->fileTmpName != NULL){
 			$imageSent = new ImageUpload();
 			$img = $imageSent->audioBookImage($this->photoName, $this->photoSize, $this->fileTmpName, $slug);
@@ -50,7 +63,7 @@ class AddAudioBookContr extends AddAudioBook
 		}else{
 			$imgName = 'sesli-kitap.jpg';
 		}
-
-		$this->setAudioBook($imgName, $slug, $this->name, $this->iframe, $this->classAdd);
+	
+		$this->setAudioBook($imgName, $slug, $this->name, $this->iframe, $this->classAdd, $this->lesson,$this->unit, $this->topic, $this->subtopic);
 	}
 }

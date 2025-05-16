@@ -2,13 +2,19 @@
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
+
 	// Grabbing the data
 	$name = $_POST["name"];
 	$iframe = $_POST["iframe"];
 	$photoSize = $_FILES['photo']['size'];
 	$photoName = $_FILES['photo']['name'];
 	$fileTmpName = $_FILES['photo']['tmp_name'];
-	$classAdd = $_POST['classAdd'];
+	$classes = isset($_POST['classes']) ? (int)$_POST['classes'] : 0;
+	$lessons = isset($_POST['lessons']) ? (int)$_POST['lessons'] : 0;
+	$units = isset($_POST['units']) ? (int)$_POST['units'] : 0;
+	$topics = isset($_POST['topics']) ? (int)$_POST['topics'] : 0;
+	$subtopics = isset($_POST['subtopics']) ? (int) $_POST['subtopics'] : 0;
+
 
 	// Instantiate AddAudioBookContr class
 	include_once "../classes/dbh.classes.php";
@@ -16,14 +22,20 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 	include_once "../classes/addaudio-book-contr.classes.php";
 	include_once "../classes/slug.classes.php";
 	include_once "../classes/addimage.classes.php";
+	
 
 
-	$addAudioBook = new AddAudioBookContr($name, $iframe, $photoSize, $photoName, $fileTmpName, $classAdd);
+	$addAudioBook = new AddAudioBookContr($name, $iframe, $photoSize, $photoName, $fileTmpName, $classes, $lessons, $units, $topics, $subtopics);
+
+	// $addAudioBook = new AddAudioBookContr($name, $iframe, $photoSize, $photoName, $fileTmpName, 3, 1, 1, 1, 3);
 
 	// Running error handlers and school addAudioBook
+
 	$addAudioBook->addAudioBookDb();
 
-	
+
+
+
 
 
 	// Going to back to products page

@@ -26,10 +26,22 @@ class ShowAudioBook extends AudioBooks
                             <div class="cursor-pointer symbol symbol-90px symbol-lg-90px"><img src="assets/media/sesli-kitap/' . $value['cover_img'] . '"></div>
                         </td>
                         <td>
-                            <a href="#" class="text-gray-800 text-hover-primary mb-1">' . $value['name'] . '</a>
+                            <a href="#" class="text-gray-800 text-hover-primary mb-1">' . $value['book_name'] . '</a>
                         </td>
                         <td>
-                            <a href="#" class="text-gray-800 text-hover-primary mb-1">' . $value['className'] . '</a>
+                            <a href="#" class="text-gray-800 text-hover-primary mb-1">' . $value['class_name'] . '</a>
+                        </td>                        
+                        <td>
+                            <a href="#" class="text-gray-800 text-hover-primary mb-1">' . $value['lesson_name'] .'</a>
+                        </td>
+                        <td>
+                            <a href="#" class="text-gray-800 text-hover-primary mb-1">' . $value['unit_name'] . '</a>
+                        </td>
+                        <td>
+                            <a href="#" class="text-gray-800 text-hover-primary mb-1">' . $value['topic_name'] . '</a>
+                        </td>
+                        <td>
+                            <a href="#" class="text-gray-800 text-hover-primary mb-1">' . $value['subtopic_name']  . '</a>
                         </td>
                         <td class="text-end">
                             <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"

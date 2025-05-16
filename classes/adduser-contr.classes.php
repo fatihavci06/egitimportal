@@ -2,6 +2,8 @@
 
 session_start();
 
+include_once 'packages.classes.php';
+
 class AddUserContr extends AddUser
 {
 	private $firstName;
@@ -20,8 +22,9 @@ class AddUserContr extends AddUser
 	private $postcode;
 	private $city;
 	private $telephone;
+	private $couponCode;
 
-	public function __construct($firstName, $lastName, $username, $tckn, $gender, $birth_day, $email, $parentFirstName, $parentLastName, $classes, $pack, $address, $district, $postcode, $city, $telephone)
+	public function __construct($firstName, $lastName, $username, $tckn, $gender, $birth_day, $email, $parentFirstName, $parentLastName, $classes, $pack, $address, $district, $postcode, $city, $telephone, $couponCode)
 	{
 		$this->firstName = $firstName;
 		$this->lastName = $lastName;
@@ -42,6 +45,7 @@ class AddUserContr extends AddUser
 		$this->postcode = $postcode;
 		$this->city = $city;
 		$this->telephone = $telephone;
+		$this->couponCode = $couponCode;
 	}
 
 	public function addUserDb()
@@ -76,6 +80,33 @@ class AddUserContr extends AddUser
 			die();
 		}
 
+		$packages = new Packages();
+
+		$couponRes = $packages->checkCoupon($this->couponCode);
+
+		if ($this->couponCode) {
+
+			if ($couponRes['coupon_quantity'] == $couponRes['used_coupon_count']) {
+				echo json_encode(["status" => "error", "message" => "Kuponun kullanım hakkı kalmamış!"]);
+				return;
+			}
+
+			$expireDate = new DateTime($couponRes['coupon_expires']);
+			$today = new DateTime();
+
+			$expireDateFormatted = $expireDate->format('Y-m-d');
+			$todayFormatted = $today->format('Y-m-d');
+
+			if ($expireDateFormatted < $todayFormatted) {
+				echo json_encode(["status" => "error", "message" => "Kuponun Süresi Dolmuş!"]);
+				return;
+			}
+
+			$packages->updateUsedCuponCount($this->couponCode);
+		}
+
+
+
 		$_SESSION['firstName'] = $this->firstName;
 		$_SESSION['lastName'] = $this->lastName;
 		$_SESSION['username'] = $this->username;
@@ -92,6 +123,7 @@ class AddUserContr extends AddUser
 		$_SESSION['postcode'] = $this->postcode;
 		$_SESSION['city'] = $this->city;
 		$_SESSION['telephone'] = $this->telephone;
+		$_SESSION['couponCode'] = $this->couponCode;
 
 		echo json_encode(["status" => "success", "message" => "Ödeme sayfasına yönlendirileceksiniz."]);
 

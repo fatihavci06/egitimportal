@@ -15,6 +15,7 @@ class ShowPackage extends Packages
         $total = count($packageInfo);
 
         $packages = "";
+        $coupons = "";
 
         foreach ($packageInfo as $package) {
 
@@ -30,6 +31,7 @@ class ShowPackage extends Packages
                             <img class="mw-100" src="assets/media/paketler/' . $package['image'] . '">
                             </label>
                         </div>
+
             ';
 
             if ($i === ($total - 1)) {
@@ -39,9 +41,13 @@ class ShowPackage extends Packages
             $i++;
         }
 
+        $coupons .= '
+				<div class="fv-row mb-5">
+					<input type="text" class="form-control" name="coupon_code" id="coupon_code" placeholder="Kupon Kodu">
+				</div>
+                ';
 
-
-        echo json_encode($packages);
+        echo json_encode([$packages, $coupons]);
     }
 }
 

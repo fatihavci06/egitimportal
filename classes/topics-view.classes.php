@@ -797,7 +797,7 @@ class ShowTopic extends Topics
 
 
 
-            $topicList .=  $topicForms;
+            $topicList .= $topicForms;
         }
 
 
@@ -997,7 +997,7 @@ class ShowSubTopic extends SubTopics
     {
         $dateFormat = new DateFormat();
 
-       // $videoName = new getVideo();
+        // $videoName = new getVideo();
 
         $link = "$_SERVER[REQUEST_URI]";
 
@@ -1062,13 +1062,13 @@ class ShowSubTopic extends SubTopics
                             }
 
                             for ($x = 0; $x < $numberOfOptions; $x++) {
-                                if($x == 0){
+                                if ($x == 0) {
                                     $testOptionLetter = "A";
-                                }elseif($x == 1){
+                                } elseif ($x == 1) {
                                     $testOptionLetter = "B";
-                                }elseif($x == 2){
+                                } elseif ($x == 2) {
                                     $testOptionLetter = "C";
-                                }elseif($x == 3){
+                                } elseif ($x == 3) {
                                     $testOptionLetter = "D";
                                 }
                                 $optionsList .= '
@@ -1146,13 +1146,13 @@ class ShowSubTopic extends SubTopics
                             }
 
                             for ($x = 0; $x < $numberOfOptions; $x++) {
-                                if($x == 0){
+                                if ($x == 0) {
                                     $testOptionLetter = "A";
-                                }elseif($x == 1){
+                                } elseif ($x == 1) {
                                     $testOptionLetter = "B";
-                                }elseif($x == 2){
+                                } elseif ($x == 2) {
                                     $testOptionLetter = "C";
-                                }elseif($x == 3){
+                                } elseif ($x == 3) {
                                     $testOptionLetter = "D";
                                 }
                                 $optionsList .= '
@@ -1704,7 +1704,7 @@ class ShowSubTopic extends SubTopics
 
 
 
-            $topicList .=  $topicForms;
+            $topicList .= $topicForms;
         }
 
 
@@ -1727,6 +1727,20 @@ class ShowSubTopic extends SubTopics
 
 
         echo json_encode($units);
+    }
+    public function showSubtopicForTopic($class, $lessons, $units, $topic)
+    {
+
+        $subtopicsInfo = $this->getSubtopicForTopic($class, $lessons, $units, $topic);
+
+        $subtopics = array();
+
+        foreach ($subtopicsInfo as $key => $value) {
+
+            $subtopics[] = array("id" => $value["id"], "text" => $value["name"]);
+        }
+
+        echo json_encode($subtopics);
     }
 }
 
@@ -1926,7 +1940,7 @@ class ShowTests extends Tests
     {
         $dateFormat = new DateFormat();
 
-       // $videoName = new getVideo();
+        // $videoName = new getVideo();
 
         $link = "$_SERVER[REQUEST_URI]";
 
@@ -2615,7 +2629,7 @@ class ShowTests extends Tests
 
 
 
-            $topicList .=  $topicForms;
+            $topicList .= $topicForms;
         }
 
 
@@ -2656,11 +2670,11 @@ class ShowTestsStudents extends TestsforStudents
         foreach ($topicInfo as $key => $value) {
 
             $testSolved = $this->isSolved($value['topicID'], $_SESSION['id']);
-                    if (!empty($testSolved)) {
-                        $testText = $dateFormat->changeDate($testSolved['created_at']);
-                    }else{
-                        $testText = "Daha Çözmediniz";
-                    }
+            if (!empty($testSolved)) {
+                $testText = $dateFormat->changeDate($testSolved['created_at']);
+            } else {
+                $testText = "Daha Çözmediniz";
+            }
 
             $topicList = '
                     <tr>
@@ -2683,7 +2697,7 @@ class ShowTestsStudents extends TestsforStudents
                             ' . $dateFormat->changeDate($value['testLastDay']) . '
                         </td>
                         <td class="text-end">
-                            ' . $testText  . '
+                            ' . $testText . '
                         </td>
                     </tr>
                 ';
@@ -2822,7 +2836,7 @@ class ShowTestsStudents extends TestsforStudents
     {
         $dateFormat = new DateFormat();
 
-       // $videoName = new getVideo();
+        // $videoName = new getVideo();
 
         $link = "$_SERVER[REQUEST_URI]";
 
@@ -3511,7 +3525,7 @@ class ShowTestsStudents extends TestsforStudents
 
 
 
-            $topicList .=  $topicForms;
+            $topicList .= $topicForms;
         }
 
 
@@ -3537,21 +3551,23 @@ class ShowTestsStudents extends TestsforStudents
     }
 }
 
-class ShowOneTest extends Tests {
+class ShowOneTest extends Tests
+{
 
-    public function showTestDetail($slug){
+    public function showTestDetail($slug)
+    {
 
         $dateFormat = new DateFormat();
-        
+
         $studentList = new Student();
 
         $resultPercentage = new TestContr();
 
         $testInfo = $this->getOneTest($slug);
 
-        if(empty($testInfo)){
+        if (empty($testInfo)) {
             echo "Böyle bir test yok!";
-        }else{
+        } else {
 
             $users = "";
 
@@ -3567,16 +3583,16 @@ class ShowOneTest extends Tests {
 
             $details = '
                 <b>Soru Sayısı: </b>' . count($rightAnswers) . ' <br><br> ' .
-                $queAns;           
+                $queAns;
 
             foreach ($studentLists as $key => $userValue) {
 
                 $solvedTests = $this->isSolved($testInfo['id'], $userValue['id']);
 
-                if(empty($solvedTests)){
+                if (empty($solvedTests)) {
                     $testResult = "Daha Çözmedi";
                     $button = "style='pointer-events: none;'";
-                }else{
+                } else {
                     $testResult = $resultPercentage->testResult($correctAnswers, $solvedTests['answers']);
                     $testResult = $testResult['basari_orani'];
                     $button = "";
@@ -3705,33 +3721,34 @@ class ShowOneTest extends Tests {
 
     }
 
-    public function showTestDetailForOne($slug, $studentid){
+    public function showTestDetailForOne($slug, $studentid)
+    {
 
         $dateFormat = new DateFormat();
-        
+
         $studentList = new Student();
 
         $resultPercentage = new TestContr();
 
         $testInfo = $this->getOneTest($slug);
 
-        if(empty($testInfo)){
+        if (empty($testInfo)) {
             echo "Böyle bir test yok!";
-        }else{
+        } else {
 
             $correctAnswers = $testInfo['correct'];
 
             $solvedTests = $this->isSolved($testInfo['id'], $studentid);
 
-                if(empty($solvedTests)){
-                    $testResult = "Daha Çözmedi";
-                }else{
-                    $testResult = $resultPercentage->testResult($correctAnswers, $solvedTests['answers']);
-                    $testTotal = $testResult['toplam_soru'];
-                    $testPercentage = $testResult['basari_orani'];
-                    $testCorrectNo = $testResult['dogru_sayisi'];
-                    $testWrongNo = $testTotal - $testCorrectNo;
-                }
+            if (empty($solvedTests)) {
+                $testResult = "Daha Çözmedi";
+            } else {
+                $testResult = $resultPercentage->testResult($correctAnswers, $solvedTests['answers']);
+                $testTotal = $testResult['toplam_soru'];
+                $testPercentage = $testResult['basari_orani'];
+                $testCorrectNo = $testResult['dogru_sayisi'];
+                $testWrongNo = $testTotal - $testCorrectNo;
+            }
 
             $studentTestDetail = $resultPercentage->testDetailsForStudent($testInfo['questions'], $testInfo['answers'], $testInfo['correct'], $solvedTests['answers']);
 
@@ -3745,7 +3762,7 @@ class ShowOneTest extends Tests {
                 </div>
                 <!--end::Avatar-->
                 <!--begin::Name-->
-                <div class="fs-3 text-gray-800 text-hover-primary fw-bold mb-3">'. $studentInfo['userName'] . ' ' . $studentInfo['userSurname'] . '</div>
+                <div class="fs-3 text-gray-800 text-hover-primary fw-bold mb-3">' . $studentInfo['userName'] . ' ' . $studentInfo['userSurname'] . '</div>
                 <!--end::Name-->
                 <!--begin::Position-->
                 <div class="mb-9">
@@ -3763,7 +3780,7 @@ class ShowOneTest extends Tests {
                     <!--begin::Stats-->
                     <div class="border border-gray-300 border-dashed rounded py-3 px-3 mb-3">
                         <div class="fs-4 fw-bold text-gray-700">
-                            <span class="w-75px">'. $testTotal .'</span>
+                            <span class="w-75px">' . $testTotal . '</span>
                             <i class="ki-duotone ki-question-2 fs-3">
                                 <span class="path1"></span>
                                 <span class="path2"></span>
@@ -3776,7 +3793,7 @@ class ShowOneTest extends Tests {
                     <!--begin::Stats-->
                     <div class="border border-gray-300 border-dashed rounded py-3 px-3 mx-4 mb-3">
                         <div class="fs-4 fw-bold text-gray-700">
-                            <span class="w-50px">'. $testCorrectNo .'</span>
+                            <span class="w-50px">' . $testCorrectNo . '</span>
                             <i class="ki-duotone ki-check fs-3 text-success"></i>
                         </div>
                         <div class="fw-semibold text-muted">Doğru</div>
@@ -3785,7 +3802,7 @@ class ShowOneTest extends Tests {
                     <!--begin::Stats-->
                     <div class="border border-gray-300 border-dashed rounded py-3 px-3 mb-3">
                         <div class="fs-4 fw-bold text-gray-700">
-                            <span class="w-50px">'. $testWrongNo .'</span>
+                            <span class="w-50px">' . $testWrongNo . '</span>
                             <i class="ki-duotone ki-cross fs-3 text-danger">
                                 <span class="path1"></span>
                                 <span class="path2"></span>

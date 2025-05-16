@@ -335,7 +335,31 @@ class SubTopics extends Dbh
 
 		$stmt = null;
 	}
+	public function getSubtopicForTopic($class, $lessons, $units, $topics)
+	{
+		if ($_SESSION['role'] == 1) {
+			$stmt = $this->connect()->prepare('SELECT id, name FROM subtopics_lnp WHERE class_id = ? AND lesson_id = ? AND unit_id = ? AND topic_id = ?');
 
+			if (!$stmt->execute(array($class, $lessons, $units, $topics))) {
+				$stmt = null;
+				exit();
+			}
+		} elseif ($_SESSION['role'] == 3) {
+			$school = $_SESSION['school_id'];
+			$stmt = $this->connect()->prepare('SELECT id, name FROM subtopics_lnp WHERE class_id = ? AND lesson_id=? AND unit_id = ? AND topic_id = ? AND school_id=?');
+
+			if (!$stmt->execute(array($class, $lessons, $units, $topics,$school))) {
+				$stmt = null;
+				exit();
+			}
+		}
+
+		$subtopicData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $subtopicData;
+
+		$stmt = null;
+	}
 	public function showSubTopicsStudent($slug)
 	{
 
