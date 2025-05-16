@@ -6,6 +6,7 @@ var KTSignupGeneral = function () {
     var form;
     var submitButton;
     var validator;
+    var couponButton
     //var passwordMeter;
 
     const maxLength = 11;
@@ -303,7 +304,12 @@ var KTSignupGeneral = function () {
                             dataType: "json",
                             success: function (response) {
                                 if (response.status === "success") {
-                                    window.location.replace("odeme-al.php");
+                                    var type = response.type;
+                                    if (type === "credit_card") {
+                                        window.location.replace("odeme-al.php");
+                                    }else if (type === "bank_transfer") {
+                                        window.location.replace("havale-bilgisi.php");
+                                    }
                                     Swal.fire({
                                         text: response.message,
                                         icon: "success",
@@ -414,6 +420,64 @@ var KTSignupGeneral = function () {
                             }
                         }
                     });
+
+                    // Paket seçimi için AJAX isteği
+
+                    $(document).ready(function() { $('input[name="pack"]:radio').change(function() {
+                         var secilenPaket = $('input[name="pack"]:checked').val();  
+                            if (secilenPaket !== "") {
+                            $.ajax({
+                                url: 'includes/getpackages.inc.php?islem=packages',
+                                type: 'POST',
+                                data: { secim: secilenPaket },
+                                success: function (response) {
+                                    $('#totalPrice').html(response);
+                                },
+                                error: function (xhr, status, error) {
+                                    console.error("Hata oluştu: " + error);
+                                    $('#totalPrice').html("<p>Veri yüklenirken bir hata oluştu.</p>");
+                                }
+                            });
+                        } else {
+                            $('#totalPrice').html("");
+                        } 
+                        });
+                    });
+
+                    couponButton = document.querySelector('#apply_coupon');
+
+                    couponButton.addEventListener('click', function (e) {
+                        const inputElementi = document.getElementById('coupon_code');
+                        const couponVal = inputElementi.value;
+                            $.ajax({
+                                url: 'includes/getpackages.inc.php?islem=coupon',
+                                type: 'POST',
+                                data: { secim: couponVal },
+                                success: function (response) {
+                                    var oldPrice = document.getElementById("Price").innerHTML;
+                                    if(response.status === "success") {
+                                        var discount = response.discount;
+                                        var type = response.type;
+                                        if (type === "percentage") {
+                                            var newPrice = oldPrice - (oldPrice * (discount / 100));
+                                        }else if (type === "amount") {
+                                            var newPrice = oldPrice - discount;
+                                        }
+                                        $('#Price').html(newPrice);
+                                        $('#couponInfo').html(response.message);
+                                        couponButton.disabled = true;
+                                    }else{
+                                        $('#couponInfo').html(response.message);
+                                    }
+                                },
+                                error: function (xhr, status, error) {
+                                    console.error("Hata oluştu: " + error);
+                                    $('#couponInfo').html("<p>Veri yüklenirken bir hata oluştu.</p>");
+                                }
+                            });
+
+                    });
+
                 },
                 error: function (xhr, status, error) {
                     console.error("Hata oluştu: " + error);
@@ -424,6 +488,7 @@ var KTSignupGeneral = function () {
             $('#veriAlani').html("");
         }
     });
+
 
     // Public functions
     return {

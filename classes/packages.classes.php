@@ -5,6 +5,11 @@ class Packages extends Dbh
 
 	public function getPackage($class)
 	{
+
+		if($class == 10 OR $class == 11 OR $class == 12){
+			$class = 2;
+		}
+
 		$stmt = $this->connect()->prepare('SELECT id, name, image FROM packages_lnp WHERE class_id = ? ');
 
 		if (!$stmt->execute(array($class))) {

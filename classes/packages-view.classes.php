@@ -4,7 +4,7 @@ include_once "dateformat.classes.php";
 class ShowPackage extends Packages
 {
 
-    // Get Units For Topic List
+    // Get Packages
 
     public function showPackages($class)
     {
@@ -28,14 +28,21 @@ class ShowPackage extends Packages
                         <div class="col-xl-6 mb-10">
                             <label role="button">
                             <input type="radio" id="pack" name="pack" value="' . $package['id'] . '">
-                            <img class="mw-100" src="assets/media/paketler/' . $package['image'] . '">
+                            <div class="card card-flush shadow-sm">
+                                <div class="card-body text-center">
+                                    <h3 class="mb-5">' . $package['name'] . '</h3>
+                                    <div class="text-gray-600 mb-2" id="monthly_fee">Aylık Birim Fiyat: ' . $this->getPackagePrice($package['id'])[0]['monthly_fee'] . ' ₺</div>
+                                    <div class="text-gray-600 mb-2" id="subscription_period">Kaç Aylık: ' . $this->getPackagePrice($package['id'])[0]['subscription_period'] . ' </div>
+                                </div>
+                            </div>
                             </label>
                         </div>
 
             ';
 
             if ($i === ($total - 1)) {
-                $packages .= '</div>';
+                $packages .= '</div>
+                ';
             }
 
             $i++;
@@ -43,12 +50,89 @@ class ShowPackage extends Packages
 
         $coupons .= '
 				<div class="fv-row mb-5">
-					<input type="text" class="form-control" name="coupon_code" id="coupon_code" placeholder="Kupon Kodu">
+                    <div class="fs-6 fw-bold">İndirim Kuponu</div>
+                    <div class="text-gray-600 mb-2">Kupon kodu varsa giriniz.</div>
+					<input type="text" class="form-control" name="coupon_code" id="coupon_code" placeholder="Kupon Kodu"> 
+                    <button type="button" id="apply_coupon" class="btn btn-primary mt-5">Uygula</button>
 				</div>
                 ';
 
         echo json_encode([$packages, $coupons]);
     }
+
+    
+    // Show Total Price
+
+    public function showPrice($id)
+    {
+
+        $packageInfo = $this->getPackagePrice($id);
+
+        foreach ($packageInfo as $package) {
+
+            $monthly_fee = $package['monthly_fee'];
+            $subscription_period = $package['subscription_period'];
+
+            $total = $monthly_fee * $subscription_period;
+
+            $priceTotal = '
+                        <h2 class="text-black-500 fw-semibold fs-12">Toplam Tutar: <span id="Price">' . $total . '</span> ₺</h2>
+            ';
+        }
+
+        echo json_encode([$priceTotal]);
+    }
+
+    
+
+    
+    // Get Coupon Info Price
+
+    public function getCouponInfo($coupon)
+    {
+        $couponRes = $this->checkCoupon($coupon);
+
+
+
+        if ($couponRes) {
+
+			if ($couponRes['coupon_quantity'] == $couponRes['used_coupon_count']) {
+				echo json_encode(["status" => "error", "message" => "Kuponun kullanım hakkı kalmamış!"]);
+				return;
+			}
+
+			$expireDate = new DateTime($couponRes['coupon_expires']);
+			$today = new DateTime();
+
+			$expireDateFormatted = $expireDate->format('Y-m-d');
+			$todayFormatted = $today->format('Y-m-d');
+
+			if ($expireDateFormatted < $todayFormatted) {
+				echo json_encode(["status" => "error", "message" => "Kuponun Süresi Dolmuş!"]);
+				return;
+			}
+
+            echo json_encode(["status" => "success", "message" => "Kupon Kodu Uygulandı!", "discount" => $couponRes['discount_value'], "type" => $couponRes['discount_type']]);
+
+		}else{
+            echo json_encode(["status" => "error", "message" => "Kupon Kodu Geçersiz!"]);
+        }
+
+        /* foreach ($packageInfo as $package) {
+
+            $monthly_fee = $package['monthly_fee'];
+            $subscription_period = $package['subscription_period'];
+
+            $total = $monthly_fee * $subscription_period;
+
+            $priceTotal = '
+                        <h2 class="text-black-500 fw-semibold fs-12">Toplam Tutar: <span id="totalPrice">' . $total . '</span> ₺</h2>
+            ';
+        } */
+
+        //echo json_encode([$priceTotal]);
+    }
+
 }
 
 
@@ -286,8 +370,8 @@ class ShowPackagesForAdmin extends PackagesForAdmin
                                 <label class="required fs-6 fw-semibold mb-2">Paket Adı</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <input type="text" id="name" class="form-control form-control-solid" value="'. $value['name'] .'" name="name" />
-                                    <input type="hidden" name="id" id="id" value="'. $value['id'] .'" />
+                                <input type="text" id="name" class="form-control form-control-solid" value="' . $value['name'] . '" name="name" />
+                                    <input type="hidden" name="id" id="id" value="' . $value['id'] . '" />
                                 <!--end::Input-->
                             </div>
 
@@ -299,7 +383,7 @@ class ShowPackagesForAdmin extends PackagesForAdmin
                                     <label class="required fs-6 fw-semibold mb-2">Aylık Ücret</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input class="form-control form-control-solid" name="monthly_fee" id="monthly_fee" value="'. $value['monthly_fee'] .'" />
+                                    <input class="form-control form-control-solid" name="monthly_fee" id="monthly_fee" value="' . $value['monthly_fee'] . '" />
                                     <!--end::Input-->
                                 </div>
                                 <!--begin::Input group-->
@@ -309,7 +393,7 @@ class ShowPackagesForAdmin extends PackagesForAdmin
                                     <label class="required fs-6 fw-semibold mb-2">Peşin Alımda İndirim Yüzdesi</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input class="form-control form-control-solid" name="discount" id="discount" value="'. $value['discount'] .'" />
+                                    <input class="form-control form-control-solid" name="discount" id="discount" value="' . $value['discount'] . '" />
                                     <!--end::Input-->
                                 </div>
                             </div>

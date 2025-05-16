@@ -6,7 +6,7 @@ class Classes extends Dbh
 	protected function getClassesList()
 	{
 
-		$stmt = $this->connect()->prepare('SELECT id, name, slug FROM classes_lnp');
+		$stmt = $this->connect()->prepare('SELECT id, name, slug FROM classes_lnp ORDER BY orderBY ASC');
 
 		if (!$stmt->execute(array())) {
 			$stmt = null;

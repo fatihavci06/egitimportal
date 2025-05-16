@@ -23,8 +23,9 @@ class AddUserContr extends AddUser
 	private $city;
 	private $telephone;
 	private $couponCode;
+	private $payment_type;
 
-	public function __construct($firstName, $lastName, $username, $tckn, $gender, $birth_day, $email, $parentFirstName, $parentLastName, $classes, $pack, $address, $district, $postcode, $city, $telephone, $couponCode)
+	public function __construct($firstName, $lastName, $username, $tckn, $gender, $birth_day, $email, $parentFirstName, $parentLastName, $classes, $pack, $address, $district, $postcode, $city, $telephone, $couponCode, $payment_type)
 	{
 		$this->firstName = $firstName;
 		$this->lastName = $lastName;
@@ -46,6 +47,7 @@ class AddUserContr extends AddUser
 		$this->city = $city;
 		$this->telephone = $telephone;
 		$this->couponCode = $couponCode;
+		$this->payment_type = $payment_type;
 	}
 
 	public function addUserDb()
@@ -125,8 +127,11 @@ class AddUserContr extends AddUser
 		$_SESSION['telephone'] = $this->telephone;
 		$_SESSION['couponCode'] = $this->couponCode;
 
-		echo json_encode(["status" => "success", "message" => "Ödeme sayfasına yönlendirileceksiniz."]);
-
+		if ($this->payment_type == 2) {
+			echo json_encode(["status" => "success", "message" => "Ödeme sayfasına yönlendirileceksiniz.", "type" => "credit_card"]);
+		} else {
+			echo json_encode(["status" => "success", "message" => "Havale bilgisi sayfasına yönlendirileceksiniz.", "type" => "bank_transfer"]);
+		}
 		//$this->setStudent($this->firstName, $this->lastName, $this->username, $this->tckn, $this->gender, $this->birth_day, $this->email, $this->parentFirstName, $this->parentLastName, $this->classes, $this->pack);
 	}
 }
