@@ -83,9 +83,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <?php foreach ($data['images'] as $img): ?>
                                                         <div class="col-md-12 mb-4">
                                                             <div class="card shadow-sm">
-                                                                <div class="card-body d-flex justify-content-center align-items-center" style="height: 500px;">
-                                                                    <img src="<?= $img['file_path'] ?>" alt="Yüklenen Görsel" class="img-fluid rounded shadow" style="max-height: 100%; max-width: 100%; object-fit: contain;">
-                                                                </div>
+                                                                <div class="card-body p-0" style="height: 700px;">
+    <img src="<?= $img['file_path'] ?>" alt="Yüklenen Görsel"
+         class="w-100 h-100 rounded shadow"
+         style="object-fit: cover;">
+</div>
                                                             </div>
                                                         </div>
                                                     <?php endforeach; ?>
