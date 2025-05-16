@@ -123,8 +123,8 @@ class Classes extends Dbh
 		}
 
 		$classData = $stmt->fetch(PDO::FETCH_ASSOC);
-		
-		
+
+
 		$stmt = $this->connect()->prepare('SELECT * FROM mainschool_content_file_lnp WHERE main_id = ?');
 		if (!$stmt->execute([$id])) {
 			return null;
@@ -134,7 +134,13 @@ class Classes extends Dbh
 
 		// İçeriğe dosya listesini ekle
 		$classData['files'] = $files;
+		$stmt = $this->connect()->prepare('SELECT * FROM main_school_primary_images WHERE main_id = ?');
+		if (!$stmt->execute([$id])) {
+			return null;
+		}
 
+		$images = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$classData['images'] = $images;
 		return $classData;
 	}
 

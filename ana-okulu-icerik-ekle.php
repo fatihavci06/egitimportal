@@ -3,7 +3,7 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001  )) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001)) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
 
@@ -77,18 +77,18 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </div>
                                             <div class="row mt-4">
                                                 <div class="col-lg-4">
-                                                <label class="fs-6 fw-semibold mb-2" for="main_school_class_id">Yaş Grubu  </label>
-                                                <?php
-                                                $class = new Classes();
-                                                $mainSchoolClasses= $class->getAgeGroup();
-                                                ?>
-                                                <select class="form-select" id="main_school_class_id" required aria-label="Default select example">
-                                                    <option value="">Seçiniz</option>
-                                                    <?php foreach ($mainSchoolClasses as $c) { ?>
-                                                        <option value="<?= $c['id'] ?>"><?= $c['name'] ?></option>
-                                                    <?php } ?>
-                                                </select>
-                                            </div>
+                                                    <label class="fs-6 fw-semibold mb-2" for="main_school_class_id">Yaş Grubu </label>
+                                                    <?php
+                                                    $class = new Classes();
+                                                    $mainSchoolClasses = $class->getAgeGroup();
+                                                    ?>
+                                                    <select class="form-select" id="main_school_class_id" required aria-label="Default select example">
+                                                        <option value="">Seçiniz</option>
+                                                        <?php foreach ($mainSchoolClasses as $c) { ?>
+                                                            <option value="<?= $c['id'] ?>"><?= $c['name'] ?></option>
+                                                        <?php } ?>
+                                                    </select>
+                                                </div>
                                                 <div class="col-lg-4">
                                                     <label class="required fs-6 fw-semibold mb-2" for="month">Ay </label>
 
@@ -178,15 +178,19 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </div>
                                             <div class="row mt-4">
                                                 <div class="col-lg-12">
-                                                    <label class=" fs-6 fw-semibold mb-2" for="content_description">İçerik Açıklaması</label>
-                                                    <textarea class="form-control" name="content_description" id="content_description" rows="4"></textarea>
+                                                    <label class=" fs-6 fw-semibold mb-2" for="summary">İçerik Özet</label>
+                                                    <textarea class="form-control" name="summary" id="summary" rows="4"></textarea>
                                                 </div>
                                             </div>
                                             <div class="row mt-4">
                                                 <label class="required fs-6 fw-semibold mb-2" for="chooseOne">İçerik Türü</label>
                                                 <div class="fv-row mb-7 mt-4" id="chooseOne">
+
                                                     <label>
-                                                        <input class="form-check-input" type="radio" name="secim" value="video_link"> Video URL
+                                                        <input class="form-check-input" type="radio" name="secim" value="primary_img"> İlk Görsel
+                                                    </label>
+                                                    <label>
+                                                        <input class="form-check-input ms-10" type="radio" name="secim" value="video_link"> Video URL
                                                     </label>
                                                     <label>
                                                         <input class="form-check-input ms-10" type="radio" name="secim" value="file_path"> Dosya Yükle
@@ -198,24 +202,29 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                                 <!-- Video URL input -->
                                                 <div id="videoInput" class="mb-4" style="display:none;">
-                                                    <label for="video_url">Video Id:</label>
+                                                    <label for="video_url">Video Link(Youtube):</label>
                                                     <input type="text" class="form-control" name="video_url" id="video_url">
+                                                </div>
+                                                <div id="primary_image" class="mb-4" style="display:none;">
+                                                    <label for="primary_img">Görsel:</label>
+                                                    <input type="file" class="form-control" name="images[]" id="images" multiple accept=".png,.jpeg,.jpg,.svg">
                                                 </div>
 
                                                 <!-- File upload input -->
                                                 <div id="fileInput" class="mb-4" style="display:none;">
                                                     <label for="file_path">Dosya Yükle:</label>
-                                                    <input type="file" class="form-control" name="file_path[]" id="file_path" multiple accept=".xls,.xlsx,.doc,.docx,.ppt,.pptx,.png,.jpeg,.jpg,.svg">
+                                                    <input type="file" class="form-control" name="file_path[]" id="files" multiple accept=".xls,.xlsx,.doc,.docx,.ppt,.pptx,.png,.jpeg,.jpg,.svg">
+                                                    <div id="fileDescriptions"></div>
                                                 </div>
 
                                                 <!-- Açıklama alanlarının ekleneceği yer -->
-                                                <div id="fileDescriptions"></div>
+
                                             </div>
 
                                             <!-- Textarea input -->
                                             <div id="textInput" class="mb-4" style="display:none;">
-                                                <label for="content">Metin İçeriği:</label>
-                                                <textarea class="form-control" name="content" id="content" rows="4"></textarea>
+                                                <label for="mcontent">Metin İçeriği:</label>
+                                                <textarea class="form-control tinymce-editor" name="mcontent" id="mcontent" rows="4"></textarea>
                                             </div>
                                     </div>
 
@@ -287,7 +296,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/js/custom/utilities/modals/users-search.js"></script>
         <script>
             $(document).ready(function() {
-                $('#file_path').on('change', function() {
+              
+
+                tinymce.init({
+                    selector: '.tinymce-editor',
+                    // diğer ayarlar...
+                });
+                 
+                $('#files').on('change', function() {
                     const files = this.files;
                     const container = $('#fileDescriptions');
                     container.empty(); // Önceki açıklamaları temizle
@@ -307,11 +323,15 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     let selected = $(this).val();
 
                     // Tüm inputları gizle
-                    $('#videoInput, #fileInput, #textInput').hide();
+                    $('#videoInput, #fileInput,#primary_image, #textInput').hide();
 
                     // Seçime göre ilgili inputu göster
                     if (selected === 'video_link') {
                         $('#videoInput').show();
+                    } else if (selected === 'primary_img') {
+
+                        $('#primary_image').show();
+
                     } else if (selected === 'file_path') {
                         $('#fileInput').show();
                     } else if (selected === 'content') {
@@ -320,7 +340,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 });
                 $('#submitForm').on('click', function(e) {
                     e.preventDefault();
-
+                     const content = tinymce.get('mcontent').getContent();
+             
                     // ✅ roles kontrolü (en az 1 seçim)
                     const selectedRoles = $('#roles option:selected');
                     if (selectedRoles.length === 0) {
@@ -375,35 +396,40 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         formData.append('roles[]', $(this).val());
                     });
 
+
                     formData.append('month', $('#month').val());
                     formData.append('week', $('#week').val());
                     formData.append('activity_title', $('#activity_title').val());
                     formData.append('content_title', $('#content_title').val());
                     formData.append('concept_title', $('#concept_title').val());
                     formData.append('subject', $('#subject').val());
-                    formData.append('content_description', $('#content_description').val());
+                    formData.append('content', content);
+                    formData.append('content_description', $('#summary').val());
                     formData.append('main_school_class_id', $('#main_school_class_id').val());
                     let selectedType = $('input[name="secim"]:checked').val();
                     formData.append('secim', selectedType);
+                    formData.append('video_url', $('#video_url').val());
+                    const files = $('#files')[0].files;
 
-                    if (selectedType === 'video_link') {
-                        formData.append('video_url', $('#video_url').val());
-                    } else if (selectedType === 'file_path') {
-                        const files = $('#file_path')[0].files;
-                        $("textarea[name='descriptions[]']").each(function() {
-                            formData.append('descriptions[]', $(this).val());
-                        }); // .get() ile jQuery nesnesinden normal diziye çevir
-
-
-
-                        for (let i = 0; i < files.length; i++) {
-                            formData.append('file_path[]', files[i]);
-                        }
-                    } else if (selectedType === 'content') {
-
-                        formData.append('content', tinymce.get('content').getContent());
-
+                    // Dosyaları tek tek formData'ya ekle
+                    for (let i = 0; i < files.length; i++) {
+                        formData.append('file_path[]', files[i]);
                     }
+
+                    // Açıklamaları da ekle
+                    $("textarea[name='descriptions[]']").each(function() {
+                        formData.append('descriptions[]', $(this).val());
+                    });
+                    const images = $('#images')[0].files;
+
+                    // Dosyaları tek tek formData'ya ekle
+                    for (let i = 0; i < images.length; i++) {
+                        formData.append('images[]', images[i]);
+                    }
+
+
+
+
 
                     // AJAX gönderimi
                     $.ajax({

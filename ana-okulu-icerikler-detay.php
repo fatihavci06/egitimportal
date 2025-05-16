@@ -52,68 +52,77 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         <div class="d-flex flex-column flex-column-fluid">
                             <!--begin::Toolbar-->
                             <?php include_once "views/toolbar.php"; ?>
+                            <?php
+                            $data = new Classes();
+                            $data = $data->getMainSchoolContentById($_GET['id']);
+                            function convertYoutubeToEmbed($url)
+                            {
+                                if (preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/', $url, $matches)) {
+                                    return 'https://www.youtube.com/embed/' . $matches[1];
+                                }
+                                return null; // Geçerli bir YouTube linki değilse null döndür
+                            }
+                            ?>
+
                             <!--end::Toolbar-->
                             <!--begin::Content-->
                             <div id="kt_app_content" class="app-content flex-column-fluid">
+
                                 <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <!--begin::Card-->
                                     <div class="card-body pt-5">
-                                        <?php
-                                        $data = new Classes();
-                                        $data = $data->getMainSchoolContentById($_GET['id']);
-                                        ?>
+                                        <h1><?= $data['subject']; ?></h1>
                                         <div class="row">
-                                            <!-- Bootstrap Tab Yapısı -->
-                                            <!-- Bootstrap 5 Tab Yapısı -->
-                                            <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                                <li class="nav-item" role="presentation">
-                                                    <a class="nav-link active" id="video-tab" data-bs-toggle="tab" href="#video" role="tab" aria-controls="video" aria-selected="true" style="font-size: 23px;">Video</a>
-                                                </li>
-                                                <li class="nav-item" role="presentation">
-                                                    <a class="nav-link" id="content-tab" data-bs-toggle="tab" href="#content" role="tab" aria-controls="content" aria-selected="false" style="font-size: 23px;">İçerik</a>
-                                                </li>
-                                                <li class="nav-item" role="presentation">
-                                                    <a class="nav-link" id="files-tab" data-bs-toggle="tab" href="#files" role="tab" aria-controls="files" aria-selected="false" style="font-size: 23px;">Dosyalar</a>
-                                                </li>
-                                            </ul>
+                                            <p><?= $data['content_description']; ?></p>
+                                        </div>
+                                        <div class="tab-content mt-4" id="myTabContent">
+                                            <!-- Video Tab -->
+                                            <div class="tab-pane fade show active" id="video" role="tabpanel" aria-labelledby="video-tab">
+                                                <div class="row">
+                                                    <?php foreach ($data['images'] as $img): ?>
+                                                        <div class="col-md-12 mb-4">
+                                                            <div class="card shadow-sm">
+                                                                <div class="card-body d-flex justify-content-center align-items-center" style="height: 500px;">
+                                                                    <img src="<?= $img['file_path'] ?>" alt="Yüklenen Görsel" class="img-fluid rounded shadow" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    <?php endforeach; ?>
+                                                </div>
+                                                <div class="row" id="videoContent">
+                                                    <?php
+                                                    $embedUrl = convertYoutubeToEmbed($data['video_url']);
 
-                                            <div class="tab-content mt-4" id="myTabContent">
-                                                <!-- Video Tab -->
-                                                <div class="tab-pane fade show active" id="video" role="tabpanel" aria-labelledby="video-tab">
+                                                    if ($embedUrl): ?>
+                                                        <iframe width="400" height="400"
+                                                            src="<?= htmlspecialchars($embedUrl, ENT_QUOTES, 'UTF-8') ?>"
+                                                            title="YouTube video player"
+                                                            frameborder="0"
+                                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                            referrerpolicy="strict-origin-when-cross-origin"
+                                                            allowfullscreen>
+                                                        </iframe>
+                                                    <?php else: ?>
+                                                        <p>Geçersiz YouTube linki.</p>
+                                                    <?php endif; ?>
 
-                                                    <div id="videoContent">
+                                                </div>
+                                                <div class="row " style="font-size:20px; margin-top:35px;">
+                                                    <p id="contentDescription">
                                                         <?php
-                                                        if (!empty($data['video_url'])) {
-                                                        ?>
-                                                            <iframe title="vimeo-player" width="100%" height="800"  src="https://player.vimeo.com/video/<?= $data['video_url'] ?>" width="640" height="360" frameborder="0" allowfullscreen></iframe>
-                                                    </div>
-                                                <?php
+                                                        if (isset($data['content'])) {
+                                                            echo $data['content'];
                                                         }
-                                                ?>
+                                                        ?>
+
+                                                    </p>
                                                 </div>
 
-                                                <!-- İçerik Tab -->
-                                                <div class="tab-pane fade" id="content" role="tabpanel" aria-labelledby="content-tab">
-                                                    <div class="row" style="font-size:20px;">
-                                                        <p id="contentDescription">
-                                                            <?php
-                                                            if (isset($data['content_description'])) {
-                                                                echo $data['content_description'];
-                                                            }
-                                                            ?>
-
-
-
-                                                        </p>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Dosyalar Tab -->
-                                                <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
+                                                <div class="row" id="files" role="tabpanel" aria-labelledby="files-tab">
                                                     <?php
                                                     if (isset($data['files'])) {
-                                                    ?>
+                                                    ?> <h1 style="margin-top:50px;margin-bottom:30px">Dosyalar</h1>
                                                         <?php foreach ($data['files'] as $file): ?>
                                                             <div class="col-md-12 mb-4" style="font-size: 20px;">
                                                                 <div class="card shadow-sm">
@@ -148,6 +157,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 </div>
 
                                             </div>
+
+                                            <!-- İçerik Tab -->
+
+
+                                            <!-- Dosyalar Tab -->
 
 
                                         </div>
