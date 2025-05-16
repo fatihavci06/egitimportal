@@ -198,7 +198,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 </div>
 
                                                 <div id="videoInput" class="mb-4" <?= empty($data['video_url']) ? 'style="display:none;"' : '' ?>>
-                                                    <label for="video_url">Video Link:</label>
+                                                    <label for="video_url">Video Id:</label>
                                                     <input type="text" class="form-control" name="video_url" id="video_url" value="<?= htmlspecialchars($data['video_url'] ?? '') ?>">
                                                 </div>
 
