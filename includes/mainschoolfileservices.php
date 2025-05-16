@@ -34,6 +34,24 @@ try {
 	
 		echo json_encode(['status' => 'success', 'message' => 'Güncelleme başarılı!']);
 	}
+    if ($service === 'deleteimg' && $id) {
+		
+		$sql = 'DELETE FROM main_school_primary_images WHERE id = ?';
+    
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$id]);
+    
+        // Etkilenen satır sayısını kontrol et
+        if ($stmt->rowCount() > 0) {
+            echo json_encode(['status' => 'success', 'message' => 'Silme başarılı!']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Silme işlemi başarısız!']);
+        }
+	
+		
+	
+		echo json_encode(['status' => 'success', 'message' => 'Güncelleme başarılı!']);
+	}
     if ($service === 'update' && $id) {
         $sql = 'UPDATE mainschool_content_file_lnp SET description = ? WHERE id = ?';
     

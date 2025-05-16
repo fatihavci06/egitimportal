@@ -4,7 +4,7 @@
 
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001  )) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001)) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
 
@@ -86,165 +86,188 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                             <div class="row mt-4">
                                                 <div class="row mt-4">
-                                                <div class="col-lg-4">
-                                                <label class="fs-6 fw-semibold mb-2" for="main_school_class_id">Yaş Grubu  </label>
-                                                <?php
-                                                $class = new Classes();
-                                                $mainSchoolClasses= $class->getAgeGroup();
-                                                ?>
-                                                <select class="form-select" id="main_school_class_id" required aria-label="Default select example">
-                                                    <option value="">Seçiniz</option>
-                                                    <?php foreach ($mainSchoolClasses as $c) { ?>
-                                                        <option value="<?= $c['id'] ?>" <?= $data['main_school_class_id'] == $c['id'] ? 'selected' : '' ?>><?= $c['name']  ?></option>
-                                                    <?php } ?>
-                                                </select>
-                                            </div>
-                                                <div class="col-lg-4">
-                                                    <label class="required fs-6 fw-semibold mb-2" for="month">Ay </label>
-                                                    <select class="form-select" id="month" required>
-                                                        <option value="">Seçiniz</option>
+                                                    <div class="col-lg-4">
+                                                        <label class="fs-6 fw-semibold mb-2" for="main_school_class_id">Yaş Grubu </label>
                                                         <?php
-                                                        $months = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
-                                                        foreach ($months as $month) {
-                                                            echo "<option value='$month' " . ($data['month'] === $month ? 'selected' : '') . ">$month</option>";
-                                                        }
+                                                        $class = new Classes();
+                                                        $mainSchoolClasses = $class->getAgeGroup();
                                                         ?>
-                                                    </select>
-                                                </div>
-
-
-                                                <div class="col-lg-4">
-                                                    <label class="fs-6 fw-semibold mb-2" for="week">Özel Hafta Seçimi </label>
-                                                    <select class="form-select" id="week" required>
-                                                        <option value="">Seçiniz</option>
-                                                        <?php foreach ($weekList as $week) { ?>
-                                                            <option value="<?= $week['id'] ?>" <?= $data['week_id'] == $week['id'] ? 'selected' : '' ?>>
-                                                                <?= $week['name'] ?>
-                                                            </option>
-                                                        <?php } ?>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <input type="hidden" id="id" value="<?= $data['id'] ?>">
-                                            <div class="row mt-4">
-                                                <div class="col-lg-4">
-                                                    <label class=" fs-6 fw-semibold mb-2" for="activity_type">Etkinlik Türü Başlığı</label>
-                                                    <select class="form-select form-control" id="activity_title" aria-label="Default select example">
-                                                        <option value="">Seçiniz</option>
-                                                        <?php
-                                                        $activityTitle = $class->getTitleList(3);
-                                                        foreach ($activityTitle as $title) {
-                                                        ?>
-                                                            <option value="<?= $title['id'] ?>" <?= $data['activity_title_id'] == $title['id'] ? 'selected' : '' ?>><?= $title['title'] ?></option>
-                                                        <?php }  ?>
-
-                                                    </select>
-
-
-                                                </div>
-                                                <div class="col-lg-4">
-                                                    <label class=" fs-6 fw-semibold mb-2" for="content_title">İçerik Başlığı</label>
-                                                    <select class="form-select form-control" id="content_title" aria-label="Default select example">
-                                                        <option value="">Seçiniz</option>
-
-                                                        <?php
-                                                        $titlesContent = $class->getTitleList(1);
-                                                        foreach ($titlesContent as $title) {
-                                                        ?>
-                                                            <option value="<?= $title['id'] ?>" <?= $data['content_title_id'] == $title['id'] ? 'selected' : '' ?>><?= $title['title'] ?></option>
-                                                        <?php }  ?>
-                                                    </select>
-                                                </div>
-                                                <div class="col-lg-4">
-                                                    <label class=" fs-6 fw-semibold mb-2" for="concept_title">Kavram Başlığı</label>
-                                                    <select class="form-select form-control" id="concept_title" aria-label="Default select example">
-                                                        <option value="">Seçiniz</option>
-
-                                                        <?php
-                                                        $titlesContent = $class->getTitleList(2);
-                                                        foreach ($titlesContent as $title) {
-                                                        ?>
-                                                            <option value="<?= $title['id'] ?>" <?= $data['concept_title_id'] == $title['id'] ? 'selected' : '' ?>><?= $title['title'] ?></option>
-                                                        <?php }  ?>
-                                                    </select>
-                                                </div>
-
-                                            </div>
-
-                                            <div class="row mt-4">
-                                                <div class="col-lg-6">
-                                                    <label class="required fs-6 fw-semibold mb-2" for="subject">Konu</label>
-                                                    <input type="text" class="form-control" id="subject" value="<?= htmlspecialchars($data['subject'] ?? '') ?>" />
-                                                </div>
-                                            </div>
-                                            <div class="row mt-4">
-                                                <div class="col-lg-12">
-                                                    <label class=" fs-6 fw-semibold mb-2" for="content_description">İçerik Açıklaması</label>
-                                                    <textarea class="form-control" name="content_description" id="content_description" rows="4"><?= $data['content_description'] ?></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="row mt-4">
-                                                <label class="required fs-6 fw-semibold mb-2">İçerik Türü</label>
-                                                <div class="fv-row mb-7 mt-4" id="chooseOne">
-                                                    <label>
-                                                        <input class="form-check-input" type="radio" name="secim" value="video_link" <?= !empty($data['video_url']) ? 'checked' : '' ?>> Video URL
-                                                    </label>
-                                                    <label>
-                                                        <input class="form-check-input" type="radio" name="secim" value="files" <?= !empty($data['files']) ? 'checked' : '' ?>> Dosya Yükle
-                                                    </label>
-                                                    <label>
-                                                        <input class="form-check-input" type="radio" name="secim" value="content" <?= !empty($data['content']) ? 'checked' : '' ?>> Text
-                                                    </label>
-                                                </div>
-
-                                                <div id="videoInput" class="mb-4" <?= empty($data['video_url']) ? 'style="display:none;"' : '' ?>>
-                                                    <label for="video_url">Video Id:</label>
-                                                    <input type="text" class="form-control" name="video_url" id="video_url" value="<?= htmlspecialchars($data['video_url'] ?? '') ?>">
-                                                </div>
-
-                                                <div id="fileInput" class="mb-4" <?= empty($data['files']) ? 'style="display:none;"' : '' ?>>
-
-                                                    <label for="file_path">Dosya Yükle:</label>
-                                                    <input type="file" class="form-control" name="file_path[]" id="file_path" multiple accept=".xls,.xlsx,.doc,.docx,.ppt,.pptx,.png,.jpeg,.jpg,.svg">
-                                                    <div id="fileDescriptions"></div>
-                                                    <div class="row mt-4">
-                                                        <div class="row">
-                                                            <?php foreach ($data['files'] as $file): ?>
-                                                                <div class="col-md-12 mb-4">
-                                                                    <div class="card">
-                                                                        <div class="card-body">
-                                                                            <h5 class="card-title">Dosya ID: <?= $file['id'] ?></h5>
-                                                                            <p><strong>Dosya Yolu:</strong> <a href="<?= $file['file_path'] ?>" target="_blank">Dosyayı Görüntüle</a></p>
-                                                                            <div class="mb-3">
-                                                                                <label for="description_<?= $file['id'] ?>" class="form-label">Açıklama</label>
-                                                                                <input type="text" class="form-control" id="description_<?= $file['id'] ?>" data-file-id="<?= $file['id'] ?>" value="<?= htmlspecialchars($file['description']) ?>">
-                                                                            </div>
-                                                                            <button type="button" class="btn btn-primary update-description" data-file-id="<?= $file['id'] ?>">Açıklamayı Güncelle</button>
-                                                                            <button type="button" class="btn btn-danger delete-file" data-file-id="<?= $file['id'] ?>">Dosyayı Sil</button>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            <?php endforeach; ?>
-                                                        </div>
+                                                        <select class="form-select" id="main_school_class_id" required aria-label="Default select example">
+                                                            <option value="">Seçiniz</option>
+                                                            <?php foreach ($mainSchoolClasses as $c) { ?>
+                                                                <option value="<?= $c['id'] ?>" <?= $data['main_school_class_id'] == $c['id'] ? 'selected' : '' ?>><?= $c['name']  ?></option>
+                                                            <?php } ?>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <label class="required fs-6 fw-semibold mb-2" for="month">Ay </label>
+                                                        <select class="form-select" id="month" required>
+                                                            <option value="">Seçiniz</option>
+                                                            <?php
+                                                            $months = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+                                                            foreach ($months as $month) {
+                                                                echo "<option value='$month' " . ($data['month'] === $month ? 'selected' : '') . ">$month</option>";
+                                                            }
+                                                            ?>
+                                                        </select>
                                                     </div>
 
 
+                                                    <div class="col-lg-4">
+                                                        <label class="fs-6 fw-semibold mb-2" for="week">Özel Hafta Seçimi </label>
+                                                        <select class="form-select" id="week" required>
+                                                            <option value="">Seçiniz</option>
+                                                            <?php foreach ($weekList as $week) { ?>
+                                                                <option value="<?= $week['id'] ?>" <?= $data['week_id'] == $week['id'] ? 'selected' : '' ?>>
+                                                                    <?= $week['name'] ?>
+                                                                </option>
+                                                            <?php } ?>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" id="id" value="<?= $data['id'] ?>">
+                                                <div class="row mt-4">
+                                                    <div class="col-lg-4">
+                                                        <label class=" fs-6 fw-semibold mb-2" for="activity_type">Etkinlik Türü Başlığı</label>
+                                                        <select class="form-select form-control" id="activity_title" aria-label="Default select example">
+                                                            <option value="">Seçiniz</option>
+                                                            <?php
+                                                            $activityTitle = $class->getTitleList(3);
+                                                            foreach ($activityTitle as $title) {
+                                                            ?>
+                                                                <option value="<?= $title['id'] ?>" <?= $data['activity_title_id'] == $title['id'] ? 'selected' : '' ?>><?= $title['title'] ?></option>
+                                                            <?php }  ?>
+
+                                                        </select>
+
+
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <label class=" fs-6 fw-semibold mb-2" for="content_title">İçerik Başlığı</label>
+                                                        <select class="form-select form-control" id="content_title" aria-label="Default select example">
+                                                            <option value="">Seçiniz</option>
+
+                                                            <?php
+                                                            $titlesContent = $class->getTitleList(1);
+                                                            foreach ($titlesContent as $title) {
+                                                            ?>
+                                                                <option value="<?= $title['id'] ?>" <?= $data['content_title_id'] == $title['id'] ? 'selected' : '' ?>><?= $title['title'] ?></option>
+                                                            <?php }  ?>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <label class=" fs-6 fw-semibold mb-2" for="concept_title">Kavram Başlığı</label>
+                                                        <select class="form-select form-control" id="concept_title" aria-label="Default select example">
+                                                            <option value="">Seçiniz</option>
+
+                                                            <?php
+                                                            $titlesContent = $class->getTitleList(2);
+                                                            foreach ($titlesContent as $title) {
+                                                            ?>
+                                                                <option value="<?= $title['id'] ?>" <?= $data['concept_title_id'] == $title['id'] ? 'selected' : '' ?>><?= $title['title'] ?></option>
+                                                            <?php }  ?>
+                                                        </select>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="row mt-4">
+                                                    <div class="col-lg-6">
+                                                        <label class="required fs-6 fw-semibold mb-2" for="subject">Konu</label>
+                                                        <input type="text" class="form-control" id="subject" value="<?= htmlspecialchars($data['subject'] ?? '') ?>" />
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-4">
+                                                    <div class="col-lg-12">
+                                                        <label class=" fs-6 fw-semibold mb-2" for="content_description">İçerik Özet</label>
+                                                        <textarea class="form-control" name="content_description" id="content_description" rows="4"><?= $data['content_description'] ?></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-4">
+                                                    <label class="required fs-6 fw-semibold mb-2">İçerik Türü</label>
+                                                    <div class="fv-row mb-7 mt-4" id="chooseOne">
+                                                        <label>
+                                                            <input class="form-check-input" type="radio" name="secim" value="primary_img" checked> İlk Görsel
+                                                        </label>
+                                                        <label>
+                                                            <input class="form-check-input" type="radio" name="secim" value="video_link" > Video URL
+                                                        </label>
+                                                        <label>
+                                                            <input class="form-check-input" type="radio" name="secim" value="files" > Dosya Yükle
+                                                        </label>
+                                                        <label>
+                                                            <input class="form-check-input" type="radio" name="secim" value="content" > Text
+                                                        </label>
+                                                    </div>
+
+                                                    <div id="videoInput" class="mb-4" style="display:none;" >
+                                                        <label for="video_url">Video Link (Youtube):</label>
+                                                        <input type="text" class="form-control" name="video_url" id="video_url" value="<?= htmlspecialchars($data['video_url'] ?? '') ?>">
+                                                    </div>
+                                                    <div id="primary_image" class="mb-4" >
+                                                        <label for="primary_img">Görsel:</label>
+                                                        <input type="file" class="form-control" name="images[]" id="images" multiple accept=".png,.jpeg,.jpg,.svg">
+                                                        <div class="row mt-4">
+                                                            <div class="row">
+                                                                <?php foreach ($data['images'] as $img): ?>
+                                                                    <div class="col-md-12 mb-4">
+                                                                        <div class="card">
+                                                                            <div class="card-body">
+                                                                                <h5 class="card-title">Dosya ID: <?= $img['id'] ?></h5>
+                                                                                <p><strong>Dosya Yolu:</strong> <a href="<?= $img['file_path'] ?>" target="_blank">Dosyayı Görüntüle</a></p>
+                                                                                
+                                                                                <button type="button" class="btn btn-danger delete-img" data-img-id="<?= $img['id'] ?>">Dosyayı Sil</button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                <?php endforeach; ?>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div id="fileInput" class="mb-4" style="display:none;">
+
+                                                        <label for="file_path">Dosya Yükle:</label>
+                                                        <input type="file" class="form-control" name="file_path[]" id="file_path" multiple accept=".xls,.xlsx,.doc,.docx,.ppt,.pptx,.png,.jpeg,.jpg,.svg">
+                                                        <div id="fileDescriptions"></div>
+                                                        <div class="row mt-4">
+                                                            <div class="row">
+                                                                <?php foreach ($data['files'] as $file): ?>
+                                                                    <div class="col-md-12 mb-4">
+                                                                        <div class="card">
+                                                                            <div class="card-body">
+                                                                                <h5 class="card-title">Dosya ID: <?= $file['id'] ?></h5>
+                                                                                <p><strong>Dosya Yolu:</strong> <a href="<?= $file['file_path'] ?>" target="_blank">Dosyayı Görüntüle</a></p>
+                                                                                <div class="mb-3">
+                                                                                    <label for="description_<?= $file['id'] ?>" class="form-label">Açıklama</label>
+                                                                                    <input type="text" class="form-control" id="description_<?= $file['id'] ?>" data-file-id="<?= $file['id'] ?>" value="<?= htmlspecialchars($file['description']) ?>">
+                                                                                </div>
+                                                                                <button type="button" class="btn btn-primary update-description" data-file-id="<?= $file['id'] ?>">Açıklamayı Güncelle</button>
+                                                                                <button type="button" class="btn btn-danger delete-file" data-file-id="<?= $file['id'] ?>">Dosyayı Sil</button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                <?php endforeach; ?>
+                                                            </div>
+                                                        </div>
+
+
+                                                    </div>
+
+
+                                                    <div id="textInput" class="mb-4" style="display:none;">
+                                                        <label for="content">Metin İçeriği:</label>
+                                                        <textarea class="form-control" name="content" id="content" rows="4"><?= htmlspecialchars($data['content'] ?? '') ?></textarea>
+                                                    </div>
                                                 </div>
 
 
-                                                <div id="textInput" class="mb-4" <?= empty($data['content']) ? 'style="display:none;"' : '' ?>>
-                                                    <label for="content">Metin İçeriği:</label>
-                                                    <textarea class="form-control" name="content" id="content" rows="4"><?= htmlspecialchars($data['content'] ?? '') ?></textarea>
+                                                <div class="row mt-5">
+                                                    <div class="col-lg-11"></div>
+                                                    <div class="col-lg-1">
+                                                        <button type="button" id="submitForm" class="btn btn-primary">Kaydet</button>
+                                                    </div>
                                                 </div>
-                                            </div>
-
-
-                                            <div class="row mt-5">
-                                                <div class="col-lg-11"></div>
-                                                <div class="col-lg-1">
-                                                    <button type="button" id="submitForm" class="btn btn-primary">Kaydet</button>
-                                                </div>
-                                            </div>
                                         </form>
 
                                         <!-- JS: İçerik Türüne Göre Alanları Göster/Gizle -->
@@ -329,11 +352,15 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     let selected = $(this).val();
 
                     // Tüm inputları gizle
-                    $('#videoInput, #fileInput, #textInput').hide();
+                    $('#videoInput, #fileInput, #textInput,#primary_image').hide();
 
                     // Seçime göre ilgili inputu göster
                     if (selected === 'video_link') {
                         $('#videoInput').show();
+                    } else if (selected === 'primary_img') {
+
+                        $('#primary_image').show();
+
                     } else if (selected === 'files') {
                         $('#fileInput').show();
                     } else if (selected === 'content') {
@@ -405,29 +432,21 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     formData.append('subject', $('#subject').val());
                     formData.append('content_description', $('#content_description').val());
                     formData.append('main_school_class_id', $('#main_school_class_id').val());
-                    
+
                     let selectedType = $('input[name="secim"]:checked').val();
                     formData.append('secim', selectedType);
-                    console.log(selectedType);
-                    if (selectedType === 'video_link') {
-                        formData.append('video_url', $('#video_url').val());
-                    } else if (selectedType === 'files') {
-
-                        const files = $('#file_path')[0].files;
-                        $("textarea[name='descriptions[]']").each(function() {
-                            formData.append('descriptions[]', $(this).val());
-                        }); // .get() ile jQuery nesnesinden normal diziye çevir
+                    formData.append('video_url', $('#video_url').val());
+                    const files = $('#file_path')[0].files;
+                    $("textarea[name='descriptions[]']").each(function() {
+                        formData.append('descriptions[]', $(this).val());
+                    }); // .get() ile jQuery nesnesinden normal diziye çevir
 
 
 
-                        for (let i = 0; i < files.length; i++) {
-                            formData.append('file_path[]', files[i]);
-                        }
-                    } else if (selectedType === 'content') {
-
-                        formData.append('content', tinymce.get('content').getContent());
-
+                    for (let i = 0; i < files.length; i++) {
+                        formData.append('file_path[]', files[i]);
                     }
+                    formData.append('content', tinymce.get('content').getContent());
 
                     // AJAX gönderimi
                     $.ajax({
@@ -506,6 +525,49 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         if (result.isConfirmed) {
                             $.ajax({
                                 url: 'includes/mainschoolfileservices.php?service=delete',
+                                method: 'POST',
+                                data: {
+                                    id: fileId
+                                },
+                                success: function(response) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Başarılı',
+                                        text: 'Başarıyla silindi!',
+                                        confirmButtonText: 'Tamam'
+                                    });
+                                    $button.closest('.card').remove();
+                                },
+                                error: function(xhr, status, error) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Hata',
+                                        text: "Bir hata oluştu: " + error,
+                                        confirmButtonText: 'Tamam'
+                                    });
+                                }
+                            });
+                        }
+                    });
+
+                });
+                $('.delete-img').on('click', function() {
+                    var $button = $(this);
+                    var fileId = $button.data('img-id');
+
+                    Swal.fire({
+                        title: 'Emin misiniz?',
+                        text: "Bu dosyayı silmek istediğinizden emin misiniz?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Evet, sil',
+                        cancelButtonText: 'İptal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: 'includes/mainschoolfileservices.php?service=deleteimg',
                                 method: 'POST',
                                 data: {
                                     id: fileId

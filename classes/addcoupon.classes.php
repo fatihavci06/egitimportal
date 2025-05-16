@@ -1,20 +1,37 @@
 <?php
 class AddCoupon extends Dbh
 {
-    // private $discount_type;
-    // private $discount_value;
-    // private $coupon_code;
-    // private $coupon_expires;
-    // private $coupon_quantity;
 
-    // public function __construct($discount_type, $discount_value, $coupon_code, $coupon_expires, $coupon_quantity)
-    // {
-    //     $this->discount_type = $discount_type;
-    //     $this->discount_value = $discount_value;
-    //     $this->coupon_code = $coupon_code;
-    //     $this->coupon_expires = $coupon_expires;
-    //     $this->coupon_quantity = $coupon_quantity;
-    // }
+    public function getAllCoupon()
+    {
+        $stmt = $this->connect()->prepare('SELECT * FROM coupon_lnp');
+
+        if (!$stmt->execute()) {
+            $stmt = null;
+            exit();
+        }
+
+        $coupons = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = null;
+
+        return $coupons;
+    }
+
+
+    public function getCoupon($id)
+    {
+        $stmt = $this->connect()->prepare('SELECT * FROM coupon_lnp WHERE id = :id');
+
+        if (!$stmt->execute([':id' => $id])) {
+            $stmt = null;
+            exit();
+        }
+
+        $coupons = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = null;
+
+        return $coupons;
+    }
 
     protected function setCoupon($discount_type, $discount_value, $coupon_code, $coupon_expires, $coupon_quantity)
     {
