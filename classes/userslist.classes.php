@@ -90,4 +90,19 @@ class User extends Dbh
 
 		$stmt = null;
 	}
+
+	public function getlnpAdmin(){
+		$stmt = $this->connect()->prepare('SELECT email FROM users_lnp WHERE school_id = ? AND role = ?');
+
+		if (!$stmt->execute(array("1", "1"))) {
+			$stmt = null;
+			exit();
+		}
+
+		$getData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return $getData;
+
+		$stmt = null;
+	}
 }

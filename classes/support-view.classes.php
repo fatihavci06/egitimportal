@@ -91,7 +91,6 @@ class ShowSupport extends Support
                                     <span class="path2"></span>
                                 </i>
                             </a>
-                            </div>
                             <!--end::Menu-->
                         </td>
                     </tr>

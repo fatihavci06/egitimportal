@@ -22,9 +22,9 @@ class AddUser extends Dbh {
 			$imgName = 'erkek.jpg';
 		}
 
-		$stmt = $this->connect()->prepare('INSERT INTO users_lnp SET name = ?, surname = ?, username = ?, email = ?, password = ?, role = ?, active = ?, telephone = ?, birth_date = ?, gender=?, identity_id=?, address = ?, district=?, postcode=?, city=?, class_id=?, package_id=?, subscribed_at=?, subscribed_end=?, photo =?');
+		$stmt = $this->connect()->prepare('INSERT INTO users_lnp SET name = ?, surname = ?, username = ?, email = ?, password = ?, role = ?, active = ?, telephone = ?, birth_date = ?, gender=?, identity_id=?, address = ?, district=?, postcode=?, city=?, class_id=?, package_id=?, subscribed_at=?, subscribed_end=?, photo =?, school_id = ?');
 
-		if(!$stmt->execute([$firstName, $lastName, $username, $kullanici_mail, $password, "2", "1",  $kullanici_gsm, $birth_day, $gender, $kullanici_tckn, $kullanici_adresiyaz, $district, $postcode, $kullanici_il, $class, $pack, $nowTime, $endTime, $imgName])){
+		if(!$stmt->execute([$firstName, $lastName, $username, $kullanici_mail, $password, "2", "1",  $kullanici_gsm, $birth_day, $gender, $kullanici_tckn, $kullanici_adresiyaz, $district, $postcode, $kullanici_il, $class, $pack, $nowTime, $endTime, $imgName, 1])){
 			$stmt = null;
 			//header("location: ../admin.php?error=stmtfailed");
 			exit();
@@ -112,6 +112,20 @@ class AddUser extends Dbh {
 		$stmt = $this->connect()->prepare('SELECT username FROM users_lnp WHERE username = ? ORDER BY username ASC');
 
 		if(!$stmt->execute([$username])){
+			$stmt = null;
+			/*header("location: ../admin.php?error=stmtfailed");*/
+			exit();
+		}
+		$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$stmt = null;
+		
+		return $result;
+	}
+
+	public function checkTelephone($telephone){
+		$stmt = $this->connect()->prepare('SELECT telephone FROM users_lnp WHERE telephone = ? ORDER BY telephone ASC');
+
+		if(!$stmt->execute([$telephone])){
 			$stmt = null;
 			/*header("location: ../admin.php?error=stmtfailed");*/
 			exit();

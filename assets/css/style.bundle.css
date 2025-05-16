@@ -28573,6 +28573,7 @@ textarea.form-control-lg {
   --bs-danger-rgb: 248, 40, 90;
   --bs-dark-rgb: 30, 33, 41;
   --bs-text-white: #ffffff;
+  --bs-text-green: #008037;
   --bs-text-primary: #1B84FF;
   --bs-text-secondary: #F1F1F4;
   --bs-text-light: #F9F9F9;
@@ -45533,7 +45534,8 @@ label.rating-label:hover ~ .rating-label > i, label.rating-label:hover ~ .rating
 
 .bg-primary {
   --bs-bg-rgb-color: var(--bs-primary-rgb);
-  background-color: var(--bs-primary) !important;
+  background-color: #E3E3E3 !important;
+ /* background-color: var(--bs-primary-active) !important;*/
 }
 
 .bg-primary-active {
@@ -46731,6 +46733,10 @@ label.rating-label:hover ~ .rating-label > i, label.rating-label:hover ~ .rating
 
 .text-white {
   color: var(--bs-text-white) !important;
+}
+
+.text-green {
+  color: var(--bs-text-green) !important;
 }
 
 .text-hover-white {

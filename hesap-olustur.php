@@ -44,16 +44,16 @@ include_once "views/pages-head.php";
 			<!--begin::Aside-->
 			<div class="d-flex flex-column flex-lg-row-auto bg-primary w-xl-600px positon-xl-relative">
 				<!--begin::Wrapper-->
-				<div class="d-flex flex-column position-xl-fixed top-0 bottom-0 w-xl-600px scroll-y">
+				<div class="d-flex flex-column position-xl-fixed top-0 bottom-0 w-xl-600px">
 					<!--begin::Header-->
 					<div class="d-flex flex-row-fluid flex-column text-center p-5 p-lg-10 pt-lg-20">
 						<!--begin::Logo-->
 						<a href="index.html" class="py-2 py-lg-20">
-							<img alt="Logo" src="assets/media/logos/lineup-campus-logo.jpg" class="h-100px h-lg-150px" />
+							<img alt="Logo" src="assets/media/logos/lineup-campus.jpg" class="h-100px h-lg-150px" />
 						</a>
 						<!--end::Logo-->
 						<!--begin::Title-->
-						<h1 class="d-none d-lg-block fw-bold text-white fs-2qx pb-5 pb-md-10">Lineup Campus'e Hoş Geldiniz</h1>
+						<h1 class="d-none d-lg-block fw-bold text-green fs-2qx pb-5 pb-md-10">Lineup Campus'e Hoş Geldiniz</h1>
 						<!--end::Title-->
 						<!--begin::Description-->
 						<!--<p class="d-none d-lg-block fw-semibold fs-2 text-white">Plan your blog post by choosing a topic creating 
@@ -94,13 +94,13 @@ include_once "views/pages-head.php";
 							<div class="row fv-row mb-7">
 								<!--begin::Col-->
 								<div class="col-xl-6">
-									<label class="form-label fw-bold text-gray-900 fs-6">Öğrencinin Adı</label>
+									<label class="form-label fw-bold text-gray-900 fs-6 required">Öğrencinin Adı</label>
 									<input class="form-control form-control-lg form-control-solid" type="text" placeholder="" name="first-name" id="first-name" autocomplete="off" />
 								</div>
 								<!--end::Col-->
 								<!--begin::Col-->
 								<div class="col-xl-6">
-									<label class="form-label fw-bold text-gray-900 fs-6">Öğrencinin Soyadı</label>
+									<label class="form-label fw-bold text-gray-900 fs-6 required">Öğrencinin Soyadı</label>
 									<input class="form-control form-control-lg form-control-solid" type="text" placeholder="" name="last-name" id="last-name" autocomplete="off" />
 								</div>
 								<!--end::Col-->
@@ -108,19 +108,19 @@ include_once "views/pages-head.php";
 							<!--end::Input group-->
 							<!--begin::Input group-->
 							<div class="fv-row mb-7">
-								<label class="form-label fw-bold text-gray-900 fs-6">Kullanıcı Adı</label>
+								<label class="form-label fw-bold text-gray-900 fs-6 required">Kullanıcı Adı</label>
 								<input class="form-control form-control-lg form-control-solid" type="text" placeholder="" name="username" id="username" autocomplete="off" />
 							</div>
 							<!--end::Input group-->
 							<!--begin::Input group-->
 							<div class="fv-row mb-7">
-								<label class="form-label fw-bold text-gray-900 fs-6">Öğrencinin Türkiye Cumuriyeti Kimlik Numarası</label>
+								<label class="form-label fw-bold text-gray-900 fs-6 required">Öğrencinin Türkiye Cumhuriyeti Kimlik Numarası</label>
 								<input class="form-control form-control-lg form-control-solid" type="text" placeholder="" name="tckn" id="tckn" autocomplete="off" />
 							</div>
 							<!--end::Input group-->
 							<!--begin::Input group-->
 							<div class="fv-row mb-7">
-								<label class="form-label fw-bold text-gray-900 fs-6">Öğrencinin Cinsiyeti</label>
+								<label class="form-label fw-bold text-gray-900 fs-6 required">Öğrencinin Cinsiyeti</label>
 								<select class="form-control form-control-lg form-control-solid" name="gender" id="gender">
 									<option value="">Lütfen Seçiniz</option>
 									<option value="Erkek">Erkek</option>
@@ -132,16 +132,16 @@ include_once "views/pages-head.php";
 
 							<!--begin::Input group-->
 							<div class="fv-row mb-7">
-								<label class="form-label fw-bold text-gray-900 fs-6">Öğrencinin Doğum Tarihi</label>
+								<label class="form-label fw-bold text-gray-900 fs-6 required">Öğrencinin Doğum Tarihi</label>
 								<!--begin::Datepicker-->
-								<input class="form-control form-control-solid fw-bold pe-5" id="birth_day" placeholder="" name="birth_day" />
+								<input type="date" class="form-control form-control-solid fw-bold pe-5" placeholder="Doğum Tarihi Seçin" name="birth_day" id="birth_day">
 								<!--end::Datepicker-->
 							</div>
 							<!--end::Input group-->
 
 							<!--begin::Input group-->
 							<div class="fv-row mb-7">
-								<label class="form-label fw-bold text-gray-900 fs-6">E-posta Adresi</label>
+								<label class="form-label fw-bold text-gray-900 fs-6 required">E-posta Adresi</label>
 								<input class="form-control form-control-lg form-control-solid" type="email" placeholder="" name="email" id="email" autocomplete="off" />
 							</div>
 							<!--end::Input group-->
@@ -149,13 +149,13 @@ include_once "views/pages-head.php";
 							<div class="row fv-row mb-7">
 								<!--begin::Col-->
 								<div class="col-xl-6">
-									<label class="form-label fw-bold text-gray-900 fs-6">Velinin Adı</label>
+									<label class="form-label fw-bold text-gray-900 fs-6 required">Velinin Adı</label>
 									<input class="form-control form-control-lg form-control-solid" type="text" placeholder="" name="parent-first-name" id="parent-first-name" autocomplete="off" />
 								</div>
 								<!--end::Col-->
 								<!--begin::Col-->
 								<div class="col-xl-6">
-									<label class="form-label fw-bold text-gray-900 fs-6">Velinin Soyadı</label>
+									<label class="form-label fw-bold text-gray-900 fs-6 required">Velinin Soyadı</label>
 									<input class="form-control form-control-lg form-control-solid" type="text" placeholder="" name="parent-last-name" id="parent-last-name" autocomplete="off" />
 								</div>
 								<!--end::Col-->
@@ -163,7 +163,7 @@ include_once "views/pages-head.php";
 							<!--end::Input group--><!--begin::Input group-->
                             <div class="d-flex flex-column mb-7 fv-row">
                                 <!--begin::Label-->
-                                <label class="required fs-6 fw-semibold mb-2">Adres</label>
+                                <label class="required fs-6 fw-semibold mb-2 required">Adres</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input class="form-control form-control-solid" name="address" id="address" placeholder="Adres" />
@@ -297,7 +297,7 @@ include_once "views/pages-head.php";
                                 <label class="required fs-6 fw-semibold mb-2">Telefon Numarası</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <input type="number" class="form-control form-control-solid" placeholder="Telefon" id="telephone" name="telephone" />
+                                <input type="text" class="form-control form-control-solid" placeholder="05001234578" id="telephone" name="telephone" />
                                 <!--end::Input-->
                             </div>
                             <!--end::Input group-->

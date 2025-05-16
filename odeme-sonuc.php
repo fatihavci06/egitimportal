@@ -3,11 +3,20 @@
 session_start();
 define('GUARD', true);
 
+/* if (!isset($_SESSION['parentFirstName'])) {
+    header("location: index");
+} */
+
 require_once('iyzico/config.php');
 
 require_once('classes/dateformat.classes.php');
 require_once('classes/dbh.classes.php');
 require_once('classes/adduser.classes.php');
+require_once('classes/userslist.classes.php');
+
+$admin = new User();
+$getadminEmail = $admin->getlnpAdmin();
+$adminEmail = $getadminEmail[0]['email'];
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -58,8 +67,8 @@ $gender = $_SESSION['gender'];
 $birth_day = $_SESSION['birth_day'];
 $class = $_SESSION['classes'];
 
-$kullanici_ad = $_SESSION['parentFirstName'];
-$kullanici_soyad = $_SESSION['parentLastName'];
+$veli_ad = $_SESSION['parentFirstName'];
+$veli_soyad = $_SESSION['parentLastName'];
 $kullanici_gsm = $_SESSION['telephone'];
 $kullanici_mail = $_SESSION['email'];
 $kullanici_tckn = $_SESSION['tckn'];
@@ -128,55 +137,141 @@ if ($odeme_durum == "FAILURE") {
 
     $mail = new PHPMailer(true);
 
-try {
-    // Sunucu Ayarları
-    $mail->SMTPDebug = SMTP::DEBUG_OFF;                      // Geliştirme için detaylı hata çıktısı (DEBUG_SERVER veya DEBUG_CONNECTION)
-    $mail->isSMTP();                                            // SMTP kullanarak gönder
-    $mail->Host       = 'zm35.ihszimbra.com';                     // SMTP sunucunuz (örneğin, mail.alanadiniz.com)
-    $mail->SMTPAuth   = true;                      // SMTP parolanız
-    $mail->SMTPSecure = false;         // TLS şifrelemesi (SSL için PHPMailer::ENCRYPTION_SMTPS kullanın)
-    $mail->SMTPAutoTLS = false;                                 // SMTP kimlik doğrulaması gerekli
-    $mail->Username   = 'aepikman@chemitech.com.tr';                 // SMTP kullanıcı adınız
-    $mail->Password   = '01051913BBo!';   
-    $mail->Port       = 587;                                    // TLS için port (SSL için genellikle 465)
-    $mail->CharSet    = 'UTF-8';                                // Karakter kodlaması
+    try {
+        $baslik = "Lineup Campus'e Hoş Geldiniz!";
+        $mesaj = "Merhaba, <br> Giriş bilgileriniz aşağıda verilmiştir. <br><br> Öğrenci Giriş Bilgisi: <br> <b>Kullanıcı adı:</b> " . $username . " <br> <b>Şifre:</b> " . $yeniSifre . " <br> <br> Veli Giriş Bilgisi: <br> <b>Kullanıcı adı:</b> " . $username2 . " <br> <b>Şifre:</b> " . $yeniSifre2 . " <br> <br>";
+        $sirket_adi = "Lineup Campus";
 
-    // Alıcılar
-    $mail->setFrom('aepikman@chemitech.com.tr', 'Gönderen Adı');
-    $mail->addAddress($kullanici_mail, 'Alıcı Adı');     // İsteğe bağlı olarak isim ekleyebilirsiniz
-    //$mail->addCC('cc@baskaalan.com');
-    //$mail->addBCC('bcc@baskaalan.com');
+        $mail_icerigi = file_get_contents('views/email-template.html');
 
-    // Ekler (isteğe bağlı)
-    //$mail->addAttachment('/var/tmp/file.tar.gz');
-    //$mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // İsteğe bağlı olarak farklı bir isimle
+        $mail_icerigi = str_replace('{{baslik}}', $baslik, $mail_icerigi);
+        $mail_icerigi = str_replace('{{mesaj}}', $mesaj, $mail_icerigi);
+        $mail_icerigi = str_replace('{{sirket_adi}}', $sirket_adi, $mail_icerigi);
 
-    // İçerik
-    $mail->isHTML(true);                                  // E-posta içeriği HTML formatında mı
-    $mail->Subject = 'Giriş Bilgileriniz';
-    $mail->Body    = 'Öğrenci Giriş Bilgisi: <br> Kullanıcı adı: ' . $username . ' <br> Şifre: ' . $yeniSifre . ' <br> <br>';
-    $mail->AltBody = 'Bu da HTML desteklemeyen istemciler için düz metin içeriğidir.';
+        // Sunucu Ayarları
+        $mail->SMTPDebug = SMTP::DEBUG_OFF;                      // Geliştirme için detaylı hata çıktısı (DEBUG_SERVER veya DEBUG_CONNECTION)
+        $mail->isSMTP();                                            // SMTP kullanarak gönder
+        $mail->Host       = 'mail.lineupcampus.com';                     // SMTP sunucunuz (örneğin, mail.alanadiniz.com)
+        $mail->SMTPAuth   = true;                      // SMTP parolanız
+        $mail->SMTPSecure = false;         // TLS şifrelemesi (SSL için PHPMailer::ENCRYPTION_SMTPS kullanın)
+        $mail->SMTPAutoTLS = false;                                 // SMTP kimlik doğrulaması gerekli
+        $mail->Username   = 'eposta@lineupcampus.com';                 // SMTP kullanıcı adınız
+        $mail->Password   = 'Y6RrEZgH4mwfb!x3';
+        $mail->Port       = 587;                                    // TLS için port (SSL için genellikle 465)
+        $mail->CharSet    = 'UTF-8';                                // Karakter kodlaması
 
-    $mail->send();
-    //echo 'E-posta başarıyla gönderildi!';
-} catch (Exception $e) {
-    echo "E-posta gönderilirken bir hata oluştu: {$mail->ErrorInfo}";
-}
+        // Alıcılar
+        $mail->setFrom('eposta@lineupcampus.com', 'Lineup Campus');
+        $mail->addAddress($kullanici_mail, $veli_ad . ' ' . $veli_soyad);     // İsteğe bağlı olarak isim ekleyebilirsiniz
+        //$mail->addCC('cc@baskaalan.com');
+        //$mail->addBCC('bcc@baskaalan.com');
 
-   
+        // Ekler (isteğe bağlı)
+        //$mail->addAttachment('/var/tmp/file.tar.gz');
+        //$mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // İsteğe bağlı olarak farklı bir isimle
+
+        // İçerik
+        $mail->isHTML(true);                                  // E-posta içeriği HTML formatında mı
+        $mail->Subject = $baslik;
+        /*$mail->Body    = 'Öğrenci Giriş Bilgisi: <br> Kullanıcı adı: ' . $username . ' <br> Şifre: ' . $yeniSifre . ' <br> <br> 
+    Veli Giriş Bilgisi: <br> Kullanıcı adı: ' . $username2 . ' <br> Şifre: ' . $yeniSifre2 . ' <br> <br> <a href="https://lineupcampus.com">Lineup Campus</a>';*/
+        //$mail->AltBody = 'Bu da HTML desteklemeyen istemciler için düz metin içeriğidir.';
+        $mail->Body    = $mail_icerigi;
+        $mail->AltBody = strip_tags($mail_icerigi);
+
+        $mail->send();
+        unset($mail);
+        $mail_icerigi = "";
+        //echo 'E-posta başarıyla gönderildi!';
+    } catch (Exception $e) {
+        echo "E-posta gönderilirken bir hata oluştu: {$mail->ErrorInfo}";
+    }
+
+    $mail = new PHPMailer(true);
+
+    try {
+        $baslik = "Yeni Üye Kaydı!";
+        $mesaj = "Merhaba, <br> Yeni bir üye kaydoldu. <br><br> Öğrenci Bilgisi: <br> Adı Soyadı: $firstName $lastName <br> <br> 
+    Veli Bilgisi: <br> Adı Soyadı: $veli_ad $veli_soyad <br> <br>
+    Telefon: $kullanici_gsm  <br> <br>
+    E-posta: $kullanici_mail <br> <br>";
+        $sirket_adi = "Lineup Campus";
+
+        $mail_icerigi = file_get_contents('views/email-template.html');
+
+        $mail_icerigi = str_replace('{{baslik}}', $baslik, $mail_icerigi);
+        $mail_icerigi = str_replace('{{mesaj}}', $mesaj, $mail_icerigi);
+        $mail_icerigi = str_replace('{{sirket_adi}}', $sirket_adi, $mail_icerigi);
+        // Sunucu Ayarları
+        $mail->SMTPDebug = SMTP::DEBUG_OFF;                      // Geliştirme için detaylı hata çıktısı (DEBUG_SERVER veya DEBUG_CONNECTION)
+        $mail->isSMTP();                                            // SMTP kullanarak gönder
+        $mail->Host       = 'mail.lineupcampus.com';                     // SMTP sunucunuz (örneğin, mail.alanadiniz.com)
+        $mail->SMTPAuth   = true;                      // SMTP parolanız
+        $mail->SMTPSecure = false;         // TLS şifrelemesi (SSL için PHPMailer::ENCRYPTION_SMTPS kullanın)
+        $mail->SMTPAutoTLS = false;                                 // SMTP kimlik doğrulaması gerekli
+        $mail->Username   = 'eposta@lineupcampus.com';                 // SMTP kullanıcı adınız
+        $mail->Password   = 'Y6RrEZgH4mwfb!x3';
+        $mail->Port       = 587;                                    // TLS için port (SSL için genellikle 465)
+        $mail->CharSet    = 'UTF-8';                                // Karakter kodlaması
+
+        // Alıcılar
+        $mail->setFrom('eposta@lineupcampus.com', 'Lineup Campus');
+        $mail->addAddress($adminEmail, 'Lineup Campus');     // İsteğe bağlı olarak isim ekleyebilirsiniz
+        //$mail->addCC('cc@baskaalan.com');
+        //$mail->addBCC('bcc@baskaalan.com');
+
+        // Ekler (isteğe bağlı)
+        //$mail->addAttachment('/var/tmp/file.tar.gz');
+        //$mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // İsteğe bağlı olarak farklı bir isimle
+
+        // İçerik
+        $mail->isHTML(true);                                  // E-posta içeriği HTML formatında mı
+        $mail->Subject = $baslik;
+        /* $mail->Body    = 'Öğrenci Bilgisi: <br> Adı Soyadı: ' . $firstName . ' ' . $lastName . ' <br> <br> 
+    Veli Bilgisi: <br> Adı Soyadı: ' . $veli_ad . ' ' . $veli_soyad . ' <br> <br>
+    Telefon: ' . $kullanici_gsm . ' <br> <br>
+    E-posta: ' . $kullanici_mail . ' <br> <br>'; */
+        //$mail->AltBody = 'Bu da HTML desteklemeyen istemciler için düz metin içeriğidir.';
+        $mail->Body    = $mail_icerigi;
+        $mail->AltBody = strip_tags($mail_icerigi);
+
+        $mail->send();
+        unset($mail);
+        $mail_icerigi = "";
+        //echo 'E-posta başarıyla gönderildi!';
+    } catch (Exception $e) {
+        echo "E-posta gönderilirken bir hata oluştu: {$mail->ErrorInfo}";
+    }
+
+
 
     $gonder = $kisiekle->setStudent2($firstName, $lastName, $username, $kullanici_tckn, $gender, $birth_dayDb, $kullanici_mail, $class, $pack, $password, $nowTime, $endTime, $kullanici_gsm, $kullanici_adresiyaz, $district, $postcode, $kullanici_il);
 
 
-    $gonderVeli = $kisiekle->setParent($kullanici_ad, $kullanici_soyad, $username2, $password2);
+    $gonderVeli = $kisiekle->setParent($veli_ad, $veli_soyad, $username2, $password2);
 
-    $text =  '<div class="text-gray-500 fw-semibold fs-4">Giriş bilgileriniz e-posta adresinize gönderildi. <br>
-				<a href="index" class="link-primary fw-bold">Giriş yap</a>
-			</div>';
+    $text =  '
+            <div class="row">
+                <div class="col-md-3">
+                    <img src="assets/media/mascots/maskot-kiz.png" class="img-fluid" alt="Lineup Campus" />
+                </div>
+                <div class="col-md-6 text-gray-500 fw-semibold fs-4 d-flex align-items-center">
+                    <div class="text-center">
+                        <div>
+                            Giriş bilgileriniz ' . $kullanici_mail . ' adresinize gönderildi.
+                        </div>
+                        <div>
+                            <a href="index" class="btn btn-primary mt-10" role="button">Giriş Yap</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <img src="assets/media/mascots/maskot-erkek.png" class="img-fluid" alt="Lineup Campus" style="transform: scaleX(-1);" />
+                </div>
+            </div>';
 
-            session_destroy();
+    session_destroy();
 }
-
 
 ?>
 <!DOCTYPE html>
@@ -215,16 +310,16 @@ include_once "views/pages-head.php";
             <!--begin::Aside-->
             <div class="d-flex flex-column flex-lg-row-auto bg-primary w-xl-600px positon-xl-relative">
                 <!--begin::Wrapper-->
-                <div class="d-flex flex-column position-xl-fixed top-0 bottom-0 w-xl-600px scroll-y">
+                <div class="d-flex flex-column position-xl-fixed top-0 bottom-0 w-xl-600px">
                     <!--begin::Header-->
                     <div class="d-flex flex-row-fluid flex-column text-center p-5 p-lg-10 pt-lg-20">
                         <!--begin::Logo-->
                         <a href="index.html" class="py-2 py-lg-20">
-                            <img alt="Logo" src="assets/media/logos/lineup-campus-logo.jpg" class="h-100px h-lg-150px" />
+                            <img alt="Logo" src="assets/media/logos/lineup-campus.jpg" class="h-100px h-lg-150px" />
                         </a>
                         <!--end::Logo-->
                         <!--begin::Title-->
-                        <h1 class="d-none d-lg-block fw-bold text-white fs-2qx pb-5 pb-md-10">Lineup Campus'e Hoş Geldiniz</h1>
+                        <h1 class="d-none d-lg-block fw-bold text-green fs-2qx pb-5 pb-md-10">Lineup Campus'e Hoş Geldiniz</h1>
                         <!--end::Title-->
                         <!--begin::Description-->
                         <!--<p class="d-none d-lg-block fw-semibold fs-2 text-white">Plan your blog post by choosing a topic creating 
@@ -244,10 +339,8 @@ include_once "views/pages-head.php";
                 <!--begin::Content-->
                 <div class="d-flex flex-center flex-column flex-column-fluid">
                     <!--begin::Wrapper-->
-                    <div class="w-lg-700px p-10 p-lg-15 mx-auto">
-                        <!--begin::Checkout-->
+                    <div class="w-lg-900px p-10 p-lg-15 mx-auto">
                         <?php echo $text; ?>
-                        <!--end::Checkout-->
                     </div>
                     <!--end::Wrapper-->
                 </div>

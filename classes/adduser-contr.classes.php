@@ -47,24 +47,32 @@ class AddUserContr extends AddUser
 	public function addUserDb()
 	{
 
-		$tcknControl = $this->checkTckn($this->tckn);
-
-		if (count($tcknControl) > 0) {
-			echo json_encode(["status" => "error", "message" => "Hata: Bu Türkiye Cumhuriyeti Kimlik Numarası daha önce kullanılmış!"]);
-			die();
-		}
 
 		$usernameRes = $this->checkUsername($this->username);
 
 		if (count($usernameRes) > 0) {
-			echo json_encode(["status" => "error", "message" => "Hata: Bu kullanıcı daha önce kullanılmış!"]);
+			echo json_encode(["status" => "error", "message" => "Hata: Bu kullanıcı <br>daha önce kullanılmış!"]);
+			die();
+		}
+
+		$tcknControl = $this->checkTckn($this->tckn);
+
+		if (count($tcknControl) > 0) {
+			echo json_encode(["status" => "error", "message" => "Hata: Bu Türkiye Cumhuriyeti Kimlik Numarası <br>daha önce kullanılmış!"]);
 			die();
 		}
 
 		$emailRes = $this->checkEmail($this->email);
 
 		if (count($emailRes) > 0) {
-			echo json_encode(["status" => "error", "message" => "Hata: Bu e-posta daha önce kullanılmış!"]);
+			echo json_encode(["status" => "error", "message" => "Hata: Bu e-posta <br>daha önce kullanılmış!"]);
+			die();
+		}
+
+		$telephoneRes = $this->checkTelephone($this->telephone);
+
+		if (count($telephoneRes) > 0) {
+			echo json_encode(["status" => "error", "message" => "Hata: Bu telefon numarası <br>daha önce kullanılmış!"]);
 			die();
 		}
 

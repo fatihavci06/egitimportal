@@ -23,7 +23,7 @@ class ShowSchool extends School
                             </div>
                         </td>
                         <td>
-                            <a href="#" class="text-gray-800 text-hover-primary mb-1">' . $value['name'] . '</a>
+                            <a href="./okul-detay/' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['name'] . '</a>
                         </td>
                         <td>
                             ' . $value['city'] . '

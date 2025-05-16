@@ -44,3 +44,291 @@ class ShowPackage extends Packages
         echo json_encode($packages);
     }
 }
+
+
+class ShowPackagesForAdmin extends PackagesForAdmin
+{
+
+    // Get Packages For Admin
+
+    public function showAllPackages()
+    {
+
+        $packageInfo = $this->getAllPackages();
+
+        foreach ($packageInfo as $value) {
+
+            $packages = '
+                    <tr>
+                        <td>
+                            <a href="./paket-detay?id=' . $value['id'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['name'] . '</a>
+                        </td>
+                        <td>
+                            ' . $value['monthly_fee'] . ' ₺
+                        </td>
+                        <td>
+                            ' . $value['subscription_period'] . ' Aylık
+                        </td>
+                        <td>
+                            %' . $value['discount'] . '
+                        </td>
+                        <td>' . $value['className'] . '</td>
+                        <td class="text-end">
+                            <a href="paket-detay?id=' . $value['id'] . '" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
+                                data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Görüntüle
+                                <i class="fa-regular fa-eye fs-5 ms-1">
+                                </i>
+                            </a>
+                        </td>
+                    </tr>
+            ';
+
+
+
+            echo $packages;
+        }
+    }
+
+
+    // Show Package Detail
+
+    public function showOnePackage($id)
+    {
+
+        $packageInfo = $this->getOnePackage($id);
+
+        $packageUsers = $this->getPackageUsers($id);
+
+        $packageUsersNo = count($packageUsers);
+
+        $packageList = '
+                <div class="mb-3">
+                    <h1 class="h3 d-inline align-middle">Böyle bir paket mevcut değil.</h1>
+                </div>
+        ';
+
+        foreach ($packageInfo as $value) {
+
+            $packageList = '
+                <div class="flex-column flex-lg-row-auto w-100 w-xl-350px mb-10">
+                    <!--begin::Card-->
+                    <div class="card mb-5 mb-xl-8">
+                        <!--begin::Card body-->
+                        <div class="card-body pt-15">
+                            <!--begin::Summary-->
+                            <div class="d-flex flex-center flex-column mb-5">
+                                <!--begin::Avatar-->
+                                <!--<div class="symbol symbol-100px symbol-circle mb-7">
+                                    <img src="assets/media/avatars/300-1.jpg" alt="image" />
+                                </div>-->
+                                <!--end::Avatar-->
+                                <!--begin::Name-->
+                                <a href="#" class="fs-3 text-gray-800 text-hover-primary fw-bold mb-1">' . $value['name'] . '</a>
+                                <!--end::Name-->
+                                <!--begin::Position-->
+                                <div class="fs-5 fw-semibold text-muted mb-6">' . $value['className'] . '</div>
+                                <!--end::Position-->
+                                <!--begin::Info-->
+                                <div class="d-flex flex-wrap flex-center">
+                                    <!--begin::Stats-->
+                                    <div class="border border-gray-300 border-dashed rounded py-3 px-3 mb-3">
+                                        <div class="fs-4 fw-bold text-gray-700">
+                                            <span class="w-75px"> ' . $packageUsersNo . '</span>
+                                            <i class="fa-solid fa-users fs-3 text-success">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                        </div>
+                                        <div class="fw-semibold text-muted"> Paketi Almış Öğrenci Sayısı</div>
+                                    </div>
+                                    <!--end::Stats-->
+                                    
+                                </div>
+                                <!--end::Info-->
+                            </div>
+                            <!--end::Summary-->
+                            <!--begin::Details toggle-->
+                            <div class="d-flex flex-stack fs-4 py-3">
+                                <div class="fw-bold rotate collapsible" data-bs-toggle="collapse" href="#kt_customer_view_details" role="button" aria-expanded="false" aria-controls="kt_customer_view_details">Detaylar
+                                    <span class="ms-2 rotate-180">
+                                        <i class="ki-duotone ki-down fs-3"></i>
+                                    </span>
+                                </div>
+                                <span data-bs-toggle="tooltip" data-bs-trigger="hover" title="Paket bilgilerini güncelle">
+                                    <a href="#" class="btn btn-sm btn-light-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_update_customer">Güncelle</a>
+                                </span>
+                            </div>
+                            <!--end::Details toggle-->
+                            <div class="separator separator-dashed my-3"></div>
+                            <!--begin::Details content-->
+                            <div id="kt_customer_view_details" class="collapse show">
+                                <div class="py-5 fs-6">
+                                    <!--begin::Badge-->
+                                    <!--<div class="badge badge-light-info d-inline">Premium user</div>-->
+                                    <!--end::Badge-->
+                                    <!--begin::Details item-->
+                                    <div class="fw-bold mt-5">Aylık Ücret</div>
+                                    <div class="text-gray-600">
+                                        ' . $value['monthly_fee'] . ' ₺
+                                    </div>
+                                    <!--end::Details item-->
+                                    <!--begin::Details item-->
+                                    <div class="fw-bold mt-5">Kaç Aylık</div>
+                                    <div class="text-gray-600">' . $value['subscription_period'] . ' Aylık</div>
+                                    <!--end::Details item-->
+                                    <!--begin::Details item-->
+                                    <div class="fw-bold mt-5">Peşin Alımda İndirim Yüzdesi</div>
+                                    <div class="text-gray-600">
+                                        %' . $value['discount'] . '
+                                    </div>
+                                    <!--end::Details item-->
+                                </div>
+                            </div>
+                            <!--end::Details content-->
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Card-->
+                </div>
+                ';
+        }
+        echo $packageList;
+    }
+
+    // Show Package Detail
+
+    public function showPackageBuyers($id)
+    {
+
+
+        $date = new DateFormat();
+
+        $packageBuyers = $this->getPackageUsers($id);
+
+        foreach ($packageBuyers as $value) {
+
+            $packages = '
+                    <tr>
+                        <td>
+                            <div class="symbol symbol-50px">
+                                <img src="assets/media/profile/' . $value['photo'] . '" alt="image" />
+                            </div>
+                        </td>
+                        <td>
+                            <a href="ogrenci-detay?id=' . $value['id'] . '" class="text-gray-600 text-hover-primary mb-1">' . $value['name'] . ' ' . $value['surname'] . '</a>
+                        </td>
+                        <td>
+                            ' . $date->changeDate($value['subscribed_end']) . '
+                        </td>
+                        <td class="pe-0 text-end">
+                            <a href="ogrenci-detay?id=' . $value['id'] . '" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
+                                data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Görüntüle
+                                <i class="fa-regular fa-eye fs-5 ms-1">
+                                </i>
+                            </a>
+                        </td>
+                    </tr>
+            ';
+
+
+
+            echo $packages;
+        }
+    }
+
+    public function showUpdatePackage($id)
+    {
+        $packageInfo = $this->getOnePackage($id);
+
+        foreach ($packageInfo as $value) {
+
+            $packages = '
+                <div class="mb-3">
+                    <h1 class="h3 d-inline align-middle">Böyle bir paket mevcut değil.</h1>
+                </div>
+        ';
+
+            $packages = '
+                <form class="form" action="#" id="kt_modal_update_customer_form" data-kt-redirect="okullar">
+                    <!--begin::Modal header-->
+                    <div class="modal-header" id="kt_modal_update_customer_header">
+                        <!--begin::Modal title-->
+                        <h2 class="fw-bold">Paket Güncelle</h2>
+                        <!--end::Modal title-->
+                        <!--begin::Close-->
+                        <div id="kt_modal_update_customer_close" class="btn btn-icon btn-sm btn-active-icon-primary">
+                            <i class="ki-duotone ki-cross fs-1">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                        </div>
+                        <!--end::Close-->
+                    </div>
+                    <!--end::Modal header-->
+                    <!--begin::Modal body-->
+                    <div class="modal-body py-10 px-lg-17">
+                        <!--begin::Scroll-->
+                            <!--begin::User toggle-->
+                            <div class="fw-bold fs-3 rotate collapsible mb-7" data-bs-toggle="collapse" aria-expanded="false" aria-controls="kt_modal_update_customer_user_info">Paket Bilgileri
+                            </div>
+                            <!--end::User toggle-->
+                            <!--begin::User form-->
+                            <div>
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="required fs-6 fw-semibold mb-2">Paket Adı</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input type="text" id="name" class="form-control form-control-solid" value="'. $value['name'] .'" name="name" />
+                                    <input type="hidden" name="id" id="id" value="'. $value['id'] .'" />
+                                <!--end::Input-->
+                            </div>
+
+                            <!--end::Input group-->
+                            <div id="kt_modal_add_customer_billing_info" class="collapse show">
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column mb-7 fv-row">
+                                    <!--begin::Label-->
+                                    <label class="required fs-6 fw-semibold mb-2">Aylık Ücret</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                    <input class="form-control form-control-solid" name="monthly_fee" id="monthly_fee" value="'. $value['monthly_fee'] .'" />
+                                    <!--end::Input-->
+                                </div>
+                                <!--begin::Input group-->
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column mb-7 fv-row">
+                                    <!--begin::Label-->
+                                    <label class="required fs-6 fw-semibold mb-2">Peşin Alımda İndirim Yüzdesi</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                    <input class="form-control form-control-solid" name="discount" id="discount" value="'. $value['discount'] .'" />
+                                    <!--end::Input-->
+                                </div>
+                            </div>
+                            <!--end::User form-->
+                        <!--end::Scroll-->
+                    </div>
+                    <!--end::Modal body-->
+                    <!--begin::Modal footer-->
+                    <div class="modal-footer flex-center">
+                        <!--begin::Button-->
+                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light me-3">İptal</button>
+                        <!--end::Button-->
+                        <!--begin::Button-->
+                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary">
+                            <span class="indicator-label">Gönder</span>
+                            <span class="indicator-progress">Lütfen bekleyin...
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                        </button>
+                        <!--end::Button-->
+                    </div>
+                    <!--end::Modal footer-->
+                </form>
+        ';
+
+            echo $packages;
+        }
+    }
+}

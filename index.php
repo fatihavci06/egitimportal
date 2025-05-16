@@ -2,9 +2,9 @@
 
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) AND ($_SESSION['role'] == 1 OR $_SESSION['role'] == 2 OR $_SESSION['role'] == 3)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 2 or $_SESSION['role'] == 3)) {
 	header("location: dashboard");
-}else{
+} else {
 ?>
 	<!DOCTYPE html>
 	<html lang="tr">
@@ -42,16 +42,16 @@ if (isset($_SESSION['role']) AND ($_SESSION['role'] == 1 OR $_SESSION['role'] ==
 				<!--begin::Aside-->
 				<div class="d-flex flex-column flex-lg-row-auto bg-primary w-xl-600px positon-xl-relative">
 					<!--begin::Wrapper-->
-					<div class="d-flex flex-column position-xl-fixed top-0 bottom-0 w-xl-600px scroll-y">
+					<div class="d-flex flex-column position-xl-fixed top-0 bottom-0 w-xl-600px">
 						<!--begin::Header-->
 						<div class="d-flex flex-row-fluid flex-column text-center p-5 p-lg-10 pt-lg-20">
 							<!--begin::Logo-->
 							<a href="index.html" class="py-2 py-lg-20">
-								<img alt="Logo" src="assets/media/logos/lineup-campus-logo.jpg" class="h-100px h-lg-150px" />
+								<img alt="Logo" src="assets/media/logos/lineup-campus.jpg" class="h-100px h-lg-150px" />
 							</a>
 							<!--end::Logo-->
 							<!--begin::Title-->
-							<h1 class="d-none d-lg-block fw-bold text-white fs-2qx pb-5 pb-md-10">Lineup Campus'e Hoş Geldiniz</h1>
+							<h1 class="d-none d-lg-block fw-bold text-green fs-2qx pb-5 pb-md-10">Lineup Campus'e Hoş Geldiniz</h1>
 							<!--end::Title-->
 							<!--begin::Description-->
 							<!--<p class="d-none d-lg-block fw-semibold fs-2 text-white">Plan your blog post by choosing a topic creating 
@@ -80,24 +80,27 @@ if (isset($_SESSION['role']) AND ($_SESSION['role'] == 1 OR $_SESSION['role'] ==
 									<h1 class="text-gray-900 mb-3">Lineup Campus'e Giriş Yap</h1>
 									<!--end::Title-->
 									<!--begin::Link-->
-									<div class="text-gray-500 fw-semibold fs-4">Yeni Misiniz?
-										<a href="hesap-olustur" class="link-primary fw-bold">Hesap Oluştur</a>
+									<div class="text-gray-500 fw-semibold fs-4">Yeni Misiniz?</div>
+									<div class="text-center mt-4">
+										<!--begin::Hesap Oluştur button-->
+										<a href="hesap-olustur" class="btn btn-primary" role="button">Hesap Oluştur</a>
+										<!--end::Hesap Oluştur button-->
 									</div>
 									<!--end::Link-->
 								</div>
 								<!--begin::Messages-->
 								<?php if (isset($_SESSION['err'])) {
 									if ($_SESSION['err'] == 1) { ?> <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"> Hata Oluştu! </div> <?php } elseif ($_SESSION['err'] == 2) { ?> <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"> Kullanıcı Bulunamadı! </div> <?php } elseif ($_SESSION['err'] == 3) { ?> <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"> Hatalı Parola! </div> <?php  }
-																																																							}
-																																																							if (isset($_SESSION['msg'])) { ?>
-													<div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"> <?php echo $_SESSION['msg']; ?> </div>
+																																																																																																																																	}
+																																																																																																																																	if (isset($_SESSION['msg'])) { ?>
+									<div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"> <?php echo $_SESSION['msg']; ?> </div>
 								<?php } ?>
 								<!--end::Messages-->
 								<!--begin::Heading-->
 								<!--begin::Input group-->
 								<div class="fv-row mb-10">
 									<!--begin::Label-->
-									<label class="form-label fs-6 fw-bold text-gray-900">E-posta ya da Kullanıcı Adı</label>
+									<label class="form-label fs-6 fw-bold text-gray-900">E-Posta ya da Kullanıcı Adı</label>
 									<!--end::Label-->
 									<!--begin::Input-->
 									<input class="form-control form-control-lg form-control-solid" class="signIn" type="text" name="email" />
@@ -117,7 +120,12 @@ if (isset($_SESSION['role']) AND ($_SESSION['role'] == 1 OR $_SESSION['role'] ==
 									</div>
 									<!--end::Wrapper-->
 									<!--begin::Input-->
-									<input class="form-control form-control-lg form-control-solid" class="signIn" type="password" name="password" autocomplete="off" />
+									<div class="input-group">
+										<input class="form-control form-control-lg form-control-solid" class="signIn" id="passwordIn" type="password" name="password" autocomplete="off" />
+										<button class="btn btn-outline-secondary" type="button" id="togglePassword">
+											<i class="bi bi-eye" id="eyeIcon"></i>
+										</button>
+									</div>
 									<!--end::Input-->
 								</div>
 								<!--end::Input group-->
@@ -159,6 +167,7 @@ if (isset($_SESSION['role']) AND ($_SESSION['role'] == 1 OR $_SESSION['role'] ==
 		<!--begin::Global Javascript Bundle(mandatory for all pages)-->
 		<script src="assets/plugins/global/plugins.bundle.js"></script>
 		<script src="assets/js/scripts.bundle.js"></script>
+		<script src="assets/js/eyetoggle.js"></script>
 		<!--end::Global Javascript Bundle-->
 		<!--begin::Custom Javascript(used for this page only)-->
 		<!--<script src="assets/js/custom/authentication/sign-in/general.js"></script>-->
