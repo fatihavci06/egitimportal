@@ -180,7 +180,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     return;
                 }
 
-                if (!coupon_code && !discount_value && !coupon_quantity) {
+                if (!coupon_code && !discount_value && !coupon_quantity && !$coupon_expires) {
                     Swal.fire({
                         icon: 'warning',
                         title: 'Uyarı',
