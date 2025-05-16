@@ -22,4 +22,9 @@ class AddCouponContr extends AddCoupon
     {
         $this->setCoupon($this->discount_type, $this->discount_value, $this->coupon_code, $this->coupon_expires, $this->coupon_quantity);
     }
+
+    // public function getCoupondDb()
+    // {
+    //     $this->getCoupon();
+    // }
 }

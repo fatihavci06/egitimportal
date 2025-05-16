@@ -10,6 +10,7 @@ class ShowStudent extends Student
     {
 
         $schoolInfo = $this->getStudentsList();
+        
 
         $dateFormat = new DateFormat();
 

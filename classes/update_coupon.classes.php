@@ -1,39 +1,7 @@
 <?php
-class AddCoupon extends Dbh
+class UpdateCoupon extends Dbh
 {
-
-    public function getAllCoupon()
-    {
-        $stmt = $this->connect()->prepare('SELECT * FROM coupon_lnp');
-
-        if (!$stmt->execute()) {
-            $stmt = null;
-            exit();
-        }
-
-        $coupons = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $stmt = null;
-
-        return $coupons;
-    }
-
-
-    public function getCoupon($id)
-    {
-        $stmt = $this->connect()->prepare('SELECT * FROM coupon_lnp WHERE id = :id');
-
-        if (!$stmt->execute([':id' => $id])) {
-            $stmt = null;
-            exit();
-        }
-
-        $coupons = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $stmt = null;
-
-        return $coupons;
-    }
-
-    protected function setCoupon($discount_type, $discount_value, $coupon_code, $coupon_expires, $coupon_quantity)
+    protected function updateCoupon($id, $discount_type, $discount_value, $coupon_code, $coupon_expires, $coupon_quantity)
     {
         $checkStmt = $this->connect()->prepare('SELECT 1 FROM coupon_lnp WHERE coupon_code = ? LIMIT 1');
         $checkStmt->execute([$coupon_code]);
