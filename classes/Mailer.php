@@ -36,7 +36,7 @@ class Mailer
 
 
         // Default sender
-        $this->mail->setFrom('aepikman@chemitech.com.tr', 'LineUP');
+        $this->mail->setFrom('aepikman@chemitech.com.tr', 'Lineup Campus');
 
         // Default charset and encoding
         $this->mail->CharSet = 'UTF-8';
@@ -127,7 +127,7 @@ class Mailer
      */
     public function sendPasswordResetEmail($to, $username, $resetLink)
     {
-        $subject = "Password Reset Request";
+        $subject = "Şifre Sıfırlama Talebi";
 
         // HTML body
         $htmlBody = "
@@ -138,14 +138,14 @@ class Mailer
                 .container { max-width: 600px; margin: 0 auto; padding: 20px; }
                 .header { background-color: #f8f9fa; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
                 .content { background-color: #ffffff; padding: 20px; border-radius: 0 0 5px 5px; }
-                .button { display: inline-block; padding: 10px 20px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 5px; }
+                .button { display: inline-block; padding: 10px 20px; background-color:rgb(166, 209, 255); color: #ffffff; text-decoration: none; border-radius: 5px; }
                 .footer { margin-top: 20px; font-size: 12px; color: #6c757d; text-align: center; }
             </style>
         </head>
         <body>
             <div class='container'>
                 <div class='header'>
-                    <h2>Password Reset Request</h2>
+                    <h2>Şifre Sıfırlama Talebi</h2>
                 </div>
                 <div class='content'>
                     <p>Merhaba " . htmlspecialchars($username) . ",</p>
@@ -160,7 +160,7 @@ class Mailer
                     <p>Saygılarımla,<br>Lineup Takımı</p>
                 </div>
                 <div class='footer'>
-                    <p>This is an automated email. Please do not reply to this message.</p>
+                    <p>Bu otomatik bir e-postadır. Lütfen bu mesaja cevap vermeyin.</p>
                 </div>
             </div>
         </body>

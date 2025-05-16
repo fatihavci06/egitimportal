@@ -80,7 +80,7 @@ try {
     }
 
     // Build the reset URL
-    $resetUrl = "https://" . $_SERVER['HTTP_HOST'] . "/authentication/sign-in/new-password.html?token=" . $token;
+    $resetUrl = "https://" . $_SERVER['HTTP_HOST'] . "/lineup_campus/authentication/sign-in/new-password.html?token=" . $token;
 
     $mailer = new Mailer();
 
