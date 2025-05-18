@@ -65,6 +65,66 @@ class ShowStudent extends Student
         }
     }
 
+    // Get Waiting Money Transfer Student List
+
+    public function getWaitingStudentList()
+    {
+
+        $schoolInfo = $this->getWaitingMoneyStudent();
+        
+
+        $dateFormat = new DateFormat();
+
+        foreach ($schoolInfo as $key => $value) {
+
+            $parentInfo = $this->getparentName($value['user_id']);
+
+            $parentName = $parentInfo[0]['name'] . ' ' . $parentInfo[0]['surname'];
+
+            $packInfo = $this->getPackName($value['pack_id']);
+
+            $packName = $packInfo[0]['name'];
+
+            $packClass = $packInfo[0]['class_id'];
+
+            $classInfo = $this->getClassName($packClass);
+
+            $className = $classInfo[0]['name'];
+
+            $studentList = '
+                    <tr>
+                        <td>
+                            <div class="cursor-pointer symbol symbol-90px symbol-lg-90px"><img src="assets/media/profile/' . $value['photo'] . '"></div>
+                        </td>
+                        <td>
+                            ' . $value['name'] . ' ' . $value['surname']  . '
+                        </td>
+                        <td>
+                            ' . $parentName . '
+                        </td>
+                        <td>
+                            ' . $value['identity_id'] . '
+                        </td>
+                        <td>
+                            ' . $packName . '
+                        </td>
+                        <td>' . $value['amount'] . ' ₺</td>
+                        <td>
+                            ' . $className . '
+                        </td>
+                        <td class="text-end">
+                            <button id="approve" data-ek=' . $value['user_id'] . ' data-info='. $value['id'] .'" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary approve"
+                                data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Ödemeyi Onayla
+                                <i class="fa-solid fa-check fs-5 ms-1"></i>
+                            </button>
+                            <!--end::Menu-->
+                        </td>
+                    </tr>
+                ';
+            echo $studentList;
+        }
+    }
+
     // Get Student List Select
 
     public function getStudentSelectList()

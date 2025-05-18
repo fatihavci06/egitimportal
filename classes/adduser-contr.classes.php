@@ -24,8 +24,9 @@ class AddUserContr extends AddUser
 	private $telephone;
 	private $couponCode;
 	private $payment_type;
+	private $isinstallment;
 
-	public function __construct($firstName, $lastName, $username, $tckn, $gender, $birth_day, $email, $parentFirstName, $parentLastName, $classes, $pack, $address, $district, $postcode, $city, $telephone, $couponCode, $payment_type)
+	public function __construct($firstName, $lastName, $username, $tckn, $gender, $birth_day, $email, $parentFirstName, $parentLastName, $classes, $pack, $address, $district, $postcode, $city, $telephone, $couponCode, $payment_type, $isinstallment)
 	{
 		$this->firstName = $firstName;
 		$this->lastName = $lastName;
@@ -48,6 +49,7 @@ class AddUserContr extends AddUser
 		$this->telephone = $telephone;
 		$this->couponCode = $couponCode;
 		$this->payment_type = $payment_type;
+		$this->isinstallment = $isinstallment;
 	}
 
 	public function addUserDb()
@@ -86,6 +88,10 @@ class AddUserContr extends AddUser
 
 		$couponRes = $packages->checkCoupon($this->couponCode);
 
+		$packDetails = $packages->getPackagePrice($this->pack);
+
+		$packUse = 0;
+
 		if ($this->couponCode) {
 
 			if ($couponRes['coupon_quantity'] == $couponRes['used_coupon_count']) {
@@ -104,10 +110,14 @@ class AddUserContr extends AddUser
 				return;
 			}
 
-			$packages->updateUsedCuponCount($this->couponCode);
+			$packUse = 1;
+
+			//$packages->updateUsedCuponCount($this->couponCode);
 		}
 
+		$installmentNo = $packDetails[0]['max_installment'];
 
+		$creditCashDiscount = $packDetails[0]['discount'];
 
 		$_SESSION['firstName'] = $this->firstName;
 		$_SESSION['lastName'] = $this->lastName;
@@ -126,6 +136,9 @@ class AddUserContr extends AddUser
 		$_SESSION['city'] = $this->city;
 		$_SESSION['telephone'] = $this->telephone;
 		$_SESSION['couponCode'] = $this->couponCode;
+		$_SESSION['isinstallment'] = $installmentNo;
+		$_SESSION['creditCash'] = $creditCashDiscount;
+		$_SESSION['packUse'] = $packUse;
 
 		if ($this->payment_type == 2) {
 			echo json_encode(["status" => "success", "message" => "Ödeme sayfasına yönlendirileceksiniz.", "type" => "credit_card"]);

@@ -307,7 +307,7 @@ var KTSignupGeneral = function () {
                                     var type = response.type;
                                     if (type === "credit_card") {
                                         window.location.replace("odeme-al.php");
-                                    }else if (type === "bank_transfer") {
+                                    } else if (type === "bank_transfer") {
                                         window.location.replace("havale-bilgisi.php");
                                     }
                                     Swal.fire({
@@ -423,58 +423,110 @@ var KTSignupGeneral = function () {
 
                     // Paket seçimi için AJAX isteği
 
-                    $(document).ready(function() { $('input[name="pack"]:radio').change(function() {
-                         var secilenPaket = $('input[name="pack"]:checked').val();  
+                    $(document).ready(function () {
+                        $('input[name="pack"]:radio').change(function () {
+                            var secilenPaket = $('input[name="pack"]:checked').val();
                             if (secilenPaket !== "") {
-                            $.ajax({
-                                url: 'includes/getpackages.inc.php?islem=packages',
-                                type: 'POST',
-                                data: { secim: secilenPaket },
-                                success: function (response) {
-                                    $('#totalPrice').html(response);
-                                },
-                                error: function (xhr, status, error) {
-                                    console.error("Hata oluştu: " + error);
-                                    $('#totalPrice').html("<p>Veri yüklenirken bir hata oluştu.</p>");
-                                }
-                            });
-                        } else {
-                            $('#totalPrice').html("");
-                        } 
+
+                                $('input[type="radio"][name="payment_type"]').prop('checked', false);
+                                $('#moneyTransferInfo').html("");
+                                $('#couponInfo').html("");
+                                $('#delete_coupon').css('display', 'none');
+                                $('#coupon_code').val('');
+                                $('#iscash').html('');
+                                $('#cashdiscount').html("");
+                                $('input[type="radio"][name="isinstallment"]').prop('checked', false);
+                                $('#payment_method').css('display', 'inline');;
+                                couponButton.disabled = false;
+                                submitButton.disabled = true;
+
+                                $.ajax({
+                                    url: 'includes/getpackages.inc.php?islem=packages',
+                                    type: 'POST',
+                                    data: { secim: secilenPaket },
+                                    success: function (response) {
+                                        $('#totalPrice').html(response.div);
+                                        $('#priceWoDiscount').html(response.total);
+                                        $('#subscription_month').html(response.subscription_period);
+                                    },
+                                    error: function (xhr, status, error) {
+                                        console.error("Hata oluştu: " + error);
+                                        $('#totalPrice').html("<p>Veri yüklenirken bir hata oluştu.</p>");
+                                    }
+                                });
+                            } else {
+                                $('#totalPrice').html("");
+                            }
                         });
                     });
 
                     couponButton = document.querySelector('#apply_coupon');
 
                     couponButton.addEventListener('click', function (e) {
+                        submitButton.disabled = true;
                         const inputElementi = document.getElementById('coupon_code');
                         const couponVal = inputElementi.value;
-                            $.ajax({
-                                url: 'includes/getpackages.inc.php?islem=coupon',
-                                type: 'POST',
-                                data: { secim: couponVal },
-                                success: function (response) {
+                        $.ajax({
+                            url: 'includes/getpackages.inc.php?islem=coupon',
+                            type: 'POST',
+                            data: { secim: couponVal },
+                            success: function (response) {
+                                if (response.status === "success") {
                                     var oldPrice = document.getElementById("Price").innerHTML;
-                                    if(response.status === "success") {
-                                        var discount = response.discount;
-                                        var type = response.type;
-                                        if (type === "percentage") {
-                                            var newPrice = oldPrice - (oldPrice * (discount / 100));
-                                        }else if (type === "amount") {
-                                            var newPrice = oldPrice - discount;
-                                        }
-                                        $('#Price').html(newPrice);
-                                        $('#couponInfo').html(response.message);
-                                        couponButton.disabled = true;
-                                    }else{
-                                        $('#couponInfo').html(response.message);
+                                    var priceWoDiscount = document.getElementById("priceWoDiscount").innerHTML;
+                                    couponButton.disabled = true;
+                                    $('#delete_coupon').css('display', 'inline');
+                                    $('input[type="radio"][name="payment_type"]').prop('checked', false);
+
+                                    var discount = response.discount;
+                                    var type = response.type;
+                                    if (type === "percentage") {
+                                        var newPrice = priceWoDiscount - (priceWoDiscount * (discount / 100));
+                                    } else if (type === "amount") {
+                                        var newPrice = priceWoDiscount - discount;
                                     }
-                                },
-                                error: function (xhr, status, error) {
-                                    console.error("Hata oluştu: " + error);
-                                    $('#couponInfo').html("<p>Veri yüklenirken bir hata oluştu.</p>");
+
+                                    $('#moneyTransferInfo').html("");
+                                    $('#Price').html(newPrice);
+                                    $('#priceWCoupon').html(newPrice);
+                                    $('#couponInfo').html(response.message);
+                                    $('#couponCode').html('<input type="hidden" name="coupon_codeDb" value="' + couponVal + '">');
+                                    $('input[type="radio"][name="isinstallment"]').prop('checked', false);
+                                    $('#cashdiscount').html("");
+                                    $('#iscash').html("");
+
+                                    $('#delete_coupon').click(function () {
+                                        
+                                        submitButton.disabled = true;
+
+                                        $('#moneyTransferInfo').html("");
+                                        $('#couponInfo').html("");
+                                        $('#delete_coupon').css('display', 'none');
+                                        $('#iscash').html('');
+                                        $('#coupon_code').val('');
+                                        $('input[type="radio"][name="payment_type"]').prop('checked', false);
+
+                                        if ($('#moneyTransferInfo').text().trim() === '') {
+                                            $('#Price').html(priceWoDiscount);
+                                        }
+                                        couponButton.disabled = false;
+                                        $('#coupon_code').val('');
+                                        $('#Price').html(priceWoDiscount);
+                                        $('#couponInfo').html("");
+                                    });
+
+                                } else {
+                                    var oldPrice = document.getElementById("Price").innerHTML;
+                                    $('#priceWoDiscount').html(oldPrice);
+                                    $('#priceWCoupon').html(oldPrice);
+                                    $('#couponInfo').html(response.message);
                                 }
-                            });
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("Hata oluştu: " + error);
+                                $('#couponInfo').html("<p>Veri yüklenirken bir hata oluştu.</p>");
+                            }
+                        });
 
                     });
 
@@ -487,6 +539,113 @@ var KTSignupGeneral = function () {
         } else {
             $('#veriAlani').html("");
         }
+
+    });
+
+    $(document).ready(function () {
+
+        $('input[type="radio"][name="payment_type"]').change(function () {
+            var oldPrice = document.getElementById("priceWoDiscount").innerHTML;
+            var priceWCoupon = document.getElementById("priceWCoupon").innerHTML;
+            var subscription_month = document.getElementById("subscription_month").innerHTML;
+            if ($(this).val() === '2') {
+
+                if ($('#couponInfo').text().trim() === '') {
+                    $('#Price').html(oldPrice);
+                } else {
+                    $('#Price').html(priceWCoupon);
+                }
+                $('#moneyTransferInfo').html("");
+                if (subscription_month > 1) {
+                    submitButton.disabled = true;
+                    $('#iscash').html(`<!--begin::Input group-->
+                                    <div class="fv-row mt-10">
+                                        <span class="form-check form-check-custom form-check-solid">
+                                            <label><input class="form-check-input" type="radio" name="isinstallment" value="1"> Peşin</label>
+                                            <label><input class="form-check-input ms-7" type="radio" name="isinstallment" value="2"> Taksitle</label>
+                                        </span>
+                                    </div>
+                                    <!--end::Input group-->`);
+                } else {
+                    submitButton.disabled = false;
+                    $('#iscash').html('');
+                }
+                $('input[type="radio"][name="isinstallment"]').change(function () {
+                    
+                    submitButton.disabled = false;
+                    if ($(this).val() === '1') {
+
+                        var secilenPaket = $('input[name="pack"]:checked').val();
+                        $.ajax({
+                            url: 'includes/getpackages.inc.php?islem=noinstallment',
+                            type: 'POST',
+                            data: { secim: secilenPaket },
+                            success: function (response) {
+                                if (response.status === "success") {
+                                    var discount = response.discount;
+
+                                    if ($('#couponInfo').text().trim() === '') {
+                                        var newPrice = oldPrice - (oldPrice * (discount / 100));
+                                        $('#Price').html(newPrice);
+                                    } else {
+                                        var newPrice = priceWCoupon - (priceWCoupon * (discount / 100));
+                                        $('#Price').html(newPrice);
+                                    }
+                                    $('#cashdiscount').html("%" + discount + " peşin ödeme indirimi uygulandı!");
+                                } else {
+                                    $('#cashdiscount').html("<p>Veri yüklenirken bir hata oluştu.</p>");
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("Hata oluştu: " + error);
+                                $('#cashdiscount').html("<p>Veri yüklenirken bir hata oluştu.</p>");
+                            }
+                        });
+
+                        //$('#iscash').show();
+                    } else {
+                        $('#cashdiscount').html("");
+                        if ($('#couponInfo').text().trim() === '') {
+                            $('#Price').html(oldPrice);
+                        } else {
+                            $('#Price').html(priceWCoupon);
+                        }
+                    }
+                });
+
+            } else {
+                var typeVal = "1";
+
+                submitButton.disabled = false;
+
+                $.ajax({
+                    url: 'includes/getpackages.inc.php?islem=moneytransfer',
+                    type: 'POST',
+                    data: { secim: typeVal },
+                    success: function (response) {
+                        if (response.status === "success") {
+                            var discount = response.discount;
+
+                            if ($('#couponInfo').text().trim() === '') {
+                                var newPrice = oldPrice - (oldPrice * (discount / 100));
+                                $('#Price').html(newPrice);
+                            } else {
+                                var newPrice = priceWCoupon - (priceWCoupon * (discount / 100));
+                                $('#Price').html(newPrice);
+                            }
+                            $('#moneyTransferInfo').html(response.message);
+                        } else {
+                            $('#moneyTransferInfo').html(response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Hata oluştu: " + error);
+                        $('#moneyTransferInfo').html("<p>Veri yüklenirken bir hata oluştu.</p>");
+                    }
+                });
+                $('#iscash').html("");
+            }
+        });
     });
 
 

@@ -13,6 +13,7 @@ require_once('classes/dateformat.classes.php');
 require_once('classes/dbh.classes.php');
 require_once('classes/adduser.classes.php');
 require_once('classes/userslist.classes.php');
+include_once('classes/packages.classes.php');
 
 $admin = new User();
 $getadminEmail = $admin->getlnpAdmin();
@@ -66,6 +67,11 @@ $username = $_SESSION['username'];
 $gender = $_SESSION['gender'];
 $birth_day = $_SESSION['birth_day'];
 $class = $_SESSION['classes'];
+if($class == 10 OR $class == 11 OR $class == 12) {
+    $role = 10002;
+} else {
+    $role = 2;
+}
 
 $veli_ad = $_SESSION['parentFirstName'];
 $veli_soyad = $_SESSION['parentLastName'];
@@ -78,6 +84,10 @@ $kullanici_il = $_SESSION['city'];
 $postcode = $_SESSION['postcode'];
 $pack = $_SESSION['pack'];
 $district = $_SESSION['district'];
+$packUse = $_SESSION['packUse'];
+$siparis_numarasi = $_SESSION['siparis_numarasi'];
+$isinstallment = $_SESSION['isinstallment'];
+$couponCode = $_SESSION['couponCode'];
 
 include_once "classes/packages.classes.php";
 
@@ -243,12 +253,21 @@ if ($odeme_durum == "FAILURE") {
         echo "E-posta gönderilirken bir hata oluştu: {$mail->ErrorInfo}";
     }
 
+    if($packUse == 1) {
+        $packages = new Packages();
+        $packages->updateUsedCuponCount($couponCode);
+    } else {
+        
+    }
 
 
-    $gonder = $kisiekle->setStudent2($firstName, $lastName, $username, $kullanici_tckn, $gender, $birth_dayDb, $kullanici_mail, $class, $pack, $password, $nowTime, $endTime, $kullanici_gsm, $kullanici_adresiyaz, $district, $postcode, $kullanici_il);
-
+    $gonder = $kisiekle->setStudent2($firstName, $lastName, $username, $kullanici_tckn, $gender, $birth_dayDb, $kullanici_mail, $class, $pack, $password, $nowTime, $endTime, $kullanici_gsm, $kullanici_adresiyaz, $district, $postcode, $kullanici_il, $role);
 
     $gonderVeli = $kisiekle->setParent($veli_ad, $veli_soyad, $username2, $password2);
+
+    $odemeBilgisiGonder = $kisiekle->setPaymentInfo($kullanici_tckn, $pack, $siparis_numarasi, $isinstallment, $paidPrice, $commissionRate, $commissionFee, $couponCode);
+
+    $error = "";
 
     $text =  '
             <div class="row">

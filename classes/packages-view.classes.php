@@ -53,14 +53,14 @@ class ShowPackage extends Packages
                     <div class="fs-6 fw-bold">İndirim Kuponu</div>
                     <div class="text-gray-600 mb-2">Kupon kodu varsa giriniz.</div>
 					<input type="text" class="form-control" name="coupon_code" id="coupon_code" placeholder="Kupon Kodu"> 
-                    <button type="button" id="apply_coupon" class="btn btn-primary mt-5">Uygula</button>
+                    <button type="button" id="apply_coupon" class="btn btn-success mt-5">Kuponu Uygula</button> <button style="display:none" type="button" id="delete_coupon" class="btn btn-danger mt-5">Kuponu Kaldır</button>
 				</div>
                 ';
 
         echo json_encode([$packages, $coupons]);
     }
 
-    
+
     // Show Total Price
 
     public function showPrice($id)
@@ -70,6 +70,7 @@ class ShowPackage extends Packages
 
         foreach ($packageInfo as $package) {
 
+            $discount = $package['discount'];
             $monthly_fee = $package['monthly_fee'];
             $subscription_period = $package['subscription_period'];
 
@@ -80,41 +81,66 @@ class ShowPackage extends Packages
             ';
         }
 
-        echo json_encode([$priceTotal]);
+        echo json_encode(["div" => $priceTotal, "total" => $total, "subscription_period" => $subscription_period]);
     }
 
-    
+    // Show Cash Discount
 
-    
+    public function getCashDiscountAmount($id)
+    {
+
+        $packageInfo = $this->getPackagePrice($id);
+
+
+        foreach ($packageInfo as $package) {
+
+            $discount = $package['discount'];
+
+            echo json_encode(["status" => "success", "discount" => $discount]);
+        }
+    }
+
+
+    // GET Money Transfer Discount
+
+    public function getTransferDiscountInfo()
+    {
+        $dicountInfo = $this->getTransferDiscount();
+
+        if ($dicountInfo) {
+            $discount = $dicountInfo['discount'];
+            echo json_encode(["status" => "success", "message" => "% " . $discount . " Havale İndirimi Uygulandı!", "discount" => $discount]);
+        } else {
+            echo json_encode(["status" => "error", "message" => "İndirim Uygulanamadı!"]);
+        }
+    }
+
     // Get Coupon Info Price
 
     public function getCouponInfo($coupon)
     {
         $couponRes = $this->checkCoupon($coupon);
 
-
-
         if ($couponRes) {
 
-			if ($couponRes['coupon_quantity'] == $couponRes['used_coupon_count']) {
-				echo json_encode(["status" => "error", "message" => "Kuponun kullanım hakkı kalmamış!"]);
-				return;
-			}
+            if ($couponRes['coupon_quantity'] == $couponRes['used_coupon_count']) {
+                echo json_encode(["status" => "error", "message" => "Kuponun kullanım hakkı kalmamış!"]);
+                return;
+            }
 
-			$expireDate = new DateTime($couponRes['coupon_expires']);
-			$today = new DateTime();
+            $expireDate = new DateTime($couponRes['coupon_expires']);
+            $today = new DateTime();
 
-			$expireDateFormatted = $expireDate->format('Y-m-d');
-			$todayFormatted = $today->format('Y-m-d');
+            $expireDateFormatted = $expireDate->format('Y-m-d');
+            $todayFormatted = $today->format('Y-m-d');
 
-			if ($expireDateFormatted < $todayFormatted) {
-				echo json_encode(["status" => "error", "message" => "Kuponun Süresi Dolmuş!"]);
-				return;
-			}
+            if ($expireDateFormatted < $todayFormatted) {
+                echo json_encode(["status" => "error", "message" => "Kuponun Süresi Dolmuş!"]);
+                return;
+            }
 
             echo json_encode(["status" => "success", "message" => "Kupon Kodu Uygulandı!", "discount" => $couponRes['discount_value'], "type" => $couponRes['discount_type']]);
-
-		}else{
+        } else {
             echo json_encode(["status" => "error", "message" => "Kupon Kodu Geçersiz!"]);
         }
 
@@ -132,7 +158,6 @@ class ShowPackage extends Packages
 
         //echo json_encode([$priceTotal]);
     }
-
 }
 
 

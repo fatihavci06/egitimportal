@@ -19,8 +19,20 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 	$postcode = htmlspecialchars(trim($_POST['postcode']));
 	$city = htmlspecialchars(trim($_POST['city']));
 	$telephone = htmlspecialchars(trim($_POST['telephone']));
-	$couponCode = htmlspecialchars(trim($_POST['coupon_code']));
+	
+	if (isset($_POST['coupon_codeDb'])) {
+		$couponCode = htmlspecialchars(trim($_POST['coupon_codeDb']));
+	} else {
+		$couponCode = '';
+	}
+
 	$payment_type = htmlspecialchars(trim($_POST['payment_type']));
+	
+	if (isset($_POST['isinstallment'])) {
+		$isinstallment = htmlspecialchars(trim($_POST['isinstallment']));
+	} else {
+		$isinstallment = '';
+	}
 
 	// Instantiate AddUserContr class
 	include_once "../classes/dbh.classes.php";
@@ -28,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 	include_once "../classes/adduser-contr.classes.php";
 	include_once "../classes/slug.classes.php";
 
-	$addUser = new AddUserContr($firstName, $lastName, $username, $tckn, $gender, $birth_day, $email, $parentFirstName, $parentLastName, $classes, $pack, $address, $district, $postcode, $city, $telephone, $couponCode, $payment_type);
+	$addUser = new AddUserContr($firstName, $lastName, $username, $tckn, $gender, $birth_day, $email, $parentFirstName, $parentLastName, $classes, $pack, $address, $district, $postcode, $city, $telephone, $couponCode, $payment_type, $isinstallment);
 
 	// Running error handlers and school addUser
 	$addUser->addUserDb();

@@ -323,12 +323,36 @@ include_once "views/pages-head.php";
 
 							</div>
 
-							<div id="couponInfo" class="mb-10">
+							<div id="subscription_month" style="display: none;">
+							
+							</div>
+
+							<div id="priceWoDiscount" style="display: none;">
+							
+							</div>
+
+							<div id="priceWCoupon" style="display: none;">
+							
+							</div>
+
+							<div id="couponInfo">
+
+							</div>
+
+							<div id="couponCode">
+
+							</div>
+
+							<div id="moneyTransferInfo" class="mb-10">
+
+							</div>
+
+							<div id="cashdiscount" class="mb-10">
 
 							</div>
 
 							<!--begin::Input group-->
-							<div class="fv-row mb-10">
+							<div id="payment_method" class="fv-row mb-5" style="display: none;" required>
 								<label class="form-label fw-bold text-gray-900 fs-6">Ödeme Şekli</label>
 								<span class="form-check form-check-custom form-check-solid">
 									<label><input class="form-check-input" type="radio" name="payment_type" value="1"> Havale/EFT</label>
@@ -336,6 +360,10 @@ include_once "views/pages-head.php";
 								</span>
 							</div>
 							<!--end::Input group-->
+
+							<div id="iscash" class="mb-10">
+
+							</div>
 
 							<!--begin::Input group-->
 							<div class="fv-row mb-10">
@@ -349,7 +377,7 @@ include_once "views/pages-head.php";
 
 							<!--begin::Actions-->
 							<div class="text-center">
-								<button type="button" id="kt_sign_up_submit" class="btn btn-lg btn-primary">
+								<button type="button" id="kt_sign_up_submit" class="btn btn-lg btn-primary" disabled>
 									<!--<button type="submit" class="btn btn-lg btn-primary">	-->
 									<span class="indicator-label">Gönder</span>
 									<span class="indicator-progress">Lütfen bekleyiniz...

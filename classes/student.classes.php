@@ -3,6 +3,100 @@
 class Student extends Dbh
 {
 
+	public function getWaitingMoneyTransfers(){
+		$stmt = $this->connect()->prepare('SELECT user_id FROM money_transfer_list_lnp WHERE status = ?');
+		if (!$stmt->execute(array("0"))) {
+			$stmt = null;
+			exit();
+		}
+		$getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		return $getData;
+		$stmt = null;
+	}
+	
+	protected function getWaitingMoneyStudent()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT money_transfer_list_lnp.id, money_transfer_list_lnp.pack_id, money_transfer_list_lnp.user_id, money_transfer_list_lnp.amount, users_lnp.name, users_lnp.surname, users_lnp.identity_id, users_lnp.photo FROM money_transfer_list_lnp INNER JOIN users_lnp ON money_transfer_list_lnp.user_id = users_lnp.id WHERE money_transfer_list_lnp.status = ?');
+
+		if (!$stmt->execute(array(0))) {
+			$stmt = null;
+			exit();
+		}
+
+		$getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $getData;
+
+		$stmt = null;
+	}
+
+	public function getMoneyTransferInfo($id){
+		$stmt = $this->connect()->prepare('SELECT * FROM money_transfer_list_lnp WHERE id = ?');
+
+		if (!$stmt->execute(array($id))) {
+			$stmt = null;
+			exit();
+		}
+
+		$getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $getData;
+
+		$stmt = null;
+	}
+
+	protected function getparentName($child_id)
+	{
+
+		$stmt = $this->connect()->prepare('SELECT name, surname FROM users_lnp WHERE child_id = ?');
+
+		if (!$stmt->execute(array($child_id))) {
+			$stmt = null;
+			exit();
+		}
+
+		$getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $getData;
+
+		$stmt = null;
+	}
+
+	public function getPackName($pack_id)
+	{
+
+		$stmt = $this->connect()->prepare('SELECT name, class_id, subscription_period FROM packages_lnp WHERE id = ?');
+
+		if (!$stmt->execute(array($pack_id))) {
+			$stmt = null;
+			exit();
+		}
+
+		$getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $getData;
+
+		$stmt = null;
+	}
+
+	protected function getClassName($class_id)
+	{
+
+		$stmt = $this->connect()->prepare('SELECT name FROM classes_lnp WHERE id = ?');
+
+		if (!$stmt->execute(array($class_id))) {
+			$stmt = null;
+			exit();
+		}
+
+		$getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $getData;
+
+		$stmt = null;
+	}
+
 	protected function getStudentsList()
 	{
 

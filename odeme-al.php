@@ -39,6 +39,10 @@ foreach ($packInfo as $key => $value) {
 	}
 }
 
+$cashDiscount = $_SESSION['creditCash'];
+
+$price -= $price * ($cashDiscount / 100);
+
 
 $kullanici_ad = $_SESSION['parentFirstName'];
 $kullanici_soyad = $_SESSION['parentLastName'];
@@ -51,8 +55,10 @@ $kullanici_il = $_SESSION['city'];
 $postcode = $_SESSION['postcode'];
 $district = $_SESSION['district'];
 $siparis_no = rand() . rand();
+$_SESSION['siparis_numarasi'] = $siparis_no;
 $sepettoplam = $price;
 $kupon_kodu = $_SESSION['couponCode'];
+$isinstallment = $_SESSION['isinstallment'];
 
 
 ?>

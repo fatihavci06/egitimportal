@@ -4,7 +4,11 @@
 // Make sure to install PHPMailer via Composer:
 // composer require phpmailer/phpmailer
 
-require '../vendor/autoload.php';
+/* require '../vendor/autoload.php'; */
+
+$base_dir = __DIR__ . '/../';
+set_include_path(get_include_path() . PATH_SEPARATOR . $base_dir);
+require 'vendor/autoload.php'; // Sadece dosya adını belirtin
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -168,6 +172,163 @@ class Mailer
         ";
 
         return $this->send($to, $subject, $htmlBody, true);
+    }
+
+    /**
+     * Send a BankTransfer email to Parent
+     * 
+     * @param string $to Recipient email
+     * @param string $username Username
+     * @param string $resetLink Password reset link
+     * @return bool True if email was sent successfully, false otherwise
+     */
+    public function sendBankTransferEmail($veli_ad, $veli_soyad, $kullanici_mail, $price)
+    {
+        $subject = "Havale Bilgileri - Lineup Campus";
+
+        // HTML body
+        $htmlBody = "
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background-color: #f8f9fa; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
+                .content { background-color: #ffffff; padding: 20px; border-radius: 0 0 5px 5px; }
+                .button { display: inline-block; padding: 10px 20px; background-color:rgb(166, 209, 255); color: #ffffff; text-decoration: none; border-radius: 5px; }
+                .footer { margin-top: 20px; font-size: 12px; color: #6c757d; text-align: center; }
+                .text-center { text-align: center; }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <div class='header'>
+                    <h2>Havale Bekleniyor</h2>
+                </div>
+                <div class='content'>
+                    <p>Merhaba " . htmlspecialchars($veli_ad) . ' ' . htmlspecialchars($veli_soyad) . ",</p>
+                    <p>Ödemeniz havale yolu ile bekleniyor.</p>
+                    <p>Açıklama kısmına <strong>Öğrencinin Adı Soyadı ve T.C. Kimlik Numarasını</strong> yazmayı unutmayın.</p>
+                    <p>Ödemeniz gereken tutar: <strong> $price ₺</strong></p>
+                    <p>Teşekkür ederiz.</p>
+                    <p style='text-align: center;'>
+                        <div class='text-center mt-5'>
+                                <h3 >Hesap Bilgileri</h3>
+                                <p>Hesap Adı: Lineup </p>
+                                <p>IBAN: TR0000000000000000000000</p>
+                                <p>Banka: Bankası</p>
+                        </div>
+                    </p>
+                    <p>Saygılarımla,<br>Lineup Takımı</p>
+                </div>
+                <div class='footer'>
+                    <p>Bu otomatik bir e-postadır. Lütfen bu mesaja cevap vermeyin.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        ";
+
+        return $this->send($kullanici_mail, $subject, $htmlBody, true);
+    }
+
+    /**
+     * Send a BankTransfer email To Admin
+     * 
+     * @param string $to Recipient email
+     * @param string $username Username
+     * @param string $resetLink Password reset link
+     * @return bool True if email was sent successfully, false otherwise
+     */
+    public function sendBankTransferEmailToAdmin($veli_ad, $veli_soyad, $adminEmail, $price)
+    {
+        $subject = "Yeni Kayıt (Havale) - Lineup Campus";
+
+        // HTML body
+        $htmlBody = "
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background-color: #f8f9fa; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
+                .content { background-color: #ffffff; padding: 20px; border-radius: 0 0 5px 5px; }
+                .button { display: inline-block; padding: 10px 20px; background-color:rgb(166, 209, 255); color: #ffffff; text-decoration: none; border-radius: 5px; }
+                .footer { margin-top: 20px; font-size: 12px; color: #6c757d; text-align: center; }
+                .text-center { text-align: center; }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <div class='header'>
+                    <h2>Yeni Kayıt - Havale Bekleniyor</h2>
+                </div>
+                <div class='content'>
+                    <p>Merhaba</p>
+                    <p>Yeni bir kullanıcı kayıt oldu.</p>
+                    <p>Havale Bekleniyor.</p>
+                    <p>Ödenmesi gereken tutar: <strong> $price ₺</strong></p>
+                    <p>Saygılarımla,<br>Lineup Takımı</p>
+                </div>
+                <div class='footer'>
+                    <p>Bu otomatik bir e-postadır. Lütfen bu mesaja cevap vermeyin.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        ";
+
+        return $this->send($adminEmail, $subject, $htmlBody, true);
+    }
+
+    /**
+     * Send a BankTransfer approved email to Parent
+     * 
+     * @param string $to Recipient email
+     * @param string $username Username
+     * @param string $resetLink Password reset link
+     * @return bool True if email was sent successfully, false otherwise
+     */
+    public function sendBankTransferApprovedEmail($veli_ad, $veli_soyad, $kullanici_mail, $sifreogrenci, $sifreveli, $veliUser, $ogrenciUser)
+    {
+        $subject = "Havale Onaylandı - Lineup Campus";
+
+        // HTML body
+        $htmlBody = "
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background-color: #f8f9fa; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
+                .content { background-color: #ffffff; padding: 20px; border-radius: 0 0 5px 5px; }
+                .button { display: inline-block; padding: 10px 20px; background-color:rgb(166, 209, 255); color: #ffffff; text-decoration: none; border-radius: 5px; }
+                .footer { margin-top: 20px; font-size: 12px; color: #6c757d; text-align: center; }
+                .text-center { text-align: center; }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <div class='header'>
+                    <h2>Havale Onaylandı</h2>
+                </div>
+                <div class='content'>
+                    <p>Merhaba " . htmlspecialchars($veli_ad) . ' ' . htmlspecialchars($veli_soyad) . ",</p>
+                    <p>Ödemeniz onaylandı.</p>
+                    <p>Giriş bilgileriniz aşağıda verilmiştir.</p>
+                    <p>Öğrenci Giriş Bilgisi: <br> <b>Kullanıcı adı:</b> $ogrenciUser <br><b>Şifre:</b> $sifreogrenci</p>
+                    <p>Veli Giriş Bilgisi: <br> <b>Kullanıcı adı:</b> $veliUser <br><b>Şifre:</b> $sifreveli</p>
+                    <p>Saygılarımızla,<br>Lineup Takımı</p>
+                </div>
+                <div class='footer'>
+                    <p>Bu otomatik bir e-postadır. Lütfen bu mesaja cevap vermeyin.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        ";
+
+        return $this->send($kullanici_mail, $subject, $htmlBody, true);
     }
 
     /**

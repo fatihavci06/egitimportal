@@ -6,9 +6,9 @@ class Packages extends Dbh
 	public function getPackage($class)
 	{
 
-		if($class == 10 OR $class == 11 OR $class == 12){
+		/* if($class == 10 OR $class == 11 OR $class == 12){
 			$class = 2;
-		}
+		} */
 
 		$stmt = $this->connect()->prepare('SELECT id, name, image FROM packages_lnp WHERE class_id = ? ');
 
@@ -26,7 +26,7 @@ class Packages extends Dbh
 
 	public function getPackagePrice($id)
 	{
-		$stmt = $this->connect()->prepare('SELECT monthly_fee, subscription_period FROM packages_lnp WHERE id = ? ');
+		$stmt = $this->connect()->prepare('SELECT monthly_fee, subscription_period, discount, max_installment FROM packages_lnp WHERE id = ? ');
 
 		if (!$stmt->execute(array($id))) {
 			$stmt = null;
@@ -34,6 +34,22 @@ class Packages extends Dbh
 		}
 
 		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $classData;
+
+		$stmt = null;
+	}
+
+	public function getTransferDiscount()
+	{
+		$stmt = $this->connect()->prepare('SELECT discount FROM money_transfer_discount_lnp');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetch(PDO::FETCH_ASSOC);
 
 		return $classData;
 
