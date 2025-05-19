@@ -7,7 +7,17 @@ class AddClasses extends Dbh
 
 	protected function setClass($slug, $name, $table = 'classes_lnp', $startDate = null, $endDate = null)
 	{
-
+		
+		if($table=='main_school_classes_lnp')
+		{
+			$classType=1;// ana okulu yaş grupları
+			$table='classes_lnp';
+		}
+		else
+		{
+			$classType=0;//sınıflar (ilköğretim sınıfları vs)
+			$table='classes_lnp';
+		}
 
 		if ($startDate != null && $endDate != null) {
 
@@ -29,8 +39,8 @@ class AddClasses extends Dbh
 				exit();
 			}
 		} else {
-			$stmt = $this->connect()->prepare("INSERT INTO `$table` (`slug`, `name`) VALUES (?, ?)");
-			if (!$stmt->execute([$slug, $name])) {
+			$stmt = $this->connect()->prepare("INSERT INTO `$table` (`slug`, `name`,`class_type`) VALUES (?, ?, ?)");
+			if (!$stmt->execute([$slug, $name,$classType])) {
 				$stmt = null;
 				//header("location: ../admin.php?error=stmtfailed");
 				exit();

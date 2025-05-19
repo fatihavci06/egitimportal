@@ -6,7 +6,7 @@ class Classes extends Dbh
 	protected function getClassesList()
 	{
 
-		$stmt = $this->connect()->prepare('SELECT id, name, slug FROM classes_lnp ORDER BY orderBY ASC');
+		$stmt = $this->connect()->prepare('SELECT id, name, slug FROM classes_lnp where class_type=0 ORDER BY orderBY ASC');
 
 		if (!$stmt->execute(array())) {
 			$stmt = null;
@@ -20,7 +20,7 @@ class Classes extends Dbh
 	protected function getMainSchoolClassesList()
 	{
 
-		$stmt = $this->connect()->prepare('SELECT id, name, slug FROM main_school_classes_lnp where school_id = 1');
+		$stmt = $this->connect()->prepare('SELECT id, name, slug FROM classes_lnp where school_id = 1 and class_type=1');
 
 		if (!$stmt->execute(array())) {
 			$stmt = null;
@@ -31,20 +31,54 @@ class Classes extends Dbh
 
 		return $classData;
 	}
-	public function getAgeGroup()
+	public function getClassId($userId)
+	{
+		$stmt = $this->connect()->prepare('
+            SELECT class_id
+            FROM users_lnp 
+            WHERE  id = :id
+        ');
+
+		if (!$stmt->execute(['id' => $userId])) {
+			$stmt = null;
+			exit();
+		}
+		$classData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return $classData['class_id'];
+	}
+	public function getAgeGroup($class_id = null)
 	{
 
-		$stmt = $this->connect()->prepare('SELECT id, name, slug FROM main_school_classes_lnp where school_id = 1');
+		if ($class_id !== null) {
+			$stmt = $this->connect()->prepare('
+            SELECT id, name, slug 
+            FROM classes_lnp 
+            WHERE class_type = 1 AND school_id = 1 AND id = :id
+        ');
 
-		if (!$stmt->execute(array())) {
-			$stmt = null;
-			exit();
+			if (!$stmt->execute(['id' => $class_id])) {
+				$stmt = null;
+				exit();
+			}
+		} else {
+			$stmt = $this->connect()->prepare('
+            SELECT id, name, slug 
+            FROM classes_lnp 
+            WHERE class_type = 1 AND school_id = 1
+        ');
+
+			if (!$stmt->execute()) {
+				$stmt = null;
+				exit();
+			}
 		}
 
 		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 		return $classData;
 	}
+
 	public function getWeekList()
 	{
 

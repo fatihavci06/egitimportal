@@ -3,7 +3,7 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001 or $_SESSION['role'] == 10002)) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
 
@@ -84,10 +84,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <div class="col-md-12 mb-4">
                                                             <div class="card shadow-sm">
                                                                 <div class="card-body p-0" style="height: 700px;">
-    <img src="<?= $img['file_path'] ?>" alt="Yüklenen Görsel"
-         class="w-100 h-100 rounded shadow"
-         style="object-fit: cover;">
-</div>
+                                                                    <img src="<?= $img['file_path'] ?>" alt="Yüklenen Görsel"
+                                                                        class="w-100 h-100 rounded shadow"
+                                                                        style="object-fit: cover;">
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     <?php endforeach; ?>

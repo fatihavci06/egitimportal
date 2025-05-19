@@ -270,7 +270,7 @@ $menu1 = new ShowMenu();
                 $menu1->showMenuSuperAdminList();
             }
             elseif ($_SESSION['role'] == 10002){
-                
+                $menu1->showMenuSuperAdminList();
             }
             ?>
             <!--end:Menu item-->

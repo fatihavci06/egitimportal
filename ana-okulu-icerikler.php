@@ -3,7 +3,7 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001 or $_SESSION['role'] == 10002)) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
 
@@ -63,15 +63,29 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                         <div class="row mt-4">
                                             <div class="col-lg-4">
-                                                <label class="fs-6 fw-semibold mb-2" for="main_school_class_id">Yaş Grubu  </label>
+                                                <label class="fs-6 fw-semibold mb-2" for="main_school_class_id">Yaş Grubu </label>
                                                 <?php
                                                 $class = new Classes();
-                                                $mainSchoolClasses= $class->getAgeGroup();
+                                                $roleId = $_SESSION['role'];
+
+
+
+                                                if ($roleId == 10002) {
+                                                  
+
+                                                    $classId = $class->getClassId($_SESSION['id']);
+                                                    $mainSchoolClasses = $class->getAgeGroup($classId);
+                                                     $_SESSION['class_id'] = $classId;
+                                                } else {
+                                                    unset($_SESSION['class_id']);
+                                                    $mainSchoolClasses = $class->getAgeGroup(); // class_id = null
+                                                }
                                                 ?>
                                                 <select class="form-select" id="main_school_class_id" required aria-label="Default select example">
+
                                                     <option value="">Seçiniz</option>
                                                     <?php foreach ($mainSchoolClasses as $c) { ?>
-                                                        <option value="<?= $c['id'] ?>"><?= $c['name'] ?></option>
+                                                        <option <?php if (isset($classId) && $c['id'] == $classId) echo 'selected'; ?> value="<?= $c['id'] ?>"><?= $c['name'] ?></option>
                                                     <?php } ?>
                                                 </select>
                                             </div>
@@ -168,7 +182,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                     <div class="row">
                                         <table id="myTable" class="table align-middle table-row-dashed fs-6 gy-5">
                                             <thead>
-                                                
+
                                             </thead>
                                             <tbody></tbody>
                                         </table>
@@ -286,7 +300,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             data: 'subject',
                                             title: 'Konu'
                                         },
-                                         {
+                                        {
                                             data: 'month',
                                             title: 'Ay'
                                         },
@@ -326,7 +340,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 $('#content_title').val('').trigger('change');
                 $('#concept_title').val('').trigger('change');
                 $('#main_school_class_id').val('').trigger('change');
-                
+
 
                 // Eğer DataTable varsa içeriğini temizle
                 if ($.fn.DataTable.isDataTable('#myTable')) {
