@@ -98,7 +98,7 @@ var KTCustomersList = function () {
 
                 // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
                 Swal.fire({
-                    text: customerName + " isimli okulu pasif yapmak istediğinizden emin misiniz?",
+                    text: "Pasif yapmak istediğinizden emin misiniz?",
                     icon: "warning",
                     showCancelButton: true,
                     buttonsStyling: false,
@@ -187,7 +187,7 @@ var KTCustomersList = function () {
                         });*/
                     } else if (result.dismiss === 'cancel') {
                         Swal.fire({
-                            text: customerName + " pasif edilmedi.",
+                            text: " Pasif edilmedi.",
                             icon: "error",
                             buttonsStyling: false,
                             confirmButtonText: "Ok, got it!",

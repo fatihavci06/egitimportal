@@ -87,7 +87,7 @@ class PackagesForAdmin extends Dbh {
 	public function getAllPackages()
 	{
 
-		$stmt = $this->connect()->prepare('SELECT packages_lnp.id, packages_lnp.name, packages_lnp.monthly_fee, packages_lnp.subscription_period, packages_lnp.discount, classes_lnp.name AS className FROM packages_lnp INNER JOIN classes_lnp ON packages_lnp.class_id = classes_lnp.id ORDER BY packages_lnp.id ASC'); 
+		$stmt = $this->connect()->prepare('SELECT packages_lnp.id,packages_lnp.status, packages_lnp.name, packages_lnp.monthly_fee, packages_lnp.subscription_period, packages_lnp.discount, classes_lnp.name AS className FROM packages_lnp INNER JOIN classes_lnp ON packages_lnp.class_id = classes_lnp.id ORDER BY packages_lnp.id DESC'); 
 
 			if (!$stmt->execute(array())) {
 				$stmt = null;
@@ -104,7 +104,7 @@ class PackagesForAdmin extends Dbh {
 	public function getOnePackage($id)
 	{
 		
-		$stmt = $this->connect()->prepare('SELECT packages_lnp.id, packages_lnp.name, packages_lnp.monthly_fee, packages_lnp.subscription_period, packages_lnp.discount, classes_lnp.name AS className FROM packages_lnp INNER JOIN classes_lnp ON packages_lnp.class_id = classes_lnp.id WHERE packages_lnp.id = ?'); 
+		$stmt = $this->connect()->prepare('SELECT packages_lnp.id,packages_lnp.class_id, packages_lnp.name, packages_lnp.monthly_fee, packages_lnp.subscription_period, packages_lnp.discount, classes_lnp.name AS className FROM packages_lnp INNER JOIN classes_lnp ON packages_lnp.class_id = classes_lnp.id WHERE packages_lnp.id = ?'); 
 
 			if (!$stmt->execute(array($id))) {
 				$stmt = null;

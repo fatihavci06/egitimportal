@@ -3,7 +3,7 @@
 <?php
 session_start();
 define('GUARD', true);
-    if (isset($_SESSION['role']) AND ($_SESSION['role'] == 1)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
     include_once "classes/dbh.classes.php";
     include_once "classes/classes.classes.php";
     include_once "classes/packages.classes.php";
@@ -11,280 +11,429 @@ define('GUARD', true);
     $package = new ShowPackagesForAdmin();
     include_once "views/pages-head.php";
 ?>
-<!--end::Head-->
-<!--begin::Body-->
+    <!--end::Head-->
+    <!--begin::Body-->
 
-<body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
-    <!--begin::Theme mode setup on page load-->
-    <script>
-        var defaultThemeMode = "light";
-        var themeMode;
-        if (document.documentElement) {
-            if (document.documentElement.hasAttribute("data-bs-theme-mode")) {
-                themeMode = document.documentElement.getAttribute("data-bs-theme-mode");
-            } else {
-                if (localStorage.getItem("data-bs-theme") !== null) {
-                    themeMode = localStorage.getItem("data-bs-theme");
+    <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
+        <!--begin::Theme mode setup on page load-->
+        <script>
+            var defaultThemeMode = "light";
+            var themeMode;
+            if (document.documentElement) {
+                if (document.documentElement.hasAttribute("data-bs-theme-mode")) {
+                    themeMode = document.documentElement.getAttribute("data-bs-theme-mode");
                 } else {
-                    themeMode = defaultThemeMode;
+                    if (localStorage.getItem("data-bs-theme") !== null) {
+                        themeMode = localStorage.getItem("data-bs-theme");
+                    } else {
+                        themeMode = defaultThemeMode;
+                    }
                 }
+                if (themeMode === "system") {
+                    themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+                }
+                document.documentElement.setAttribute("data-bs-theme", themeMode);
             }
-            if (themeMode === "system") {
-                themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-            }
-            document.documentElement.setAttribute("data-bs-theme", themeMode);
-        }
-    </script>
-    <!--end::Theme mode setup on page load-->
-    <!--begin::App-->
-    <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
-        <!--begin::Page-->
-        <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
-            <!--begin::Header-->
-				<?php include_once "views/header.php"; ?>
-            <!--end::Header-->
-            <!--begin::Wrapper-->
-            <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
-                <!--begin::Sidebar-->
-					<?php include_once "views/sidebar.php"; ?>
-                <!--end::Sidebar-->
-                <!--begin::Main-->
-                <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
-                    <!--begin::Content wrapper-->
-                    <div class="d-flex flex-column flex-column-fluid">
-                        <!--begin::Toolbar-->
-					        <?php include_once "views/toolbar.php"; ?>
-                        <!--end::Toolbar-->
-                        <!--begin::Content-->
-                        <div id="kt_app_content" class="app-content flex-column-fluid">
-                            <!--begin::Content container-->
-                            <div id="kt_app_content_container" class="app-container container-fluid">
-                                <!--begin::Card-->
-                                <div class="card">
-                                    <!--begin::Card header-->
-                                    <div class="card-header border-0 pt-6">
-                                        <!--begin::Card title-->
-                                        <div class="card-title">
-                                            <!--begin::Search-->
-                                            <!-- <div class="d-flex align-items-center position-relative my-1">
-                                                <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                </i>
-                                                <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder="Öğrenci Ara" />
-                                            </div> -->
-                                            <!--end::Search-->
-                                        </div>
-                                        <!--begin::Card title-->
-                                        <!--begin::Card toolbar-->
-                                        <div class="card-toolbar">
-                                            <!--begin::Toolbar-->
-                                            <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
-                                                <!--begin::Filter-->
-													<button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-													<i class="ki-duotone ki-filter fs-2">
-														<span class="path1"></span>
-														<span class="path2"></span>
-													</i>Filter</button>
-													<!--begin::Menu 1-->
-													<div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true" id="kt-toolbar-filter">
-														<!--begin::Header-->
-														<div class="px-7 py-5">
-															<div class="fs-4 text-gray-900 fw-bold">Filter Options</div>
-														</div>
-														<!--end::Header-->
-														<!--begin::Separator-->
-														<div class="separator border-gray-200"></div>
-														<!--end::Separator-->
-														<!--begin::Content-->
-														<div class="px-7 py-5">
-															<!--begin::Input group-->
-															<div class="mb-10">
-																<!--begin::Label-->
-																<label class="form-label fs-5 fw-semibold mb-3">Month:</label>
-																<!--end::Label-->
-																<!--begin::Input-->
-																<select class="form-select form-select-solid fw-bold" data-kt-select2="true" data-placeholder="Select option" data-allow-clear="true" data-kt-customer-table-filter="month" data-dropdown-parent="#kt-toolbar-filter">
-																	<option></option>
-																	<option value="aug">August</option>
-																	<option value="sep">September</option>
-																	<option value="oct">October</option>
-																	<option value="nov">November</option>
-																	<option value="dec">December</option>
-																</select>
-																<!--end::Input-->
-															</div>
-															<!--end::Input group-->
-															<!--begin::Input group-->
-															<div class="mb-10">
-																<!--begin::Label-->
-																<label class="form-label fs-5 fw-semibold mb-3">Payment Type:</label>
-																<!--end::Label-->
-																<!--begin::Options-->
-																<div class="d-flex flex-column flex-wrap fw-semibold" data-kt-customer-table-filter="payment_type">
-																	<!--begin::Option-->
-																	<label class="form-check form-check-sm form-check-custom form-check-solid mb-3 me-5">
-																		<input class="form-check-input" type="radio" name="payment_type" value="all" checked="checked" />
-																		<span class="form-check-label text-gray-600">All</span>
-																	</label>
-																	<!--end::Option-->
-																	<!--begin::Option-->
-																	<label class="form-check form-check-sm form-check-custom form-check-solid mb-3 me-5">
-																		<input class="form-check-input" type="radio" name="payment_type" value="visa" />
-																		<span class="form-check-label text-gray-600">Visa</span>
-																	</label>
-																	<!--end::Option-->
-																	<!--begin::Option-->
-																	<label class="form-check form-check-sm form-check-custom form-check-solid mb-3">
-																		<input class="form-check-input" type="radio" name="payment_type" value="mastercard" />
-																		<span class="form-check-label text-gray-600">Mastercard</span>
-																	</label>
-																	<!--end::Option-->
-																	<!--begin::Option-->
-																	<label class="form-check form-check-sm form-check-custom form-check-solid">
-																		<input class="form-check-input" type="radio" name="payment_type" value="american_express" />
-																		<span class="form-check-label text-gray-600">American Express</span>
-																	</label>
-																	<!--end::Option-->
-																</div>
-																<!--end::Options-->
-															</div>
-															<!--end::Input group-->
-															<!--begin::Actions-->
-															<div class="d-flex justify-content-end">
-																<button type="reset" class="btn btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true" data-kt-customer-table-filter="reset">Reset</button>
-																<button type="submit" class="btn btn-primary" data-kt-menu-dismiss="true" data-kt-customer-table-filter="filter">Apply</button>
-															</div>
-															<!--end::Actions-->
-														</div>
-														<!--end::Content-->
-													</div>
-													<!--end::Menu 1-->
-													<!--end::Filter-->
-                                                <!--begin::Add school-->
-                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_customer">Paket Ekle</button>
-                                                <!--end::Add school-->
-                                            </div>
-                                            <!--end::Toolbar-->
-                                            <!--begin::Group actions-->
-                                            <div class="d-flex justify-content-end align-items-center d-none" data-kt-customer-table-toolbar="selected">
-                                                <div class="fw-bold me-5">
-                                                    <span class="me-2" data-kt-customer-table-select="selected_count"></span>Seçildi
+        </script>
+        <!--end::Theme mode setup on page load-->
+        <!--begin::App-->
+        <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
+            <!--begin::Page-->
+            <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
+                <!--begin::Header-->
+                <?php include_once "views/header.php"; ?>
+                <!--end::Header-->
+                <!--begin::Wrapper-->
+                <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
+                    <!--begin::Sidebar-->
+                    <?php include_once "views/sidebar.php"; ?>
+                    <!--end::Sidebar-->
+                    <!--begin::Main-->
+                    <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+                        <!--begin::Content wrapper-->
+                        <div class="d-flex flex-column flex-column-fluid">
+                            <!--begin::Toolbar-->
+                            <?php include_once "views/toolbar.php"; ?>
+                            <!--end::Toolbar-->
+                            <!--begin::Content-->
+                            <div id="kt_app_content" class="app-content flex-column-fluid">
+                                <!--begin::Content container-->
+                                <div id="kt_app_content_container" class="app-container container-fluid">
+                                    <!--begin::Card-->
+                                    <div class="card">
+                                        <!--begin::Card header-->
+                                        <div class="card-header border-0 pt-6">
+                                            <!--begin::Card title-->
+                                            <div class="card-title">
+                                                <!--begin::Search-->
+                                                <div class="d-flex align-items-center position-relative my-1">
+                                                    <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                    </i>
+                                                    <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder="Paket Ara" />
                                                 </div>
-                                                <button type="button" class="btn btn-danger" data-kt-customer-table-select="delete_selected">Seçilenleri Pasif Yap</button>
+                                                <!--end::Search-->
                                             </div>
-                                            <!--end::Group actions-->
+                                            <!--begin::Card title-->
+                                            <!--begin::Card toolbar-->
+                                            <div class="card-toolbar">
+                                                <!--begin::Toolbar-->
+                                                <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
+                                                    <!--begin::Add school-->
+                                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#packageCreate">
+                                                        Paket Ekle
+                                                    </button>
+
+                                                    <!-- Modal -->
+                                                    <div class="modal fade" id="packageCreate" tabindex="-1" aria-labelledby="packageCreateLabel" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="packageCreateLabel">Paket Ekle</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+
+                                                                <div class="modal-body">
+                                                                    <div class="mb-3">
+                                                                        <label for="packageName" class="form-label">Paket Adı</label>
+                                                                        <input type="text" class="form-control" id="packageName" name="packageName" placeholder="Paket adını giriniz">
+                                                                    </div>
+                                                                    <!-- Select Box -->
+                                                                    <?php
+                                                                    $classes = new Classes();
+                                                                    $classList = $classes->getClasses();
+                                                                    ?>
+                                                                    <div class="mb-3">
+                                                                        <label for="packageType" class="form-label">Sınıf</label>
+                                                                        <select class="form-select" id="class_id" name="packageType">
+                                                                            <option value="" selected disabled>Seçiniz</option>
+                                                                            <?php foreach ($classList as $c) { ?>
+                                                                                <option value="<?= $c['id'] ?>"><?= $c['name'] ?></option>
+                                                                            <?php } ?>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label for="monthly_fee" class="form-label">Aylık Ücret</label>
+                                                                        <input type="number" class="form-control" id="monthly_fee" name="monthly_fee" placeholder="Aylık ücret giriniz.">
+                                                                    </div>
+
+                                                                    <div class="mb-3">
+                                                                        <label for="subscription_period" class="form-label">Abonelik Periyodu (Ay)</label>
+                                                                        <input type="number" class="form-control" id="subscription_period" name="discount" placeholder="Abonelik periyodu giriniz.">
+                                                                    </div>
+
+
+                                                                    <!-- Radio Buttons -->
+
+
+                                                                    <!-- Text Input -->
+
+                                                                </div>
+
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeç</button>
+                                                                    <button type="button" class="btn btn-primary">Kaydet</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!--end::Add school-->
+
+                                                </div>
+                                                <!--end::Toolbar-->
+                                                <!--begin::week actions-->
+                                                <div class="d-flex justify-content-end align-items-center d-none" data-kt-customer-table-toolbar="selected">
+                                                    <div class="fw-bold me-5">
+                                                        <span class="me-2" data-kt-customer-table-select="selected_count"></span>Seçildi
+                                                    </div>
+                                                    <button type="button" class="btn btn-danger" data-kt-customer-table-select="delete_selected">Seçilenleri Pasif Yap</button>
+                                                </div>
+                                                <!--end::week actions-->
+                                            </div>
+                                            <!--end::Card toolbar-->
                                         </div>
-                                        <!--end::Card toolbar-->
+                                        <!--end::Card header-->
+                                        <!--begin::Card body-->
+                                        <div class="card-body pt-0">
+                                            <!-- Button trigger modal -->
+
+
+                                            <!-- Modal -->
+                                            <!-- Button trigger modal (id değeri burada veriliyor) -->
+
+
+                                            <!-- Modal -->
+
+
+
+
+                                            <!--begin::Table-->
+                                            <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_customers_table">
+                                                <thead>
+                                                    <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
+                                                        <th class="min-w-125px">Paket Adı</th>
+                                                        <th class="min-w-125px">Aylık Ücret</th>
+                                                        <th class="min-w-125px">Kaç Aylık</th>
+                                                        <th class="min-w-125px">Peşin Alımda İndirim Yüzdesi</th>
+                                                        <th class="min-w-125px">Hangi Sınıf</th>
+                                                        <th class="text-end min-w-70px">İşlem</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="fw-semibold text-gray-600">
+
+                                                    <?php
+
+                                                    $package->showAllPackages(); ?>
+                                                </tbody>
+                                            </table>
+                                            <!--end::Table-->
+                                        </div>
+                                        <!--end::Card body-->
                                     </div>
-                                    <!--end::Card header-->
-                                    <!--begin::Card body-->
-                                    <div class="card-body pt-0">
-                                        <!--begin::Table-->
-                                        <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_customers_table">
-                                            <thead>
-                                                <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                    <th class="min-w-125px">Paket Adı</th>
-                                                    <th class="min-w-125px">Aylık Ücret</th>
-                                                    <th class="min-w-125px">Kaç Aylık</th>
-                                                    <th class="min-w-125px">Peşin Alımda İndirim Yüzdesi</th>
-                                                    <th class="min-w-125px">Hangi Sınıf</th>
-                                                    <th class="text-end min-w-70px">İşlem</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody class="fw-semibold text-gray-600">
-                                                <?php $package->showAllPackages(); ?>
-                                            </tbody>
-                                        </table>
-                                        <!--end::Table-->
+                                    <!--end::Card-->
+                                    <!--begin::Modals-->
+                                    <!--begin::Modal - Customers - Add-->
+                                    <?php include_once "views/classes/add_important_week-view.classes.php" ?>
+
+                                    <!--end::Modal - Customers - Add-->
+                                    <!--begin::Modal - Adjust Balance-->
+                                    <div class="modal fade" id="kt_customers_export_modal" tabindex="-1" aria-hidden="true">
+                                        <!--begin::Modal dialog-->
+                                        <div class="modal-dialog modal-dialog-centered mw-650px">
+                                            <!--begin::Modal content-->
+                                            <div class="modal-content">
+                                                <!--begin::Modal header-->
+                                                <div class="modal-header">
+                                                    <!--begin::Modal title-->
+                                                    <h2 class="fw-bold">Export Customers</h2>
+                                                    <!--end::Modal title-->
+                                                    <!--begin::Close-->
+                                                    <div id="kt_customers_export_close" class="btn btn-icon btn-sm btn-active-icon-primary">
+                                                        <i class="ki-duotone ki-cross fs-1">
+                                                            <span class="path1"></span>
+                                                            <span class="path2"></span>
+                                                        </i>
+                                                    </div>
+                                                    <!--end::Close-->
+                                                </div>
+                                                <!--end::Modal header-->
+                                                <!--begin::Modal body-->
+                                                <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
+                                                    <!--begin::Form-->
+                                                    <form id="kt_customers_export_form" class="form" action="#">
+                                                        <!--begin::Input week-->
+                                                        <div class="fv-row mb-10">
+                                                            <!--begin::Label-->
+                                                            <label class="fs-5 fw-semibold form-label mb-5">Select Export Format:</label>
+                                                            <!--end::Label-->
+                                                            <!--begin::Input-->
+                                                            <select data-control="select2" data-placeholder="Select a format" data-hide-search="true" name="format" class="form-select form-select-solid">
+                                                                <option value="excell">Excel</option>
+                                                                <option value="pdf">PDF</option>
+                                                                <option value="cvs">CVS</option>
+                                                                <option value="zip">ZIP</option>
+                                                            </select>
+                                                            <!--end::Input-->
+                                                        </div>
+                                                        <!--end::Input week-->
+                                                        <!--begin::Input week-->
+                                                        <div class="fv-row mb-10">
+                                                            <!--begin::Label-->
+                                                            <label class="fs-5 fw-semibold form-label mb-5">Select Date Range:</label>
+                                                            <!--end::Label-->
+                                                            <!--begin::Input-->
+                                                            <input class="form-control form-control-solid" placeholder="Pick a date" name="date" />
+                                                            <!--end::Input-->
+                                                        </div>
+                                                        <!--end::Input week-->
+                                                        <!--begin::Row-->
+                                                        <div class="row fv-row mb-15">
+                                                            <!--begin::Label-->
+                                                            <label class="fs-5 fw-semibold form-label mb-5">Payment Type:</label>
+                                                            <!--end::Label-->
+                                                            <!--begin::Radio week-->
+                                                            <div class="d-flex flex-column">
+                                                                <!--begin::Radio button-->
+                                                                <label class="form-check form-check-custom form-check-sm form-check-solid mb-3">
+                                                                    <input class="form-check-input" type="checkbox" value="1" checked="checked" name="payment_type" />
+                                                                    <span class="form-check-label text-gray-600 fw-semibold">All</span>
+                                                                </label>
+                                                                <!--end::Radio button-->
+                                                                <!--begin::Radio button-->
+                                                                <label class="form-check form-check-custom form-check-sm form-check-solid mb-3">
+                                                                    <input class="form-check-input" type="checkbox" value="2" checked="checked" name="payment_type" />
+                                                                    <span class="form-check-label text-gray-600 fw-semibold">Visa</span>
+                                                                </label>
+                                                                <!--end::Radio button-->
+                                                                <!--begin::Radio button-->
+                                                                <label class="form-check form-check-custom form-check-sm form-check-solid mb-3">
+                                                                    <input class="form-check-input" type="checkbox" value="3" name="payment_type" />
+                                                                    <span class="form-check-label text-gray-600 fw-semibold">Mastercard</span>
+                                                                </label>
+                                                                <!--end::Radio button-->
+                                                                <!--begin::Radio button-->
+                                                                <label class="form-check form-check-custom form-check-sm form-check-solid">
+                                                                    <input class="form-check-input" type="checkbox" value="4" name="payment_type" />
+                                                                    <span class="form-check-label text-gray-600 fw-semibold">American Express</span>
+                                                                </label>
+                                                                <!--end::Radio button-->
+                                                            </div>
+                                                            <!--end::Input week-->
+                                                        </div>
+                                                        <!-- Button trigger modal -->
+
+                                                        <!--end::Row-->
+                                                        <!--begin::Actions-->
+                                                        <div class="text-center">
+                                                            <button type="reset" id="kt_customers_export_cancel" class="btn btn-light me-3">Discard</button>
+                                                            <button type="submit" id="kt_customers_export_submit" class="btn btn-primary">
+                                                                <span class="indicator-label">Submit</span>
+                                                                <span class="indicator-progress">Please wait...
+                                                                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                                            </button>
+                                                        </div>
+                                                        <!--end::Actions-->
+                                                    </form>
+                                                    <!--end::Form-->
+                                                </div>
+                                                <!--end::Modal body-->
+                                            </div>
+                                            <!--end::Modal content-->
+                                        </div>
+                                        <!--end::Modal dialog-->
                                     </div>
-                                    <!--end::Card body-->
+                                    <!--end::Modal - New Card-->
+                                    <!--end::Modals-->
                                 </div>
-                                <!--end::Card-->
-                                <!--begin::Modals-->
-                                <!--begin::Modal - Customers - Add-->
-                                    <?php /* if ($_SESSION['role'] == 1){
-                                            include_once "views/student/add_student.php";
-                                        }else{
-                                            include_once "views/student/add_student_school.php";
-                                        } */ ?>
-                                <!--end::Modal - Customers - Add-->
-                                <!--end::Modals-->
+                                <!--end::Content container-->
                             </div>
-                            <!--end::Content container-->
+                            <!--end::Content-->
                         </div>
-                        <!--end::Content-->
+                        <!--end::Content wrapper-->
+                        <!--begin::Footer-->
+                        <?php include_once "views/footer.php"; ?>
+                        <!--end::Footer-->
                     </div>
-                    <!--end::Content wrapper-->
-                    <!--begin::Footer-->
-						<?php include_once "views/footer.php"; ?>
-                    <!--end::Footer-->
+                    <!--end:::Main-->
+                    <!--begin::aside-->
+                    <?php include_once "views/aside.php"; ?>
+                    <!--end::aside-->
                 </div>
-                <!--end:::Main-->
-                <!--begin::aside-->
-						<?php include_once "views/aside.php"; ?>
-                <!--end::aside-->
+                <!--end::Wrapper-->
             </div>
-            <!--end::Wrapper-->
+            <!--end::Page-->
         </div>
-        <!--end::Page-->
-    </div>
-    <!--end::App-->
-    <!--begin::Scrolltop-->
-    <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
-        <i class="ki-duotone ki-arrow-up">
-            <span class="path1"></span>
-            <span class="path2"></span>
-        </i>
-    </div>
-    <!--end::Scrolltop-->
-    <!--begin::Modals-->
-    <!--begin::Modal - Upgrade plan-->
-    <div class="modal fade" id="kt_modal_upgrade_plan" tabindex="-1" aria-hidden="true">
-        <!--begin::Modal dialog-->
-        <div class="modal-dialog modal-xl">
-            <!--begin::Modal content-->
-            <div class="modal-content rounded">
-                <!--begin::Modal header-->
-                <div class="modal-header justify-content-end border-0 pb-0">
-                    <!--begin::Close-->
-                    <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
-                        <i class="ki-duotone ki-cross fs-1">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                        </i>
-                    </div>
-                    <!--end::Close-->
-                </div>
-                <!--end::Modal header-->
-            </div>
-            <!--end::Modal content-->
+        <!--end::App-->
+        <!--begin::Scrolltop-->
+        <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
+            <i class="ki-duotone ki-arrow-up">
+                <span class="path1"></span>
+                <span class="path2"></span>
+            </i>
         </div>
-        <!--end::Modal dialog-->
-    </div>
-    <!--end::Modal - Upgrade plan-->
-    <!--end::Modals-->
-    <!--begin::Javascript-->
-    <script>
-        var hostUrl = "assets/";
-    </script>
-    <!--begin::Global Javascript Bundle(mandatory for all pages)-->
-    <script src="assets/plugins/global/plugins.bundle.js"></script>
-    <script src="assets/js/scripts.bundle.js"></script>
-    <!--end::Global Javascript Bundle-->
-    <!--begin::Vendors Javascript(used for this page only)-->
-    <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
-    <!--end::Vendors Javascript-->
-    <!--begin::Custom Javascript(used for this page only)-->
-    <script src="assets/js/custom/apps/packages/list/export.js"></script>
-    <script src="assets/js/custom/apps/packages/list/list.js"></script>
-    <script src="assets/js/custom/apps/packages/add.js"></script>
-    <!--end::Custom Javascript-->
-    <!--end::Javascript-->
-</body>
-<!--end::Body-->
+        <!--end::Scrolltop-->
+        <!--begin::Javascript-->
+        <script>
+            var hostUrl = "assets/";
+        </script>
+        <!--begin::Global Javascript Bundle(mandatory for all pages)-->
+        <script src="assets/plugins/global/plugins.bundle.js"></script>
+        <script src="assets/js/scripts.bundle.js"></script>
+        <!--end::Global Javascript Bundle-->
+        <!--begin::Vendors Javascript(used for this page only)-->
+        <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
+        <!--end::Vendors Javascript-->
+        <!--begin::Custom Javascript(used for this page only)-->
+        <script src="assets/js/custom/apps/class/list/export.js"></script>
+        <script src="assets/js/widgets.bundle.js"></script>
+        <script src="assets/js/custom/widgets.js"></script>
+        <script src="assets/js/custom/apps/chat/chat.js"></script>
+        <script src="assets/js/custom/utilities/modals/upgrade-plan.js"></script>
+        <script src="assets/js/custom/utilities/modals/create-account.js"></script>
+        <script src="assets/js/custom/utilities/modals/create-app.js"></script>
+        <script src="assets/js/custom/utilities/modals/users-search.js"></script>
+        <script src="assets/js/fatih.js"></script>
+
+        <script src="assets/js/custom/apps/class/list/list.js"></script>
+
+        <script>
+            $(document).ready(function() {
+                $('#packageCreate .btn-primary').on('click', function() {
+                    var packageName = $('#packageName').val().trim();
+                    var classId = $('#class_id').val();
+                    var monthlyFee = $('#monthly_fee').val().trim();
+                    var subscriptionPeriod = $('#subscription_period').val().trim();
+
+                    // Boş alan kontrolü
+                    if (packageName === '' || !classId || monthlyFee === '' || subscriptionPeriod === '') {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Eksik Bilgi',
+                            text: 'Lütfen tüm alanları doldurunuz.'
+                        });
+                        return;
+                    }
+
+                    // Ajax ile gönder
+                    $.ajax({
+                        url: 'includes/ajax.php?service=createPackage',
+                        type: 'POST',
+                        data: {
+                            packageName: packageName,
+                            class_id: classId,
+                            monthly_fee: monthlyFee,
+                            subscription_period: subscriptionPeriod
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Başarılı',
+                                text: 'Paket başarıyla kaydedildi.'
+                            }).then(() => {
+                                $('#packageCreate').modal('hide');
+                                $('#packageCreate input, #packageCreate select').val('');
+                                location.reload();
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            // error.message doğrudan burada undefined olabilir, bu yüzden response'dan alıyoruz
+                            let errorMessage = 'Bilinmeyen hata oluştu';
+
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                errorMessage = xhr.responseJSON.message;
+                            } else if (xhr.responseText) {
+                                try {
+                                    let json = JSON.parse(xhr.responseText);
+                                    if (json.message) errorMessage = json.message;
+                                } catch (e) {
+                                    // JSON parse edilemedi, errorMessage değişmeden kalır
+                                }
+                            }
+
+                            console.log(errorMessage); // Hata mesajını konsola yazdır
+
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Hata',
+                                text: errorMessage
+                            });
+                        }
+                    });
+
+                });
+            });
+        </script>
+
+
+
+        <!--end::Custom Javascript-->
+        <!--end::Javascript-->
+    </body>
+    <!--end::Body-->
 
 </html>
-<?php }else{
+<?php } else {
     header("location: index");
-}?>
+}

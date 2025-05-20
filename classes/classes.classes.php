@@ -47,6 +47,21 @@ class Classes extends Dbh
 
 		return $classData['class_id'];
 	}
+	public function getSettings()
+	{
+		
+		$stmt = $this->connect()->prepare('SELECT * from settings_lnp where school_id=1');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return $data;
+		
+	}
 	public function getAgeGroup($class_id = null)
 	{
 
@@ -115,6 +130,22 @@ class Classes extends Dbh
 
 		return $classData;
 	}
+	public function getStudentList()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT id, name FROM users_lnp where school_id = 1 and role=2');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $data;
+	}
+
+	
 	public function getCategoryTitleList()
 	{
 

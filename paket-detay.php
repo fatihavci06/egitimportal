@@ -6,7 +6,7 @@ define('GUARD', true);
 if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 	include_once "classes/dbh.classes.php";
 	include_once "classes/userslist.classes.php";
-    include_once "classes/classes.classes.php";
+	include_once "classes/classes.classes.php";
 	include_once "classes/packages.classes.php";
 	include_once "classes/packages-view.classes.php";
 	$package = new ShowPackagesForAdmin();
@@ -99,7 +99,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 									<!--begin::Layout-->
 									<div class="d-flex flex-column flex-xl-row">
 										<!--begin::Sidebar-->
-											<?php $package->showOnePackage($id); ?>
+										<?php $package->showOnePackage($id); ?>
 										<!--end::Sidebar-->
 										<!--begin::Content-->
 										<div class="flex-lg-row-fluid ms-lg-15">
@@ -132,7 +132,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 																</thead>
 																<tbody class="fs-6 fw-semibold text-gray-600">
 																	<?php
-																		$package->showPackageBuyers($id);
+																	$package->showPackageBuyers($id);
 																	?>
 																</tbody>
 																<!--end::Table body-->
@@ -177,7 +177,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 					</div>
 					<!--end:::Main-->
 					<!--begin::aside-->
-						<?php include_once "views/aside.php"; ?>
+					<?php include_once "views/aside.php"; ?>
 					<!--end::aside-->
 				</div>
 				<!--end::Wrapper-->
@@ -211,7 +211,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 		<script src="assets/js/custom/apps/packdetails/view/payment-method.js"></script> -->
 		<script src="assets/js/custom/apps/packdetails/view/payment-table.js"></script><!-- 
 		<script src="assets/js/custom/apps/packdetails/view/statement.js"></script>-->
-		<script src="assets/js/custom/apps/packdetails/update.js"></script> 
+
 		<script src="assets/js/widgets.bundle.js"></script>
 		<script src="assets/js/custom/widgets.js"></script>
 		<script src="assets/js/custom/apps/chat/chat.js"></script>
@@ -223,6 +223,70 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 		<!--end::Custom Javascript-->
 		<!--end::Javascript-->
 	</body>
+	<script>
+		$(document).ready(function() {
+			$('#packageUpdate').on('click', function() {
+
+
+				const id = $('#id').val();
+				const packageName = $('#name').val();
+				const class_id = $('#class_id').val();
+				const monthly_fee = $('#monthly_fee').val();
+				const subscription_period = $('#subscription_period').val();
+
+				// Boş alan kontrolü
+				console.log()
+
+				// Ajax ile gönder
+				$.ajax({
+					url: 'includes/ajax.php?service=updatePackage',
+					type: 'POST',
+					data: {
+						id: id,
+						packageName: packageName,
+						class_id: class_id,
+						monthly_fee: monthly_fee,
+						subscription_period:subscription_period
+					},
+					success: function(response) {
+						Swal.fire({
+							icon: 'success',
+							title: 'Başarılı',
+							text: 'Paket başarıyla kaydedildi.'
+						}).then(() => {
+							$('#packageCreate').modal('hide');
+							$('#packageCreate input, #packageCreate select').val('');
+							location.reload();
+						});
+					},
+					error: function(xhr, status, error) {
+						// error.message doğrudan burada undefined olabilir, bu yüzden response'dan alıyoruz
+						let errorMessage = 'Bilinmeyen hata oluştu';
+
+						if (xhr.responseJSON && xhr.responseJSON.message) {
+							errorMessage = xhr.responseJSON.message;
+						} else if (xhr.responseText) {
+							try {
+								let json = JSON.parse(xhr.responseText);
+								if (json.message) errorMessage = json.message;
+							} catch (e) {
+								// JSON parse edilemedi, errorMessage değişmeden kalır
+							}
+						}
+
+						console.log(errorMessage); // Hata mesajını konsola yazdır
+
+						Swal.fire({
+							icon: 'error',
+							title: 'Hata',
+							text: errorMessage
+						});
+					}
+				});
+
+			});
+		});
+	</script>
 	<!--end::Body-->
 
 </html>

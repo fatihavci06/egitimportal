@@ -23,7 +23,7 @@ $main_school_class_id = $_POST['main_school_class_id'] ?? null;
 $file_urls = [];
 
 if (isset($_FILES['file_path'])) {
-    $uploadDir = __DIR__ . '/../uploads/mainschool/';
+    $uploadDir = __DIR__ . '/../uploads/preschool/';
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0755, true);
     }
@@ -35,7 +35,7 @@ if (isset($_FILES['file_path'])) {
             $targetFile = $uploadDir . $fileName;
 
             if (move_uploaded_file($tmpName, $targetFile)) {
-                $file_urls[] = 'uploads/mainschool/' . $fileName;
+                $file_urls[] = 'uploads/preschool/' . $fileName;
             } else {
                 echo json_encode(['status' => 'error', 'message' => 'Dosya yüklenemedi: ' . $fileName]);
                 exit;
@@ -44,7 +44,7 @@ if (isset($_FILES['file_path'])) {
     }
 }
 if (isset($_FILES['images'])) {
-    $uploadDir = __DIR__ . '/../uploads/mainschool/primaryimages/';
+    $uploadDir = __DIR__ . '/../uploads/preschool/primaryimages/';
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0755, true);
     }
@@ -57,7 +57,7 @@ if (isset($_FILES['images'])) {
             $targetFile = $uploadDir . $fileName;
 
             if (move_uploaded_file($tmpName, $targetFile)) {
-                $image_urls[] = 'uploads/mainschool/primaryimages/' . $fileName;
+                $image_urls[] = 'uploads/preschool/primaryimages/' . $fileName;
             } else {
                 echo json_encode(['status' => 'error', 'message' => 'Dosya yüklenemedi: ' . $fileName]);
                 exit;

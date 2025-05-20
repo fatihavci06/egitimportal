@@ -4,7 +4,16 @@ include_once '../classes/dbh.classes.php';
 header('Content-Type: application/json');
 session_start();
 // Sadece POST isteğini kabul et
-
+function cleanInput(string $data): string
+{
+    return htmlspecialchars(trim($data), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
+function jsonResponse(int $statusCode, string $status, string $message): void
+{
+    http_response_code($statusCode);
+    echo json_encode(['status' => $status, 'message' => $message]);
+    exit();
+}
 // Servis kontrolü
 $service = $_GET['service'] ?? '';
 
@@ -33,6 +42,182 @@ switch ($service) {
             echo json_encode(['status' => 'success', 'message' => 'Başlık başarıyla kaydedildi.']);
         } catch (PDOException $e) {
             echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası: ' . $e->getMessage()]);
+        }
+        break;
+    case 'passivePackage':
+        // Gelen ID kontrolü
+        $id = $_POST['id'] ?? null;
+
+        if (!$id || !is_numeric($id)) {
+            echo json_encode(['status' => 'error', 'message' => 'Geçersiz ID']);
+            exit;
+        }
+
+        try {
+            // Silme işlemi
+            $stmt = $pdo->prepare("UPDATE packages_lnp SET status=0 WHERE id = ?");
+            $stmt->execute([$id]);
+
+            if ($stmt->rowCount()) {
+                echo json_encode(['status' => 'success', 'message' => 'İşlem Başarılı']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Kayıt bulunamadı veya silinemedi.']);
+            }
+        } catch (PDOException $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası: ' . $e->getMessage()]);
+        }
+        break;
+    case 'activatePackage':
+        // Gelen ID kontrolü
+        $id = $_POST['id'] ?? null;
+
+        if (!$id || !is_numeric($id)) {
+            echo json_encode(['status' => 'error', 'message' => 'Geçersiz ID']);
+            exit;
+        }
+
+        try {
+            // Silme işlemi
+            $stmt = $pdo->prepare("UPDATE packages_lnp SET status=1 WHERE id = ?");
+            $stmt->execute([$id]);
+
+            if ($stmt->rowCount()) {
+                echo json_encode(['status' => 'success', 'message' => 'Aktifleştirildi']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Kayıt bulunamadı ']);
+            }
+        } catch (PDOException $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası: ' . $e->getMessage()]);
+        }
+        break;
+    case 'createPackage':
+
+        $packageName = isset($_POST['packageName']) ? cleanInput($_POST['packageName']) : null;
+        $classId = isset($_POST['class_id']) ? (int)$_POST['class_id'] : null;
+        $monthlyFee = isset($_POST['monthly_fee']) ? (float)$_POST['monthly_fee'] : null;
+        $subscriptionPeriod = $_POST['subscription_period'] ?? null;
+
+        // Girdileri doğrula
+
+
+        // Veritabanı işlemi (örnek güncelleme)
+        try {
+            if (!$packageName) {
+                throw new Exception('Paket adı boş olamaz');
+            }
+
+            if (!is_float($monthlyFee) || $monthlyFee < 0) {
+
+                throw new Exception('Aylık ücret geçerli bir sayı olmalıdır.');
+            }
+
+            if (
+                !isset($subscriptionPeriod) ||
+                !is_numeric($subscriptionPeriod) ||
+                intval($subscriptionPeriod) != $subscriptionPeriod ||
+                $subscriptionPeriod < 1 ||
+                $subscriptionPeriod > 12
+            ) {
+                throw new Exception('Abonelik periyodu 1 ile 12 arasında bir tam sayı olmalıdır.');
+            }
+
+            $stmt = $pdo->prepare("INSERT INTO packages_lnp (name, class_id, monthly_fee, subscription_period) VALUES (?, ?, ?, ?)");
+            $stmt->execute([$packageName, $classId, $monthlyFee, $subscriptionPeriod]);
+
+            if ($stmt->rowCount() > 0) {
+                jsonResponse(200, 'success', 'Paket başarıyla eklendi.');
+            } else {
+                jsonResponse(500, 'error', 'Kayıt eklenemedi.');
+            }
+        } catch (Exception $e) {
+            http_response_code(422); // Veya uygun bir HTTP kodu
+            echo json_encode([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+            exit();
+        }
+        break;
+
+    case 'settingsUpdate':
+        $taxRatio = isset($_POST['taxRatio']) ? cleanInput($_POST['taxRatio']) : null;
+        $discountRatio = isset($_POST['discountRatio']) ? cleanInput($_POST['discountRatio']) : null;
+        try {
+            if (!$taxRatio) {
+                throw new Exception('Vergi oranı boş olamaz!');
+            }
+            if ($taxRatio <= 0) {
+                throw new Exception('Vergi oranı 0 veya negatif olamaz!');
+            }
+
+            if ($taxRatio > 100) {
+                throw new Exception('Vergi oranı 100\'den büyük olamaz!');
+            }
+
+
+            $stmt = $pdo->prepare("UPDATE settings_lnp SET tax_rate = ?,discount_rate=? WHERE school_id = 1");
+            $stmt->execute([$taxRatio,$discountRatio]);
+
+            if ($stmt->rowCount() > 0) {
+                jsonResponse(200, 'success', 'Başarıyla güncellendi.');
+            } else {
+                jsonResponse(500, 'error', 'Güncellenemedi veya zaten bu veriler mevcut.');
+            }
+        } catch (Exception $e) {
+            http_response_code(422); // Veya uygun bir HTTP kodu
+            echo json_encode([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+            exit();
+        }
+        break;
+    case 'updatePackage':
+
+        $packageName = isset($_POST['packageName']) ? cleanInput($_POST['packageName']) : null;
+        $classId = isset($_POST['class_id']) ? (int)$_POST['class_id'] : null;
+        $monthlyFee = isset($_POST['monthly_fee']) ? (float)$_POST['monthly_fee'] : null;
+        $subscriptionPeriod = $_POST['subscription_period'] ?? null;
+        $id = $_POST['id'] ?? null;
+        // Girdileri doğrula
+
+
+        // Veritabanı işlemi (örnek güncelleme)
+        try {
+            if (!$packageName) {
+                throw new Exception('Paket adı boş olamaz');
+            }
+
+            if (!is_float($monthlyFee) || $monthlyFee < 0) {
+
+                throw new Exception('Aylık ücret geçerli bir sayı olmalıdır.');
+            }
+
+            if (
+                !isset($subscriptionPeriod) ||
+                !is_numeric($subscriptionPeriod) ||
+                intval($subscriptionPeriod) != $subscriptionPeriod ||
+                $subscriptionPeriod < 1 ||
+                $subscriptionPeriod > 12
+            ) {
+                throw new Exception('Abonelik periyodu 1 ile 12 arasında bir tam sayı olmalıdır.');
+            }
+
+            $stmt = $pdo->prepare("UPDATE packages_lnp SET name = ?, class_id = ?, monthly_fee = ?, subscription_period = ? WHERE id = ?");
+            $stmt->execute([$packageName, $classId, $monthlyFee, $subscriptionPeriod, $id]);
+
+            if ($stmt->rowCount() > 0) {
+                jsonResponse(200, 'success', 'Paket başarıyla güncellendi.');
+            } else {
+                jsonResponse(500, 'error', 'Paket güncellenemedi veya zaten bu veriler mevcut.');
+            }
+        } catch (Exception $e) {
+            http_response_code(422); // Veya uygun bir HTTP kodu
+            echo json_encode([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+            exit();
         }
         break;
     case 'deleteMainGroup':
@@ -273,6 +458,11 @@ switch ($service) {
             echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası: ' . $e->getMessage()]);
         }
         break;
+        
+    case 'filter-payment-report-byuser':
+        $studentId = isset($_POST['student']) ? $_POST['student'] : null;
+        
+       
     case 'filter-main-school-content':
         $month = isset($_POST['month']) ? $_POST['month'] : null;
         $week = isset($_POST['week']) ? $_POST['week'] : null;
@@ -280,9 +470,8 @@ switch ($service) {
         $content_title = isset($_POST['content_title']) ? $_POST['content_title'] : null;
         $concept_title = isset($_POST['concept_title']) ? $_POST['concept_title'] : null;
         $main_school_class_id = isset($_POST['main_school_class_id']) ? $_POST['main_school_class_id'] : null;
-        if(isset($_SESSION['class_id']) && $_SESSION['class_id']!=null){
-            $main_school_class_id=$_SESSION['class_id'];
-           
+        if (isset($_SESSION['class_id']) && $_SESSION['class_id'] != null) {
+            $main_school_class_id = $_SESSION['class_id'];
         }
         $whereClauses = [];
         $params = [];

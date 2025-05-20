@@ -6,7 +6,7 @@ function handleDelete({ id, url, reload = true, customSuccess, customError }) {
         text: "Bu işlem geri alınamaz!",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "Evet, sil!",
+        confirmButtonText: "Evet, Kabul Ediyorum!",
         cancelButtonText: "Hayır, iptal et",
         customClass: {
             confirmButton: "btn btn-danger",
