@@ -1,23 +1,41 @@
-<?php
-class UpdateCoupon extends Dbh
-{
-    protected function updateCoupon($id, $discount_type, $discount_value, $coupon_code, $coupon_expires, $coupon_quantity)
+    <?php
+    class UpdateCoupon extends Dbh
     {
-        $checkStmt = $this->connect()->prepare('SELECT 1 FROM coupon_lnp WHERE coupon_code = ? LIMIT 1');
-        $checkStmt->execute([$coupon_code]);
+        protected function updateCouponWithStatus($id, $discount_type, $discount_value, $coupon_code, $coupon_expires, $coupon_quantity)
+        {
+            $stmt = $this->connect()->prepare('UPDATE coupon_lnp 
+    SET 
+        discount_value = :discount_value,
+        coupon_code = :coupon_code,
+        coupon_expires = :coupon_expires,
+        coupon_quantity = :coupon_quantity 
+    WHERE id = :id');
 
-        if ($checkStmt->fetchColumn()) {
-            echo json_encode(["status" => "error", "message" => "Bu kupon kodu zaten mevcut!"]);
-            return;
-        }
+            if (!$stmt->execute([
+                ':discount_value' => $discount_value,
+                ':coupon_code' => $coupon_code,
+                ':coupon_expires' => $coupon_expires,
+                ':coupon_quantity' => $coupon_quantity,
+                ':id' => $id
+            ])) {
+                $stmt = null;
+                exit();
+            }
 
-        $stmt = $this->connect()->prepare('INSERT INTO coupon_lnp SET discount_type = ?, discount_value = ?, coupon_code = ?, coupon_expires = ?, coupon_quantity = ?');
-
-        if (!$stmt->execute([$discount_type, $discount_value, $coupon_code, $coupon_expires, $coupon_quantity])) {
+            echo json_encode(["status" => "success", "message" => 'Kupon başarıyla güncellendi!']);
             $stmt = null;
-            exit();
         }
-        echo json_encode(["status" => "success", "message" => 'Kupon başarıyla oluşturuldu']);
-        $stmt = null;
+
+        // protected function updateCouponStatus($id)
+        // {
+        //     $stmt = $this->connect()->prepare('UPDATE coupon_lnp SET is_active = :isActive WHERE id= :id');
+
+        //     if (!$stmt->execute([':isActive' => 0, ':id' => $id])) {
+        //         $stmt = null;
+        //         exit();
+        //     }
+
+        //     echo json_encode(["status" => "success", "message" => 'Kupon başarıyla kaldırılı']);
+        //     $stmt = null;
+        // }
     }
-}
