@@ -3,11 +3,22 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001 or $_SESSION['role'] == 10002)) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
 
     include_once "views/pages-head.php";
+    $data = new Classes();
+    if ($_SESSION['role'] == 10002) {
+        $contentId = $_GET['id'];
+        $exists = $data->permissionControl($contentId,  $_SESSION['id']);
+        if (!$exists) {
+            // Kullanıcının yetkisi yoksa login sayfasına yönlendir
+            header("Location: ana-okulu-icerikler");
+            exit;
+        }
+    }
+
 ?>
     <!--end::Head-->
     <!--begin::Body-->
@@ -53,7 +64,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             <!--begin::Toolbar-->
                             <?php include_once "views/toolbar.php"; ?>
                             <?php
-                            $data = new Classes();
+
                             $data = $data->getMainSchoolContentById($_GET['id']);
                             function convertYoutubeToEmbed($url)
                             {
@@ -71,7 +82,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <!--begin::Card-->
-                                    <div class="card-body pt-5">
+                                    <div class="card-body col-10 container pt-5">
                                         <h1><?= $data['subject']; ?></h1>
                                         <div class="row">
                                             <p><?= $data['content_description']; ?></p>
@@ -80,19 +91,22 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             <!-- Video Tab -->
                                             <div class="tab-pane fade show active" id="video" role="tabpanel" aria-labelledby="video-tab">
                                                 <div class="row">
-                                                    <?php foreach ($data['images'] as $img): ?>
+                                                    <?php 
+                                                    
+                                                    if(isset($data['images'])&& count($data['images'])>0){
+                                                    foreach ($data['images'] as $img): ?>
                                                         <div class="col-md-12 mb-4">
                                                             <div class="card shadow-sm">
                                                                 <div class="card-body p-0" style="height: 700px;">
-    <img src="<?= $img['file_path'] ?>" alt="Yüklenen Görsel"
-         class="w-100 h-100 rounded shadow"
-         style="object-fit: cover;">
-</div>
+                                                                    <img src="<?= $img['file_path'] ?>" alt="Yüklenen Görsel"
+                                                                        class="w-100 h-100 rounded shadow"
+                                                                        style="object-fit: cover;">
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    <?php endforeach; ?>
+                                                    <?php endforeach; } ?>
                                                 </div>
-                                                <div class="row" id="videoContent">
+                                                <div class="row mt-4" id="videoContent">
                                                     <?php
                                                     $embedUrl = convertYoutubeToEmbed($data['video_url']);
 
@@ -110,7 +124,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <?php endif; ?>
 
                                                 </div>
-                                                <div class="row " style="font-size:20px; margin-top:35px;">
+                                                <div class="row " style="font-size:17px; margin-top:35px;">
                                                     <p id="contentDescription">
                                                         <?php
                                                         if (isset($data['content'])) {

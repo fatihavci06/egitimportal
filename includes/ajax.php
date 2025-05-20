@@ -2,7 +2,7 @@
 // includes/ajax.php
 include_once '../classes/dbh.classes.php';
 header('Content-Type: application/json');
-
+session_start();
 // Sadece POST isteğini kabul et
 
 // Servis kontrolü
@@ -46,7 +46,7 @@ switch ($service) {
 
         try {
             // Silme işlemi
-            $stmt = $pdo->prepare("DELETE FROM main_school_classes_lnp WHERE id = ?");
+            $stmt = $pdo->prepare("DELETE FROM classes_lnp WHERE id = ?");
             $stmt->execute([$id]);
 
             if ($stmt->rowCount()) {
@@ -68,7 +68,7 @@ switch ($service) {
 
         try {
             // Silme işlemi
-            $stmt = $pdo->prepare("Select name FROM main_school_classes_lnp WHERE id = ?");
+            $stmt = $pdo->prepare("Select name FROM classes_lnp WHERE id = ?");
             $stmt->execute([$id]);
 
             if ($stmt->rowCount()) {
@@ -92,7 +92,7 @@ switch ($service) {
 
         try {
             // Silme işlemi
-            $updateStmt = $pdo->prepare("UPDATE main_school_classes_lnp SET name = ? WHERE id = ?");
+            $updateStmt = $pdo->prepare("UPDATE classes_lnp SET name = ? WHERE id = ?");
             $updateStmt->execute([$name, $id]);
             echo json_encode(['status' => 'success', 'message' => 'Grup adı başarıyla güncellendi.']);
         } catch (PDOException $e) {
@@ -280,7 +280,10 @@ switch ($service) {
         $content_title = isset($_POST['content_title']) ? $_POST['content_title'] : null;
         $concept_title = isset($_POST['concept_title']) ? $_POST['concept_title'] : null;
         $main_school_class_id = isset($_POST['main_school_class_id']) ? $_POST['main_school_class_id'] : null;
-
+        if(isset($_SESSION['class_id']) && $_SESSION['class_id']!=null){
+            $main_school_class_id=$_SESSION['class_id'];
+           
+        }
         $whereClauses = [];
         $params = [];
 
@@ -324,12 +327,12 @@ switch ($service) {
         $sql = "
     SELECT 
         main_school_content_lnp.*, 
-        main_school_classes_lnp.name as class_name 
+        classes_lnp.name as class_name 
     FROM 
         main_school_content_lnp
     INNER JOIN 
-        main_school_classes_lnp 
-        ON main_school_content_lnp.main_school_class_id = main_school_classes_lnp.id
+        classes_lnp 
+        ON main_school_content_lnp.main_school_class_id = classes_lnp.id
     $whereSQL
 ";
         $stmt = $pdo->prepare($sql);
