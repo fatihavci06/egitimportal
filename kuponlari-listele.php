@@ -72,7 +72,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <span class="path1"></span>
                                                         <span class="path2"></span>
                                                     </i>
-                                                    <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder="Öğrenci Ara" />
+                                                    <input type="text" data-kt-coupon-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder="Öğrenci Ara" />
                                                 </div>
                                                 <!--end::Search-->
                                             </div>
@@ -80,7 +80,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             <!--begin::Card toolbar-->
                                             <div class="card-toolbar">
                                                 <!--begin::Toolbar-->
-                                                <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
+                                                <div class="d-flex justify-content-end" data-kt-coupon-table-toolbar="base">
                                                     <!--begin::Filter-->
                                                     <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
                                                         <i class="ki-duotone ki-filter fs-2">
@@ -105,7 +105,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                 <label class="form-label fs-5 fw-semibold mb-3">Month:</label>
                                                                 <!--end::Label-->
                                                                 <!--begin::Input-->
-                                                                <select class="form-select form-select-solid fw-bold" data-kt-select2="true" data-placeholder="Select option" data-allow-clear="true" data-kt-customer-table-filter="month" data-dropdown-parent="#kt-toolbar-filter">
+                                                                <select class="form-select form-select-solid fw-bold" data-kt-select2="true" data-placeholder="Select option" data-allow-clear="true" data-kt-coupon-table-filter="month" data-dropdown-parent="#kt-toolbar-filter">
                                                                     <option></option>
                                                                     <option value="aug">August</option>
                                                                     <option value="sep">September</option>
@@ -116,45 +116,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                 <!--end::Input-->
                                                             </div>
                                                             <!--end::Input group-->
-                                                            <!--begin::Input group-->
-                                                            <div class="mb-10">
-                                                                <!--begin::Label-->
-                                                                <label class="form-label fs-5 fw-semibold mb-3">Payment Type:</label>
-                                                                <!--end::Label-->
-                                                                <!--begin::Options-->
-                                                                <div class="d-flex flex-column flex-wrap fw-semibold" data-kt-customer-table-filter="payment_type">
-                                                                    <!--begin::Option-->
-                                                                    <label class="form-check form-check-sm form-check-custom form-check-solid mb-3 me-5">
-                                                                        <input class="form-check-input" type="radio" name="payment_type" value="all" checked="checked" />
-                                                                        <span class="form-check-label text-gray-600">All</span>
-                                                                    </label>
-                                                                    <!--end::Option-->
-                                                                    <!--begin::Option-->
-                                                                    <label class="form-check form-check-sm form-check-custom form-check-solid mb-3 me-5">
-                                                                        <input class="form-check-input" type="radio" name="payment_type" value="visa" />
-                                                                        <span class="form-check-label text-gray-600">Visa</span>
-                                                                    </label>
-                                                                    <!--end::Option-->
-                                                                    <!--begin::Option-->
-                                                                    <label class="form-check form-check-sm form-check-custom form-check-solid mb-3">
-                                                                        <input class="form-check-input" type="radio" name="payment_type" value="mastercard" />
-                                                                        <span class="form-check-label text-gray-600">Mastercard</span>
-                                                                    </label>
-                                                                    <!--end::Option-->
-                                                                    <!--begin::Option-->
-                                                                    <label class="form-check form-check-sm form-check-custom form-check-solid">
-                                                                        <input class="form-check-input" type="radio" name="payment_type" value="american_express" />
-                                                                        <span class="form-check-label text-gray-600">American Express</span>
-                                                                    </label>
-                                                                    <!--end::Option-->
-                                                                </div>
-                                                                <!--end::Options-->
-                                                            </div>
-                                                            <!--end::Input group-->
                                                             <!--begin::Actions-->
                                                             <div class="d-flex justify-content-end">
-                                                                <button type="reset" class="btn btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true" data-kt-customer-table-filter="reset">Reset</button>
-                                                                <button type="submit" class="btn btn-primary" data-kt-menu-dismiss="true" data-kt-customer-table-filter="filter">Apply</button>
+                                                                <button type="reset" class="btn btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true" data-kt-coupon-table-filter="reset">Reset</button>
+                                                                <button type="submit" class="btn btn-primary" data-kt-menu-dismiss="true" data-kt-coupon-table-filter="filter">Apply</button>
                                                             </div>
                                                             <!--end::Actions-->
                                                         </div>
@@ -168,11 +133,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 </div>
                                                 <!--end::Toolbar-->
                                                 <!--begin::Group actions-->
-                                                <div class="d-flex justify-content-end align-items-center d-none" data-kt-customer-table-toolbar="selected">
+                                                <div class="d-flex justify-content-end align-items-center d-none" data-kt-coupon-table-toolbar="selected">
                                                     <div class="fw-bold me-5">
-                                                        <span class="me-2" data-kt-customer-table-select="selected_count"></span>Seçildi
+                                                        <span class="me-2" data-kt-coupon-table-select="selected_count"></span>Seçildi
                                                     </div>
-                                                    <button type="button" class="btn btn-danger" data-kt-customer-table-select="delete_selected">Seçilenleri Pasif Yap</button>
+                                                    <button type="button" class="btn btn-danger" data-kt-coupon-table-select="delete_selected">Seçilenleri Pasif Yap</button>
                                                 </div>
                                                 <!--end::Group actions-->
                                             </div>
@@ -182,62 +147,64 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         <!--begin::Card body-->
                                         <div class="card-body pt-0">
                                             <!--begin::Table-->
-                                            <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_customers_table">
-                                                <thead>
-                                                    <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                        <th class="min-w-125px">Kupon Kodu</th>
-                                                        <th class="min-w-125px">Kupon Tipi</th>
-                                                        <th class="min-w-125px">Kupon Değeri</th>
-                                                        <th class="min-w-125px">Kupon Durumu</th>
-                                                        <th class="min-w-125px">Kupon Süresi</th>
-                                                        <th class="min-w-125px">Kupon Adedi</th>
-                                                        <th class="min-w-125px">Kullanılan Kupon Adedi</th>
-                                                        <th class="text-end min-w-70px">İşlemler</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="fw-semibold text-gray-600">
-                                                    <?php foreach ($data as $key => $value) : ?>
-                                                        <tr>
-                                                            <td>
-                                                                <a href="./kupon-detay?id=<?= $value['id'] ?>" class="text-gray-800 text-hover-primary mb-1"><?= $value['coupon_code'] ?></a>
-
-                                                            </td>
-                                                            <td>
-                                                                <?= $value['discount_type'] ?>
-                                                            </td>
-                                                            <td>
-                                                                <?= $value['discount_value'] ?>
-                                                            </td>
-                                                            <td>
-                                                                <?= $value['is_active'] ?>
-                                                            </td>
-                                                            <td><?= $value['coupon_expires'] ?></td>
-                                                            <td><?= $value['coupon_quantity'] ?></td>
-                                                            <td><?= $value['used_coupon_count'] ?></td>
-                                                            <td class="text-end">
-                                                                <a class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
-                                                                    data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
-                                                                    <i class="ki-duotone ki-down fs-5 ms-1"></i></a>
-                                                                <!--begin::Menu-->
-                                                                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
-                                                                    data-kt-menu="true">
-                                                                    <!--begin::Menu item-->
-                                                                    <div class="menu-item px-3">
-                                                                        <a href="./kupon-detay?id=<?= $value['id'] ?>" class="menu-link px-3">Görüntüle</a>
-                                                                    </div>
-                                                                    <!--end::Menu item-->
-                                                                    <!--begin::Menu item-->
-                                                                    <div class="menu-item px-3">
-                                                                        <a href="#" class="menu-link px-3" id="delete_coupon" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
-                                                                    </div>
-                                                                    <!--end::Menu item-->
-                                                                </div>
-                                                                <!--end::Menu-->
-                                                            </td>
+                                            <div class="table-responsive">
+                                                <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_coupons_table">
+                                                    <thead>
+                                                        <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
+                                                            <th class="min-w-125px">Kupon Kodu</th>
+                                                            <th class="min-w-125px">Kupon Tipi</th>
+                                                            <th class="min-w-125px">Kupon Değeri</th>
+                                                            <th class="min-w-125px">Kupon Durumu</th>
+                                                            <th class="min-w-125px">Kupon Süresi</th>
+                                                            <th class="min-w-125px">Kupon Adedi</th>
+                                                            <th class="min-w-125px">Kullanılan Kupon Adedi</th>
+                                                            <th class="text-end min-w-70px">İşlemler</th>
                                                         </tr>
-                                                    <?php endforeach ?>
-                                                </tbody>
-                                            </table>
+                                                    </thead>
+                                                    <tbody class="fw-semibold text-gray-600">
+                                                        <?php foreach ($data as $key => $value) : ?>
+                                                            <tr>
+                                                                <td>
+                                                                    <a href="./kupon-detay?id=<?= $id ?>" class="text-gray-800 text-hover-primary mb-1"><?= $value['coupon_code'] ?></a>
+
+                                                                </td>
+                                                                <td>
+                                                                    <?= $value['discount_type'] ?>
+                                                                </td>
+                                                                <td>
+                                                                    <?= $value['discount_value'] ?>
+                                                                </td>
+                                                                <td>
+                                                                    <?= $value['is_active'] ?>
+                                                                </td>
+                                                                <td><?= $value['coupon_expires'] ?></td>
+                                                                <td><?= $value['coupon_quantity'] ?></td>
+                                                                <td><?= $value['used_coupon_count'] ?></td>
+                                                                <td class="text-end">
+                                                                    <a class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
+                                                                        data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
+                                                                        <i class="ki-duotone ki-down fs-5 ms-1"></i></a>
+                                                                    <!--begin::Menu-->
+                                                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
+                                                                        data-kt-menu="true">
+                                                                        <!--begin::Menu item-->
+                                                                        <div class="menu-item px-3">
+                                                                            <a href="./kupon-detay?id=<?= $value['id'] ?>" class="menu-link px-3">Görüntüle</a>
+                                                                        </div>
+                                                                        <!--end::Menu item-->
+                                                                        <!--begin::Menu item-->
+                                                                        <div class="menu-item px-3">
+                                                                            <a href="#" class="menu-link px-3 delete_coupon" data-id="<?= $value['id'] ?>" data-kt-coupon-table-filter="delete_row">Pasif Yap</a>
+                                                                        </div>
+                                                                        <!--end::Menu item-->
+                                                                    </div>
+                                                                    <!--end::Menu-->
+                                                                </td>
+                                                            </tr>
+                                                        <?php endforeach ?>
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                             <!--end::Table-->
                                         </div>
                                         <!--end::Card body-->
@@ -318,9 +285,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
         <!--end::Vendors Javascript-->
         <!--begin::Custom Javascript(used for this page only)-->
-        <script src="assets/js/custom/apps/students/list/export.js"></script>
+        <!-- <script src="assets/js/custom/apps/students/list/export.js"></script>
         <script src="assets/js/custom/apps/students/list/list.js"></script>
-        <script src="assets/js/custom/apps/students/add.js"></script>
+        <script src="assets/js/custom/apps/students/add.js"></script> -->
         <script src="assets/js/widgets.bundle.js"></script>
         <script src="assets/js/custom/widgets.js"></script>
         <script src="assets/js/custom/apps/chat/chat.js"></script>
@@ -332,45 +299,121 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <!--end::Javascript-->
 
         <script>
-            $('#delete_coupon').on('click', function(e) {
+            $('.delete_coupon').on('click', function(e) {
+                e.preventDefault();
 
                 const id = $(this).data('id');
 
-                $.ajax({
-                    url: 'includes/update_coupon.inc.php',
-                    method: 'POST',
-                    data: {
-                        id: id,
-                    },
-                    success: function(response) {
-                        const res = JSON.parse(response);
+                Swal.fire({
+                    text: "Bu kuponu pasif yapmak istediğinizden emin misiniz?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    buttonsStyling: false,
+                    confirmButtonText: "Evet, pasif yap!",
+                    cancelButtonText: "Hayır, iptal et",
+                    customClass: {
+                        confirmButton: "btn fw-bold btn-danger",
+                        cancelButton: "btn fw-bold btn-active-light-primary"
+                    }
+                }).then(function(result) {
+                    if (result.value) {
 
-                        if (res.status === "error") {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Hata',
-                                text: res.message,
-                                confirmButtonText: 'Tamam'
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Başarılı',
-                                text: res.message,
-                                confirmButtonText: 'Tamam'
-                            });
-                        }
-                    },
-                    error: function(xhr, status, error) {
+                        $.ajax({
+                            type: "POST",
+                            url: "includes/delete_coupon.inc.php",
+                            data: {
+                                id: id
+                            },
+                            dataType: "json",
+                            success: function(response) {
+                                if (response.status === "success") {
+
+                                    Swal.fire({
+                                        text: "Kupon pasif hale gelmiştir!",
+                                        icon: "success",
+                                        buttonsStyling: false,
+                                        confirmButtonText: "Tamam, anladım!",
+                                        customClass: {
+                                            confirmButton: "btn btn-primary"
+                                        }
+                                    }).then(function(result) {
+                                        location.reload();
+                                        if (result.isConfirmed) {
+                                            // Remove current row
+                                            datatable.row($(parent)).remove().draw();
+
+                                        }
+
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        text: response.message,
+                                        icon: "error",
+                                        buttonsStyling: false,
+                                        confirmButtonText: "Tamam, anladım!",
+                                        customClass: {
+                                            confirmButton: "btn btn-primary"
+                                        },
+                                    }).then(function(result) {
+                                        if (result.isConfirmed) {
+
+                                            // Enable submit button after loading
+                                            submitButton.disabled = false;
+                                        }
+                                    });
+                                }
+                            },
+                            error: function(xhr, status, error, response) {
+                                Swal.fire({
+                                    text: "Bir sorun oldu!",
+                                    icon: "error",
+                                    buttonsStyling: false,
+                                    confirmButtonText: "Tamam, anladım!",
+                                    customClass: {
+                                        confirmButton: "btn btn-primary"
+                                    }
+                                }).then(function(result) {
+                                    if (result.isConfirmed) {
+
+                                        // Enable submit button after loading
+                                        submitButton.disabled = false;
+                                    }
+                                });
+                            },
+                            error: function(xhr, status, error, response) {
+                                Swal.fire({
+                                    text: "Bir sorun oldu!",
+                                    icon: "error",
+                                    buttonsStyling: false,
+                                    confirmButtonText: "Tamam, anladım!",
+                                    customClass: {
+                                        confirmButton: "btn btn-primary"
+                                    }
+                                }).then(function(result) {
+                                    if (result.isConfirmed) {
+
+                                        // Enable submit button after loading
+                                        submitButton.disabled = false;
+                                    }
+                                });
+                                //alert(status + "0");
+
+                            },
+                        });
+
+                    } else if (result.dismiss === 'cancel') {
                         Swal.fire({
-                            icon: 'error',
-                            title: 'Hata',
-                            text: 'Kupon kaldırılırken bir hata oluştu: ' + res.error,
-                            confirmButtonText: 'Tamam'
+                            text: "Kupon pasif edilmedi.",
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn fw-bold btn-primary",
+                            }
                         });
                     }
-                });
-            });
+                })
+            })
         </script>
     </body>
     <!--end::Body-->
