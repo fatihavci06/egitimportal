@@ -17,6 +17,22 @@ class Classes extends Dbh
 
 		return $classData;
 	}
+
+	protected function getClassesListForCreateAccount()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT id, name, slug FROM classes_lnp ORDER BY orderBY ASC');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
+
 	protected function getMainSchoolClassesList()
 	{
 

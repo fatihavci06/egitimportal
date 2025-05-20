@@ -116,6 +116,22 @@ class ShowClass extends Classes
         }
     }
 
+    public function getClassSelectListForCreateAccount()
+    {
+
+        $classInfo = $this->getClassesListForCreateAccount();
+
+        $dateFormat = new DateFormat();
+
+        foreach ($classInfo as $key => $value) {
+
+            $classList = '
+                    <option value="' . $value['id'] . '">' . $value['name'] . '</option>
+                ';
+            echo $classList;
+        }
+    }
+
     // Show Class
 
     public function showOneClass($slug)

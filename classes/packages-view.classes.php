@@ -76,8 +76,13 @@ class ShowPackage extends Packages
 
             $total = $monthly_fee * $subscription_period;
 
+            // KDV Oranını VT'den çekicen Sonra
+            $kdv = 0.10;
+
             $priceTotal = '
-                        <h2 class="text-black-500 fw-semibold fs-12">Toplam Tutar: <span id="Price">' . $total . '</span> ₺</h2>
+                        <h2 class="text-black-500 fw-semibold fs-12">KDV\'siz Tutar: <span id="PriceWOVat">' . $total . '</span> ₺</h2>
+                        <h2 class="text-black-500 fw-semibold fs-12">KDV Oranı: <span id="vatPercentage">%' . $kdv*100 . '</span></h2>
+                        <h2 class="text-black-500 fw-semibold fs-12">KDV\'li Tutar: <span id="PriceWVat">' . ($total + ($total * $kdv)) . '</span> ₺</h2>
             ';
         }
 

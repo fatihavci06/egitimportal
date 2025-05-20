@@ -437,7 +437,7 @@ var KTSignupGeneral = function () {
                                 $('#delete_coupon').css('display', 'none');
                                 $('#coupon_code').val('');
                                 $('#iscash').html('');
-                                $('#cashdiscount').html("");
+                                /* $('#cashdiscount').html(""); */
                                 $('input[type="radio"][name="isinstallment"]').prop('checked', false);
                                 $('#payment_method').css('display', 'inline');;
                                 couponButton.disabled = false;
@@ -475,7 +475,7 @@ var KTSignupGeneral = function () {
                             data: { secim: couponVal },
                             success: function (response) {
                                 if (response.status === "success") {
-                                    var oldPrice = document.getElementById("Price").innerHTML;
+                                    var oldPrice = document.getElementById("PriceWOVat").innerHTML;
                                     var priceWoDiscount = document.getElementById("priceWoDiscount").innerHTML;
                                     couponButton.disabled = true;
                                     $('#delete_coupon').css('display', 'inline');
@@ -485,21 +485,24 @@ var KTSignupGeneral = function () {
                                     var type = response.type;
                                     if (type === "percentage") {
                                         var newPrice = priceWoDiscount - (priceWoDiscount * (discount / 100));
+                                        var newPriceWVat = newPrice * 1.10;
                                     } else if (type === "amount") {
                                         var newPrice = priceWoDiscount - discount;
+                                        var newPriceWVat = newPrice * 1.10;
                                     }
 
                                     $('#moneyTransferInfo').html("");
-                                    $('#Price').html(newPrice);
+                                    $('#PriceWOVat').html(newPrice);
                                     $('#priceWCoupon').html(newPrice);
+                                    $('#PriceWVat').html(newPriceWVat.toFixed(2));
                                     $('#couponInfo').html(response.message);
                                     $('#couponCode').html('<input type="hidden" name="coupon_codeDb" value="' + couponVal + '">');
                                     $('input[type="radio"][name="isinstallment"]').prop('checked', false);
-                                    $('#cashdiscount').html("");
+                                    /* $('#cashdiscount').html(""); */
                                     $('#iscash').html("");
 
                                     $('#delete_coupon').click(function () {
-                                        
+
                                         submitButton.disabled = true;
 
                                         $('#moneyTransferInfo').html("");
@@ -510,18 +513,24 @@ var KTSignupGeneral = function () {
                                         $('input[type="radio"][name="payment_type"]').prop('checked', false);
 
                                         if ($('#moneyTransferInfo').text().trim() === '') {
-                                            $('#Price').html(priceWoDiscount);
+                                            $('#PriceWOVat').html(priceWoDiscount);
+                                            var newPriceWVat = priceWoDiscount * 1.10;
+                                            $('#PriceWVat').html(newPriceWVat);
                                         }
                                         couponButton.disabled = false;
                                         $('#coupon_code').val('');
-                                        $('#Price').html(priceWoDiscount);
+                                        $('#PriceWOVat').html(priceWoDiscount);
+                                        var newPriceWVat = priceWoDiscount * 1.10;
+                                        $('#PriceWVat').html(newPriceWVat.toFixed(2));
                                         $('#couponInfo').html("");
                                     });
 
                                 } else {
-                                    var oldPrice = document.getElementById("Price").innerHTML;
+                                    var oldPrice = document.getElementById("PriceWOVat").innerHTML;
                                     $('#priceWoDiscount').html(oldPrice);
                                     $('#priceWCoupon').html(oldPrice);
+                                    var newPriceWVat = oldPrice * 1.10;
+                                    $('#PriceWVat').html(newPriceWVat.toFixed(2));
                                     $('#couponInfo').html(response.message);
                                 }
                             },
@@ -550,16 +559,21 @@ var KTSignupGeneral = function () {
         $('input[type="radio"][name="payment_type"]').change(function () {
             var oldPrice = document.getElementById("priceWoDiscount").innerHTML;
             var priceWCoupon = document.getElementById("priceWCoupon").innerHTML;
-            var subscription_month = document.getElementById("subscription_month").innerHTML;
+            /* var subscription_month = document.getElementById("subscription_month").innerHTML; */
             if ($(this).val() === '2') {
-
+                
+                    submitButton.disabled = false;
                 if ($('#couponInfo').text().trim() === '') {
-                    $('#Price').html(oldPrice);
+                    $('#PriceWOVat').html(oldPrice);
+                    var newPriceWVat = oldPrice * 1.10;
+                    $('#PriceWVat').html(newPriceWVat.toFixed(2));
                 } else {
-                    $('#Price').html(priceWCoupon);
+                    $('#PriceWOVat').html(priceWCoupon);
+                    var newPriceWVat = priceWCoupon * 1.10;
+                    $('#PriceWVat').html(newPriceWVat.toFixed(2));
                 }
                 $('#moneyTransferInfo').html("");
-                if (subscription_month > 1) {
+                /* if (subscription_month > 1) {
                     submitButton.disabled = true;
                     $('#iscash').html(`<!--begin::Input group-->
                                     <div class="fv-row mt-10">
@@ -572,8 +586,8 @@ var KTSignupGeneral = function () {
                 } else {
                     submitButton.disabled = false;
                     $('#iscash').html('');
-                }
-                $('input[type="radio"][name="isinstallment"]').change(function () {
+                } */
+                /* $('input[type="radio"][name="isinstallment"]').change(function () {
                     
                     submitButton.disabled = false;
                     if ($(this).val() === '1') {
@@ -614,7 +628,7 @@ var KTSignupGeneral = function () {
                             $('#Price').html(priceWCoupon);
                         }
                     }
-                });
+                }); */
 
             } else {
                 var typeVal = "1";
@@ -631,10 +645,14 @@ var KTSignupGeneral = function () {
 
                             if ($('#couponInfo').text().trim() === '') {
                                 var newPrice = oldPrice - (oldPrice * (discount / 100));
-                                $('#Price').html(newPrice);
+                                $('#PriceWOVat').html(newPrice);
+                                var newPriceWVat = newPrice * 1.10;
+                                $('#PriceWVat').html(newPriceWVat.toFixed(2));
                             } else {
                                 var newPrice = priceWCoupon - (priceWCoupon * (discount / 100));
-                                $('#Price').html(newPrice);
+                                $('#PriceWOVat').html(newPrice);
+                                var newPriceWVat = newPrice * 1.10;
+                                $('#PriceWVat').html(newPriceWVat.toFixed(2));
                             }
                             $('#moneyTransferInfo').html(response.message);
                         } else {

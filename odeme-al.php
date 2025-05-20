@@ -39,9 +39,14 @@ foreach ($packInfo as $key => $value) {
 	}
 }
 
-$cashDiscount = $_SESSION['creditCash'];
+/* $cashDiscount = $_SESSION['creditCash'];
 
-$price -= $price * ($cashDiscount / 100);
+$price -= $price * ($cashDiscount / 100); */
+
+$vat = 10;  // %10 KDV oranı
+$price += $price * ($vat / 100); // KDV'yi ekle
+$vatAmount = $price * ($vat / 100); // KDV tutarını hesapla
+$price = number_format($price, 2, '.', ''); // İki ondalık basamakla formatla
 
 
 $kullanici_ad = $_SESSION['parentFirstName'];
@@ -59,6 +64,8 @@ $_SESSION['siparis_numarasi'] = $siparis_no;
 $sepettoplam = $price;
 $kupon_kodu = $_SESSION['couponCode'];
 $isinstallment = $_SESSION['isinstallment'];
+$_SESSION['vatAmount'] = $vatAmount;
+$_SESSION['vat'] = $vat;
 
 
 ?>
