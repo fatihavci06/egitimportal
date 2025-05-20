@@ -2,7 +2,7 @@
 if (!defined('GUARD')) {
     die('Erişim yasak!');
 }
-?>	
+?>
 <div class="modal fade" id="kt_modal_add_customer" tabindex="-1" aria-hidden="true">
     <!--begin::Modal dialog-->
     <div class="modal-dialog modal-dialog-centered mw-650px">
@@ -188,11 +188,81 @@ if (!defined('GUARD')) {
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
-                                <label class="required fs-6 fw-semibold mb-2">Telefon Numarası</label>
+                                <label class="required fs-6 fw-semibold mb-2">Okul Telefon Numarası</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <input type="number" class="form-control form-control-solid" placeholder="Telefon" id="telephone" name="telephone" />
+                                <input type="text" class="form-control form-control-solid" placeholder="05001234578" id="telephone" name="telephone" />
                                 <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="row fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="fs-6 fw-semibold mb-2">Okul Admini</label>
+                                <!--end::Label-->
+                                <!--begin::Col-->
+                                <div class="col-md-6 fv-row mb-7">
+                                    <!--begin::Input-->
+                                    <input type="text" id="schoolAdminName" class="form-control form-control-solid" placeholder="Adı" name="schoolAdminName" />
+                                    <!--end::Input-->
+                                </div>
+                                <!--end::Col-->
+                                <!--begin::Col-->
+                                <div class="col-md-6 fv-row mb-7">
+                                    <!--begin::Input-->
+                                    <input type="text" id="schoolAdminSurname" class="form-control form-control-solid" placeholder="Soyadı" name="schoolAdminSurname" />
+                                    <!--end::Input-->
+                                </div>
+                                <!--end::Col-->
+                                <!--begin::Col-->
+                                <div class="col-md-6 fv-row mb-7">
+                                    <!--begin::Input-->
+                                    <input type="text" id="schoolAdminEmail" class="form-control form-control-solid" placeholder="E-Posta Adresi" name="schoolAdminEmail" />
+                                    <!--end::Input-->
+                                </div>
+                                <!--end::Col-->
+                                <!--begin::Col-->
+                                <div class="col-md-6 fv-row">
+                                    <!--begin::Input-->
+                                    <input type="text" id="schoolAdminTelephone" class="form-control form-control-solid" placeholder="Telefon Numarası (05001234578)" name="schoolAdminTelephone" />
+                                    <!--end::Input-->
+                                </div>
+                                <!--end::Col-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="row fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="fs-6 fw-semibold mb-2">Okul Eğitim Koordinatörü</label>
+                                <!--end::Label-->
+                                <!--begin::Col-->
+                                <div class="col-md-6 fv-row mb-7">
+                                    <!--begin::Input-->
+                                    <input type="text" id="schoolCoordinatorName" class="form-control form-control-solid" placeholder="Adı" name="schoolCoordinatorName" />
+                                    <!--end::Input-->
+                                </div>
+                                <!--end::Col-->
+                                <!--begin::Col-->
+                                <div class="col-md-6 fv-row mb-7">
+                                    <!--begin::Input-->
+                                    <input type="text" id="schoolCoordinatorSurname" class="form-control form-control-solid" placeholder="Soyadı" name="schoolCoordinatorSurname" />
+                                    <!--end::Input-->
+                                </div>
+                                <!--end::Col-->
+                                <!--begin::Col-->
+                                <div class="col-md-6 fv-row mb-7">
+                                    <!--begin::Input-->
+                                    <input type="text" id="schoolCoordinatorEmail" class="form-control form-control-solid" placeholder="E-Posta Adresi" name="schoolCoordinatorEmail" />
+                                    <!--end::Input-->
+                                </div>
+                                <!--end::Col-->
+                                <!--begin::Col-->
+                                <div class="col-md-6 fv-row">
+                                    <!--begin::Input-->
+                                    <input type="text" id="schoolCoordinatorTelephone" class="form-control form-control-solid" placeholder="Telefon Numarası (05001234578)" name="schoolCoordinatorTelephone" />
+                                    <!--end::Input-->
+                                </div>
+                                <!--end::Col-->
                             </div>
                             <!--end::Input group-->
                         </div>

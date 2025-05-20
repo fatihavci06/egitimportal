@@ -10,7 +10,7 @@ class ShowStudent extends Student
     {
 
         $schoolInfo = $this->getStudentsList();
-        
+
 
         $dateFormat = new DateFormat();
 
@@ -30,15 +30,12 @@ class ShowStudent extends Student
                             <a href="./ogrenci-detay/' . $value['username'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['name'] . ' ' . $value['surname']  . '</a>
                         </td>
                         <td>
-                            ' . $value['username'] . '
-                        </td>
-                        <td>
                             <a href="mailto:' . $value['email'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['email'] . '</a>
                         </td>
                         <td>
-                            <a href="tel:' . $value['telephone'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['telephone'] . '</a>
+                            ' . $value['className'] . '
                         </td>
-                        <td>' . $dateFormat->changeDate($value['created_at']) . '</td>
+                        <td>' . $dateFormat->changeDate($value['subscribed_end']) . '</td>
                         <td class="text-end">
                             <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
@@ -71,7 +68,7 @@ class ShowStudent extends Student
     {
 
         $schoolInfo = $this->getWaitingMoneyStudent();
-        
+
 
         $dateFormat = new DateFormat();
 
@@ -113,7 +110,7 @@ class ShowStudent extends Student
                             ' . $className . '
                         </td>
                         <td class="text-end">
-                            <button id="approve" data-ek=' . $value['user_id'] . ' data-info='. $value['id'] .'" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary approve"
+                            <button id="approve" data-ek=' . $value['user_id'] . ' data-info=' . $value['id'] . '" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary approve"
                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Ödemeyi Onayla
                                 <i class="fa-solid fa-check fs-5 ms-1"></i>
                             </button>
@@ -135,7 +132,7 @@ class ShowStudent extends Student
         foreach ($schoolInfo as $key => $value) {
 
             $studentList = '
-                    <option value="' . $value['id'] . '">' . $value['name'] .'</option>
+                    <option value="' . $value['id'] . '">' . $value['name'] . '</option>
                 ';
             echo $studentList;
         }
@@ -441,8 +438,8 @@ class ShowStudent extends Student
                                 <label class="required fs-6 fw-semibold mb-2">Okul Adı</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <input type="text" id="name" class="form-control form-control-solid" value="'. $value['name'] .'" name="name" />
-                                    <input type="hidden" name="old_slug" id="old_slug" value="'. $value['slug'] .'" />
+                                <input type="text" id="name" class="form-control form-control-solid" value="' . $value['name'] . '" name="name" />
+                                    <input type="hidden" name="old_slug" id="old_slug" value="' . $value['slug'] . '" />
                                 <!--end::Input-->
                             </div>
 
@@ -454,7 +451,7 @@ class ShowStudent extends Student
                                     <label class="required fs-6 fw-semibold mb-2">Adres</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input class="form-control form-control-solid" name="address" id="address" value="'. $value['address'] .'" />
+                                    <input class="form-control form-control-solid" name="address" id="address" value="' . $value['address'] . '" />
                                     <!--end::Input-->
                                 </div>
                                 <!--begin::Input group-->
@@ -465,7 +462,7 @@ class ShowStudent extends Student
                                         <label class="required fs-6 fw-semibold mb-2">İlçe</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input class="form-control form-control-solid" name="district" id="district" value="'. $value['district'] .'" />
+                                        <input class="form-control form-control-solid" name="district" id="district" value="' . $value['district'] . '" />
                                         <!--end::Input-->
                                     </div>
                                     <!--end::Col-->
@@ -475,7 +472,7 @@ class ShowStudent extends Student
                                         <label class="fs-6 fw-semibold mb-2">Posta Kodu</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input class="form-control form-control-solid" name="postcode" id="postcode" value="'. $value['postcode'] .'" />
+                                        <input class="form-control form-control-solid" name="postcode" id="postcode" value="' . $value['postcode'] . '" />
                                         <!--end::Input-->
                                     </div>
                                     <!--end::Col-->
@@ -491,7 +488,7 @@ class ShowStudent extends Student
                                     <!--begin::Input-->
                                     <select id="city" name="city" aria-label="Sehir Seçiniz" data-control="select2" data-dropdown-parent="#kt_modal_update_customer"
                                         class="form-select form-select-solid fw-bold">
-                                        <option value="'. $value['city'] .'">'. $value['city'] .'</option>
+                                        <option value="' . $value['city'] . '">' . $value['city'] . '</option>
                                         <option value="Adana">Adana</option>
                                         <option value="Adıyaman">Adıyaman</option>
                                         <option value="Afyonkarahisar">Afyonkarahisar</option>
@@ -585,8 +582,8 @@ class ShowStudent extends Student
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input type="email" class="form-control form-control-solid" name="email" id="email" value="'. $value['email'] .'" />
-                                    <input type="hidden" name="email_old" id="email_old" value="'. $value['email'] .'" />
+                                    <input type="email" class="form-control form-control-solid" name="email" id="email" value="' . $value['email'] . '" />
+                                    <input type="hidden" name="email_old" id="email_old" value="' . $value['email'] . '" />
                                     <!--end::Input-->
                                 </div>
                                 <!--end::Input group-->
@@ -596,7 +593,7 @@ class ShowStudent extends Student
                                     <label class="required fs-6 fw-semibold mb-2">Telefon Numarası</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input type="number" class="form-control form-control-solid" value="'. $value['telephone'] .'" id="telephone" name="telephone" />
+                                    <input type="number" class="form-control form-control-solid" value="' . $value['telephone'] . '" id="telephone" name="telephone" />
                                     <!--end::Input-->
                                 </div>
                                 <!--end::Input group-->
@@ -624,6 +621,150 @@ class ShowStudent extends Student
                 ';
         }
         echo $studentList;
+    }
+
+    // List of Lessons Student Details Page
+
+    public function showLessonsListForStudentDetails($class_id, $school_id)
+    {
+
+        $lessonsInfo = $this->getLessons();
+
+        $styles = ["danger", "success", "primary", "warning", "info", "secondary", "light", "dark"];
+        $styleIndex = 0;
+
+        foreach ($lessonsInfo as $value) {
+
+            $style = $styles[$styleIndex % count($styles)];
+
+            $lessonList = '';
+
+            $classes = $value['class_id'];
+
+            $pieces = explode(";", $classes);
+
+            if (in_array($class_id, $pieces)) {
+
+                $class_id = $class_id;
+                $school_id = $school_id;
+                $lesson_id = $value['id'];
+
+                $unitData = $this->getUnits($lesson_id, $class_id, $school_id);
+                $unitCount = count($unitData);
+
+                $lessonList .= '
+                <!--begin::Item-->
+                    <div class="d-flex flex-stack">
+                        <!--begin::Symbol-->
+                        <div class="symbol symbol-40px me-4">
+                            <div class="symbol-label fs-2 fw-semibold bg-'. $style .' text-inverse-'. $style .'">'. mb_substr($value['name'], 0, 1, 'UTF-8') .'</div>
+                        </div>
+                        <!--end::Symbol-->
+                        <!--begin::Section-->
+                        <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                            <!--begin:Author-->
+                            <div class="flex-grow-1 me-2">
+                                <a href="pages/user-profile/overview.html" class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $value['name'] . '</a>
+                                <span class="text-muted fw-semibold d-block fs-7">'. $unitCount .' Ünite</span>
+                            </div>
+                            <!--end:Author--><!--begin::Progress-->
+                            <div class="d-flex align-items-center w-100px w-sm-200px flex-column mt-3">
+                                <div class="d-flex justify-content-between w-100 mt-auto mb-2">
+                                    <span class="fw-semibold fs-6 text-gray-500">Tamamlama Oranı</span>
+                                    <span class="fw-bold fs-6">25%</span>
+                                </div>
+                                <div class="h-5px mx-3 w-100 bg-light mb-3">
+                                    <div class="bg-warning rounded h-5px" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            <!--end::Progress-->
+                        </div>
+                        <!--end::Section-->
+                    </div>
+                <!--end::Item-->
+                <!--begin::Separator-->
+                    <div class="separator separator-dashed my-4"></div>
+                <!--end::Separator-->';
+            } 
+            
+            echo $lessonList;
+
+            $styleIndex++;
+        }
+    }
+
+    // List of Package Student Details Page
+
+    public function showPackageListForStudentDetails($id){
+
+        $packagesInfo = $this->getStudentPackagesWithName($id);
+
+        $dateFormat = new DateFormat();
+
+        $packagesList = '';
+        if (empty($packagesInfo)) {
+            $packagesList = '<tr>
+                                <td class="ps-0" colspan="3">
+                                    <a href="#" class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6 text-start pe-0">Alınan Paket Yok!</a>
+                                </td>
+                            </tr>';
+        } else {
+            foreach ($packagesInfo as $value){
+
+                $packagesList .= '<tr>
+                                    <td class="ps-0">
+                                        <a href="#" class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6 text-start pe-0">' . $value['packageName'] . '</a>
+                                    </td>
+                                    <td>
+                                        <span class="text-gray-800 fw-bold d-block fs-6 ps-0 text-end">'. str_replace('.', ',', strval($value['pay_amount'])) .'₺</span>
+                                    </td>
+                                    <td class="text-end pe-0">
+                                        <span class="text-gray-800 fw-bold d-block fs-6">' . $dateFormat->changeDate($value['subscribed_end']) . '</span>
+                                    </td>
+                                </tr>';
+
+            }
+        }
+
+        echo $packagesList;
+
+    }
+
+    // List of Package Student Details Page
+
+    public function showAdditionalPackageListForStudentDetails($id){
+
+        $packagesInfo = $this->getStudentAdditionalPackagesWithName($id);
+
+        $dateFormat = new DateFormat();
+
+        $packagesList = '';
+        if (empty($packagesInfo)) {
+            $packagesList = '<tr>
+                                <td class="ps-0" colspan="3">
+                                    <a href="#" class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6 text-start pe-0">Alınan Ek Paket Yok!</a>
+                                </td>
+                            </tr>';
+        } else {
+            foreach ($packagesInfo as $value){
+
+                $packagesList .= '<tr>
+                                    <td class="ps-0">
+                                        <a href="#" class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6 text-start pe-0">' . $value['packageName'] . '</a>
+                                    </td>
+                                    <td>
+                                        <span class="text-gray-800 fw-bold d-block fs-6 ps-0 text-end">'. str_replace('.', ',', strval($value['pay_amount'])) .'₺</span>
+                                    </td>
+                                    <td class="text-end pe-0">
+                                        <span class="text-gray-800 fw-bold d-block fs-6">' . $dateFormat->changeDate($value['subscribed_end']) . '</span>
+                                    </td>
+                                </tr>';
+
+            }
+        }
+
+        echo $packagesList;
+
     }
 
     // List of Students

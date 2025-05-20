@@ -10826,7 +10826,7 @@
 			 * displayed after filtering. `emptyTable` is shown when there is simply no
 			 * information in the table at all (regardless of filtering).
 			 */
-			"sZeroRecords": "No matching records found"
+			"sZeroRecords": "Sonuç Bulunamadı",
 		},
 	
 	

@@ -152,6 +152,9 @@ var KTSignupGeneral = function () {
                                 max: 11,
                                 message: 'Telefon numarası 11 haneli olmalıdır'
                             },
+                            notEmpty: {
+                                message: 'Telefon Numarası zorunlu'
+                            }
                         }
                     },
                     'birth_day': {
@@ -210,14 +213,14 @@ var KTSignupGeneral = function () {
                             }
                         }
                     },
-                    'telephone': {
+                    /*'telephone': {
                         validators: {
                             notEmpty: {
                                 message: 'Telefon numarası zorunlu'
                             }
                         }
                     },
-                    /*'password': {
+                    'password': {
                         validators: {
                             notEmpty: {
                                 message: 'The password is required'

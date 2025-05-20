@@ -17,19 +17,17 @@ var KTCustomersList = function () {
 
         tableRows.forEach(row => {
             const dateRow = row.querySelectorAll('td');
-            const realDate = moment(dateRow[6].innerHTML, "DD MMM YYYY, LT").format(); // select date from 3rd column in table
-            dateRow[6].setAttribute('data-order', realDate);
+            const realDate = moment(dateRow[4].innerHTML, "DD MMM YYYY, LT").format(); // select date from 3rd column in table
+            dateRow[4].setAttribute('data-order', realDate);
         });
 
         // Init datatable --- more info on datatables: https://datatables.net/manual/
         datatable = $(table).DataTable({
             "info": false,
-            'order': [],
+            'order': [[4, 'desc']], // Set default column order
             'columnDefs': [
                 { orderable: false, targets: 0 }, // Disable ordering on column 0 (checkbox)
                 { orderable: false, targets: 1 }, // Disable ordering on column 1 (photo)
-                { orderable: false, targets: 5 }, // Disable ordering on column 5 (phone)
-                { orderable: false, targets: 7 }, // Disable ordering on column 7 (actions)
             ]
         });
 

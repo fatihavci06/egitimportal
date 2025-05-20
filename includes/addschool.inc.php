@@ -10,6 +10,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 	$city = $_POST["city"];
 	$email = $_POST["email"];
 	$telephone = $_POST["telephone"];
+	$schoolAdminName = $_POST["schoolAdminName"] ?? "";
+	$schoolAdminSurname = $_POST["schoolAdminSurname"] ?? "";
+	$schoolAdminEmail = $_POST["schoolAdminEmail"] ?? "";
+	$schoolAdminTelephone = $_POST["schoolAdminTelephone"] ?? "";
+	$schoolCoordinatorName = $_POST["schoolCoordinatorName"] ?? "";
+	$schoolCoordinatorSurname = $_POST["schoolCoordinatorSurname"] ?? "";
+	$schoolCoordinatorEmail = $_POST["schoolCoordinatorEmail"] ?? "";
+	$schoolCoordinatorTelephone = $_POST["schoolCoordinatorTelephone"] ?? "";
 
 	// Instantiate AddProductContr class
 	include_once "../classes/dbh.classes.php";
@@ -18,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 	include_once "../classes/slug.classes.php";
 
 
-	$addSchool = new AddSchoolContr($name, $address, $district, $postcode, $city, $email, $telephone);
+	$addSchool = new AddSchoolContr($name, $address, $district, $postcode, $city, $email, $telephone, $schoolAdminName, $schoolAdminSurname, $schoolAdminEmail, $schoolAdminTelephone, $schoolCoordinatorName, $schoolCoordinatorSurname, $schoolCoordinatorEmail, $schoolCoordinatorTelephone);
 
 	// Running error handlers and school addSchool
 	$addSchool->addSchoolDb();

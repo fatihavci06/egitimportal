@@ -93,6 +93,44 @@ class ShowSchool extends School
 
         foreach ($schoolInfo as $value) {
 
+            $getAdminInfo = $this->getSchoolAdmin($value['id']);  
+            $getCoordinatorInfo = $this->getSchoolCoordinator($value['id']);  
+            $getStudentsInfo = $this->getSchoolStudents($value['id']);  
+            $getTeachersInfo = $this->getSchoolTeachers($value['id']); 
+
+            $coordinatorInfo = '';
+            $adminInfo = '';
+
+            if(count($getAdminInfo) > 0){
+                $adminName = $getAdminInfo[0]['name'] . ' ' . $getAdminInfo[0]['surname'];
+                $adminEmail = $getAdminInfo[0]['email'];
+                $adminTelephone = $getAdminInfo[0]['telephone'];
+
+                $adminInfo = '<!--begin::Details item-->
+                                <div class="fw-bold mt-5">Okul Admini</div>
+                                <div class="text-gray-600">
+                                    ' . $adminName . '<br>
+                                    <a href="mailto: ' . $adminEmail . '" class="text-gray-600 text-hover-primary">' . $adminEmail . '</a><br>
+                                    <a href="tel: ' . $adminTelephone . '" class="text-gray-600 text-hover-primary">' . $adminTelephone . '</a>
+                                </div>
+                            <!--end::Details item-->';
+            }
+
+            if(count($getCoordinatorInfo) > 0){
+                $coordinatorName = $getCoordinatorInfo[0]['name'] . ' ' . $getCoordinatorInfo[0]['surname'];
+                $coordinatorEmail = $getCoordinatorInfo[0]['email'];
+                $coordinatorTelephone = $getCoordinatorInfo[0]['telephone'];
+
+                $coordinatorInfo = '<!--begin::Details item-->
+                                <div class="fw-bold mt-5">Okul Eğitim Koordinatörü</div>
+                                <div class="text-gray-600">
+                                    ' . $coordinatorName . '<br>
+                                    <a href="mailto: ' . $coordinatorEmail . '" class="text-gray-600 text-hover-primary">' . $coordinatorEmail . '</a><br>
+                                    <a href="tel: ' . $coordinatorTelephone . '" class="text-gray-600 text-hover-primary">' . $coordinatorTelephone . '</a>
+                                </div>
+                            <!--end::Details item-->';
+            }
+
             $schoolList = '
                 <div class="flex-column flex-lg-row-auto w-100 w-xl-350px mb-10">
                     <!--begin::Card-->
@@ -115,39 +153,21 @@ class ShowSchool extends School
                                 <!--begin::Info-->
                                 <div class="d-flex flex-wrap flex-center">
                                     <!--begin::Stats-->
-                                    <div class="border border-gray-300 border-dashed rounded py-3 px-3 mb-3">
+                                    <div class="border border-gray-300 border-dashed rounded py-3 px-3 mb-3 me-5">
                                         <div class="fs-4 fw-bold text-gray-700">
-                                            <span class="w-75px">46</span>
-                                            <i class="ki-duotone ki-arrow-up fs-3 text-success">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
+                                            <span class="w-75px">' . count($getStudentsInfo) . '</span>
+                                            <i class="fa-solid fa-child fs-3 text-success"></i>
                                         </div>
                                         <div class="fw-semibold text-muted">Öğrenci Sayısı</div>
                                     </div>
                                     <!--end::Stats-->
                                     <!--begin::Stats-->
-                                    <div class="border border-gray-300 border-dashed rounded py-3 px-3 mx-4 mb-3">
-                                        <div class="fs-4 fw-bold text-gray-700">
-                                            <span class="w-50px">130</span>
-                                            <i class="ki-duotone ki-arrow-down fs-3 text-danger">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                        </div>
-                                        <div class="fw-semibold text-muted">Üniteler</div>
-                                    </div>
-                                    <!--end::Stats-->
-                                    <!--begin::Stats-->
                                     <div class="border border-gray-300 border-dashed rounded py-3 px-3 mb-3">
                                         <div class="fs-4 fw-bold text-gray-700">
-                                            <span class="w-50px">68</span>
-                                            <i class="ki-duotone ki-arrow-up fs-3 text-success">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
+                                            <span class="w-50px">' . count($getTeachersInfo) . '</span>
+                                            <i class="fa-solid fa-chalkboard-user fs-3 text-success"></i>
                                         </div>
-                                        <div class="fw-semibold text-muted">Sınavlar</div>
+                                        <div class="fw-semibold text-muted">Öğretmen Sayısı</div>
                                     </div>
                                     <!--end::Stats-->
                                 </div>
@@ -189,6 +209,8 @@ class ShowSchool extends School
                                         <a href="tel: ' . $value['telephone'] . '" class="text-gray-600 text-hover-primary">' . $value['telephone'] . '</a>
                                     </div>
                                     <!--end::Details item-->
+                                    ' . $adminInfo . '
+                                    ' . $coordinatorInfo . '
                                 </div>
                             </div>
                             <!--end::Details content-->
@@ -463,5 +485,86 @@ class ShowSchool extends School
 
 
         echo $divStart . $schoolList . $divEnd;
+    }
+
+    // List of Schools Students
+
+    public function showSchoolTeachersList($slug){
+
+        $schoolInfo = $this->getOneSchool($slug);
+
+        $schoolId = $schoolInfo[0]['id'];
+
+        $teachersInfo = $this->getSchoolTeachers($schoolId);
+
+        $dateFormat = new DateFormat();
+
+        foreach ($teachersInfo as $key => $value){
+            $teacherData = '<tr>
+                                <td>
+                                    <a href="#" class="text-gray-600 text-hover-primary mb-1"> ' . $value['name'] . ' ' . $value['surname'] . '</a>
+                                </td>
+                                <td>
+                                    <a href="mailto'. $value['email'] .'" class="text-gray-600 text-hover-primary mb-1"> ' . $value['email'] . '</a>
+                                </td>
+                                <td>
+                                    <a href="tel'. $value['telephone'] .'" class="text-gray-600 text-hover-primary mb-1"> ' . $value['telephone'] . '</a>
+                                </td>
+                                <td class="pe-0 text-end">
+                                    <a href="#" class="btn btn-sm btn-light image.png btn-active-light-primary" data-kt-menu-trigger="click"
+                                        data-kt-menu-placement="bottom-end">İşlemler
+                                        <i class="ki-duotone ki-down fs-5 ms-1"></i></a>
+                                </td>
+                            </tr>';
+            echo $teacherData;
+        }
+
+    }
+
+    // List of Schools Teachers
+
+    public function showSchoolStudentsList($slug){
+
+        $schoolInfo = $this->getOneSchool($slug);
+
+        $schoolId = $schoolInfo[0]['id'];
+
+        $studentsInfo = $this->getSchoolStudents($schoolId);
+
+        $dateFormat = new DateFormat();
+
+        foreach ($studentsInfo as $key => $value){
+            $studentData = '<tr>
+                                <td>
+                                    <a href="ogrenci-detay/' . $value['username'] . '" class="text-gray-600 text-hover-primary mb-1"> ' . $value['name'] . ' ' . $value['surname'] . '</a>
+                                </td>
+                                <td>
+                                    <a href="mailto'. $value['email'] .'" class="text-gray-600 text-hover-primary mb-1"> ' . $value['email'] . '</a>
+                                </td>
+                                <td>' . $dateFormat->changeDate($value['subscribed_end']) . '</td>
+                                <td class="pe-0 text-end">
+                                    <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
+                                        data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
+                                        <i class="ki-duotone ki-down fs-5 ms-1"></i></a>
+                                    <!--begin::Menu-->
+                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
+                                        data-kt-menu="true">
+                                        <!--begin::Menu item-->
+                                        <div class="menu-item px-3">
+                                            <a href="./ogrenci-detay/' . $value['username'] . '" class="menu-link px-3">Görüntüle</a>
+                                        </div>
+                                        <!--end::Menu item-->
+                                        <!--begin::Menu item-->
+                                        <div class="menu-item px-3">
+                                            <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
+                                        </div>
+                                        <!--end::Menu item-->
+                                    </div>
+                                    <!--end::Menu-->
+                                </td>
+                            </tr>';
+            echo $studentData;
+        }
+
     }
 }

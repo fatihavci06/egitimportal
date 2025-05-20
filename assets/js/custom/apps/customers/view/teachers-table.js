@@ -1,27 +1,27 @@
 "use strict";
 
 // Class definition
-var KTCustomerViewPaymentTable = function () {
+var KTCustomerViewPaymentTable2 = function () {
 
     // Define shared variables
-    var datatable;
-    var table = document.querySelector('#kt_table_customers_payment');
+    var datatable2;
+    var table2 = document.querySelector('#kt_table_teachers');
 
     // Private functions
     var initCustomerView = function () {
         // Set date data order
-        const tableRows = table.querySelectorAll('tbody tr');
+        const tableRows2 = table2.querySelectorAll('tbody tr');
 
-        tableRows.forEach(row => {
-            const dateRow = row.querySelectorAll('td');
-            const realDate = moment(dateRow[2].innerHTML, "DD MMM YYYY, LT").format(); // select date from 4th column in table
-            dateRow[2].setAttribute('data-order', realDate);
+        tableRows2.forEach(row => {
+            const dateRow2 = row.querySelectorAll('td');
+            const realDate2 = moment(dateRow2[2].innerHTML, "DD MMM YYYY, LT").format(); // select date from 4th column in table
+            dateRow2[2].setAttribute('data-order', realDate2);
         });
 
         // Init datatable --- more info on datatables: https://datatables.net/manual/
-        datatable = $(table).DataTable({
+        datatable2 = $(table2).DataTable({
             "info": false,
-            'order': [[3, 'desc']], // Set default order
+            'order': [[0, 'asc']], // Set default order
             "pageLength": 5,
             "lengthChange": false,
             'columnDefs': [
@@ -31,7 +31,7 @@ var KTCustomerViewPaymentTable = function () {
     }
 
     // Delete customer
-    var deleteRows = () => {
+   /*  var deleteRows = () => {
         // Select all delete buttons
         const deleteButtons = table.querySelectorAll('[data-kt-customer-table-filter="delete_row"]');
         
@@ -89,22 +89,22 @@ var KTCustomerViewPaymentTable = function () {
                 });
             })
         });
-    }
+    } */
 
     // Public methods
     return {
         init: function () {
-            if (!table) {
+            if (!table2) {
                 return;
             }
 
             initCustomerView();
-            deleteRows();
+           // deleteRows();
         }
     }
 }();
 
 // On document ready
 KTUtil.onDOMContentLoaded(function () {
-    KTCustomerViewPaymentTable.init();
+    KTCustomerViewPaymentTable2.init();
 });

@@ -64,15 +64,6 @@
                                     <div class="card-header border-0 pt-6">
                                         <!--begin::Card title-->
                                         <div class="card-title">
-                                            <!--begin::Search-->
-                                            <div class="d-flex align-items-center position-relative my-1">
-                                                <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                </i>
-                                                <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder="Ders Ara" />
-                                            </div>
-                                            <!--end::Search-->
                                         </div>
                                         <!--begin::Card title-->
                                         <!--begin::Card toolbar-->

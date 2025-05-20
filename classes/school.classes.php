@@ -53,6 +53,91 @@ class School extends Dbh {
 		
 	}
 
+	public function getOneSchoolById($id){
+
+		$stmt = $this->connect()->prepare('SELECT * FROM schools_lnp WHERE id = ?');
+
+		if(!$stmt->execute(array($id))){
+			$stmt = null;
+			exit();
+		}
+
+        $schoolData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $schoolData;
+
+		$stmt = null;
+		
+	}
+
+	public function getSchoolAdmin($id){
+
+		$stmt = $this->connect()->prepare('SELECT * FROM users_lnp WHERE role = ? AND school_id = ?');
+
+		if(!$stmt->execute(array(8, $id))){
+			$stmt = null;
+			exit();
+		}
+
+        $getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $getData;
+
+		$stmt = null;
+		
+	}
+
+	public function getSchoolCoordinator($id){
+
+		$stmt = $this->connect()->prepare('SELECT * FROM users_lnp WHERE role = ? AND school_id = ?');
+
+		if(!$stmt->execute(array(3, $id))){
+			$stmt = null;
+			exit();
+		}
+
+        $getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $getData;
+
+		$stmt = null;
+		
+	}
+
+	public function getSchoolStudents($id){
+
+		$stmt = $this->connect()->prepare('SELECT * FROM users_lnp WHERE role = ? AND school_id = ?');
+
+		if(!$stmt->execute(array(2, $id))){
+			$stmt = null;
+			exit();
+		}
+
+        $getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $getData;
+
+		$stmt = null;
+		
+	}
+
+	public function getSchoolTeachers($id){
+
+		$stmt = $this->connect()->prepare('SELECT * FROM users_lnp WHERE role = ? AND school_id = ?');
+
+		if(!$stmt->execute(array(4, $id))){
+			$stmt = null;
+			exit();
+		}
+
+        $getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $getData;
+
+		$stmt = null;
+		
+	}
+
 
 }
 

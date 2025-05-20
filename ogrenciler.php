@@ -3,7 +3,7 @@
 <?php
 session_start();
 define('GUARD', true);
-    if (isset($_SESSION['role']) AND ($_SESSION['role'] == 1 OR $_SESSION['role'] == 3 OR $_SESSION['role'] == 4)) {
+    if (isset($_SESSION['role']) AND ($_SESSION['role'] == 1 OR $_SESSION['role'] == 3 OR $_SESSION['role'] == 4 OR $_SESSION['role'] == 8)) {
     include_once "classes/dbh.classes.php";
     include_once "classes/school.classes.php";
     include_once "classes/school-view.classes.php";
@@ -90,7 +90,7 @@ define('GUARD', true);
 													<i class="ki-duotone ki-filter fs-2">
 														<span class="path1"></span>
 														<span class="path2"></span>
-													</i>Filter</button>
+													</i>Filtre</button>
 													<!--begin::Menu 1-->
 													<div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true" id="kt-toolbar-filter">
 														<!--begin::Header-->
@@ -197,9 +197,8 @@ define('GUARD', true);
                                                     <th class="min-w-125px">Fotoğraf</th>
                                                     <th class="min-w-125px">Öğrenci Adı</th>
                                                     <th class="min-w-125px">E-posta Adresi</th>
-                                                    <th class="min-w-125px">Telefon</th>
-                                                    <th class="min-w-125px">Okulu</th>
                                                     <th class="min-w-125px">Sınıfı</th>
+                                                    <th class="min-w-125px">Paket Bitiş Tarihi</th>
                                                     <th class="text-end min-w-70px">İşlemler</th>
                                                 </tr>
                                             </thead>

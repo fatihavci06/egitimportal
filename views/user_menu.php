@@ -2,12 +2,16 @@
 if (!defined('GUARD')) {
     die('Erişim yasak!');
 }
-?>	
+?>
 <base href="http://localhost/lineup_campus/" />
 <div class="app-navbar-item ms-3 ms-lg-4 me-lg-6" id="kt_header_user_menu_toggle">
     <!--begin::Menu wrapper-->
     <div class="cursor-pointer symbol symbol-30px symbol-lg-40px" data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
-        <img src="assets/media/profile/<?php echo $_SESSION['photo']; ?>" alt="user" />
+        <?php if ($_SESSION['photo'] == "") { ?>
+            <img src="assets/media/avatars/blank.png" alt="user" />
+        <?php } else { ?>
+            <img src="assets/media/profile/<?php echo $_SESSION['photo']; ?>" alt="user" />
+        <?php } ?>
     </div>
     <!--begin::User account menu-->
     <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px" data-kt-menu="true">
@@ -16,7 +20,11 @@ if (!defined('GUARD')) {
             <div class="menu-content d-flex align-items-center px-3">
                 <!--begin::Avatar-->
                 <div class="symbol symbol-50px me-5">
-                    <img alt="Logo" src="assets/media/profile/<?php echo $_SESSION['photo']; ?>" />
+                    <?php if ($_SESSION['photo'] == "") { ?>
+                        <img alt="Logo" src="assets/media/avatars/blank.png" alt="user" />
+                    <?php } else { ?>
+                        <img alt="Logo" src="assets/media/profile/<?php echo $_SESSION['photo']; ?>" />
+                    <?php } ?>
                 </div>
                 <!--end::Avatar-->
                 <!--begin::Username-->
@@ -54,25 +62,25 @@ if (!defined('GUARD')) {
                 <span class="menu-title">My Subscription</span>
                 <span class="menu-arrow"></span>
             </a>-->
-            <!--begin::Menu sub-->
-            <!--<div class="menu-sub menu-sub-dropdown w-175px py-4">-->
-                <!--begin::Menu item-->
-                <!--<div class="menu-item px-3">
+        <!--begin::Menu sub-->
+        <!--<div class="menu-sub menu-sub-dropdown w-175px py-4">-->
+        <!--begin::Menu item-->
+        <!--<div class="menu-item px-3">
                     <a href="account/referrals.html" class="menu-link px-5">Referrals</a>
                 </div>-->
-                <!--end::Menu item-->
-                <!--begin::Menu item-->
-                <!--<div class="menu-item px-3">
+        <!--end::Menu item-->
+        <!--begin::Menu item-->
+        <!--<div class="menu-item px-3">
                     <a href="account/billing.html" class="menu-link px-5">Billing</a>
                 </div>-->
-                <!--end::Menu item-->
-                <!--begin::Menu item-->
-                <!--<div class="menu-item px-3">
+        <!--end::Menu item-->
+        <!--begin::Menu item-->
+        <!--<div class="menu-item px-3">
                     <a href="account/statements.html" class="menu-link px-5">Payments</a>
                 </div>-->
-                <!--end::Menu item-->
-                <!--begin::Menu item-->
-                <!--<div class="menu-item px-3">
+        <!--end::Menu item-->
+        <!--begin::Menu item-->
+        <!--<div class="menu-item px-3">
                     <a href="account/statements.html" class="menu-link d-flex flex-stack px-5">Statements
                         <span class="ms-2 lh-0" data-bs-toggle="tooltip" title="View your statements">
                             <i class="ki-duotone ki-information-5 fs-5">
@@ -82,12 +90,12 @@ if (!defined('GUARD')) {
                             </i>
                         </span></a>
                 </div>-->
-                <!--end::Menu item-->
-                <!--begin::Menu separator-->
-                <!--<div class="separator my-2"></div>-->
-                <!--end::Menu separator-->
-                <!--begin::Menu item-->
-                <!--<div class="menu-item px-3">
+        <!--end::Menu item-->
+        <!--begin::Menu separator-->
+        <!--<div class="separator my-2"></div>-->
+        <!--end::Menu separator-->
+        <!--begin::Menu item-->
+        <!--<div class="menu-item px-3">
                     <div class="menu-content px-3">
                         <label class="form-check form-switch form-check-custom form-check-solid">
                             <input class="form-check-input w-30px h-20px" type="checkbox" value="1" checked="checked" name="notifications" />
@@ -95,9 +103,9 @@ if (!defined('GUARD')) {
                         </label>
                     </div>
                 </div>-->
-                <!--end::Menu item-->
-            <!--</div>-->
-            <!--end::Menu sub-->
+        <!--end::Menu item-->
+        <!--</div>-->
+        <!--end::Menu sub-->
         <!--</div>-->
         <!--end::Menu item-->
         <!--begin::Menu item-->

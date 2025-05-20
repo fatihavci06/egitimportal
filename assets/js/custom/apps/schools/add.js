@@ -9,6 +9,60 @@ var KTModalCustomersAdd = function () {
 	var form;
 	var modal;
 
+	
+    const maxLength = 11;
+	
+    const inputTel = $('#telephone');
+
+    // Karakter girişini engelleme
+    inputTel.on('input', function () {
+        if (this.value.length > maxLength) {
+            this.value = this.value.slice(0, maxLength);
+        }
+    });
+
+    const sayiGirisInput = document.getElementById("telephone");
+
+    sayiGirisInput.addEventListener("input", function (e) {
+        const girilenDeger = e.target.value;
+        const sadeceRakam = girilenDeger.replace(/[^0-9]/g, ""); // Sadece rakamları al
+        e.target.value = sadeceRakam; // Giriş değerini güncelle
+    });
+	
+    const inputTel2 = $('#schoolAdminTelephone');
+
+    // Karakter girişini engelleme
+    inputTel2.on('input', function () {
+        if (this.value.length > maxLength) {
+            this.value = this.value.slice(0, maxLength);
+        }
+    });
+
+    const sayiGirisInput2 = document.getElementById("schoolAdminTelephone");
+
+    sayiGirisInput2.addEventListener("input", function (e) {
+        const girilenDeger2 = e.target.value;
+        const sadeceRakam2 = girilenDeger2.replace(/[^0-9]/g, ""); // Sadece rakamları al
+        e.target.value = sadeceRakam2; // Giriş değerini güncelle
+    });
+	
+    const inputTel3 = $('#schoolCoordinatorTelephone');
+
+    // Karakter girişini engelleme
+    inputTel3.on('input', function () {
+        if (this.value.length > maxLength) {
+            this.value = this.value.slice(0, maxLength);
+        }
+    });
+
+    const sayiGirisInput3 = document.getElementById("schoolCoordinatorTelephone");
+
+    sayiGirisInput3.addEventListener("input", function (e) {
+        const girilenDeger3 = e.target.value;
+        const sadeceRakam3 = girilenDeger3.replace(/[^0-9]/g, ""); // Sadece rakamları al
+        e.target.value = sadeceRakam3; // Giriş değerini güncelle
+    });
+
 	// Init form inputs
 	var handleForm = function () {
 		// Init form validation rules. For more info check the FormValidation plugin's official documentation:https://formvalidation.io/
@@ -33,6 +87,20 @@ var KTModalCustomersAdd = function () {
 							}
 						}
 					},
+					'schoolAdminEmail': {
+						validators: {
+							emailAddress: {
+							  message: 'Geçerli bir e-posta adresi girin'
+							}
+						}
+					},
+					'schoolCoordinatorEmail': {
+						validators: {
+							emailAddress: {
+							  message: 'Geçerli bir e-posta adresi girin'
+							}
+						}
+					},
 					'city': {
 						validators: {
 							notEmpty: {
@@ -47,13 +115,48 @@ var KTModalCustomersAdd = function () {
 							}
 						}
 					},
-					'telephone': {
-						validators: {
+                    'telephone': {
+                        validators: {
+                            regexp: {
+                                regexp: /^0/,
+                                message: 'Telefon numarası 0 ile başlamalıdır'
+                            },
+                            stringLength: {
+                                min: 11,
+                                max: 11,
+                                message: 'Telefon numarası 11 haneli olmalıdır'
+                            },
 							notEmpty: {
-								message: 'Telefon Numarası zorunlu'
+								message: 'Telefon numarası zorunlu'
 							}
-						}
-					},
+                        }
+                    },
+                    'schoolAdminTelephone': {
+                        validators: {
+                            regexp: {
+                                regexp: /^0/,
+                                message: 'Telefon numarası 0 ile başlamalıdır'
+                            },
+                            stringLength: {
+                                min: 11,
+                                max: 11,
+                                message: 'Telefon numarası 11 haneli olmalıdır'
+                            },
+                        }
+                    },
+                    'schoolCoordinatorTelephone': {
+                        validators: {
+                            regexp: {
+                                regexp: /^0/,
+                                message: 'Telefon numarası 0 ile başlamalıdır'
+                            },
+                            stringLength: {
+                                min: 11,
+                                max: 11,
+                                message: 'Telefon numarası 11 haneli olmalıdır'
+                            },
+                        }
+                    },
 					'district': {
 						validators: {
 							notEmpty: {
@@ -111,6 +214,14 @@ var KTModalCustomersAdd = function () {
 							var city = $("#city").val();
 							var email = $("#email").val();
 							var telephone = $("#telephone").val();
+							var schoolAdminName = $("#schoolAdminName").val();
+							var schoolAdminSurname = $("#schoolAdminSurname").val();
+							var schoolAdminEmail = $("#schoolAdminEmail").val();
+							var schoolAdminTelephone = $("#schoolAdminTelephone").val();
+							var schoolCoordinatorName = $("#schoolCoordinatorName").val();
+							var schoolCoordinatorSurname = $("#schoolCoordinatorSurname").val();
+							var schoolCoordinatorEmail = $("#schoolCoordinatorEmail").val();
+							var schoolCoordinatorTelephone = $("#schoolCoordinatorTelephone").val();
 
 							$.ajax({
 								type: "POST",
@@ -122,7 +233,15 @@ var KTModalCustomersAdd = function () {
 									postcode: postcode,
 									city: city,
 									email: email,
-									telephone: telephone
+									telephone: telephone,
+									schoolAdminName: schoolAdminName,
+									schoolAdminSurname: schoolAdminSurname,
+									schoolAdminEmail: schoolAdminEmail,
+									schoolAdminTelephone: schoolAdminTelephone,
+									schoolCoordinatorName: schoolCoordinatorName,
+									schoolCoordinatorSurname: schoolCoordinatorSurname,
+									schoolCoordinatorEmail: schoolCoordinatorEmail,
+									schoolCoordinatorTelephone: schoolCoordinatorTelephone
 								},
 								dataType: "json",
 								success: function (response) {
@@ -168,7 +287,7 @@ var KTModalCustomersAdd = function () {
 								},
 								error: function(xhr, status, error, response) {
 									Swal.fire({
-										text: "Bir sorun oldu!",
+										text: "Bir sorun oldu!" + xhr.responseText,
 										icon: "error",
 										buttonsStyling: false,
 										confirmButtonText: "Tamam, anladım!",

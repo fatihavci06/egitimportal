@@ -18,18 +18,7 @@ class ShowParent extends Parents
             $parentList = '
                     <tr>
                         <td>
-                            <div class="form-check form-check-sm form-check-custom form-check-solid">
-                                <input class="form-check-input" type="checkbox" value="1" />
-                            </div>
-                        </td>
-                        <td>
-                            <div class="cursor-pointer symbol symbol-90px symbol-lg-90px"><img src="assets/media/profile/' . $value['parentPhoto'] . '"></div>
-                        </td>
-                        <td>
-                            <a href="./ogrenci-detay/' . $value['parentUsername'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['parentName'] . ' ' . $value['parentSurname']  . '</a>
-                        </td>
-                        <td>
-                            ' . $value['parentUsername'] . '
+                            ' . $value['parentName'] . ' ' . $value['parentSurname']  . '
                         </td>
                         <td>
                             <a href="mailto:' . $value['parentEmail'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['parentEmail'] . '</a>
@@ -40,27 +29,7 @@ class ShowParent extends Parents
                         <td>
                             ' . $value['childName'] . ' ' . $value['childSurname']  . '</a>
                         </td>
-                        <td>' . $dateFormat->changeDate($value['parentCreated_at']) . '</td>
-                        <td class="text-end">
-                            <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
-                                data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
-                                <i class="ki-duotone ki-down fs-5 ms-1"></i></a>
-                            <!--begin::Menu-->
-                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
-                                data-kt-menu="true">
-                                <!--begin::Menu item-->
-                                <div class="menu-item px-3">
-                                    <a href="./ogrenci-detay/' . $value['parentUsername'] . '" class="menu-link px-3">Görüntüle</a>
-                                </div>
-                                <!--end::Menu item-->
-                                <!--begin::Menu item-->
-                                <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
-                                </div>
-                                <!--end::Menu item-->
-                            </div>
-                            <!--end::Menu-->
-                        </td>
+                        <td class="text-end">' . @$dateFormat->changeDate($value['subscribed_end']) . '</td>
                     </tr>
                 ';
             echo $parentList;

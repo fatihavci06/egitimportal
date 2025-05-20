@@ -71,7 +71,7 @@ error_reporting(E_ALL); ini_set('display_errors', 1);
                                                     <span class="path1"></span>
                                                     <span class="path2"></span>
                                                 </i>
-                                                <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder="Veli Ara" />
+                                                <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder="Arama" />
                                             </div>
                                             <!--end::Search-->
                                         </div>
@@ -103,19 +103,11 @@ error_reporting(E_ALL); ini_set('display_errors', 1);
                                         <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_customers_table">
                                             <thead>
                                                 <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                    <th class="w-10px pe-2">
-                                                        <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                                            <input class="form-check-input" type="checkbox" data-kt-check="true" data-kt-check-target="#kt_customers_table .form-check-input" value="1" />
-                                                        </div>
-                                                    </th>
-                                                    <th class="min-w-125px">Fotoğraf</th>
-                                                    <th class="min-w-125px">veli Adı</th>
-                                                    <th class="min-w-125px">Kulanıcı Adı</th>
+                                                    <th class="min-w-125px">Veli Adı</th>
                                                     <th class="min-w-125px">E-posta Adresi</th>
                                                     <th class="min-w-125px">Telefon</th>
                                                     <th class="min-w-125px">Çocuğu</th>
-                                                    <th class="min-w-125px">Eklenme Tarihi</th>
-                                                    <th class="text-end min-w-70px">İşlemler</th>
+                                                    <th class="text-end min-w-125px">Paket Bitiş Tarihi</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="fw-semibold text-gray-600">

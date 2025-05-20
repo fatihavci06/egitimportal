@@ -23,6 +23,7 @@ RewriteRule ^sesli-kitap-dinle/([A-Za-z0-9_-]+)    ./sesli-kitap-dinle.php?q=$1 
 RewriteRule ^test-detay/([A-Za-z0-9_-]+)    ./test-detay.php?q=$1     [L,QSA]
 RewriteRule ^test-detay-ogrenci/([A-Za-z0-9_-]+)    ./test-detay-ogrenci.php?q=$1     [L,QSA]
 RewriteRule ^duyuru/([A-Za-z0-9_-]+)    ./duyuru.php?q=$1     [L,QSA]
+RewriteRule ^ogrenci-detay/([A-Za-z0-9_-]+)    ./ogrenci-detay.php?q=$1     [L,QSA]
 
 
 

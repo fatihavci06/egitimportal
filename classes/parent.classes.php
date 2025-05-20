@@ -7,7 +7,7 @@ class Parents extends Dbh
 	{
 
 		if ($_SESSION['role'] == 1) {
-			$stmt = $this->connect()->prepare('SELECT parent.id AS parentId, parent.name AS parentName, parent.surname AS parentSurname, parent.username AS parentUsername, parent.created_at AS parentCreated_at, parent.email AS parentEmail, parent.telephone AS parentTelephone, parent.photo AS parentPhoto, child.name AS childName, child.surname AS childSurname FROM users_lnp AS parent LEFT JOIN users_lnp AS child ON child.parent_id = parent.id WHERE parent.active = ? AND parent.role = ?');
+			$stmt = $this->connect()->prepare('SELECT parent.id AS parentId, parent.name AS parentName, parent.surname AS parentSurname, parent.username AS parentUsername, parent.created_at AS parentCreated_at, child.email AS parentEmail, child.telephone AS parentTelephone, parent.photo AS parentPhoto, child.name AS childName, child.surname AS childSurname, child.subscribed_end AS subscribed_end FROM users_lnp AS parent LEFT JOIN users_lnp AS child ON child.parent_id = parent.id WHERE parent.active = ? AND parent.role = ? ORDER BY child.subscribed_end ASC');
 
 			if (!$stmt->execute(array("1", "5"))) {
 				$stmt = null;
