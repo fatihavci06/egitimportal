@@ -14,7 +14,7 @@ $request->setPaidPrice($sepettoplam);
 $request->setCurrency(\Iyzipay\Model\Currency::TL);
 $request->setBasketId("$siparis_no");
 $request->setPaymentGroup(\Iyzipay\Model\PaymentGroup::PRODUCT);
-$request->setCallbackUrl("http://localhost/lineup_campus/odeme-sonuc.php");
+$request->setCallbackUrl("http://localhost/lineup_campus/odeme-sonuc");
 $request->setEnabledInstallments([1]);
 
 

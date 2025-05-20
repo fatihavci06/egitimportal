@@ -308,7 +308,7 @@ include_once "views/pages-head.php";
 								<label class="form-label fw-bold text-gray-900 fs-6">Öğrencinin Sınıfı</label>
 								<select class="form-control form-control-lg form-control-solid" name="classes" id="classes">
 									<option value="">Lütfen Seçiniz</option>
-									<?php $chooseClass->getClassSelectList(); ?>
+									<?php $chooseClass->getClassSelectListForCreateAccount(); ?>
 								</select>
 							</div>
 							<!--end::Input group-->
@@ -347,9 +347,9 @@ include_once "views/pages-head.php";
 
 							</div>
 
-							<div id="cashdiscount" class="mb-10">
+							<!-- <div id="cashdiscount" class="mb-10">
 
-							</div>
+							</div> -->
 
 							<!--begin::Input group-->
 							<div id="payment_method" class="fv-row mb-5" style="display: none;" required>

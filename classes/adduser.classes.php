@@ -71,7 +71,7 @@ class AddUser extends Dbh
 		$stmt = null;
 	}
 
-	public function setWaitingMoneyTransfer($kullanici_tckn, $pack, $price, $siparis_no, $kupon_kodu)
+	public function setWaitingMoneyTransfer($kullanici_tckn, $pack, $price, $siparis_no, $kupon_kodu, $vatAmount, $vat)
 	{
 
 		$stmt2 = $this->connect()->prepare('SELECT id FROM users_lnp WHERE identity_id = ?');
@@ -87,9 +87,9 @@ class AddUser extends Dbh
 
 		$user_id = $lastId['id'];
 
-		$stmt = $this->connect()->prepare('INSERT INTO money_transfer_list_lnp SET user_id = ?, status = ?, order_no = ?, ip_address = ?, pack_id = ?, amount = ?, coupon=?');
+		$stmt = $this->connect()->prepare('INSERT INTO money_transfer_list_lnp SET user_id = ?, status = ?, order_no = ?, ip_address = ?, pack_id = ?, amount = ?, coupon=?, kdv_amount = ?, kdv_percent = ?');
 
-		if (!$stmt->execute([$user_id, 0, $siparis_no, $user_ip, $pack, $price, $kupon_kodu])) {
+		if (!$stmt->execute([$user_id, 0, $siparis_no, $user_ip, $pack, $price, $kupon_kodu, $vatAmount, $vat])) {
 			$stmt = null;
 			header("location: ../admin.php?error=stmtfailed");
 			exit();
@@ -100,9 +100,9 @@ class AddUser extends Dbh
 
 	}
 
-	public function setPaymentInfo($kullanici_tckn, $pack, $siparis_numarasi, $isinstallment, $paidPrice, $commissionRate, $commissionFee, $couponCode)
+	public function setPaymentInfo($kullanici_tckn, $pack, $siparis_numarasi, $isinstallment, $paidPrice, $commissionRate, $commissionFee, $couponCode, $vatAmount, $vat)
 	{
-		$stmt = $this->connect()->prepare('INSERT INTO package_payments_lnp SET user_id = ?, pack_id = ?, order_no = ?, payment_type = ?, payment_status = ?,installment = ?, pay_amount = ?, commissionRate = ?, commissionFee = ?, ipAddress = ?, coupon=?');
+		$stmt = $this->connect()->prepare('INSERT INTO package_payments_lnp SET user_id = ?, pack_id = ?, order_no = ?, payment_type = ?, payment_status = ?,installment = ?, pay_amount = ?, commissionRate = ?, commissionFee = ?, ipAddress = ?, coupon=?, kdv_amount = ?, kdv_percent = ?');
 
 		$stmt2 = $this->connect()->prepare('SELECT id FROM users_lnp WHERE identity_id = ?');
 
@@ -117,7 +117,7 @@ class AddUser extends Dbh
 
 		$user_id = $lastId['id'];
 
-		if (!$stmt->execute([$user_id, $pack, $siparis_numarasi, "2", "3", $isinstallment, $paidPrice, $commissionRate, $commissionFee, $user_ip, $couponCode])) {
+		if (!$stmt->execute([$user_id, $pack, $siparis_numarasi, "2", "3", $isinstallment, $paidPrice, $commissionRate, $commissionFee, $user_ip, $couponCode, $vatAmount, $vat])) {
 			$stmt = null;
 			header("location: ../admin.php?error=stmtfailed");
 			exit();

@@ -74,10 +74,10 @@ class AddBankTransfer extends Dbh {
 		$stmt = null;
 	}
 
-	protected function addPackagePayment($user_id, $order_no, $ip_address, $pack_id, $amount, $coupon){
-		$stmt = $this->connect()->prepare('INSERT INTO package_payments_lnp SET user_id = ?, pack_id = ?, order_no = ?, payment_type = ?, payment_status = ?, ipAddress=?, pay_amount = ?, coupon = ?');
+	protected function addPackagePayment($user_id, $order_no, $ip_address, $pack_id, $amount, $coupon, $kdv_amount, $kdv_percent){
+		$stmt = $this->connect()->prepare('INSERT INTO package_payments_lnp SET user_id = ?, pack_id = ?, order_no = ?, payment_type = ?, payment_status = ?, ipAddress=?, pay_amount = ?, coupon = ?, kdv_amount = ?, kdv_percent = ?');
 
-		if(!$stmt->execute([$user_id, $pack_id, $order_no, "1", "2", $ip_address, $amount, $coupon])){
+		if(!$stmt->execute([$user_id, $pack_id, $order_no, "1", "2", $ip_address, $amount, $coupon, $kdv_amount, $kdv_percent])){
 			$stmt = null;
 			//header("location: ../admin.php?error=stmtfailed");
 			exit();

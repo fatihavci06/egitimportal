@@ -76,7 +76,7 @@ class AddBankTransferContr extends AddBankTransfer
 
 		$endTime = $bitis->format('Y-m-d H:i:s');
 
-		$this->addPackagePayment($this->user_id, $transferData[0]['order_no'], $transferData[0]['ip_address'], $transferData[0]['pack_id'], $transferData[0]['amount'], $transferData[0]['coupon']);
+		$this->addPackagePayment($this->user_id, $transferData[0]['order_no'], $transferData[0]['ip_address'], $transferData[0]['pack_id'], $transferData[0]['amount'], $transferData[0]['coupon'], $transferData[0]['kdv_amount'], $transferData[0]['kdv_percent']);
 
 		$this->updateTransfer($this->transfer_id);
 		$this->updateUser($this->user_id, $nowTime, $endTime, $password);

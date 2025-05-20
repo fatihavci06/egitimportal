@@ -117,7 +117,7 @@ class AddUserContr extends AddUser
 
 		$installmentNo = $packDetails[0]['max_installment'];
 
-		$creditCashDiscount = $packDetails[0]['discount'];
+		/* $creditCashDiscount = $packDetails[0]['discount']; */
 
 		$_SESSION['firstName'] = $this->firstName;
 		$_SESSION['lastName'] = $this->lastName;
@@ -137,7 +137,7 @@ class AddUserContr extends AddUser
 		$_SESSION['telephone'] = $this->telephone;
 		$_SESSION['couponCode'] = $this->couponCode;
 		$_SESSION['isinstallment'] = $installmentNo;
-		$_SESSION['creditCash'] = $creditCashDiscount;
+		/* $_SESSION['creditCash'] = $creditCashDiscount; */
 		$_SESSION['packUse'] = $packUse;
 
 		if ($this->payment_type == 2) {

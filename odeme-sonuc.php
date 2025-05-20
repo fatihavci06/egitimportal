@@ -89,6 +89,10 @@ $siparis_numarasi = $_SESSION['siparis_numarasi'];
 $isinstallment = $_SESSION['isinstallment'];
 $couponCode = $_SESSION['couponCode'];
 
+
+$vatAmount = $_SESSION['vatAmount'];
+$vat = $_SESSION['vat'];
+
 include_once "classes/packages.classes.php";
 
 $package = new Packages();
@@ -265,7 +269,7 @@ if ($odeme_durum == "FAILURE") {
 
     $gonderVeli = $kisiekle->setParent($veli_ad, $veli_soyad, $username2, $password2);
 
-    $odemeBilgisiGonder = $kisiekle->setPaymentInfo($kullanici_tckn, $pack, $siparis_numarasi, $isinstallment, $paidPrice, $commissionRate, $commissionFee, $couponCode);
+    $odemeBilgisiGonder = $kisiekle->setPaymentInfo($kullanici_tckn, $pack, $siparis_numarasi, $isinstallment, $paidPrice, $commissionRate, $commissionFee, $couponCode, $vatAmount, $vat);
 
     $error = "";
 

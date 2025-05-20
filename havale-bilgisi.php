@@ -38,11 +38,20 @@ foreach ($packInfo as $key => $value) {
     }
 }
 
-$cashDiscount = $_SESSION['creditCash'];
+/* $cashDiscount = $_SESSION['creditCash'];
 
-$price -= $price * ($cashDiscount / 100);
+$price -= $price * ($cashDiscount / 100); */
 
+$vat = 10;  // %10 KDV oranı
+$price += $price * ($vat / 100); // KDV'yi ekle
+$vatAmount = $price * ($vat / 100); // KDV tutarını hesapla
+$price = number_format($price, 2, '.', ''); // İki ondalık basamakla formatla
 
+$moneyTransferDiscount = $package->getTransferDiscount();
+$moneyTransferDiscount = $moneyTransferDiscount['discount'];
+
+$price -= $price * ($moneyTransferDiscount / 100); // Havale indirimini uygula
+$price = number_format($price, 2, '.', ''); // İki ondalık basamakla formatla
 
 function gucluSifreUret($uzunluk = 12)
 {
@@ -124,12 +133,12 @@ $gonder = $kisiekle->setStudentMoneyTransfer($firstName, $lastName, $username, $
 
 $gonderVeli = $kisiekle->setParent($veli_ad, $veli_soyad, $username2, $password2);
 
-$gonderHavale = $kisiekle->setWaitingMoneyTransfer($kullanici_tckn, $pack, $price, $siparis_no, $kupon_kodu);
+$gonderHavale = $kisiekle->setWaitingMoneyTransfer($kullanici_tckn, $pack, $price, $siparis_no, $kupon_kodu, $vatAmount, $vat);
 
 
 if ($packUse == 1) {
     $packages = new Packages();
-    $packages->updateUsedCuponCount($couponCode);
+    $packages->updateUsedCuponCount($kupon_kodu);
 } else {
 }
 
