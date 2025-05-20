@@ -156,7 +156,7 @@ switch ($service) {
 
 
             $stmt = $pdo->prepare("UPDATE settings_lnp SET tax_rate = ?,discount_rate=? WHERE school_id = 1");
-            $stmt->execute([$taxRatio,$discountRatio]);
+            $stmt->execute([$taxRatio, $discountRatio]);
 
             if ($stmt->rowCount() > 0) {
                 jsonResponse(200, 'success', 'Başarıyla güncellendi.');
@@ -458,11 +458,58 @@ switch ($service) {
             echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası: ' . $e->getMessage()]);
         }
         break;
-        
+
     case 'filter-payment-report-byuser':
-        $studentId = isset($_POST['student']) ? $_POST['student'] : null;
-        
+    $studentId = $_POST['student'];
+  
+    if (!empty($studentId)) {
        
+        // Belirli bir öğrenci için filtrele
+        $stmt = $pdo->prepare("SELECT 
+            u.id as id,
+            CONCAT(u.name, ' ', u.surname) as fullname,
+            pp.order_no as order_no,
+            pp.created_at as payment_date,
+            pt.name as payment_type,
+            pp.pay_amount as payment_total,
+            pp.kdv_amount as tax,
+            ps.name as payment_status
+        FROM `package_payments_lnp` pp
+        LEFT JOIN users_lnp u ON pp.user_id = u.id
+        LEFT JOIN payment_types_lnp pt ON pp.payment_type = pt.id
+        LEFT JOIN payment_status_lnp ps ON ps.id = pp.payment_status
+        WHERE u.id = :user_id");
+
+        $stmt->execute(['user_id' => $studentId]);
+    } else {
+        // Tüm öğrenciler için filtrele
+        $stmt = $pdo->prepare("SELECT 
+            u.id as id,
+            CONCAT(u.name, ' ', u.surname) as fullname,
+            pp.order_no as order_no,
+            pp.created_at as payment_date,
+            pt.name as payment_type,
+            pp.pay_amount as payment_total,
+            pp.kdv_amount as tax,
+            ps.name as payment_status
+        FROM `package_payments_lnp` pp
+        LEFT JOIN users_lnp u ON pp.user_id = u.id
+        LEFT JOIN payment_types_lnp pt ON pp.payment_type = pt.id
+        LEFT JOIN payment_status_lnp ps ON ps.id = pp.payment_status");
+
+        $stmt->execute();
+    }
+
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    echo json_encode([
+        'status' => 'success',
+        'data' => $results
+    ]);
+    break;
+
+
+
     case 'filter-main-school-content':
         $month = isset($_POST['month']) ? $_POST['month'] : null;
         $week = isset($_POST['week']) ? $_POST['week'] : null;

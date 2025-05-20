@@ -149,7 +149,7 @@ class Classes extends Dbh
 	public function getStudentList()
 	{
 
-		$stmt = $this->connect()->prepare('SELECT id, name FROM users_lnp where school_id = 1 and role=2');
+		$stmt = $this->connect()->prepare('SELECT id,  CONCAT(name, " ", surname) as fullname FROM users_lnp where school_id = 1 and role=2');
 
 		if (!$stmt->execute(array())) {
 			$stmt = null;

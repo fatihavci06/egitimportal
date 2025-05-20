@@ -73,7 +73,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <select class="form-select" id="student" required aria-label="Default select example">
                                                     <option value="">Seçiniz</option>
                                                     <?php foreach ($studentList as $student) { ?>
-                                                        <option value="<?= $student['id'] ?>"><?= $student['name'] ?></option>
+                                                        <option value="<?= $student['id'] ?>"><?= $student['fullname'] ?></option>
                                                     <?php } ?>
                                                 </select>
                                             </div>
@@ -90,8 +90,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         </div>
                                     </div>
 
-                                    <div class="row">
-                                        <table id="myTable" class="table align-middle table-row-dashed fs-6 gy-5">
+                                    <div class="row mt-3">
+                                        
+                                        <table id="paymentReport" class="table align-middle table-row-dashed fs-6 gy-5">
                                             <thead>
 
                                             </thead>
@@ -167,7 +168,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     e.preventDefault();
 
                     const data = {
-                        id: $('#student').val(),
+                        student: $('#student').val(),
                        
 
                     };
@@ -181,19 +182,21 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             if (response.status === 'success' && Array.isArray(response.data)) {
 
                                 // DataTable önceden başlatıldıysa temizle
-                                if ($.fn.DataTable.isDataTable('#myTable')) {
-                                    $('#myTable').DataTable().clear().destroy();
+                                if ($.fn.DataTable.isDataTable('#paymentReport')) {
+                                    $('#paymentReport').DataTable().clear().destroy();
                                 }
 
                                 // Yeni tabloyu başlat
-                                $('#myTable').DataTable({
+                                $('#paymentReport').DataTable({
                                     data: response.data,
-                                    columns: [{
-                                            data: 'id',
-                                            title: 'ID'
+                                     searching: true,
+                                    columns: [
+                                        {
+                                            data: 'order_no',
+                                            title: 'Sipariş No'
                                         },
                                         {
-                                            data: 'name',
+                                            data: 'fullname',
                                             title: 'Kişi'
                                         },
                                         {
@@ -209,12 +212,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             title: 'Toplam Ödeme'
                                         },
                                         {
-                                            data: 'payment_total',
-                                            title: 'Toplam Ödeme'
-                                        },
-                                        {
                                             data: 'tax',
                                             title: 'Toplam Vergi'
+                                        },
+                                        {
+                                            data: 'payment_status',
+                                            title: 'Ödeme Durumu'
                                         }
                                     ]
                                 });
@@ -235,24 +238,21 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 $('#month').val('');
 
                 // select2 ile oluşturulan selectbox'ları sıfırla ve görünümü güncelle
-                $('#week').val('').trigger('change');
-                $('#activity_title').val('').trigger('change');
-                $('#content_title').val('').trigger('change');
-                $('#concept_title').val('').trigger('change');
-                $('#main_school_class_id').val('').trigger('change');
+                $('#student').val('').trigger('change');
+              
 
 
                 // Eğer DataTable varsa içeriğini temizle
-                if ($.fn.DataTable.isDataTable('#myTable')) {
-                    $('#myTable').DataTable().clear().draw();
+                if ($.fn.DataTable.isDataTable('#paymentReport')) {
+                    $('#paymentReport').DataTable().clear().draw();
                 }
 
                 // (Opsiyonel) select2 kullanıyorsan .trigger('change') ekle
                 // $('.form-select').val('').trigger('change');
 
                 // Eğer tablo daha önce yüklenmişse sıfırla
-                if ($.fn.DataTable.isDataTable('#myTable')) {
-                    $('#myTable').DataTable().clear().draw();
+                if ($.fn.DataTable.isDataTable('#paymentReport')) {
+                    $('#paymentReport').DataTable().clear().draw();
                 }
             });
         </script>
