@@ -18,8 +18,8 @@ if (!defined('GUARD')) {
             <!--end::Sidebar mobile toggle-->
             <!--begin::Logo-->
             <a href="index" class="app-sidebar-logo">
-                <img alt="Logo" src="assets/media/logos/lineup-campus-logo.jpg" class="h-75px theme-light-show" />
-                <img alt="Logo" src="assets/media/logos/lineup-campus-logo.jpg" class="h-75px theme-dark-show" />
+                <img alt="Logo" src="assets/media/logos/lineup-campus-logo.jpg" class="h-70px theme-light-show" />
+                <img alt="Logo" src="assets/media/logos/lineup-campus-logo.jpg" class="h-70px theme-dark-show" />
             </a>
             <!--end::Logo-->
             <!--begin::Sidebar toggle-->
