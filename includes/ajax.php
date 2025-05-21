@@ -458,14 +458,144 @@ switch ($service) {
             echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası: ' . $e->getMessage()]);
         }
         break;
+    case 'paymenttypegraphicreport':
+        function getGroupedByPeriod($pdo, $dateFormat)
+        {
+            $stmt = $pdo->prepare("
+                SELECT 
+                    DATE_FORMAT(pp.created_at, ?) AS period,
+                    pt.name AS payment_type,
+                    SUM(pp.pay_amount) AS total_payment,
+                    SUM(pp.kdv_amount) AS total_tax
+                FROM package_payments_lnp pp
+                LEFT JOIN payment_types_lnp pt ON pt.id = pp.payment_type
+                GROUP BY period, pt.name
+                ORDER BY period
+            ");
+            $stmt->execute([$dateFormat]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
 
+        $response = [
+            'daily' => getGroupedByPeriod($pdo, '%Y-%m-%d'),
+            'weekly' => getGroupedByPeriod($pdo, '%x-W%v'),
+            'monthly' => getGroupedByPeriod($pdo, '%Y-%m'),
+            'yearly' => getGroupedByPeriod($pdo, '%Y')
+        ];
+
+        header('Content-Type: application/json');
+        echo json_encode($response);
+        break;
+    case 'userpaymentreport':
+        if ($_GET['action'] === 'kullaniciBasinaGelir') {
+
+            $period = $_GET['period'] ?? 'daily'; // daily, weekly, monthly, yearly
+
+            // Kullanıcı rolü 2 olanların sayısını al
+            $userCountStmt = $pdo->prepare("SELECT COUNT(*) FROM users_lnp WHERE role = 2");
+            $userCountStmt->execute();
+            $userCount = (int) $userCountStmt->fetchColumn();
+
+            if ($userCount === 0) {
+                echo json_encode(['data' => []]);
+                exit;
+            }
+
+            // Tarih formatı ve GROUP BY ifadesi
+            switch ($period) {
+                case 'weekly':
+                    $dateFormat = '%x-W%v';
+                    $groupBy = "YEARWEEK(pp.created_at, 3)";
+                    break;
+                case 'monthly':
+                    $dateFormat = '%Y-%m';
+                    $groupBy = "DATE_FORMAT(pp.created_at, '%Y-%m')";
+                    break;
+                case 'yearly':
+                    $dateFormat = '%Y';
+                    $groupBy = "YEAR(pp.created_at)";
+                    break;
+                case 'daily':
+                default:
+                    $dateFormat = '%Y-%m-%d';
+                    $groupBy = "DATE(pp.created_at)";
+                    break;
+            }
+
+            $stmt = $pdo->prepare("
+        SELECT 
+            DATE_FORMAT(pp.created_at, ?) AS period,
+            ROUND(SUM(pp.pay_amount) / ?, 2) AS avg_payment,
+            ROUND(SUM(pp.kdv_amount) / ?, 2) AS avg_tax
+        FROM package_payments_lnp pp
+        INNER JOIN users_lnp u ON u.id = pp.user_id AND u.role = 2
+        GROUP BY $groupBy
+        ORDER BY period
+    ");
+
+            $stmt->execute([$dateFormat, $userCount, $userCount]);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            echo json_encode(['data' => $result]);
+            exit;
+        }
+        break;
+
+    case 'graphicreport':
+        try {
+            $daily = $pdo->query("
+    SELECT DATE(created_at) AS day, 
+           SUM(pay_amount) AS total_payment, 
+           ROUND(SUM(kdv_amount), 0) AS total_tax 
+    FROM package_payments_lnp 
+    GROUP BY day 
+    ORDER BY day
+")->fetchAll(PDO::FETCH_ASSOC);
+
+            $weekly = $pdo->query("
+    SELECT CONCAT(YEAR(created_at), '-W', LPAD(WEEK(created_at, 1), 2, '0')) AS week, 
+           SUM(pay_amount) AS total_payment, 
+           ROUND(SUM(kdv_amount), 0) AS total_tax 
+    FROM package_payments_lnp 
+    GROUP BY week 
+    ORDER BY week
+")->fetchAll(PDO::FETCH_ASSOC);
+
+            $monthly = $pdo->query("
+    SELECT DATE_FORMAT(created_at, '%Y-%m') AS period, 
+           SUM(pay_amount) AS total_payment, 
+           ROUND(SUM(kdv_amount), 0) AS total_tax 
+    FROM package_payments_lnp 
+    GROUP BY period 
+    ORDER BY period
+")->fetchAll(PDO::FETCH_ASSOC);
+
+            $yearly = $pdo->query("
+    SELECT YEAR(created_at) AS year, 
+           SUM(pay_amount) AS total_payment, 
+           ROUND(SUM(kdv_amount), 0) AS total_tax 
+    FROM package_payments_lnp 
+    GROUP BY year 
+    ORDER BY year
+")->fetchAll(PDO::FETCH_ASSOC);
+
+            echo json_encode([
+                'daily' => $daily,
+                'weekly' => $weekly,
+                'monthly' => $monthly,
+                'yearly' => $yearly
+            ]);
+        } catch (Exception $e) {
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+        break;
     case 'filter-payment-report-byuser':
-    $studentId = $_POST['student'];
-  
-    if (!empty($studentId)) {
-       
-        // Belirli bir öğrenci için filtrele
-        $stmt = $pdo->prepare("SELECT 
+        $studentId = $_POST['student'];
+
+        if (!empty($studentId)) {
+
+            // Belirli bir öğrenci için filtrele
+            $stmt = $pdo->prepare("SELECT 
             u.id as id,
             CONCAT(u.name, ' ', u.surname) as fullname,
             pp.order_no as order_no,
@@ -480,10 +610,10 @@ switch ($service) {
         LEFT JOIN payment_status_lnp ps ON ps.id = pp.payment_status
         WHERE u.id = :user_id");
 
-        $stmt->execute(['user_id' => $studentId]);
-    } else {
-        // Tüm öğrenciler için filtrele
-        $stmt = $pdo->prepare("SELECT 
+            $stmt->execute(['user_id' => $studentId]);
+        } else {
+            // Tüm öğrenciler için filtrele
+            $stmt = $pdo->prepare("SELECT 
             u.id as id,
             CONCAT(u.name, ' ', u.surname) as fullname,
             pp.order_no as order_no,
@@ -497,16 +627,16 @@ switch ($service) {
         LEFT JOIN payment_types_lnp pt ON pp.payment_type = pt.id
         LEFT JOIN payment_status_lnp ps ON ps.id = pp.payment_status");
 
-        $stmt->execute();
-    }
+            $stmt->execute();
+        }
 
-    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    echo json_encode([
-        'status' => 'success',
-        'data' => $results
-    ]);
-    break;
+        echo json_encode([
+            'status' => 'success',
+            'data' => $results
+        ]);
+        break;
 
 
 
@@ -583,7 +713,37 @@ switch ($service) {
         break;
 
 
+    case 'toppackages':
+        try {
+        $stmt = $pdo->query("
+            SELECT 
+                c.id AS class_id,
+                c.name AS class_name,
+                p.id AS package_id,
+                p.name AS package_name,
+                COUNT(DISTINCT pp.user_id) AS buyer_count
+               
+            FROM package_payments_lnp pp
+            INNER JOIN packages_lnp p ON p.id = pp.pack_id
+            INNER JOIN classes_lnp c ON c.id = p.class_id
+            GROUP BY c.id, c.name, p.id, p.name
+            ORDER BY buyer_count DESC
+            LIMIT 10
+        ");
 
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            'status' => 'success',
+            'data' => $result
+        ]);
+    } catch (Exception $e) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => $e->getMessage()
+        ]);
+    }
+    exit;
 
 
     // Diğer servisler buraya eklenebilir

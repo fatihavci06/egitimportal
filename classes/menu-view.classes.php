@@ -104,7 +104,7 @@ class ShowMenu extends Menus
 
                     $menuList .= '<div data-kt-menu-trigger="click" class="mb-3 menu-item' . $show . '' . $here . ' menu-accordion">
                                 <!--begin:Menu link-->
-                                <span class="menu-link">
+                                <span class="menu-link"  >
                                     <span class="menu-icon">
                                         <i class="' . $value['classes'] . ' fs-1"></i>
                                     </span>

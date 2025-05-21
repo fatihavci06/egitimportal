@@ -49924,11 +49924,11 @@ body,
   transition: padding 0.3s ease !important;
 }
 .app-sidebar .menu > .menu-item > .menu-link {
-  height: 45px;
+  height: 27px;
   margin-bottom: 3px;
 }
 .app-sidebar .menu > .menu-item > .menu-link .menu-title {
-  font-size: 1.15rem;
+  font-size: 0.90rem;
   font-weight: 600;
 }
 .app-sidebar .menu > .menu-item > .menu-sub > .toggle {
@@ -50112,8 +50112,8 @@ body,
   margin-bottom: 0;
 }
 .app-sidebar .menu > .menu-item .menu-item > .menu-link .menu-title {
-  font-size: 1.15rem;
-  font-weight: 600;
+  font-size: 0.85rem;
+  font-weight: 700;
   padding-top: 0.2rem;
   padding-bottom: 0.2rem;
 }
