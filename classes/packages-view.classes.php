@@ -1,6 +1,7 @@
 <?php
 include_once "dateformat.classes.php";
-include_once "classes/packages.classes.php";
+include_once "packages.classes.php";
+
 class ShowPackage extends Packages
 {
 
