@@ -715,7 +715,7 @@ switch ($service) {
 
     case 'toppackages':
         try {
-        $stmt = $pdo->query("
+            $stmt = $pdo->query("
             SELECT 
                 c.id AS class_id,
                 c.name AS class_name,
@@ -731,19 +731,121 @@ switch ($service) {
             LIMIT 10
         ");
 
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        echo json_encode([
-            'status' => 'success',
-            'data' => $result
-        ]);
-    } catch (Exception $e) {
-        echo json_encode([
-            'status' => 'error',
-            'message' => $e->getMessage()
-        ]);
-    }
-    exit;
+            echo json_encode([
+                'status' => 'success',
+                'data' => $result
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
+        exit;
+    case 'expired-user-count-report':
+        try {
+            $today = date('Y-m-d');
+
+            // Günlük
+            $daily = $pdo->query("
+            SELECT DATE(created_at) AS day, COUNT(*) AS user_count
+            FROM users_lnp
+            WHERE role=2 and  subscribed_end < '$today'
+            GROUP BY day
+            ORDER BY day
+        ")->fetchAll(PDO::FETCH_ASSOC);
+
+            // Haftalık
+            $weekly = $pdo->query("
+            SELECT CONCAT(YEAR(created_at), '-W', LPAD(WEEK(created_at, 1), 2, '0')) AS week, COUNT(*) AS user_count
+            FROM users_lnp
+            WHERE role=2 and  subscribed_end < '$today'
+            GROUP BY week
+            ORDER BY week
+        ")->fetchAll(PDO::FETCH_ASSOC);
+
+            // Aylık
+            $monthly = $pdo->query("
+            SELECT DATE_FORMAT(created_at, '%Y-%m') AS period, COUNT(*) AS user_count
+            FROM users_lnp
+            WHERE role=2 and  subscribed_end < '$today'
+            GROUP BY period
+            ORDER BY period
+        ")->fetchAll(PDO::FETCH_ASSOC);
+
+            // Yıllık
+            $yearly = $pdo->query("
+            SELECT YEAR(created_at) AS year, COUNT(*) AS user_count
+            FROM users_lnp
+            WHERE role=2 and subscribed_end < '$today'
+            GROUP BY year
+            ORDER BY year
+        ")->fetchAll(PDO::FETCH_ASSOC);
+
+            echo json_encode([
+                'status' => 'success',
+                'daily' => $daily,
+                'weekly' => $weekly,
+                'monthly' => $monthly,
+                'yearly' => $yearly,
+            ]);
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        break;
+    case 'active-user-count-report':
+        try {
+            $today = date('Y-m-d');
+
+            // Günlük
+            $daily = $pdo->query("
+            SELECT DATE(created_at) AS day, COUNT(*) AS user_count
+            FROM users_lnp
+            WHERE role=2 and  subscribed_end > '$today'
+            GROUP BY day
+            ORDER BY day
+        ")->fetchAll(PDO::FETCH_ASSOC);
+
+            // Haftalık
+            $weekly = $pdo->query("
+            SELECT CONCAT(YEAR(created_at), '-W', LPAD(WEEK(created_at, 1), 2, '0')) AS week, COUNT(*) AS user_count
+            FROM users_lnp
+            WHERE role=2 and  subscribed_end > '$today'
+            GROUP BY week
+            ORDER BY week
+        ")->fetchAll(PDO::FETCH_ASSOC);
+
+            // Aylık
+            $monthly = $pdo->query("
+            SELECT DATE_FORMAT(created_at, '%Y-%m') AS period, COUNT(*) AS user_count
+            FROM users_lnp
+            WHERE role=2 and  subscribed_end > '$today'
+            GROUP BY period
+            ORDER BY period
+        ")->fetchAll(PDO::FETCH_ASSOC);
+
+            // Yıllık
+            $yearly = $pdo->query("
+            SELECT YEAR(created_at) AS year, COUNT(*) AS user_count
+            FROM users_lnp
+            WHERE role=2 and subscribed_end > '$today'
+            GROUP BY year
+            ORDER BY year
+        ")->fetchAll(PDO::FETCH_ASSOC);
+
+            echo json_encode([
+                'status' => 'success',
+                'daily' => $daily,
+                'weekly' => $weekly,
+                'monthly' => $monthly,
+                'yearly' => $yearly,
+            ]);
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        break;
 
 
     // Diğer servisler buraya eklenebilir
