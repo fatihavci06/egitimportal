@@ -147,7 +147,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         height: 400
       },
       series: [{
-        name: 'Aktif Kullanıcı Sayısı',
+        name: 'Toplam Kullanıcı Sayısı',
         data: counts
       }],
       xaxis: {
@@ -195,10 +195,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     const selected = this.value;
     if (chartData && chartData[selected]) {
       const titleMap = {
-        daily: "Günlük Aktif Kullanıcılar",
-        weekly: "Haftalık Aktif Kullanıcılar",
-        monthly: "Aylık Aktif Kullanıcılar",
-        yearly: "Yıllık Aktif Kullanıcılar"
+        daily: "Günlük Toplam Kullanıcılar",
+        weekly: "Haftalık Toplam Kullanıcılar",
+        monthly: "Aylık Toplam Kullanıcılar",
+        yearly: "Yıllık Toplam Kullanıcılar"
       };
       renderChart(chartData[selected], titleMap[selected]);
     }
@@ -217,7 +217,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
       // Varsayılan olarak günlük veriyi göster
       document.getElementById('time-range').value = 'daily';
-      renderChart(data.daily, 'Günlük Aktif Kullanıcılar');
+      renderChart(data.daily, 'Günlük Toplam Kullanıcılar');
     })
     .catch(err => alert('Hata: ' + err.message));
 </script>
