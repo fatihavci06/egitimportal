@@ -78,6 +78,21 @@ class Classes extends Dbh
 		return $data;
 		
 	}
+	public function getSMSApiSettings()
+	{
+		
+		$stmt = $this->connect()->prepare('SELECT * from sms_settings_lnp limit 1');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return $data;
+		
+	}
 	public function getAgeGroup($class_id = null)
 	{
 

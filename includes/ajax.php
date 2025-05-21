@@ -142,6 +142,11 @@ switch ($service) {
     case 'settingsUpdate':
         $taxRatio = isset($_POST['taxRatio']) ? cleanInput($_POST['taxRatio']) : null;
         $discountRatio = isset($_POST['discountRatio']) ? cleanInput($_POST['discountRatio']) : null;
+        $notifySms = isset($_POST['notifySms']) ? cleanInput($_POST['notifySms']) : null;
+        $notifyEmail = isset($_POST['notifyEmail']) ? cleanInput($_POST['notifyEmail']) : null;
+        $notificationStartDay = isset($_POST['notificationStartDay']) ? cleanInput($_POST['notificationStartDay']) : null;
+        $notificationCount = isset($_POST['notificationCount']) ? cleanInput($_POST['notificationCount']) : null;
+
         try {
             if (!$taxRatio) {
                 throw new Exception('Vergi oranı boş olamaz!');
@@ -149,22 +154,40 @@ switch ($service) {
             if ($taxRatio <= 0) {
                 throw new Exception('Vergi oranı 0 veya negatif olamaz!');
             }
-
             if ($taxRatio > 100) {
                 throw new Exception('Vergi oranı 100\'den büyük olamaz!');
             }
+            if (!is_numeric($notificationCount) || intval($notificationCount) < 0 || intval($notificationCount) > 5) {
+                throw new Exception('Bildirim sayısı 0 ile 5 arasında bir tamsayı olmalıdır!');
+            }
+            if (!is_numeric($notificationStartDay) || intval($notificationStartDay) < 0 || intval($notificationStartDay) > 100) {
+                throw new Exception('Bildirim başlangıç günü 0 ile 100 arasında bir tamsayı olmalıdır!');
+            }
 
 
-            $stmt = $pdo->prepare("UPDATE settings_lnp SET tax_rate = ?,discount_rate=? WHERE school_id = 1");
-            $stmt->execute([$taxRatio, $discountRatio]);
+            $notificationCount = intval($notificationCount);
+            $notificationStartDay = intval($notificationStartDay);
 
-            if ($stmt->rowCount() > 0) {
-                jsonResponse(200, 'success', 'Başarıyla güncellendi.');
+            // Önce mevcut kayıt var mı kontrol edilir
+            $checkStmt = $pdo->prepare("SELECT COUNT(*) FROM settings_lnp WHERE school_id = 1");
+            $checkStmt->execute();
+            $exists = $checkStmt->fetchColumn();
+
+            if ($exists) {
+                // Güncelleme
+                $updateStmt = $pdo->prepare("UPDATE settings_lnp SET tax_rate = ?, discount_rate = ?, notify_sms = ?, notify_email = ?, notification_start_day = ?, notification_count = ? WHERE school_id = 1");
+                $updateStmt->execute([$taxRatio, $discountRatio, $notifySms, $notifyEmail, $notificationStartDay, $notificationCount]);
+
+                jsonResponse(200, 'success', 'Ayarlar güncellendi.');
             } else {
-                jsonResponse(500, 'error', 'Güncellenemedi veya zaten bu veriler mevcut.');
+                // Yeni kayıt ekleme
+                $insertStmt = $pdo->prepare("INSERT INTO settings_lnp (school_id, tax_rate, discount_rate, notify_sms, notify_email, notification_start_day, notification_count) VALUES (1, ?, ?, ?, ?, ?, ?)");
+                $insertStmt->execute([$taxRatio, $discountRatio, $notifySms, $notifyEmail, $notificationStartDay, $notificationCount]);
+
+                jsonResponse(200, 'success', 'Ayarlar kaydedildi.');
             }
         } catch (Exception $e) {
-            http_response_code(422); // Veya uygun bir HTTP kodu
+            http_response_code(422);
             echo json_encode([
                 'status' => 'error',
                 'message' => $e->getMessage()
@@ -172,6 +195,7 @@ switch ($service) {
             exit();
         }
         break;
+
     case 'updatePackage':
 
         $packageName = isset($_POST['packageName']) ? cleanInput($_POST['packageName']) : null;
@@ -589,6 +613,58 @@ switch ($service) {
             echo json_encode(['error' => $e->getMessage()]);
         }
         break;
+
+    case 'filter-expire-list':
+        $startDate = $_POST['start_date'] ?? null;
+        $stopDate = $_POST['stop_date'] ?? null;
+        try {
+            if (!$startDate || empty($startDate)) {
+                throw new Exception('Başlangıç tarihi parametresi eksik.');
+            }
+            if (!$stopDate || empty($stopDate)) {
+                throw new Exception('Bitiş tarihi parametresi eksik.');
+            }
+
+            // Sorgu hazırlanıyor
+            $sql = "SELECT 
+                    u.id, 
+                    u.parent_id, 
+                    CONCAT(u.name, ' ', u.surname) AS fullname, 
+                    u.subscribed_end, 
+                    u.telephone AS parent_phone, 
+                    CONCAT(p.name, ' ', p.surname) AS parent_fullname 
+                FROM users_lnp u 
+                LEFT JOIN users_lnp p ON u.parent_id = p.id 
+                WHERE u.role = 2 
+                  AND u.subscribed_end BETWEEN :start_date AND :stop_date
+                ORDER BY u.subscribed_end DESC";
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                'start_date' => $startDate,
+                'stop_date' => $stopDate
+            ]);
+
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+            echo json_encode([
+                'status' => 'success',
+                'data' => $results
+            ]);
+        } catch (Exception $e) {
+            http_response_code(422); // Veya uygun bir HTTP kodu
+            echo json_encode([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+            exit();
+        }
+
+        break;
+
+
+
     case 'filter-payment-report-byuser':
         $studentId = $_POST['student'];
 
@@ -744,6 +820,46 @@ switch ($service) {
             ]);
         }
         exit;
+    case 'sms-settings':
+        $username = $_POST['username'];
+        $password = $_POST['password'];
+        try {
+            if (!$username) {
+                throw new Exception('username adı boş olamaz');
+            }
+            if (!$password) {
+                throw new Exception('password boş olamaz');
+            }
+
+
+
+            $check = $pdo->query("SELECT id FROM sms_settings_lnp LIMIT 1");
+
+            if ($check->rowCount() > 0) {
+                // Varsa güncelle (ilk kaydı güncelle)
+                $stmt = $pdo->prepare("UPDATE sms_settings_lnp SET username = ?, password = ? LIMIT 1");
+                $stmt->execute([$username, $password]);
+            } else {
+                // Yoksa yeni kayıt ekle
+                $stmt = $pdo->prepare("INSERT INTO sms_settings_lnp (username, password) VALUES (?, ?)");
+                $stmt->execute([$username, $password]);
+            }
+
+            if ($stmt->rowCount() > 0) {
+                jsonResponse(200, 'success', 'Ayarlar başarıyla kaydedildi veya güncellendi.');
+            } else {
+                jsonResponse(500, 'error', 'İşlem gerçekleştirilemedi.');
+            }
+        } catch (Exception $e) {
+            http_response_code(422); // Veya uygun bir HTTP kodu
+            echo json_encode([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+            exit();
+        }
+
+        break;
     case 'expired-user-count-report':
         try {
             $today = date('Y-m-d');

@@ -70,14 +70,48 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             $data = new Classes();
                                             $data = $data->getSettings();
                                             ?>
+                                            <h3 class="mt-4">Muhasebe Ayarları</h3>
                                             <div class="mb-3 mt-4">
                                                 <label for="tax_rate" class="form-label">KDV Oranı</label>
-                                                <input type="number" class="form-control" id="tax_rate" name="tax_ratio" value="<?= $data['tax_rate'] ; ?>" placeholder="KDV Oranı ">
+                                                <input type="number" class="form-control" id="tax_rate" name="tax_ratio" value="<?= $data['tax_rate']; ?>" placeholder="KDV Oranı ">
                                             </div>
 
                                             <div class="mb-3 mt-4">
                                                 <label for="discount_rate" class="form-label">Peşin Alımda İndirim Oranı</label>
                                                 <input type="number" class="form-control" id="discount_rate" name="discount_ratio" value="<?= $data['discount_rate']; ?>" placeholder="KDV Oranı ">
+                                            </div>
+                                            <h3 class="mt-5">Bildirim Ayarları</h3>
+                                            <div class="mb-3 mt-4">
+                                                <label class="form-label">Aboneliği Biten Kullanıcılara Bildirim Gönderim Tipi</label>
+                                                <!-- E-posta Bildirimi -->
+                                                <div class="form-check">
+                                                    <!-- unchecked durum için -->
+                                                    <input type="hidden" name="notify_email" value="0">
+                                                    <!-- checked durum için -->
+                                                    <input class="form-check-input" type="checkbox" id="notify_email" name="notify_email" value="1" <?= (isset($data['notify_email']) && $data['notify_email'] == 1) ? 'checked' : '' ?>>
+                                                    <label for="notify_email">E-posta</label>
+                                                </div>
+
+                                                <!-- SMS Bildirimi -->
+                                                <div class="form-check mt-3">
+                                                    <!-- unchecked durum için -->
+                                                    <input type="hidden" name="notify_sms" value="0">
+                                                    <!-- checked durum için -->
+                                                    <input class="form-check-input" type="checkbox" id="notify_sms" name="notify_sms" value="1" <?= (isset($data['notify_sms']) && $data['notify_sms'] == 1) ? 'checked' : '' ?>>
+
+                                                    <label for="notify_sms">SMS</label>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="mb-3 mt-4">
+                                                <label for="notification_count" class="form-label">Bildirim Sayısı</label>
+                                                <input type="text" class="form-control" id="notification_count" name="notification_count" value="<?= $data['notification_count'] ?>" placeholder="Gönderim sayısı">
+                                            </div>
+
+                                            <div class="mb-3 mt-4">
+                                                <label for="notification_start_day" class="form-label">Kaç gün önce bildirim gönderilmeye başlansın</label>
+                                                <input type="text" class="form-control" id="notification_start_day" name="notification_start_day" value="<?= $data['notification_start_day'] ?>" placeholder="Gün sayısı">
                                             </div>
                                             <div class="mb-3 mt-4">
                                                 <a href="#" id="sendTaxRateButton" class="btn btn-primary" role="button">
@@ -88,6 +122,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         </div>
                                         <!--end::Card body-->
                                     </div>
+
                                     <!--end::Card-->
                                     <!--begin::Modals-->
                                     <!--begin::Modal - Customers - Add-->
@@ -171,7 +206,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     e.preventDefault(); // Linkin varsayılan davranışını engelle
 
                     var taxRatio = $('#tax_rate').val();
-                     var discountRatio = $('#discount_rate').val();
+                    var discountRatio = $('#discount_rate').val();
+                    var notificationStartDay = $('#notification_start_day').val();
+                    var notificationCount = $('#notification_count').val();
+                    let notifySms = $('#notify_sms').is(':checked') ? 1 : 0;
+                    let notifyEmail = $('#notify_email').is(':checked') ? 1 : 0;
+
+
                     if (!taxRatio || taxRatio.trim() === '') {
                         Swal.fire({
                             icon: 'warning',
@@ -186,7 +227,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         type: 'POST',
                         data: {
                             taxRatio: taxRatio,
-                            discountRatio:discountRatio
+                            discountRatio: discountRatio,
+                            notifySms: notifySms,
+                            notifyEmail: notifyEmail,
+                            notificationCount: notificationCount,
+                            notificationStartDay: notificationStartDay
+
                         },
                         success: function(response) {
                             Swal.fire({
