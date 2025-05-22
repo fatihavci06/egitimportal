@@ -10,9 +10,9 @@ class Packages extends Dbh
 			$class = 2;
 		} */
 
-		$stmt = $this->connect()->prepare('SELECT id, name, image FROM packages_lnp WHERE class_id = ? ');
+		$stmt = $this->connect()->prepare('SELECT id, name, image FROM packages_lnp WHERE class_id = ? AND status = ?');
 
-		if (!$stmt->execute(array($class))) {
+		if (!$stmt->execute(array($class, 1))) {
 			$stmt = null;
 			exit();
 		}
@@ -26,9 +26,9 @@ class Packages extends Dbh
 
 	public function getPackagePrice($id)
 	{
-		$stmt = $this->connect()->prepare('SELECT monthly_fee, subscription_period, discount, max_installment FROM packages_lnp WHERE id = ? ');
+		$stmt = $this->connect()->prepare('SELECT monthly_fee, subscription_period, discount, max_installment FROM packages_lnp WHERE id = ? AND status = ?');
 
-		if (!$stmt->execute(array($id))) {
+		if (!$stmt->execute(array($id, 1))) {
 			$stmt = null;
 			exit();
 		}
@@ -42,9 +42,9 @@ class Packages extends Dbh
 
 	public function getTransferDiscount()
 	{
-		$stmt = $this->connect()->prepare('SELECT discount FROM money_transfer_discount_lnp');
+		$stmt = $this->connect()->prepare('SELECT discount_rate FROM settings_lnp WHERE school_id = ?');
 
-		if (!$stmt->execute(array())) {
+		if (!$stmt->execute(array(1))) {
 			$stmt = null;
 			exit();
 		}
@@ -52,6 +52,22 @@ class Packages extends Dbh
 		$classData = $stmt->fetch(PDO::FETCH_ASSOC);
 
 		return $classData;
+
+		$stmt = null;
+	}
+
+	public function getVat()
+	{
+		$stmt = $this->connect()->prepare('SELECT tax_rate FROM settings_lnp WHERE school_id = ?');
+
+		if (!$stmt->execute(array(1))) {
+			$stmt = null;
+			exit();
+		}
+
+		$getData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return $getData;
 
 		$stmt = null;
 	}

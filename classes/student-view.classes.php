@@ -657,7 +657,7 @@ class ShowStudent extends Student
                     <div class="d-flex flex-stack">
                         <!--begin::Symbol-->
                         <div class="symbol symbol-40px me-4">
-                            <div class="symbol-label fs-2 fw-semibold bg-'. $style .' text-inverse-'. $style .'">'. mb_substr($value['name'], 0, 1, 'UTF-8') .'</div>
+                            <div class="symbol-label fs-2 fw-semibold bg-' . $style . ' text-inverse-' . $style . '">' . mb_substr($value['name'], 0, 1, 'UTF-8') . '</div>
                         </div>
                         <!--end::Symbol-->
                         <!--begin::Section-->
@@ -665,7 +665,7 @@ class ShowStudent extends Student
                             <!--begin:Author-->
                             <div class="flex-grow-1 me-2">
                                 <a href="pages/user-profile/overview.html" class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $value['name'] . '</a>
-                                <span class="text-muted fw-semibold d-block fs-7">'. $unitCount .' Ünite</span>
+                                <span class="text-muted fw-semibold d-block fs-7">' . $unitCount . ' Ünite</span>
                             </div>
                             <!--end:Author--><!--begin::Progress-->
                             <div class="d-flex align-items-center w-100px w-sm-200px flex-column mt-3">
@@ -685,8 +685,8 @@ class ShowStudent extends Student
                 <!--begin::Separator-->
                     <div class="separator separator-dashed my-4"></div>
                 <!--end::Separator-->';
-            } 
-            
+            }
+
             echo $lessonList;
 
             $styleIndex++;
@@ -695,7 +695,8 @@ class ShowStudent extends Student
 
     // List of Package Student Details Page
 
-    public function showPackageListForStudentDetails($id){
+    public function showPackageListForStudentDetails($id)
+    {
 
         $packagesInfo = $this->getStudentPackagesWithName($id);
 
@@ -709,30 +710,29 @@ class ShowStudent extends Student
                                 </td>
                             </tr>';
         } else {
-            foreach ($packagesInfo as $value){
+            foreach ($packagesInfo as $value) {
 
                 $packagesList .= '<tr>
                                     <td class="ps-0">
                                         <a href="#" class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6 text-start pe-0">' . $value['packageName'] . '</a>
                                     </td>
                                     <td>
-                                        <span class="text-gray-800 fw-bold d-block fs-6 ps-0 text-end">'. str_replace('.', ',', strval($value['pay_amount'])) .'₺</span>
+                                        <span class="text-gray-800 fw-bold d-block fs-6 ps-0 text-end">' . str_replace('.', ',', strval($value['pay_amount'])) . '₺</span>
                                     </td>
                                     <td class="text-end pe-0">
                                         <span class="text-gray-800 fw-bold d-block fs-6">' . $dateFormat->changeDate($value['subscribed_end']) . '</span>
                                     </td>
                                 </tr>';
-
             }
         }
 
         echo $packagesList;
-
     }
 
     // List of Package Student Details Page
 
-    public function showAdditionalPackageListForStudentDetails($id){
+    public function showAdditionalPackageListForStudentDetails($id)
+    {
 
         $packagesInfo = $this->getStudentAdditionalPackagesWithName($id);
 
@@ -746,25 +746,23 @@ class ShowStudent extends Student
                                 </td>
                             </tr>';
         } else {
-            foreach ($packagesInfo as $value){
+            foreach ($packagesInfo as $value) {
 
                 $packagesList .= '<tr>
                                     <td class="ps-0">
                                         <a href="#" class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6 text-start pe-0">' . $value['packageName'] . '</a>
                                     </td>
                                     <td>
-                                        <span class="text-gray-800 fw-bold d-block fs-6 ps-0 text-end">'. str_replace('.', ',', strval($value['pay_amount'])) .'₺</span>
+                                        <span class="text-gray-800 fw-bold d-block fs-6 ps-0 text-end">' . str_replace('.', ',', strval($value['pay_amount'])) . '₺</span>
                                     </td>
                                     <td class="text-end pe-0">
                                         <span class="text-gray-800 fw-bold d-block fs-6">' . $dateFormat->changeDate($value['subscribed_end']) . '</span>
                                     </td>
                                 </tr>';
-
             }
         }
 
         echo $packagesList;
-
     }
 
     // List of Students
@@ -798,5 +796,108 @@ class ShowStudent extends Student
 
 
         echo $divStart . $studentList . $divEnd;
+    }
+
+    // List of Lessons For Student Details Page
+
+    public function showLessonsListForStudentDetailsPage($class_id, $school_id)
+    {
+        $lessonsInfo = $this->getLessons();
+
+        $styles = ["danger", "success", "primary", "warning", "info", "secondary", "light", "dark"];
+        $styleIndex = 0;
+
+
+
+        foreach ($lessonsInfo as $value) {
+
+            $style = $styles[$styleIndex % count($styles)];
+
+            $lessonList = '';
+
+            $classes = $value['class_id'];
+
+            $pieces = explode(";", $classes);
+
+            if (in_array($class_id, $pieces)) {
+
+                $class_id = $class_id;
+                $school_id = $school_id;
+                $lesson_id = $value['id'];
+
+                $unitData = $this->getUnits($lesson_id, $class_id, $school_id);
+                $unitCount = count($unitData);
+
+                $units = '';
+
+                foreach ($unitData as $unit) {
+                    $topicCount = 0;
+                    $topicData = $this->getTopics($lesson_id, $class_id, $school_id, $unit['id']);
+                    $topicCount = count($topicData);
+
+                    $units .= '
+                            <!--begin::Item-->
+                                <div class="d-flex flex-stack">
+                                    <!--begin::Symbol-->
+                                    <div class="symbol symbol-40px me-4">
+                                        <div class="symbol-label fs-2 fw-semibold bg-' . $style . ' text-inverse-' . $style . '">' . mb_substr($unit['name'], 0, 1, 'UTF-8') . '</div>
+                                    </div>
+                                    <!--end::Symbol-->
+                                    <!--begin::Section-->
+                                    <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                                        <!--begin:Author-->
+                                        <div class="flex-grow-1 me-2">
+                                            <a href="' . $unit['id'] .  '" class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $unit['name'] . '</a>
+                                            <span class="text-muted fw-semibold d-block fs-7">' . $topicCount . ' Konu</span>
+                                        </div>
+                                        <!--end:Author-->
+                                        <!--begin::Actions-->
+                                        <a href="#" class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px">
+                                            <i class="ki-duotone ki-arrow-right fs-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                        </a>
+                                        <!--begin::Actions-->
+                                    </div>
+                                    <!--end::Section-->
+                                </div>
+                                <!--end::Item-->
+                                <!--begin::Separator-->
+                                <div class="separator separator-dashed my-4"></div>
+                            <!--end::Separator-->
+                    ';
+                }
+
+                $leftUnits = '
+                        <!--begin::Col-->
+                            <div class="col-xl-6">
+                                <!--begin::List widget 20-->
+                                    <div class="card mb-5 mb-xl-8">
+                                        <!--begin::Header-->
+                                        <div class="card-header border-0 pt-5">
+                                            <h3 class="card-title align-items-start flex-column">
+                                                <span class="card-label fw-bold text-gray-900">' . $value['name'] . '</span>
+                                                
+                                                <span class="text-muted fw-semibold d-block fs-7">' . $unitCount . ' Ünite</span>
+                                            </h3>
+                                        </div>
+                                        <!--end::Header-->
+                                        <!--begin::Body-->
+                                        <div class="card-body pt-6">
+                                            ' . $units . '
+                                        </div>
+                                        <!--end::Body-->
+                                    </div>
+                                    <!--end::List widget 20-->
+                                </div>
+                            <!--end::Col-->';
+
+
+                $styleIndex++;
+
+                echo $leftUnits;
+            }
+        }
     }
 }
