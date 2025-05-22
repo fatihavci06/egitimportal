@@ -60,7 +60,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <!--begin::Card-->
-                                    <div class="card col-6">
+                                    <div class="card col-7">
                                         <!--begin::Card header-->
 
                                         <!--end::Card header-->
@@ -103,7 +103,17 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 </div>
 
                                             </div>
-
+                                            <div class="mb-3 mt-4">
+                                                <label for="sms_template" class="form-label">Bildirim Şablonu ()</label>
+                                                <textarea class="form-control" id="sms_template" name="sms_template" rows="4" placeholder="Örn: Sayın {name} {surname}, aboneliğiniz bitmek üzere..."><?= $data['sms_template'] ?? '' ?></textarea>
+                                                <div class="mt-2">
+                                                    <p>Sürükle Bırak Parametreler : 
+                                                    <span draggable="true" ondragstart="drag(event)" data-tag="{name}" class="badge bg-secondary me-2" style="font-size: 1.2rem; padding: 0.75rem 1rem;">name</span>
+                                                    <span draggable="true" ondragstart="drag(event)" data-tag="{surname}" class="badge bg-secondary" style="font-size: 1.2rem; padding: 0.75rem 1rem;">surname</span>
+                                                    <span draggable="true" ondragstart="drag(event)" data-tag="{subscribed_end}" class="badge bg-secondary" style="font-size: 1.2rem; padding: 0.75rem 1rem;">subscribed_end</span>
+                                                </p>
+                                                </div>
+                                            </div>
                                             <div class="mb-3 mt-4">
                                                 <label for="notification_count" class="form-label">Bildirim Sayısı</label>
                                                 <input type="text" class="form-control" id="notification_count" name="notification_count" value="<?= $data['notification_count'] ?>" placeholder="Gönderim sayısı">
@@ -211,6 +221,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     var notificationCount = $('#notification_count').val();
                     let notifySms = $('#notify_sms').is(':checked') ? 1 : 0;
                     let notifyEmail = $('#notify_email').is(':checked') ? 1 : 0;
+                    var smsTemplate = $('#sms_template').val();
 
 
                     if (!taxRatio || taxRatio.trim() === '') {
@@ -231,14 +242,15 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             notifySms: notifySms,
                             notifyEmail: notifyEmail,
                             notificationCount: notificationCount,
-                            notificationStartDay: notificationStartDay
+                            notificationStartDay: notificationStartDay,
+                            smsTemplate:smsTemplate
 
                         },
                         success: function(response) {
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Başarılı',
-                                text: 'Paket başarıyla kaydedildi.'
+                                text: 'İşlem başarıyla kaydedildi.'
                             }).then(() => {
                                 location.reload();
                             });
@@ -264,6 +276,27 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             });
                         }
                     });
+                });
+            });
+        </script>
+        <script>
+            function drag(event) {
+                event.dataTransfer.setData("text", event.target.getAttribute("data-tag"));
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const textarea = document.getElementById('sms_template');
+
+                textarea.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                });
+
+                textarea.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    const text = e.dataTransfer.getData("text");
+                    const cursorPos = textarea.selectionStart;
+                    const currentValue = textarea.value;
+                    textarea.value = currentValue.substring(0, cursorPos) + text + currentValue.substring(cursorPos);
                 });
             });
         </script>

@@ -15,7 +15,7 @@ class AddClasses extends Dbh
 		}
 		else if($table=='important_weeks_lnp')
 		{
-			$classType=1;// ana okulu yaş grupları
+			
 			$table='important_weeks_lnp';
 		}
 		else

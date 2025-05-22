@@ -2,6 +2,10 @@
 include_once "classes/dbh.classes.php";
 include_once "classes/classes.classes.php";
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require 'vendor/autoload.php';
 try {
     $pdo = new Dbh;
 
@@ -61,8 +65,15 @@ try {
 
             // Eğer bugün bildirim yapılacak günse
             if ($notificationDay->format('Y-m-d') === $today->format('Y-m-d')) {
-                $message = "Sayın {$user['name']} {$user['surname']}, aboneliğiniz {$subscribedEnd->format('d.m.Y')} tarihinde sona erecek.";
+                $smsTemplate = $settings['sms_template'] ?? 'Sayın {name} {surname}, aboneliğiniz {subscribed_end} tarihinde sona erecek.';
 
+                $placeholders = [
+                    '{name}'           => $user['name'] ?? '',
+                    '{surname}'        => $user['surname'] ?? '',
+                    '{subscribed_end}' => $subscribedEnd->format('d.m.Y'),
+                ];
+
+                $message = str_replace(array_keys($placeholders), array_values($placeholders), $smsTemplate);
                 if ($notifySms === 1 && !empty($user['telephone'])) {
                     sendSms($user['telephone'], $message);
                 } else {
@@ -82,22 +93,57 @@ try {
     }
 
     echo "Bildirim işlemi tamamlandı.\n";
-
 } catch (Exception $e) {
     echo "Hata: " . $e->getMessage();
 }
 
 // SMS gönderim fonksiyonu (örnek)
-function sendSms($phoneNumber, $message) {
+function sendSms($phoneNumber, $message)
+{
     if (!$phoneNumber) return;
     // Burada kendi SMS API çağrını yap
     echo "SMS gönderildi: {$phoneNumber} - Mesaj: {$message}\n";
 }
 
 // Email gönderim fonksiyonu (örnek)
-function sendEmail($email, $subject, $message) {
+function sendEmail($email, $subject, $message)
+{
     if (!$email) return;
+    $mail = new PHPMailer(true);
+
+    try {
+        // Sunucu ayarları
+        $mail->isSMTP();
+        $mail->Host       = 'mail.lineupcampus.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = 'eposta@lineupcampus.com';    // Mail adresiniz
+        $mail->Password   = 'Y6RrEZgH4mwfb!x3';                        // Şifreniz (gerçek şifreyle değiştirin)
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port       = 587;
+        $mail->SMTPOptions = [
+            'ssl' => [
+                'verify_peer'       => false,
+                'verify_peer_name'  => false,
+                'allow_self_signed' => true,
+            ],
+        ];
+        // Gönderen bilgisi
+        $mail->setFrom('eposta@lineupcampus.com', 'Lineup Campus');
+
+        // Alıcı
+        $mail->addAddress($email, 'Alıcı İsmi'); // Alıcı adresini değiştirin
+
+        // İçerik
+        $mail->isHTML(true);
+        $mail->Subject = $subject ?? null;
+        $mail->Body    = $message ?? null;
+        $mail->CharSet = 'UTF-8';
+        $mail->Encoding = 'base64';
+        $mail->send();
+        echo 'Mail başarıyla gönderildi.';
+    } catch (Exception $e) {
+        echo "Mail gönderilemedi. Hata: {$mail->ErrorInfo}";
+    }
     // Burada mail() veya SMTP ile gönderim yap
     echo "Email gönderildi: {$email} - Konu: {$subject}\n";
 }
-?>

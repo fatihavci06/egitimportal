@@ -146,7 +146,8 @@ switch ($service) {
         $notifyEmail = isset($_POST['notifyEmail']) ? cleanInput($_POST['notifyEmail']) : null;
         $notificationStartDay = isset($_POST['notificationStartDay']) ? cleanInput($_POST['notificationStartDay']) : null;
         $notificationCount = isset($_POST['notificationCount']) ? cleanInput($_POST['notificationCount']) : null;
-
+        $smsTemplate=isset($_POST['smsTemplate']) ? cleanInput($_POST['smsTemplate']) : null;
+       
         try {
             if (!$taxRatio) {
                 throw new Exception('Vergi oranı boş olamaz!');
@@ -175,14 +176,14 @@ switch ($service) {
 
             if ($exists) {
                 // Güncelleme
-                $updateStmt = $pdo->prepare("UPDATE settings_lnp SET tax_rate = ?, discount_rate = ?, notify_sms = ?, notify_email = ?, notification_start_day = ?, notification_count = ? WHERE school_id = 1");
-                $updateStmt->execute([$taxRatio, $discountRatio, $notifySms, $notifyEmail, $notificationStartDay, $notificationCount]);
+                $updateStmt = $pdo->prepare("UPDATE settings_lnp SET tax_rate = ?, discount_rate = ?,sms_template=?, notify_sms = ?, notify_email = ?, notification_start_day = ?, notification_count = ? WHERE school_id = 1");
+                $updateStmt->execute([$taxRatio, $discountRatio,$smsTemplate, $notifySms, $notifyEmail, $notificationStartDay, $notificationCount]);
 
                 jsonResponse(200, 'success', 'Ayarlar güncellendi.');
             } else {
                 // Yeni kayıt ekleme
-                $insertStmt = $pdo->prepare("INSERT INTO settings_lnp (school_id, tax_rate, discount_rate, notify_sms, notify_email, notification_start_day, notification_count) VALUES (1, ?, ?, ?, ?, ?, ?)");
-                $insertStmt->execute([$taxRatio, $discountRatio, $notifySms, $notifyEmail, $notificationStartDay, $notificationCount]);
+                $insertStmt = $pdo->prepare("INSERT INTO settings_lnp (school_id, tax_rate, discount_rate, notify_sms, notify_email, notification_start_day, notification_count,sms_template) VALUES (1, ?, ?, ?, ?, ?, ?,?)");
+                $insertStmt->execute([$taxRatio, $discountRatio, $notifySms, $notifyEmail, $notificationStartDay, $notificationCount,$smsTemplate]);
 
                 jsonResponse(200, 'success', 'Ayarlar kaydedildi.');
             }
