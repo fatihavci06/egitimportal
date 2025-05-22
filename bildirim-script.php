@@ -15,20 +15,17 @@ try {
         throw new Exception('Ayarlar bulunamadı.');
     }
 
-    $notificationStartDay = (int)$settings['notification_start_day']; // örn 7
-    $notificationCount = (int)$settings['notification_count']; // örn 3
-    $notifySms = (int)$settings['notify_sms'];
-    $notifyEmail = (int)$settings['notify_email'];
+    // Ayarları değişkenlere al
+    $notificationStartDay = (int)$settings['notification_start_day']; // Örn: 7 (abonelik bitişinden önceki gün sayısı)
+    $notificationCount = (int)$settings['notification_count'];       // Örn: 3 (toplam bildirim sayısı)
+    $notifySms = (int)$settings['notify_sms'];                       // SMS bildirimi açık mı?
+    $notifyEmail = (int)$settings['notify_email'];                   // Email bildirimi açık mı?
 
-
-    // Bildirim aralığı gün olarak
     if ($notificationCount <= 0) {
         throw new Exception('Bildirim sayısı 0 veya negatif olamaz.');
     }
-    $interval = $notificationStartDay / $notificationCount; // örn 7 / 3 = 2.33 gün
-  
 
-    // Kullanıcıları al, burada rol = 2 gibi filtre koyabilirsin
+    // Kullanıcıları al, örneğin rol = 2 (aboneler gibi)
     $sqlUsers = "SELECT * FROM users_lnp WHERE role = 2";
     $stmtUsers = $pdo->connect()->prepare($sqlUsers);
     $stmtUsers->execute();
@@ -39,41 +36,31 @@ try {
         exit;
     }
 
-    $today = new DateTime('today'); // sadece tarih kısmı önemli
-    
+    $today = new DateTime('today'); // Bugünün tarihi (sadece tarih kısmı önemli)
+
+    // Bildirim günlerini hesapla: başlangıç, ortası, bitiş
+    // Örnek: notificationStartDay=7, notificationCount=3 ise bildirimler:
+    // 7 gün önce, 3-4 gün önce (yarısı), 0 gün önce (bitiş günü)
+    $notificationDays = [
+        $notificationStartDay,
+        (int) round($notificationStartDay / 2),
+        0
+    ];
 
     foreach ($users as $user) {
         if (empty($user['subscribed_end'])) {
-          
-            continue; // boşsa atla
+            continue; // Abonelik bitiş tarihi yoksa atla
         }
 
-        $subscribedEnd = new DateTime($user['subscribed_end']);
-        // Bildirim başlangıç tarihi (abonelik bitişinden geriye notificationStartDay gün)
-        $notificationStartDate = clone $subscribedEnd;
-        $notificationStartDate->modify("-{$notificationStartDay} days");
+        $subscribedEnd = new DateTime($user['subscribed_end']); // Abonelik bitiş tarihi
 
-        
+        // Bildirim yapılacak her gün için kontrol et
+        foreach ($notificationDays as $daysBeforeEnd) {
+            $notificationDay = clone $subscribedEnd;
+            $notificationDay->modify("-{$daysBeforeEnd} days");
 
-        // Eğer bugün bildirim aralığı içindeyse kontrol et
-        if ($today < $notificationStartDate || $today > $subscribedEnd) {
-            // Bildirim dönemi dışında
-            
-            continue;
-        }
-
-        // Bildirim yapılacak günleri hesapla ve bugün bunlardan biri mi?
-        $notificationSent = false;
-        for ($i = 0; $i < $notificationCount; $i++) {
-            $notificationDay = clone $notificationStartDate;
-            // interval float, tam sayıya çeviriyoruz
-            $daysToAdd = (int) round($interval * $i);
-            $notificationDay->modify("+{$daysToAdd} days");
-
-
-            if ($notificationDay->format('Y-m-d') == $today->format('Y-m-d')) {
-                
-                // Bugün bildirim yapılacak
+            // Eğer bugün bildirim yapılacak günse
+            if ($notificationDay->format('Y-m-d') === $today->format('Y-m-d')) {
                 $message = "Sayın {$user['name']} {$user['surname']}, aboneliğiniz {$subscribedEnd->format('d.m.Y')} tarihinde sona erecek.";
 
                 if ($notifySms === 1 && !empty($user['telephone'])) {
@@ -81,17 +68,17 @@ try {
                 } else {
                     echo " --- SMS gönderimi kapalı veya telefon numarası yok.\n";
                 }
+
                 if ($notifyEmail === 1 && !empty($user['email'])) {
                     sendEmail($user['email'], 'Abonelik Bildirimi', $message);
                 } else {
                     echo " --- Email gönderimi kapalı veya email adresi yok.\n";
                 }
-                $notificationSent = true;
-                break; // bu kullanıcı için bugünkü bildirim yapıldı, döngüden çık
+
+                // Bu kullanıcı için bildirim gönderildi, diğer bildirim tarihlerini kontrol etmeye gerek yok
+                break;
             }
         }
-
-       
     }
 
     echo "Bildirim işlemi tamamlandı.\n";
