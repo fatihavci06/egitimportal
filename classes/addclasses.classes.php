@@ -13,6 +13,11 @@ class AddClasses extends Dbh
 			$classType=1;// ana okulu yaş grupları
 			$table='classes_lnp';
 		}
+		else if($table=='important_weeks_lnp')
+		{
+			$classType=1;// ana okulu yaş grupları
+			$table='important_weeks_lnp';
+		}
 		else
 		{
 			$classType=0;//sınıflar (ilköğretim sınıfları vs)
@@ -32,7 +37,7 @@ class AddClasses extends Dbh
 				echo json_encode(["status" => "false", "message" => 'Bitiş tarihi, başlangıç tarihinden küçük olamaz.']);
 				exit();
 			}
-
+			
 			$stmt = $this->connect()->prepare("INSERT INTO `$table` (`slug`, `name`, `start_date`, `end_date`) VALUES (?, ?, ?, ?)");
 			if (!$stmt->execute([$slug, $name, $startDate, $endDate])) {
 				$stmt = null;
