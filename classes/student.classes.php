@@ -281,6 +281,23 @@ class Student extends Dbh
 		$stmt = null;
 	}
 
+	public function getTopics($lesson_id, $class_id, $school_id, $unit_id)
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM topics_lnp WHERE school_id = ? AND lesson_id = ? AND class_id = ? AND unit_id = ?');
+
+		if (!$stmt->execute(array($school_id, $lesson_id, $class_id, $unit_id))) {
+			$stmt = null;
+			exit();
+		}
+
+		$unitData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $unitData;
+
+		$stmt = null;
+	}
+
 	public function getStudentsForTests($class_id)
 	{
 

@@ -1,7 +1,6 @@
 <?php
 include_once "dateformat.classes.php";
 include_once "packages.classes.php";
-
 class ShowPackage extends Packages
 {
 
@@ -77,17 +76,19 @@ class ShowPackage extends Packages
 
             $total = $monthly_fee * $subscription_period;
 
-            // KDV Oranını VT'den çekicen Sonra
-            $kdv = 0.10;
+            $getVat = $this->getVat();
+
+            $kdv = $getVat['tax_rate'];
+            $vatPercentage = $kdv / 100;
 
             $priceTotal = '
-                        <h2 class="text-black-500 fw-semibold fs-12">KDV\'siz Tutar: <span id="PriceWOVat">' . $total . '</span> ₺</h2>
-                        <h2 class="text-black-500 fw-semibold fs-12">KDV Oranı: <span id="vatPercentage">%' . $kdv*100 . '</span></h2>
-                        <h2 class="text-black-500 fw-semibold fs-12">KDV\'li Tutar: <span id="PriceWVat">' . ($total + ($total * $kdv)) . '</span> ₺</h2>
+                        <h2 class="text-black-500 fw-semibold fs-12">KDV\'siz Tutar: <span id="PriceWOVat">' . number_format($total, 2, '.', '') . '</span> ₺</h2>
+                        <h2 class="text-black-500 fw-semibold fs-12">KDV Oranı: %<span id="vatPercentage">' . $kdv . '</span></h2>
+                        <h2 class="text-black-500 fw-semibold fs-12">KDV\'li Tutar: <span id="PriceWVat">' . number_format(($total + ($total * $vatPercentage)), 2, '.', '') . '</span> ₺</h2>
             ';
         }
 
-        echo json_encode(["div" => $priceTotal, "total" => $total, "subscription_period" => $subscription_period]);
+        echo json_encode(["div" => $priceTotal, "total" => $total, "subscription_period" => $subscription_period, "vat" => $vatPercentage]);
     }
 
     // Show Cash Discount
@@ -114,7 +115,7 @@ class ShowPackage extends Packages
         $dicountInfo = $this->getTransferDiscount();
 
         if ($dicountInfo) {
-            $discount = $dicountInfo['discount'];
+            $discount = $dicountInfo['discount_rate'];
             echo json_encode(["status" => "success", "message" => "% " . $discount . " Havale İndirimi Uygulandı!", "discount" => $discount]);
         } else {
             echo json_encode(["status" => "error", "message" => "İndirim Uygulanamadı!"]);

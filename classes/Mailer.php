@@ -30,17 +30,17 @@ class Mailer
 
         // Server settings
         $this->mail->isSMTP();
-        $this->mail->Host = 'zm35.ihszimbra.com';               // SMTP server
+        $this->mail->Host = 'mail.lineupcampus.com';               // SMTP server
         $this->mail->SMTPAuth = true;                             // Enable SMTP authentication
-        $this->mail->Username = 'aepikman@chemitech.com.tr';         // SMTP username
-        $this->mail->Password   = '01051913BBo!';                 // SMTP password
+        $this->mail->Username = 'eposta@lineupcampus.com';         // SMTP username
+        $this->mail->Password   = 'Y6RrEZgH4mwfb!x3';                 // SMTP password
         $this->mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;   // Enable TLS encryption
         $this->mail->Port = 587;                              // TCP port to connect to
 
 
 
         // Default sender
-        $this->mail->setFrom('aepikman@chemitech.com.tr', 'Lineup Campus');
+        $this->mail->setFrom('eposta@lineupcampus.com', 'Lineup Campus');
 
         // Default charset and encoding
         $this->mail->CharSet = 'UTF-8';
