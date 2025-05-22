@@ -47,9 +47,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     <?php include_once "views/sidebar.php"; ?>
                     <!--end::Sidebar-->
                     <!--begin::Main-->
-                    <form action="kullanici-odeme-raporu-excel.php" method="post">
-    <button type="submit">Excel'e Aktar</button>
-</form>
+                   
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
                         <!--begin::Content wrapper-->
                         <div class="d-flex flex-column flex-column-fluid">

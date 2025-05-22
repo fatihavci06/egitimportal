@@ -613,7 +613,60 @@ switch ($service) {
             echo json_encode(['error' => $e->getMessage()]);
         }
         break;
+    case 'payment-excel':
 
+        try {
+            if (!$_POST['start_date'] || empty($_POST['start_date'])) {
+                throw new Exception('Başlangıç tarihi parametresi eksik.');
+            }
+            if (!$_POST['stop_date'] || empty($_POST['stop_date'])) {
+                throw new Exception('Bitiş tarihi parametresi eksik.');
+            }
+            $startDate = $_POST['start_date'] . ' 00:00:00';
+            $stopDate = $_POST['stop_date'] . ' 23:59:59';
+            $sql = "SELECT 
+            ROW_NUMBER() OVER (ORDER BY u.subscribed_end DESC) AS row_number,
+            u.id,
+            pp.pay_amount,
+            CONCAT(pkg.name, ' ', cls.name, ' paketi için ödeme') AS description,
+            u.identity_id AS student_identity_id,
+            parent.identity_id AS parent_identity_id,
+            u.parent_id,
+            CONCAT(u.address, ' ', u.district, ' / ', u.city) AS address,
+            CONCAT(u.name, ' ', u.surname) AS student_fullname,
+            u.subscribed_end,
+            u.telephone AS parent_phone,
+            CONCAT(parent.name, ' ', parent.surname) AS parent_fullname
+        FROM users_lnp u
+        LEFT JOIN users_lnp parent ON u.parent_id = parent.id
+        LEFT JOIN package_payments_lnp pp ON pp.user_id = u.id
+        LEFT JOIN packages_lnp pkg ON pkg.id = pp.pack_id
+        LEFT JOIN classes_lnp cls ON cls.id = pkg.class_id
+        WHERE u.role = 2 
+          AND pp.created_at BETWEEN :start_date AND :stop_date
+        ORDER BY u.subscribed_end DESC";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                'start_date' => $startDate,
+                'stop_date' => $stopDate
+            ]);
+
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+            echo json_encode([
+                'status' => 'success',
+                'data' => $results
+            ]);
+        } catch (Exception $e) {
+            http_response_code(422); // Veya uygun bir HTTP kodu
+            echo json_encode([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+            exit();
+        }
+        break;
     case 'filter-expire-list':
         $startDate = $_POST['start_date'] ?? null;
         $stopDate = $_POST['stop_date'] ?? null;
