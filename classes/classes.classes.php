@@ -78,6 +78,21 @@ class Classes extends Dbh
 		return $data;
 		
 	}
+	public function getSMSApiSettings()
+	{
+		
+		$stmt = $this->connect()->prepare('SELECT * from sms_settings_lnp limit 1');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return $data;
+		
+	}
 	public function getAgeGroup($class_id = null)
 	{
 
@@ -149,7 +164,7 @@ class Classes extends Dbh
 	public function getStudentList()
 	{
 
-		$stmt = $this->connect()->prepare('SELECT id, name FROM users_lnp where school_id = 1 and role=2');
+		$stmt = $this->connect()->prepare('SELECT id,  CONCAT(name, " ", surname) as fullname FROM users_lnp where school_id = 1 and role=2');
 
 		if (!$stmt->execute(array())) {
 			$stmt = null;

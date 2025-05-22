@@ -6,7 +6,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $coupon_code = trim($_POST['coupon_code']);
     $coupon_expires = $_POST['coupon_expires'];
     $coupon_quantity = trim($_POST['coupon_quantity']);
-    // $expire_date = $_POST['expire_date'] ?? null;
 
     // generateCouponCode() u al;
 
@@ -21,4 +20,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Running error handlers and addTopic
     $addCoupon->addCouponDb();
+
 }

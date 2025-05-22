@@ -14,6 +14,10 @@ class ComposerStaticInita51e5526f2c51bccf4fc9bb53a92f0e6
     );
 
     public static $prefixLengthsPsr4 = array (
+        'Z' => 
+        array (
+            'ZipStream\\' => 10,
+        ),
         'R' => 
         array (
             'Rize\\' => 5,
@@ -22,15 +26,18 @@ class ComposerStaticInita51e5526f2c51bccf4fc9bb53a92f0e6
         ),
         'P' => 
         array (
+            'Psr\\SimpleCache\\' => 16,
             'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Http\\Client\\' => 16,
             'Psr\\Cache\\' => 10,
+            'PhpOffice\\PhpSpreadsheet\\' => 25,
             'PHPMailer\\PHPMailer\\' => 20,
         ),
         'M' => 
         array (
             'Monolog\\' => 8,
+            'Matrix\\' => 7,
         ),
         'I' => 
         array (
@@ -69,6 +76,11 @@ class ComposerStaticInita51e5526f2c51bccf4fc9bb53a92f0e6
         array (
             'Firebase\\JWT\\' => 13,
         ),
+        'C' => 
+        array (
+            'Composer\\Pcre\\' => 14,
+            'Complex\\' => 8,
+        ),
         'B' => 
         array (
             'Brick\\Math\\' => 11,
@@ -76,6 +88,10 @@ class ComposerStaticInita51e5526f2c51bccf4fc9bb53a92f0e6
     );
 
     public static $prefixDirsPsr4 = array (
+        'ZipStream\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/maennchen/zipstream-php/src',
+        ),
         'Rize\\' => 
         array (
             0 => __DIR__ . '/..' . '/rize/uri-template/src/Rize',
@@ -87,6 +103,10 @@ class ComposerStaticInita51e5526f2c51bccf4fc9bb53a92f0e6
         'Ramsey\\Collection\\' => 
         array (
             0 => __DIR__ . '/..' . '/ramsey/collection/src',
+        ),
+        'Psr\\SimpleCache\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/simple-cache/src',
         ),
         'Psr\\Log\\' => 
         array (
@@ -105,6 +125,10 @@ class ComposerStaticInita51e5526f2c51bccf4fc9bb53a92f0e6
         array (
             0 => __DIR__ . '/..' . '/psr/cache/src',
         ),
+        'PhpOffice\\PhpSpreadsheet\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet',
+        ),
         'PHPMailer\\PHPMailer\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
@@ -112,6 +136,10 @@ class ComposerStaticInita51e5526f2c51bccf4fc9bb53a92f0e6
         'Monolog\\' => 
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
+        ),
+        'Matrix\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/markbaker/matrix/classes/src',
         ),
         'Iyzipay\\' => 
         array (
@@ -224,6 +252,14 @@ class ComposerStaticInita51e5526f2c51bccf4fc9bb53a92f0e6
         'Firebase\\JWT\\' => 
         array (
             0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
+        ),
+        'Composer\\Pcre\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/composer/pcre/src',
+        ),
+        'Complex\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/markbaker/complex/classes/src',
         ),
         'Brick\\Math\\' => 
         array (

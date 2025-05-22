@@ -51,36 +51,36 @@ var KTCustomersList = function () {
 
     // Filter Datatable
     var handleFilterDatatable = () => {
-         // Select filter options
-         filterMonth = $('[data-kt-customer-table-filter="month"]');
-         filterPayment = document.querySelectorAll('[data-kt-customer-table-filter="payment_type"] [name="payment_type"]');
-         const filterButton = document.querySelector('[data-kt-customer-table-filter="filter"]');
- 
-         // Filter datatable on submit
-         filterButton.addEventListener('click', function () {
-             // Get filter values
-             const monthValue = filterMonth.val();
-             let paymentValue = '';
- 
-             // Get payment value
-             filterPayment.forEach(r => {
-                 if (r.checked) {
-                     paymentValue = r.value;
-                 }
- 
-                 // Reset payment value if "All" is selected
-                 if (paymentValue === 'all') {
-                     paymentValue = '';
-                 }
-             });
- 
-             // Build filter string from filter options
-             const filterString = monthValue + ' ' + paymentValue;
- 
-             // Filter datatable --- official docs reference: https://datatables.net/reference/api/search()
-             datatable.search(filterString).draw();
-         });
-     }
+        // Select filter options
+        filterMonth = $('[data-kt-customer-table-filter="month"]');
+        filterPayment = document.querySelectorAll('[data-kt-customer-table-filter="payment_type"] [name="payment_type"]');
+        const filterButton = document.querySelector('[data-kt-customer-table-filter="filter"]');
+
+        // Filter datatable on submit
+        filterButton.addEventListener('click', function () {
+            // Get filter values
+            const monthValue = filterMonth.val();
+            let paymentValue = '';
+
+            // Get payment value
+            filterPayment.forEach(r => {
+                if (r.checked) {
+                    paymentValue = r.value;
+                }
+
+                // Reset payment value if "All" is selected
+                if (paymentValue === 'all') {
+                    paymentValue = '';
+                }
+            });
+
+            // Build filter string from filter options
+            const filterString = monthValue + ' ' + paymentValue;
+
+            // Filter datatable --- official docs reference: https://datatables.net/reference/api/search()
+            datatable.search(filterString).draw();
+        });
+    }
 
     // Delete customer
     var handleDeleteRows = () => {

@@ -4,9 +4,9 @@ class AddCoupon extends Dbh
 
     public function getAllCoupon()
     {
-        $stmt = $this->connect()->prepare('SELECT * FROM coupon_lnp');
+        $stmt = $this->connect()->prepare('SELECT * FROM coupon_lnp WHERE is_active = :isActive');
 
-        if (!$stmt->execute()) {
+        if (!$stmt->execute([':isActive' => 1])) {
             $stmt = null;
             exit();
         }
@@ -23,6 +23,47 @@ class AddCoupon extends Dbh
         $stmt = $this->connect()->prepare('SELECT * FROM coupon_lnp WHERE id = :id');
 
         if (!$stmt->execute([':id' => $id])) {
+            $stmt = null;
+            exit();
+        }
+
+        $coupons = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = null;
+
+        return $coupons;
+    }
+
+    public function getCouponWithId($id)
+    {
+        $stmt = $this->connect()->prepare('SELECT * FROM coupon_lnp WHERE id = :id');
+
+        if (!$stmt->execute([':id' => $id])) {
+            $stmt = null;
+            exit();
+        }
+
+        $coupons = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt = null;
+
+        return $coupons;
+    }
+
+    public function getCouponWithUsers($id)
+    {
+        $stmt = $this->connect()->prepare('SELECT 
+    c.id AS coupon_id,
+    c.coupon_code,
+    c.discount_value,
+    u.id AS user_id,
+    u.name,
+    u.surname,
+    u.email,
+    u.telephone,
+    p.coupon
+    FROM package_payments_lnp p JOIN users_lnp u ON p.user_id = u.id
+    JOIN coupon_lnp c ON p.coupon = c.coupon_code WHERE c.id = :coupon_id');
+
+        if (!$stmt->execute([':coupon_id' => $id])) {
             $stmt = null;
             exit();
         }
