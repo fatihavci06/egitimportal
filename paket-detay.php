@@ -246,7 +246,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 						packageName: packageName,
 						class_id: class_id,
 						monthly_fee: monthly_fee,
-						subscription_period:subscription_period
+						subscription_period: subscription_period
 					},
 					success: function(response) {
 						Swal.fire({
@@ -284,6 +284,10 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 					}
 				});
 
+			});
+			$('#kt_modal_update_customer_cancel').on('click', function(e) {
+				e.preventDefault();
+				$('#kt_modal_update_customer').modal('hide');
 			});
 		});
 	</script>

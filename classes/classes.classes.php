@@ -194,7 +194,7 @@ class Classes extends Dbh
 	public function getMainSchoolContentList()
 	{
 
-		$stmt = $this->connect()->prepare('SELECT * FROM main_school_content_lnp where school_id = 1');
+		$stmt = $this->connect()->prepare('SELECT * FROM main_school_content_lnp where school_id = 1 ORDER BY id DESC');
 
 		if (!$stmt->execute(array())) {
 			$stmt = null;
@@ -259,6 +259,16 @@ class Classes extends Dbh
 
 		$images = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		$classData['images'] = $images;
+		
+
+		$stmt = $this->connect()->prepare('SELECT * FROM mainschool_wordwall_lnp WHERE main_id = ?');
+		if (!$stmt->execute([$id])) {
+			return null;
+		}
+
+		$wordwalls = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$classData['wordwalls'] = $wordwalls;
+
 		return $classData;
 	}
 

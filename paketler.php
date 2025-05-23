@@ -178,7 +178,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
                                                         <th class="min-w-125px">Kaç Aylık</th>
                                                         <th class="min-w-125px">Peşin Alımda İndirim Yüzdesi</th>
                                                         <th class="min-w-125px">Hangi Sınıf</th>
-                                                        <th class="text-end min-w-70px">İşlem</th>
+                                                        <th class=" min-w-125px">İşlem</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="fw-semibold text-gray-600">

@@ -212,7 +212,7 @@ class ShowPackagesForAdmin extends PackagesForAdmin
             <td>' . $subscription_period . ' Aylık</td>
             <td>%' . $discount . '</td>
             <td>' . $className . '</td>
-            <td class="text-end">
+            <td style="width:250px;" class="text-end">
                 <a href="paket-detay?id=' . $id . '" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                     data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
                     Görüntüle
@@ -389,12 +389,7 @@ class ShowPackagesForAdmin extends PackagesForAdmin
                 <!--begin::Modal header-->
                 <div class="modal-header" id="kt_modal_update_customer_header">
                     <h2 class="fw-bold">Paket Güncelle</h2>
-                    <div id="kt_modal_update_customer_close" class="btn btn-icon btn-sm btn-active-icon-primary">
-                        <i class="ki-duotone ki-cross fs-1">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                        </i>
-                    </div>
+                    
                 </div>
                 <!--end::Modal header-->
 
