@@ -65,32 +65,7 @@ class ShowClass extends Classes
             $classList = '
                     <tr>
                         <td>
-                            <div class="form-check form-check-sm form-check-custom form-check-solid">
-                                <input class="form-check-input" type="checkbox" value="1" />
-                            </div>
-                        </td>
-                        <td>
                             <a href="#" class="text-gray-800 text-hover-primary mb-1">' . $value['name'] . '</a>
-                        </td>
-                        <td class="text-end">
-                            <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
-                                data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
-                                <i class="ki-duotone ki-down fs-5 ms-1"></i></a>
-                            <!--begin::Menu-->
-                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
-                                data-kt-menu="true">
-                                <!--begin::Menu item-->
-                                <div class="menu-item px-3">
-                                    <a href="./okul-detay/' . $value['slug'] . '" class="menu-link px-3">Görüntüle</a>
-                                </div>
-                                <!--end::Menu item-->
-                                <!--begin::Menu item-->
-                                <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row" id="deleteGroup">Pasif Yap</a>
-                                </div>
-                                <!--end::Menu item-->
-                            </div>
-                            <!--end::Menu-->
                         </td>
                     </tr>
                 ';
@@ -584,10 +559,10 @@ class ShowClass extends Classes
                     <!--begin::Modal footer-->
                     <div class="modal-footer flex-center">
                         <!--begin::Button-->
-                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light me-3">İptal</button>
+                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light btn-sm me-3">İptal</button>
                         <!--end::Button-->
                         <!--begin::Button-->
-                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary">
+                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary btn-sm">
                             <span class="indicator-label">Gönder</span>
                             <span class="indicator-progress">Lütfen bekleyin...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>

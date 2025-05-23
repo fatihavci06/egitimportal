@@ -83,7 +83,7 @@ define('GUARD', true);
                                             <!--begin::Toolbar-->
                                             <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
                                                 <!--begin::Add school-->
-                                                <?php if(!empty($waitingStudents->getWaitingMoneyTransfers())){ ?><a href="ogrenciler"><button type="button" class="btn btn-primary" data-bs-toggle="modal">Tüm Öğrenciler</button></a><?php } ?>
+                                                <?php if(!empty($waitingStudents->getWaitingMoneyTransfers())){ ?><a href="ogrenciler"><button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal">Tüm Öğrenciler</button></a><?php } ?>
                                                 <!--end::Add school-->
                                             </div>
                                             <!--end::Toolbar-->

@@ -30,7 +30,37 @@ class Teacher extends Dbh
 		$stmt = null;
 	}
 
-	public function getOneTeacher($slug)
+	public function getTeacherId($slug){
+		$stmt = $this->connect()->prepare('SELECT * FROM users_lnp WHERE username = ?');
+
+		if (!$stmt->execute(array($slug))) {
+			$stmt = null;
+			exit();
+		}
+
+		$teacherId = $stmt->fetch(PDO::FETCH_ASSOC);
+		return $teacherId['id'];
+		$stmt = null;
+	}
+
+	public function getOneTeacher($teacher_id)
+	{
+
+		$stmt = $this->connect()->prepare('SELECT users_lnp.*, schools_lnp.name AS schoolName FROM users_lnp INNER JOIN schools_lnp ON users_lnp.school_id = schools_lnp.id WHERE users_lnp.id = ?');
+
+		if (!$stmt->execute(array($teacher_id))) {
+			$stmt = null;
+			exit();
+		}
+
+		$getData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return $getData;
+
+		$stmt = null;
+	}
+
+	/* public function getOneTeacher($slug)
 	{
 
 		$stmt = $this->connect()->prepare('SELECT * FROM schools_lnp WHERE slug = ?');
@@ -45,7 +75,7 @@ class Teacher extends Dbh
 		return $schoolData;
 
 		$stmt = null;
-	}
+	} */
 
 	public function getTeachers()
 	{

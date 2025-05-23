@@ -63,9 +63,9 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
 
                                         <div class="row mt-4">
                                             <div class="mt-4 text-start">
-                                                <button id="filterBtn" class="btn btn-primary">Filtrele</button>
-                                                <button id="clearFilterBtn" class="btn btn-danger">Filtreyi Temizle</button>
-                                                <button id="excelExportBtn" class="btn btn-success">Excel'e Aktar</button>
+                                                <button id="filterBtn" class="btn btn-primary btn-sm">Filtrele</button>
+                                                <button id="clearFilterBtn" class="btn btn-danger btn-sm">Filtreyi Temizle</button>
+                                                <button id="excelExportBtn" class="btn btn-success btn-sm">Excel'e Aktar</button>
 
                                             </div>
                                         </div>

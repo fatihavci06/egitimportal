@@ -66,9 +66,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                       <div class="container mt-5">
                         <div class="buttons" style="margin-bottom: 20px;">
                           <button data-period="daily" class="active btn btn-primary btn-sm"">Günlük</button>
-                          <button data-period="weekly" class="btn btn-primary btn-sm">Haftalık</button>
-                          <button data-period="monthly" class="btn btn-primary btn-sm">Aylık</button>
-                          <button data-period="yearly" class="btn btn-primary btn-sm">Yıllık</button>
+                          <button data-period="weekly" class="btn btn-primary btn-sm btn-sm">Haftalık</button>
+                          <button data-period="monthly" class="btn btn-primary btn-sm btn-sm">Aylık</button>
+                          <button data-period="yearly" class="btn btn-primary btn-sm btn-sm">Yıllık</button>
                         </div>
                         <div id="chart"></div> <!-- EKLENDİ -->
                       </div>

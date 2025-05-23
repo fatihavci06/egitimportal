@@ -48,7 +48,7 @@ include_once "views/pages-head.php";
 					<!--begin::Header-->
 					<div class="d-flex flex-row-fluid flex-column text-center p-5 p-lg-10 pt-lg-20">
 						<!--begin::Logo-->
-						<a href="index.html" class="py-2 py-lg-20">
+						<a href="index" class="py-2 py-lg-20">
 							<img alt="Logo" src="assets/media/logos/lineup-campus.jpg" class="h-100px h-lg-150px" />
 						</a>
 						<!--end::Logo-->
@@ -84,7 +84,7 @@ include_once "views/pages-head.php";
 								<h1 class="text-gray-900 mb-3">Hesap Oluştur</h1>
 								<!--end::Title-->
 								<!--begin::Link-->
-								<div class="text-gray-500 fw-semibold fs-4">Zaten bir hesabınız var mı?
+								<div class="text-gray-800 fw-semibold fs-4">Zaten bir hesabınız var mı?
 									<a href="index" class="link-primary fw-bold">Giriş yap</a>
 								</div>
 								<!--end::Link-->
@@ -369,7 +369,7 @@ include_once "views/pages-head.php";
 							<div class="fv-row mb-10">
 								<label class="form-check form-check-custom form-check-solid form-check-inline">
 									<input class="form-check-input" type="checkbox" name="toc" value="0" />
-									<span class="form-check-label fw-semibold text-gray-700 fs-6"><a href="#" class="ms-1 link-primary">KVKK Metnini</a>
+									<span class="form-check-label fw-semibold text-gray-700 fs-6"><a href="assets/pdf/kvkk-sozlesmesi.pdf" target="_blank" class="ms-1 link-primary">KVKK Metnini</a>
 										onaylıyorum.</span>
 								</label>
 							</div>

@@ -4,6 +4,29 @@ include_once "dateformat.classes.php";
 class ShowStudent extends Student
 {
 
+    // Get Class List For Search
+
+    public function getClassList()
+    {
+
+        $schoolInfo = $this->getAllClasses();
+
+        $classList = '';
+
+        foreach ($schoolInfo as $key => $value) {
+
+            $classList .= '
+                    <!--begin::Option-->
+                    <label class="form-check form-check-sm form-check-custom form-check-solid  mb-3 me-5">
+                        <input class="form-check-input" type="radio" name="student_class" value="' . $value['slug'] . '" />
+                        <span class="form-check-label text-gray-600">' . $value['name'] . '</span>
+                    </label>
+                    <!--end::Option-->
+                ';
+        }
+        echo $classList;
+    }
+
     // Get Student List
 
     public function getStudentList()
@@ -13,17 +36,28 @@ class ShowStudent extends Student
 
 
         $dateFormat = new DateFormat();
+        $studentList = '';
 
         foreach ($schoolInfo as $key => $value) {
 
-            $studentList = '
+            $sinifArama = 'data-filter="' . $value['classSlug'] . '"';
+
+            if ($value['userActive'] == 1) {
+                $aktifArama = 'data-filter="Aktif"';
+                $aktifYazi = 'Aktif';
+            } else {
+                $aktifArama = 'data-filter="Passive"';
+                $aktifYazi = 'Pasif';
+            }
+
+            $studentList .= '
                     <tr>
                         <td>
                             <div class="form-check form-check-sm form-check-custom form-check-solid">
                                 <input class="form-check-input" type="checkbox" value="1" />
                             </div>
                         </td>
-                        <td>
+                        <td '. $aktifArama . '>
                             <div class="cursor-pointer symbol symbol-90px symbol-lg-90px"><img src="assets/media/profile/' . $value['photo'] . '"></div>
                         </td>
                         <td>
@@ -32,10 +66,11 @@ class ShowStudent extends Student
                         <td>
                             <a href="mailto:' . $value['email'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['email'] . '</a>
                         </td>
-                        <td>
+                        <td ' . $sinifArama . '>
                             ' . $value['className'] . '
                         </td>
-                        <td>' . $dateFormat->changeDate($value['subscribed_end']) . '</td>
+                        <td  data-order="' . $dateFormat->forDB($value['subscribed_end']) . '">' . $dateFormat->changeDate($value['subscribed_end']) . '</td>
+                        <td>' . $aktifYazi . '</td>
                         <td class="text-end">
                             <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
@@ -58,8 +93,9 @@ class ShowStudent extends Student
                         </td>
                     </tr>
                 ';
-            echo $studentList;
+            
         }
+            echo $studentList;
     }
 
     // Get Waiting Money Transfer Student List
@@ -606,10 +642,10 @@ class ShowStudent extends Student
                     <!--begin::Modal footer-->
                     <div class="modal-footer flex-center">
                         <!--begin::Button-->
-                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light me-3">İptal</button>
+                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light btn-sm me-3">İptal</button>
                         <!--end::Button-->
                         <!--begin::Button-->
-                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary">
+                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary btn-sm">
                             <span class="indicator-label">Gönder</span>
                             <span class="indicator-progress">Lütfen bekleyin...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -729,7 +765,56 @@ class ShowStudent extends Student
         echo $packagesList;
     }
 
-    // List of Package Student Details Page
+    // List of Package Details Student Details Page
+
+    public function showPackageDetailsListForStudentDetails($id)
+    {
+
+        $packagesInfo = $this->getStudentPackagesWithName($id);
+
+        $dateFormat = new DateFormat();
+
+        $packagesList = '';
+
+        $totalPrice = 0;
+
+        if (empty($packagesInfo)) {
+            $packagesList = '<tr>
+                                <td class="ps-0" colspan="4">
+                                    Alınan Paket Yok!
+                                </td>
+                            </tr>';
+        } else {
+            foreach ($packagesInfo as $value) {
+
+                $totalPrice += $value['pay_amount'];
+
+                $packagesList .= '<tr>
+                                    <td>
+                                        <a href="paket-detay?id=' . $value['id'] . '" class="text-hover-primary text-gray-600">' . $value['packageName'] . '</a>
+                                    </td>
+                                    <td>
+                                        ' . $value['className'] . '
+                                    </td>
+                                    <td>' . str_replace('.', ',', strval($value['pay_amount'])) . '₺</td>
+                                    <td class="text-end">' . $dateFormat->changeDate($value['subscribed_end']) . '</td>
+                                </tr>';
+            }
+        }
+
+        $packagesList .= '<tfoot class="border-gray-200 fs-5 fw-semibold bg-lighten">
+                            <tr>
+                                <td class="text-gray-800 fw-bold mb-1 fs-6 text-start pe-0">Toplam Ücret</td>
+                                <td></td>
+                                <td>' . str_replace('.', ',', strval($totalPrice)) . '₺</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>';
+
+        echo $packagesList;
+    }
+
+    // List of Additional Package Student Details Page
 
     public function showAdditionalPackageListForStudentDetails($id)
     {
@@ -741,8 +826,8 @@ class ShowStudent extends Student
         $packagesList = '';
         if (empty($packagesInfo)) {
             $packagesList = '<tr>
-                                <td class="ps-0" colspan="3">
-                                    <a href="#" class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6 text-start pe-0">Alınan Ek Paket Yok!</a>
+                                <td colspan="3">
+                                    Alınan Ek Paket Yok!
                                 </td>
                             </tr>';
         } else {
@@ -750,7 +835,7 @@ class ShowStudent extends Student
 
                 $packagesList .= '<tr>
                                     <td class="ps-0">
-                                        <a href="#" class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6 text-start pe-0">' . $value['packageName'] . '</a>
+                                        <a href="paket-detay?id=' . $value['id'] . '" class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6 text-start pe-0">' . $value['packageName'] . '</a>
                                     </td>
                                     <td>
                                         <span class="text-gray-800 fw-bold d-block fs-6 ps-0 text-end">' . str_replace('.', ',', strval($value['pay_amount'])) . '₺</span>
@@ -761,6 +846,53 @@ class ShowStudent extends Student
                                 </tr>';
             }
         }
+
+        echo $packagesList;
+    }
+
+    // List of Additional Package Details Student Details Page
+
+    public function showAdditionalPackageDetailsListForStudentDetails($id)
+    {
+
+        $packagesInfo = $this->getStudentAdditionalPackagesWithName($id);
+
+        $dateFormat = new DateFormat();
+
+        $packagesList = '';
+
+        $totalPrice = 0;
+
+        if (empty($packagesInfo)) {
+            $packagesList = '<tr>
+                                <td colspan="4">
+                                    Alınan Ek Paket Yok!
+                                </td>
+                            </tr>';
+        } else {
+            foreach ($packagesInfo as $value) {
+
+                $totalPrice += $value['pay_amount'];
+
+                $packagesList .= '<tr>
+                                    <td>
+                                        <a href="paket-detay?id=' . $value['id'] . '" class="text-hover-primary text-gray-600">' . $value['packageName'] . '</a>
+                                    </td>
+                                    <td>
+                                        ' . $value['className'] . '
+                                    </td>
+                                    <td>' . str_replace('.', ',', strval($value['pay_amount'])) . '₺</td>
+                                    <td class="text-end">' . $dateFormat->changeDate($value['subscribed_end']) . '</td>
+                                </tr>';
+            }
+        }
+
+        $packagesList .= '<tr>
+                            <td class="text-gray-800 fw-bold mb-1 fs-6 text-start pe-0">Toplam Ücret</td>
+                            <td></td>
+                            <td>' . str_replace('.', ',', strval($totalPrice)) . '₺</td>
+                            <td></td>
+                        </tr>';
 
         echo $packagesList;
     }
@@ -851,14 +983,18 @@ class ShowStudent extends Student
                                             <span class="text-muted fw-semibold d-block fs-7">' . $topicCount . ' Konu</span>
                                         </div>
                                         <!--end:Author-->
-                                        <!--begin::Actions-->
-                                        <a href="#" class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px">
-                                            <i class="ki-duotone ki-arrow-right fs-2">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                        </a>
-                                        <!--begin::Actions-->
+                                        <!--begin::Progress-->
+                                        <div class="d-flex align-items-center w-100px w-sm-200px flex-column mt-3">
+                                            <div class="d-flex justify-content-between w-100 mt-auto mb-2">
+                                                <span class="fw-semibold fs-6 text-gray-500">Tamamlama Oranı</span>
+                                                <span class="fw-bold fs-6">25%</span>
+                                            </div>
+                                            <div class="h-5px mx-3 w-100 bg-light mb-3">
+                                                <div class="bg-warning rounded h-5px" role="progressbar" style="width: 25%;" aria-valuenow="25"
+                                                    aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                        <!--end::Progress-->
                                     </div>
                                     <!--end::Section-->
                                 </div>
@@ -899,5 +1035,51 @@ class ShowStudent extends Student
                 echo $leftUnits;
             }
         }
+    }
+
+    // List of Logins Student Details Page
+
+    public function showLoginDetailsListForStudentDetails($id)
+    {
+
+        $loginInfo = $this->getStudentLoginInfo($id);
+
+        $dateFormat = new DateFormat();
+
+        $loginList = '';
+
+        if (empty($loginInfo)) {
+            $loginList = '<tr>
+                                <td colspan="4">
+                                    Giriş Yapılmamış!
+                                </td>
+                            </tr>';
+        } else {
+            foreach ($loginInfo as $value) {
+
+                $logoutTime = $dateFormat->changeDateHour($value['logoutTime']);
+                if($value['logoutTime'] == '0000-00-00 00:00:00'){
+                    $logoutTime = 'Çıkış Bilgisi Yok';
+                }
+
+                $loginList .= '<tr>
+                                    <td>
+                                        ' . $value['deviceType'] . '
+                                    </td>
+                                    <td>
+                                        ' . $value['deviceModel'] . '
+                                    </td>
+                                    <td>' . $value['deviceOs'] . '</td>
+                                    <td>' . $value['browser'] . '</td>
+                                    <td>' . $value['resolution'] . '</td>
+                                    <td>' . $value['ipAddress'] . '</td>
+                                    <td>' . $dateFormat->changeDateHour($value['loginTime']) . '</td>
+                                    <td>' . $logoutTime . '</td>
+                                </tr>';
+            }
+
+        }
+
+        echo $loginList;
     }
 }

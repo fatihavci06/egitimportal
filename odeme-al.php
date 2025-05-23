@@ -43,7 +43,9 @@ foreach ($packInfo as $key => $value) {
 
 $price -= $price * ($cashDiscount / 100); */
 
-$vat = 10;  // %10 KDV oranı
+$vat = $package->getVat();
+
+$vat = $vat['tax_rate'];  // %10 KDV oranı
 $price += $price * ($vat / 100); // KDV'yi ekle
 $vatAmount = $price * ($vat / 100); // KDV tutarını hesapla
 $price = number_format($price, 2, '.', ''); // İki ondalık basamakla formatla

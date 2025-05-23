@@ -86,7 +86,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <input type="text" id="coupon_code" name="coupon_code" id="coupon_code" class="form-control" value="<?= $coupon['coupon_code'] ?>"/>
                                             </div>
                                         </div>
-                                        <button class="btn btn-primary mt-5 type=" id="coupon_submit">Güncelle</button>
+                                        <button class="btn btn-primary btn-sm mt-5 type=" id="coupon_submit">Güncelle</button>
                                     </form>
                                     <!--end::Card(FORM)-->
                                 </div>

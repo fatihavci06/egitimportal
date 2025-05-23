@@ -287,7 +287,7 @@ var KTModalCustomersAdd = function () {
 								},
 								error: function(xhr, status, error, response) {
 									Swal.fire({
-										text: "Bir sorun oldu!" + xhr.responseText,
+										text: "Bir sorun oldu!" /*+ xhr.responseText*/,
 										icon: "error",
 										buttonsStyling: false,
 										confirmButtonText: "Tamam, anladım!",

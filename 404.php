@@ -20,7 +20,7 @@
 				<h1 class="fw-semibold mb-10" style="color: #A3A3C7">Seems there is nothing here</h1>
 				<!--end::Message-->
 				<!--begin::Link-->
-				<a href="index.html" class="btn btn-primary">Return Home</a>
+				<a href="index.html" class="btn btn-primary btn-sm">Return Home</a>
 				<!--end::Link-->
 			</div>
 			<!--end::Authentication - 404 Page-->

@@ -83,11 +83,6 @@ class ShowClass extends Classes
             $classList = '
                     <tr>
                         <td>
-                            <div class="form-check form-check-sm form-check-custom form-check-solid">
-                                <input class="form-check-input" type="checkbox" value="1" />
-                            </div>
-                        </td>
-                        <td>
                             <a href="#" class="text-gray-800 text-hover-primary mb-1">' . $value['name'] . '</a>
                         </td>
                         <td class="text-end">
@@ -586,10 +581,10 @@ class ShowClass extends Classes
                     <!--begin::Modal footer-->
                     <div class="modal-footer flex-center">
                         <!--begin::Button-->
-                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light me-3">İptal</button>
+                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light btn-sm me-3">İptal</button>
                         <!--end::Button-->
                         <!--begin::Button-->
-                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary">
+                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary btn-sm">
                             <span class="indicator-label">Gönder</span>
                             <span class="indicator-progress">Lütfen bekleyin...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>

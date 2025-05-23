@@ -81,6 +81,23 @@ class Student extends Dbh
 		$stmt = null;
 	}
 
+	protected function getAllClasses()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM classes_lnp ORDER BY orderBy ASC');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $getData;
+
+		$stmt = null;
+	}
+
 	protected function getClassName($class_id)
 	{
 
@@ -102,15 +119,15 @@ class Student extends Dbh
 	{
 
 		if ($_SESSION['role'] == 1) {
-			$stmt = $this->connect()->prepare('SELECT users_lnp.*, classes_lnp.name AS className FROM users_lnp INNER JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id WHERE active = ? AND role = ?');
+			$stmt = $this->connect()->prepare('SELECT users_lnp.*, classes_lnp.name AS className, classes_lnp.slug AS classSlug, users_lnp.active AS userActive FROM users_lnp INNER JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id WHERE (users_lnp.active = ? OR users_lnp.active = ?) AND users_lnp.role = ?');
 
-			if (!$stmt->execute(array("1", "2"))) {
+			if (!$stmt->execute(array("1", "0", "2"))) {
 				$stmt = null;
 				exit();
 			}
 		} elseif ($_SESSION['role'] == 3) {
 			$school = $_SESSION['school_id'];
-			$stmt = $this->connect()->prepare('SELECT users_lnp.*, classes_lnp.name AS className FROM users_lnp INNER JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id WHERE active = ? AND role = ? AND school_id = ?');
+			$stmt = $this->connect()->prepare('SELECT users_lnp.*, classes_lnp.name AS className, classes_lnp.slug AS classSlug FROM users_lnp INNER JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id WHERE active = ? AND role = ? AND school_id = ?');
 
 			if (!$stmt->execute(array("1", "2", $school))) {
 				$stmt = null;
@@ -119,7 +136,7 @@ class Student extends Dbh
 		} elseif ($_SESSION['role'] == 4) {
 			$school = $_SESSION['school_id'];
 			$class_id = $_SESSION['class_id'];
-			$stmt = $this->connect()->prepare('SELECT users_lnp.*, classes_lnp.name AS className FROM users_lnp INNER JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id WHERE active = ? AND role = ? AND school_id = ? AND class_id = ?');
+			$stmt = $this->connect()->prepare('SELECT users_lnp.*, classes_lnp.name AS className, classes_lnp.slug AS classSlug FROM users_lnp INNER JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id WHERE active = ? AND role = ? AND school_id = ? AND class_id = ?');
 
 			if (!$stmt->execute(array("1", "2", $school, $class_id))) {
 				$stmt = null;
@@ -162,7 +179,7 @@ class Student extends Dbh
 	}
 
 	public function getStudentPackagesWithName($id){
-		$stmt = $this->connect()->prepare('SELECT package_payments_lnp.*, packages_lnp.name AS packageName, users_lnp.subscribed_end FROM package_payments_lnp INNER JOIN packages_lnp ON package_payments_lnp.pack_id = packages_lnp.id INNER JOIN users_lnp ON package_payments_lnp.user_id = users_lnp.id WHERE package_payments_lnp.user_id = ?');
+		$stmt = $this->connect()->prepare('SELECT package_payments_lnp.*, packages_lnp.name AS packageName, users_lnp.subscribed_end, classes_lnp.name AS className FROM package_payments_lnp INNER JOIN packages_lnp ON package_payments_lnp.pack_id = packages_lnp.id INNER JOIN users_lnp ON package_payments_lnp.user_id = users_lnp.id INNER JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id WHERE package_payments_lnp.user_id = ?');
 		
 		if (!$stmt->execute(array($id))) {
 			$stmt = null;
@@ -184,6 +201,19 @@ class Student extends Dbh
 
 		$studentPackages = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		return $studentPackages;
+		$stmt = null;
+	}
+
+	public function getStudentLoginInfo($id){
+		$stmt = $this->connect()->prepare('SELECT * FROM logininfo_lnp  WHERE user_id = ? ORDER BY id DESC');
+
+		if (!$stmt->execute(array($id))) {
+			$stmt = null;
+			exit();
+		}
+
+		$loginData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		return $loginData;
 		$stmt = null;
 	}
 

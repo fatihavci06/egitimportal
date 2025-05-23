@@ -216,7 +216,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                                 <h5 class="card-title">Dosya ID: <?= $img['id'] ?></h5>
                                                                                 <p><strong>Dosya Yolu:</strong> <a href="<?= $img['file_path'] ?>" target="_blank">Dosyayı Görüntüle</a></p>
                                                                                 
-                                                                                <button type="button" class="btn btn-danger delete-img" data-img-id="<?= $img['id'] ?>">Dosyayı Sil</button>
+                                                                                <button type="button" class="btn btn-danger btn-sm delete-img" data-img-id="<?= $img['id'] ?>">Dosyayı Sil</button>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -242,8 +242,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                                     <label for="description_<?= $file['id'] ?>" class="form-label">Açıklama</label>
                                                                                     <input type="text" class="form-control" id="description_<?= $file['id'] ?>" data-file-id="<?= $file['id'] ?>" value="<?= htmlspecialchars($file['description']) ?>">
                                                                                 </div>
-                                                                                <button type="button" class="btn btn-primary update-description" data-file-id="<?= $file['id'] ?>">Açıklamayı Güncelle</button>
-                                                                                <button type="button" class="btn btn-danger delete-file" data-file-id="<?= $file['id'] ?>">Dosyayı Sil</button>
+                                                                                <button type="button" class="btn btn-primary btn-sm update-description" data-file-id="<?= $file['id'] ?>">Açıklamayı Güncelle</button>
+                                                                                <button type="button" class="btn btn-danger btn-sm delete-file" data-file-id="<?= $file['id'] ?>">Dosyayı Sil</button>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -265,7 +265,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <div class="row mt-5">
                                                     <div class="col-lg-11"></div>
                                                     <div class="col-lg-1">
-                                                        <button type="button" id="submitForm" class="btn btn-primary">Kaydet</button>
+                                                        <button type="button" id="submitForm" class="btn btn-primary btn-sm">Kaydet</button>
                                                     </div>
                                                 </div>
                                         </form>

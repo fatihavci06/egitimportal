@@ -63,8 +63,8 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
 
                                         <div class="row mt-4">
                                             <div class="mt-4 text-start">
-                                                <button id="filterBtn" class="btn btn-primary">Filtrele</button>
-                                                <button id="clearFilterBtn" class="btn btn-secondary">Filtreyi Temizle</button>
+                                                <button id="filterBtn" class="btn btn-primary btn-sm">Filtrele</button>
+                                                <button id="clearFilterBtn" class="btn btn-secondary btn-sm">Filtreyi Temizle</button>
                                             </div>
                                         </div>
 
@@ -185,8 +185,8 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                 });
 
                 $('#clearFilterBtn').on('click', function() {
-                    $('#startDate').val('');
-                    $('#student').val('');
+                    $('#start_date').val('');
+                    $('#start_date').val('');
 
                     if ($.fn.DataTable.isDataTable('#paymentList')) {
                         $('#paymentList').DataTable().clear().draw();

@@ -158,7 +158,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                                                         <!-- Dosya İndirme Butonu -->
                                                                         <div class="d-flex justify-content-between">
-                                                                            <a href="<?= $file['file_path'] ?>" class="btn btn-primary" target="_blank">
+                                                                            <a href="<?= $file['file_path'] ?>" class="btn btn-primary btn-sm" target="_blank">
                                                                                 <i class="bi bi-download"></i> Dosyayı Görüntüle
                                                                             </a>
 

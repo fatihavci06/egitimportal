@@ -737,10 +737,10 @@ class ShowAudioBook extends AudioBooks
                     <!--begin::Modal footer-->
                     <div class="modal-footer flex-center">
                         <!--begin::Button-->
-                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light me-3">İptal</button>
+                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light btn-sm me-3">İptal</button>
                         <!--end::Button-->
                         <!--begin::Button-->
-                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary">
+                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary btn-sm">
                             <span class="indicator-label">Gönder</span>
                             <span class="indicator-progress">Lütfen bekleyin...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -1572,10 +1572,10 @@ class ShowAudioBookStudent extends AudioBooksStudent
                     <!--begin::Modal footer-->
                     <div class="modal-footer flex-center">
                         <!--begin::Button-->
-                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light me-3">İptal</button>
+                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light btn-sm me-3">İptal</button>
                         <!--end::Button-->
                         <!--begin::Button-->
-                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary">
+                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary btn-sm">
                             <span class="indicator-label">Gönder</span>
                             <span class="indicator-progress">Lütfen bekleyin...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -2391,10 +2391,10 @@ class ShowAudioBooks extends AudioBooks
                     <!--begin::Modal footer-->
                     <div class="modal-footer flex-center">
                         <!--begin::Button-->
-                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light me-3">İptal</button>
+                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light btn-sm me-3">İptal</button>
                         <!--end::Button-->
                         <!--begin::Button-->
-                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary">
+                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary btn-sm">
                             <span class="indicator-label">Gönder</span>
                             <span class="indicator-progress">Lütfen bekleyin...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>

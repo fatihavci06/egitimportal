@@ -121,8 +121,6 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 												<!--begin:::Tab item-->
 												<li class="nav-item ms-auto">
 													<!--begin::Action menu-->
-													<a href="#" class="btn btn-primary ps-7" data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">İşlemler
-														<i class="ki-duotone ki-down fs-2 me-0"></i></a>
 													<!--begin::Menu-->
 													<!--end::Menu-->
 													<!--end::Menu-->

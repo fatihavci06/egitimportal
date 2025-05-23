@@ -3,14 +3,33 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 8 or $_SESSION['role'] == 4 or $_SESSION['role'] == 3)) {
 	include_once "classes/dbh.classes.php";
+	include "classes/teacher.classes.php";
+	include "classes/teacher-view.classes.php";
 	include "classes/school.classes.php";
-	include "classes/school-view.classes.php";
-	$schools = new ShowSchool();
+	include "classes/timespend.classes.php";
+	$teacherId = new Teacher();
+	$teacher = new ShowTeacher();
+	$timeSpend = new timeSpend();
+	$school = new School();
 	$slug = $_GET['q'];
 	include_once "views/pages-head.php";
+	$getTeacherId = $teacherId->getTeacherId($slug);
+
+	$teacherInfo = $teacher->getOneTeacher($getTeacherId);
+
+	$timeSpendInfo = $timeSpend->getTimeSpend($getTeacherId);
+
+	$schoolInfo = $school->getOneSchoolById($studentInfo['school_id']);
+
+	$studentPackages = $student->getStudentPackages($getStudentId);
+
+	$studentAdditionalPackages = $student->getStudentAdditionalPackages($getStudentId);
+
+	$studentClassName = $student->getStudentClass($studentInfo['class_id']);
 ?>
+
 	<!--end::Head-->
 	<!--begin::Body-->
 
@@ -75,12 +94,12 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 												</li>
 												<!--end::Item-->
 												<!--begin::Item-->
-												<li class="breadcrumb-item text-gray-700 fw-bold lh-1">Okul Detay</li>
+												<li class="breadcrumb-item text-gray-700">Öğrenci Detay</li>
 												<!--end::Item-->
 											</ul>
 											<!--end::Breadcrumb-->
 											<!--begin::Title-->
-											<h1 class="page-heading d-flex flex-column justify-content-center text-gray-900 fw-bolder fs-1 lh-0">Okul Detay</h1>
+											<h1 class="page-heading d-flex flex-column justify-content-center text-gray-900 fw-bolder fs-1 lh-0">Öğrenci Detay</h1>
 											<!--end::Title-->
 										</div>
 										<!--end::Page title-->
@@ -94,1611 +113,1581 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 							<div id="kt_app_content" class="app-content flex-column-fluid">
 								<!--begin::Content container-->
 								<div id="kt_app_content_container" class="app-container container-fluid">
-									<!--begin::Layout-->
-									<div class="d-flex flex-column flex-xl-row">
-										<!--begin::Sidebar-->
-											<?php $schools->showOneSchool($slug); ?>
-										<!--end::Sidebar-->
-										<!--begin::Content-->
-										<div class="flex-lg-row-fluid ms-lg-15">
-											<!--begin:::Tabs-->
-											<ul class="nav nav-custom nav-tabs nav-line-tabs nav-line-tabs-2x border-0 fs-4 fw-semibold mb-8">
-												<!--begin:::Tab item-->
-												<li class="nav-item">
-													<a class="nav-link text-active-primary pb-4 active" data-bs-toggle="tab" href="#kt_customer_view_overview_tab">Öğrenciler</a>
-												</li>
-												<!--end:::Tab item-->
-												<!--begin:::Tab item-->
-												<li class="nav-item">
-													<a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#kt_customer_view_overview_events_and_logs_tab">Öğretmenler</a>
-												</li>
-												<!--end:::Tab item-->
-												<!--begin:::Tab item-->
-												<!--<li class="nav-item">
-													<a class="nav-link text-active-primary pb-4" data-kt-countup-tabs="true" data-bs-toggle="tab" href="#kt_customer_view_overview_statements">Statements</a>
-												</li>-->
-												<!--end:::Tab item-->
-												<!--begin:::Tab item-->
-												<li class="nav-item ms-auto">
-													<!--begin::Action menu-->
-													<a href="#" class="btn btn-primary btn-sm ps-7" data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">İşlemler
-														<i class="ki-duotone ki-down fs-2 me-0"></i></a>
-													<!--begin::Menu-->
-													<!--end::Menu-->
-													<!--end::Menu-->
-												</li>
-												<!--end:::Tab item-->
-											</ul>
-											<!--end:::Tabs-->
-											<!--begin:::Tab content-->
-											<div class="tab-content" id="myTabContent">
-												<!--begin:::Tab pane-->
-												<div class="tab-pane fade show active" id="kt_customer_view_overview_tab" role="tabpanel">
-													<!--begin::Card-->
-													<div class="card pt-4 mb-6 mb-xl-9">
-														<!--begin::Card header-->
-														<div class="card-header border-0">
-															<!--begin::Card title-->
-															<div class="card-title">
-																<h2>Öğrenci Listesi</h2>
-															</div>
-															<!--end::Card title-->
-														</div>
-														<!--end::Card header-->
-														<!--begin::Card body-->
-														<div class="card-body pt-0 pb-5">
-															<!--begin::Table-->
-															<table class="table align-middle table-row-dashed gy-5" id="kt_table_customers_payment">
-																<thead class="border-bottom border-gray-200 fs-7 fw-bold">
-																	<tr class="text-start text-muted text-uppercase gs-0">
-																		<th class="min-w-100px">Öğrenci Adı</th>
-																		<th>E-posta Adresi</th>
-																		<th>Telefon Numarası</th>
-																		<th class="min-w-100px">Üyelik Bitiş Tarihi</th>
-																		<th class="text-end min-w-100px pe-4">İşlemler</th>
-																	</tr>
-																</thead>
-																<tbody class="fs-6 fw-semibold text-gray-600">
-																	<tr>
-																		<td>
-																			<a href="#" class="text-gray-600 text-hover-primary mb-1">A Öğrencisi</a>
-																		</td>
-																		<td>
-																			ogrencia@eposta.com
-																		</td>
-																		<td>0530 12345678</td>
-																		<td>14 Aralık 2020</td>
-																		<td class="pe-0 text-end">
-																			<a href="#" class="btn btn-sm btn-light image.png btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
-																				<i class="ki-duotone ki-down fs-5 ms-1"></i></a>
-																		</td>
-																	</tr>
-																	<tr>
-																		<td>
-																			<a href="#" class="text-gray-600 text-hover-primary mb-1">B Öğrencisi</a>
-																		</td>
-																		<td>
-																			ogrencib@eposta.com
-																		</td>
-																		<td>0530 12331678</td>
-																		<td>19 Aralık 2020</td>
-																		<td class="pe-0 text-end">
-																			<a href="#" class="btn btn-sm btn-light image.png btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
-																				<i class="ki-duotone ki-down fs-5 ms-1"></i></a>
-																		</td>
-																	</tr>
-																	<tr>
-																		<td>
-																			<a href="#" class="text-gray-600 text-hover-primary mb-1">C Öğrencisi</a>
-																		</td>
-																		<td>
-																			ogrencic@eposta.com
-																		</td>
-																		<td>0537 12345678</td>
-																		<td>28 Aralık 2020</td>
-																		<td class="pe-0 text-end">
-																			<a href="#" class="btn btn-sm btn-light image.png btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
-																				<i class="ki-duotone ki-down fs-5 ms-1"></i></a>
-																		</td>
-																	</tr>
-																	<tr>
-																		<td>
-																			<a href="#" class="text-gray-600 text-hover-primary mb-1">D Öğrencisi</a>
-																		</td>
-																		<td>
-																			ogrencid@eposta.com
-																		</td>
-																		<td>0540 12345678</td>
-																		<td>14 Kasım 2020</td>
-																		<td class="pe-0 text-end">
-																			<a href="#" class="btn btn-sm btn-light image.png btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
-																				<i class="ki-duotone ki-down fs-5 ms-1"></i></a>
-																		</td>
-																	</tr>
-																</tbody>
-																<!--end::Table body-->
-															</table>
-															<!--end::Table-->
-														</div>
-														<!--end::Card body-->
+									<!--begin::Navbar-->
+									<div class="card mb-5 mb-xxl-8">
+										<div class="card-body pt-9 pb-0">
+											<!--begin::Details-->
+											<div class="d-flex flex-wrap flex-sm-nowrap">
+												<!--begin: Pic-->
+												<div class="me-7 mb-4">
+													<div class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
+														<img src="assets/media/profile/<?php echo $studentInfo['photo'] ?>" alt="image" />
+														<!-- <div class="position-absolute translate-middle bottom-0 start-100 mb-6 bg-success rounded-circle border border-4 border-body h-20px w-20px"></div> -->
 													</div>
-													<!--end::Card-->
 												</div>
-												<!--end:::Tab pane-->
-												<!--begin:::Tab pane-->
-												<div class="tab-pane fade" id="kt_customer_view_overview_events_and_logs_tab" role="tabpanel">
-													<!--begin::Card-->
-													<!--begin::Card-->
-													<div class="card pt-4 mb-6 mb-xl-9">
-														<!--begin::Card header-->
-														<div class="card-header border-0">
-															<!--begin::Card title-->
-															<div class="card-title">
-																<h2>Öğretmen Listesi</h2>
+												<!--end::Pic-->
+												<!--begin::Info-->
+												<div class="flex-grow-1">
+													<!--begin::Title-->
+													<div class="d-flex justify-content-between align-items-start flex-wrap mb-2">
+														<!--begin::User-->
+														<div class="d-flex flex-column">
+															<!--begin::Name-->
+															<div class="d-flex align-items-center mb-2">
+																<a href="#" class="text-gray-900 text-hover-primary fs-2 fw-bold me-1"><?php echo $studentInfo['name'] . ' ' . $studentInfo['surname'] ?> </a>
 															</div>
-															<!--end::Card title-->
-														</div>
-														<!--end::Card header-->
-														<!--begin::Card body-->
-														<div class="card-body pt-0 pb-5">
-															<!--begin::Table-->
-															<table class="table align-middle table-row-dashed gy-5" id="kt_table_customers_payment">
-																<thead class="border-bottom border-gray-200 fs-7 fw-bold">
-																	<tr class="text-start text-muted text-uppercase gs-0">
-																		<th class="min-w-100px">Öğretmen Adı</th>
-																		<th>E-posta Adresi</th>
-																		<th>Telefon Numarası</th>
-																		<th class="text-end min-w-100px pe-4">İşlemler</th>
-																	</tr>
-																</thead>
-																<tbody class="fs-6 fw-semibold text-gray-600">
-																	<tr>
-																		<td>
-																			<a href="#" class="text-gray-600 text-hover-primary mb-1">A Öğretmen</a>
-																		</td>
-																		<td>
-																			ogretmena@eposta.com
-																		</td>
-																		<td>0530 12345678</td>
-																		<td class="pe-0 text-end">
-																			<a href="#" class="btn btn-sm btn-light image.png btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
-																				<i class="ki-duotone ki-down fs-5 ms-1"></i></a>
-																		</td>
-																	</tr>
-																	<tr>
-																		<td>
-																			<a href="#" class="text-gray-600 text-hover-primary mb-1">B Öğretmen</a>
-																		</td>
-																		<td>
-																			ogretmenb@eposta.com
-																		</td>
-																		<td>0530 12331678</td>
-																		<td class="pe-0 text-end">
-																			<a href="#" class="btn btn-sm btn-light image.png btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
-																				<i class="ki-duotone ki-down fs-5 ms-1"></i></a>
-																		</td>
-																	</tr>
-																	<tr>
-																		<td>
-																			<a href="#" class="text-gray-600 text-hover-primary mb-1">C Öğretmen</a>
-																		</td>
-																		<td>
-																			ogretmenc@eposta.com
-																		</td>
-																		<td>0537 12345678</td>
-																		<td class="pe-0 text-end">
-																			<a href="#" class="btn btn-sm btn-light image.png btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
-																				<i class="ki-duotone ki-down fs-5 ms-1"></i></a>
-																		</td>
-																	</tr>
-																	<tr>
-																		<td>
-																			<a href="#" class="text-gray-600 text-hover-primary mb-1">D Öğretmen</a>
-																		</td>
-																		<td>
-																			ogretmend@eposta.com
-																		</td>
-																		<td>0540 12345678</td>
-																		<td class="pe-0 text-end">
-																			<a href="#" class="btn btn-sm btn-light image.png btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
-																				<i class="ki-duotone ki-down fs-5 ms-1"></i></a>
-																		</td>
-																	</tr>
-																</tbody>
-																<!--end::Table body-->
-															</table>
-															<!--end::Table-->
-														</div>
-														<!--end::Card body-->
-													</div>
-													<!--end::Card-->
-												</div>
-												<!--end:::Tab pane-->
-												<!--begin:::Tab pane-->
-												<div class="tab-pane fade" id="kt_customer_view_overview_statements" role="tabpanel">
-													<!--begin::Earnings-->
-													<div class="card mb-6 mb-xl-9">
-														<!--begin::Header-->
-														<div class="card-header border-0">
-															<div class="card-title">
-																<h2>Earnings</h2>
-															</div>
-														</div>
-														<!--end::Header-->
-														<!--begin::Body-->
-														<div class="card-body py-0">
-															<div class="fs-5 fw-semibold text-gray-500 mb-4">Last 30 day earnings calculated. Apart from arranging the order of topics.</div>
-															<!--begin::Left Section-->
-															<div class="d-flex flex-wrap flex-stack mb-5">
-																<!--begin::Row-->
-																<div class="d-flex flex-wrap">
-																	<!--begin::Col-->
-																	<div class="border border-dashed border-gray-300 w-150px rounded my-3 p-4 me-6">
-																		<span class="fs-1 fw-bold text-gray-800 lh-1">
-																			<span data-kt-countup="true" data-kt-countup-value="6,840" data-kt-countup-prefix="$">0</span>
-																			<i class="ki-duotone ki-arrow-up fs-1 text-success">
-																				<span class="path1"></span>
-																				<span class="path2"></span>
-																			</i>
-																		</span>
-																		<span class="fs-6 fw-semibold text-muted d-block lh-1 pt-2">Net Earnings</span>
-																	</div>
-																	<!--end::Col-->
-																	<!--begin::Col-->
-																	<div class="border border-dashed border-gray-300 w-125px rounded my-3 p-4 me-6">
-																		<span class="fs-1 fw-bold text-gray-800 lh-1">
-																			<span class="" data-kt-countup="true" data-kt-countup-value="16">0</span>%
-																			<i class="ki-duotone ki-arrow-down fs-1 text-danger">
-																				<span class="path1"></span>
-																				<span class="path2"></span>
-																			</i></span>
-																		<span class="fs-6 fw-semibold text-muted d-block lh-1 pt-2">Change</span>
-																	</div>
-																	<!--end::Col-->
-																	<!--begin::Col-->
-																	<div class="border border-dashed border-gray-300 w-150px rounded my-3 p-4 me-6">
-																		<span class="fs-1 fw-bold text-gray-800 lh-1">
-																			<span data-kt-countup="true" data-kt-countup-value="1,240" data-kt-countup-prefix="$">0</span>
-																			<span class="text-primary">--</span>
-																		</span>
-																		<span class="fs-6 fw-semibold text-muted d-block lh-1 pt-2">Fees</span>
-																	</div>
-																	<!--end::Col-->
-																</div>
-																<!--end::Row-->
-																<a href="#" class="btn btn-sm btn-light-primary flex-shrink-0">Withdraw Earnings</a>
-															</div>
-															<!--end::Left Section-->
-														</div>
-														<!--end::Body-->
-													</div>
-													<!--end::Earnings-->
-													<!--begin::Statements-->
-													<div class="card mb-6 mb-xl-9">
-														<!--begin::Header-->
-														<div class="card-header">
-															<!--begin::Title-->
-															<div class="card-title">
-																<h2>Statement</h2>
-															</div>
-															<!--end::Title-->
-															<!--begin::Toolbar-->
-															<div class="card-toolbar">
-																<!--begin::Tab nav-->
-																<ul class="nav nav-stretch fs-5 fw-semibold nav-line-tabs nav-line-tabs-2x border-transparent" role="tablist">
-																	<li class="nav-item" role="presentation">
-																		<a class="nav-link text-active-primary active" data-bs-toggle="tab" role="tab" href="#kt_customer_view_statement_1">This Year</a>
-																	</li>
-																	<li class="nav-item" role="presentation">
-																		<a class="nav-link text-active-primary ms-3" data-bs-toggle="tab" role="tab" href="#kt_customer_view_statement_2">2020</a>
-																	</li>
-																	<li class="nav-item" role="presentation">
-																		<a class="nav-link text-active-primary ms-3" data-bs-toggle="tab" role="tab" href="#kt_customer_view_statement_3">2019</a>
-																	</li>
-																	<li class="nav-item" role="presentation">
-																		<a class="nav-link text-active-primary ms-3" data-bs-toggle="tab" role="tab" href="#kt_customer_view_statement_4">2018</a>
-																	</li>
-																</ul>
-																<!--end::Tab nav-->
-															</div>
-															<!--end::Toolbar-->
-														</div>
-														<!--end::Header-->
-														<!--begin::Card body-->
-														<div class="card-body pb-5">
-															<!--begin::Tab Content-->
-															<div id="kt_customer_view_statement_tab_content" class="tab-content">
-																<!--begin::Tab panel-->
-																<div id="kt_customer_view_statement_1" class="py-0 tab-pane fade show active" role="tabpanel">
-																	<!--begin::Table-->
-																	<table id="kt_customer_view_statement_table_1" class="table align-middle table-row-dashed fs-6 text-gray-600 fw-semibold gy-4">
-																		<thead class="border-bottom border-gray-200">
-																			<tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
-																				<th class="w-125px">Date</th>
-																				<th class="w-100px">Order ID</th>
-																				<th class="w-300px">Details</th>
-																				<th class="w-100px">Amount</th>
-																				<th class="w-100px text-end pe-7">Invoice</th>
-																			</tr>
-																		</thead>
-																		<tbody>
-																			<tr>
-																				<td>Nov 01, 2021</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">102445788</a>
-																				</td>
-																				<td>Darknight transparency 36 Icons Pack</td>
-																				<td class="text-success">$38.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Oct 24, 2021</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">423445721</a>
-																				</td>
-																				<td>Seller Fee</td>
-																				<td class="text-danger">$-2.60</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Oct 08, 2021</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">312445984</a>
-																				</td>
-																				<td>Cartoon Mobile Emoji Phone Pack</td>
-																				<td class="text-success">$76.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Sep 15, 2021</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">312445984</a>
-																				</td>
-																				<td>Iphone 12 Pro Mockup Mega Bundle</td>
-																				<td class="text-success">$5.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>May 30, 2021</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">523445943</a>
-																				</td>
-																				<td>Seller Fee</td>
-																				<td class="text-danger">$-1.30</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Apr 22, 2021</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">231445943</a>
-																				</td>
-																				<td>Parcel Shipping / Delivery Service App</td>
-																				<td class="text-success">$204.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Feb 09, 2021</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">426445943</a>
-																				</td>
-																				<td>Visual Design Illustration</td>
-																				<td class="text-success">$31.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Nov 01, 2021</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">984445943</a>
-																				</td>
-																				<td>Abstract Vusial Pack</td>
-																				<td class="text-success">$52.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Jan 04, 2021</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">324442313</a>
-																				</td>
-																				<td>Seller Fee</td>
-																				<td class="text-danger">$-0.80</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Nov 01, 2021</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">102445788</a>
-																				</td>
-																				<td>Darknight transparency 36 Icons Pack</td>
-																				<td class="text-success">$38.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Oct 24, 2021</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">423445721</a>
-																				</td>
-																				<td>Seller Fee</td>
-																				<td class="text-danger">$-2.60</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Oct 08, 2021</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">312445984</a>
-																				</td>
-																				<td>Cartoon Mobile Emoji Phone Pack</td>
-																				<td class="text-success">$76.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Sep 15, 2021</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">312445984</a>
-																				</td>
-																				<td>Iphone 12 Pro Mockup Mega Bundle</td>
-																				<td class="text-success">$5.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>May 30, 2021</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">523445943</a>
-																				</td>
-																				<td>Seller Fee</td>
-																				<td class="text-danger">$-1.30</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Apr 22, 2021</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">231445943</a>
-																				</td>
-																				<td>Parcel Shipping / Delivery Service App</td>
-																				<td class="text-success">$204.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Feb 09, 2021</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">426445943</a>
-																				</td>
-																				<td>Visual Design Illustration</td>
-																				<td class="text-success">$31.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Nov 01, 2021</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">984445943</a>
-																				</td>
-																				<td>Abstract Vusial Pack</td>
-																				<td class="text-success">$52.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Jan 04, 2021</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">324442313</a>
-																				</td>
-																				<td>Seller Fee</td>
-																				<td class="text-danger">$-0.80</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																		</tbody>
-																	</table>
-																	<!--end::Table-->
-																</div>
-																<!--end::Tab panel-->
-																<!--begin::Tab panel-->
-																<div id="kt_customer_view_statement_2" class="py-0 tab-pane fade" role="tabpanel">
-																	<!--begin::Table-->
-																	<table id="kt_customer_view_statement_table_2" class="table align-middle table-row-dashed fs-6 text-gray-600 fw-semibold gy-4">
-																		<thead class="border-bottom border-gray-200">
-																			<tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
-																				<th class="w-125px">Date</th>
-																				<th class="w-100px">Order ID</th>
-																				<th class="w-300px">Details</th>
-																				<th class="w-100px">Amount</th>
-																				<th class="w-100px text-end pe-7">Invoice</th>
-																			</tr>
-																		</thead>
-																		<tbody>
-																			<tr>
-																				<td>May 30, 2020</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">523445943</a>
-																				</td>
-																				<td>Seller Fee</td>
-																				<td class="text-danger">$-1.30</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Apr 22, 2020</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">231445943</a>
-																				</td>
-																				<td>Parcel Shipping / Delivery Service App</td>
-																				<td class="text-success">$204.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Feb 09, 2020</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">426445943</a>
-																				</td>
-																				<td>Visual Design Illustration</td>
-																				<td class="text-success">$31.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Nov 01, 2020</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">984445943</a>
-																				</td>
-																				<td>Abstract Vusial Pack</td>
-																				<td class="text-success">$52.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Jan 04, 2020</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">324442313</a>
-																				</td>
-																				<td>Seller Fee</td>
-																				<td class="text-danger">$-0.80</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Nov 01, 2020</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">102445788</a>
-																				</td>
-																				<td>Darknight transparency 36 Icons Pack</td>
-																				<td class="text-success">$38.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Oct 24, 2020</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">423445721</a>
-																				</td>
-																				<td>Seller Fee</td>
-																				<td class="text-danger">$-2.60</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Oct 08, 2020</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">312445984</a>
-																				</td>
-																				<td>Cartoon Mobile Emoji Phone Pack</td>
-																				<td class="text-success">$76.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Sep 15, 2020</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">312445984</a>
-																				</td>
-																				<td>Iphone 12 Pro Mockup Mega Bundle</td>
-																				<td class="text-success">$5.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>May 30, 2020</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">523445943</a>
-																				</td>
-																				<td>Seller Fee</td>
-																				<td class="text-danger">$-1.30</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Apr 22, 2020</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">231445943</a>
-																				</td>
-																				<td>Parcel Shipping / Delivery Service App</td>
-																				<td class="text-success">$204.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Feb 09, 2020</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">426445943</a>
-																				</td>
-																				<td>Visual Design Illustration</td>
-																				<td class="text-success">$31.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Nov 01, 2020</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">984445943</a>
-																				</td>
-																				<td>Abstract Vusial Pack</td>
-																				<td class="text-success">$52.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Jan 04, 2020</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">324442313</a>
-																				</td>
-																				<td>Seller Fee</td>
-																				<td class="text-danger">$-0.80</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Nov 01, 2020</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">102445788</a>
-																				</td>
-																				<td>Darknight transparency 36 Icons Pack</td>
-																				<td class="text-success">$38.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Oct 24, 2020</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">423445721</a>
-																				</td>
-																				<td>Seller Fee</td>
-																				<td class="text-danger">$-2.60</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Oct 08, 2020</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">312445984</a>
-																				</td>
-																				<td>Cartoon Mobile Emoji Phone Pack</td>
-																				<td class="text-success">$76.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Sep 15, 2020</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">312445984</a>
-																				</td>
-																				<td>Iphone 12 Pro Mockup Mega Bundle</td>
-																				<td class="text-success">$5.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																		</tbody>
-																	</table>
-																	<!--end::Table-->
-																</div>
-																<!--end::Tab panel-->
-																<!--begin::Tab panel-->
-																<div id="kt_customer_view_statement_3" class="py-0 tab-pane fade" role="tabpanel">
-																	<!--begin::Table-->
-																	<table id="kt_customer_view_statement_table_3" class="table align-middle table-row-dashed fs-6 text-gray-600 fw-semibold gy-4">
-																		<thead class="border-bottom border-gray-200">
-																			<tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
-																				<th class="w-125px">Date</th>
-																				<th class="w-100px">Order ID</th>
-																				<th class="w-300px">Details</th>
-																				<th class="w-100px">Amount</th>
-																				<th class="w-100px text-end pe-7">Invoice</th>
-																			</tr>
-																		</thead>
-																		<tbody>
-																			<tr>
-																				<td>Feb 09, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">426445943</a>
-																				</td>
-																				<td>Visual Design Illustration</td>
-																				<td class="text-success">$31.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Nov 01, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">984445943</a>
-																				</td>
-																				<td>Abstract Vusial Pack</td>
-																				<td class="text-success">$52.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Jan 04, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">324442313</a>
-																				</td>
-																				<td>Seller Fee</td>
-																				<td class="text-danger">$-0.80</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Sep 15, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">312445984</a>
-																				</td>
-																				<td>Iphone 12 Pro Mockup Mega Bundle</td>
-																				<td class="text-success">$5.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Nov 01, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">102445788</a>
-																				</td>
-																				<td>Darknight transparency 36 Icons Pack</td>
-																				<td class="text-success">$38.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Oct 24, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">423445721</a>
-																				</td>
-																				<td>Seller Fee</td>
-																				<td class="text-danger">$-2.60</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Oct 08, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">312445984</a>
-																				</td>
-																				<td>Cartoon Mobile Emoji Phone Pack</td>
-																				<td class="text-success">$76.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>May 30, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">523445943</a>
-																				</td>
-																				<td>Seller Fee</td>
-																				<td class="text-danger">$-1.30</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Apr 22, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">231445943</a>
-																				</td>
-																				<td>Parcel Shipping / Delivery Service App</td>
-																				<td class="text-success">$204.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Feb 09, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">426445943</a>
-																				</td>
-																				<td>Visual Design Illustration</td>
-																				<td class="text-success">$31.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Nov 01, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">984445943</a>
-																				</td>
-																				<td>Abstract Vusial Pack</td>
-																				<td class="text-success">$52.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Jan 04, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">324442313</a>
-																				</td>
-																				<td>Seller Fee</td>
-																				<td class="text-danger">$-0.80</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Sep 15, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">312445984</a>
-																				</td>
-																				<td>Iphone 12 Pro Mockup Mega Bundle</td>
-																				<td class="text-success">$5.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Nov 01, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">102445788</a>
-																				</td>
-																				<td>Darknight transparency 36 Icons Pack</td>
-																				<td class="text-success">$38.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Oct 24, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">423445721</a>
-																				</td>
-																				<td>Seller Fee</td>
-																				<td class="text-danger">$-2.60</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Oct 08, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">312445984</a>
-																				</td>
-																				<td>Cartoon Mobile Emoji Phone Pack</td>
-																				<td class="text-success">$76.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>May 30, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">523445943</a>
-																				</td>
-																				<td>Seller Fee</td>
-																				<td class="text-danger">$-1.30</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Apr 22, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">231445943</a>
-																				</td>
-																				<td>Parcel Shipping / Delivery Service App</td>
-																				<td class="text-success">$204.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																		</tbody>
-																	</table>
-																	<!--end::Table-->
-																</div>
-																<!--end::Tab panel-->
-																<!--begin::Tab panel-->
-																<div id="kt_customer_view_statement_4" class="py-0 tab-pane fade" role="tabpanel">
-																	<!--begin::Table-->
-																	<table id="kt_customer_view_statement_table_4" class="table align-middle table-row-dashed fs-6 text-gray-600 fw-semibold gy-4">
-																		<thead class="border-bottom border-gray-200">
-																			<tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
-																				<th class="w-125px">Date</th>
-																				<th class="w-100px">Order ID</th>
-																				<th class="w-300px">Details</th>
-																				<th class="w-100px">Amount</th>
-																				<th class="w-100px text-end pe-7">Invoice</th>
-																			</tr>
-																		</thead>
-																		<tbody>
-																			<tr>
-																				<td>Nov 01, 2018</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">102445788</a>
-																				</td>
-																				<td>Darknight transparency 36 Icons Pack</td>
-																				<td class="text-success">$38.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Oct 24, 2018</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">423445721</a>
-																				</td>
-																				<td>Seller Fee</td>
-																				<td class="text-danger">$-2.60</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Nov 01, 2018</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">102445788</a>
-																				</td>
-																				<td>Darknight transparency 36 Icons Pack</td>
-																				<td class="text-success">$38.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Oct 24, 2018</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">423445721</a>
-																				</td>
-																				<td>Seller Fee</td>
-																				<td class="text-danger">$-2.60</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Feb 09, 2018</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">426445943</a>
-																				</td>
-																				<td>Visual Design Illustration</td>
-																				<td class="text-success">$31.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Nov 01, 2018</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">984445943</a>
-																				</td>
-																				<td>Abstract Vusial Pack</td>
-																				<td class="text-success">$52.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Jan 04, 2018</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">324442313</a>
-																				</td>
-																				<td>Seller Fee</td>
-																				<td class="text-danger">$-0.80</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Oct 08, 2018</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">312445984</a>
-																				</td>
-																				<td>Cartoon Mobile Emoji Phone Pack</td>
-																				<td class="text-success">$76.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Oct 08, 2018</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">312445984</a>
-																				</td>
-																				<td>Cartoon Mobile Emoji Phone Pack</td>
-																				<td class="text-success">$76.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Feb 09, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">426445943</a>
-																				</td>
-																				<td>Visual Design Illustration</td>
-																				<td class="text-success">$31.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Nov 01, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">984445943</a>
-																				</td>
-																				<td>Abstract Vusial Pack</td>
-																				<td class="text-success">$52.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Jan 04, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">324442313</a>
-																				</td>
-																				<td>Seller Fee</td>
-																				<td class="text-danger">$-0.80</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Sep 15, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">312445984</a>
-																				</td>
-																				<td>Iphone 12 Pro Mockup Mega Bundle</td>
-																				<td class="text-success">$5.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Nov 01, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">102445788</a>
-																				</td>
-																				<td>Darknight transparency 36 Icons Pack</td>
-																				<td class="text-success">$38.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Oct 24, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">423445721</a>
-																				</td>
-																				<td>Seller Fee</td>
-																				<td class="text-danger">$-2.60</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Oct 08, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">312445984</a>
-																				</td>
-																				<td>Cartoon Mobile Emoji Phone Pack</td>
-																				<td class="text-success">$76.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>May 30, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">523445943</a>
-																				</td>
-																				<td>Seller Fee</td>
-																				<td class="text-danger">$-1.30</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Apr 22, 2019</td>
-																				<td>
-																					<a href="#" class="text-gray-600 text-hover-primary">231445943</a>
-																				</td>
-																				<td>Parcel Shipping / Delivery Service App</td>
-																				<td class="text-success">$204.00</td>
-																				<td class="text-end">
-																					<button class="btn btn-sm btn-light btn-active-light-primary">Download</button>
-																				</td>
-																			</tr>
-																		</tbody>
-																	</table>
-																	<!--end::Table-->
-																</div>
-																<!--end::Tab panel-->
-															</div>
-															<!--end::Tab Content-->
-														</div>
-														<!--end::Card body-->
-													</div>
-													<!--end::Statements-->
-												</div>
-												<!--end:::Tab pane-->
-											</div>
-											<!--end:::Tab content-->
-										</div>
-										<!--end::Content-->
-									</div>
-									<!--end::Layout-->
-									<!--begin::Modals-->
-									<!--begin::Modal - Add Payment-->
-									<div class="modal fade" id="kt_modal_add_payment" tabindex="-1" aria-hidden="true">
-										<!--begin::Modal dialog-->
-										<div class="modal-dialog mw-650px">
-											<!--begin::Modal content-->
-											<div class="modal-content">
-												<!--begin::Modal header-->
-												<div class="modal-header">
-													<!--begin::Modal title-->
-													<h2 class="fw-bold">Add a Payment Record</h2>
-													<!--end::Modal title-->
-													<!--begin::Close-->
-													<div id="kt_modal_add_payment_close" class="btn btn-icon btn-sm btn-active-icon-primary">
-														<i class="ki-duotone ki-cross fs-1">
-															<span class="path1"></span>
-															<span class="path2"></span>
-														</i>
-													</div>
-													<!--end::Close-->
-												</div>
-												<!--end::Modal header-->
-												<!--begin::Modal body-->
-												<div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
-													<!--begin::Form-->
-													<form id="kt_modal_add_payment_form" class="form" action="#">
-														<!--begin::Input group-->
-														<div class="fv-row mb-7">
-															<!--begin::Label-->
-															<label class="fs-6 fw-semibold form-label mb-2">
-																<span class="required">Invoice Number</span>
-																<span class="ms-2" data-bs-toggle="tooltip" title="The invoice number must be unique.">
-																	<i class="ki-duotone ki-information fs-7">
+															<!--end::Name-->
+															<!--begin::Info-->
+															<div class="d-flex flex-wrap fw-semibold fs-6 mb-4 pe-2">
+																<span class="d-flex align-items-center text-gray-500 me-5 mb-2">
+																	<i class="fa-solid fa-school fs-4 me-1"></i>
+																	<?php echo $schoolInfo['name']; ?>
+																</span>
+																<a href="tel:<?php echo $studentInfo['telephone']; ?>" class="d-flex align-items-center text-gray-500 text-hover-primary me-5 mb-2">
+																	<i class="fa-solid fa-phone fs-4 me-1"></i>
+																	<?php echo $studentInfo['telephone']; ?>
+																</a>
+																<a href="mailto:<?php echo $studentInfo['email']; ?>" class="d-flex align-items-center text-gray-500 text-hover-primary mb-2">
+																	<i class="ki-duotone ki-sms fs-4 me-1">
 																		<span class="path1"></span>
 																		<span class="path2"></span>
-																		<span class="path3"></span>
 																	</i>
-																</span>
-															</label>
-															<!--end::Label-->
-															<!--begin::Input-->
-															<input type="text" class="form-control form-control-solid" name="invoice" value="" />
-															<!--end::Input-->
+																	<?php echo $studentInfo['email']; ?>
+																</a>
+															</div>
+															<!--end::Info-->
 														</div>
-														<!--end::Input group-->
-														<!--begin::Input group-->
-														<div class="fv-row mb-7">
-															<!--begin::Label-->
-															<label class="required fs-6 fw-semibold form-label mb-2">Status</label>
-															<!--end::Label-->
-															<!--begin::Input-->
-															<select class="form-select form-select-solid fw-bold" name="status" data-control="select2" data-placeholder="Select an option" data-hide-search="true">
-																<option></option>
-																<option value="0">Approved</option>
-																<option value="1">Pending</option>
-																<option value="2">Rejected</option>
-																<option value="3">In progress</option>
-																<option value="4">Completed</option>
-															</select>
-															<!--end::Input-->
-														</div>
-														<!--end::Input group-->
-														<!--begin::Input group-->
-														<div class="fv-row mb-7">
-															<!--begin::Label-->
-															<label class="required fs-6 fw-semibold form-label mb-2">Invoice Amount</label>
-															<!--end::Label-->
-															<!--begin::Input-->
-															<input type="text" class="form-control form-control-solid" name="amount" value="" />
-															<!--end::Input-->
-														</div>
-														<!--end::Input group-->
-														<!--begin::Input group-->
-														<div class="fv-row mb-15">
-															<!--begin::Label-->
-															<label class="fs-6 fw-semibold form-label mb-2">
-																<span class="required">Additional Information</span>
-																<span class="ms-2" data-bs-toggle="tooltip" title="Information such as description of invoice or product purchased.">
-																	<i class="ki-duotone ki-information fs-7">
-																		<span class="path1"></span>
-																		<span class="path2"></span>
-																		<span class="path3"></span>
-																	</i>
-																</span>
-															</label>
-															<!--end::Label-->
-															<!--begin::Input-->
-															<textarea class="form-control form-control-solid rounded-3" name="additional_info"></textarea>
-															<!--end::Input-->
-														</div>
-														<!--end::Input group-->
+														<!--end::User-->
 														<!--begin::Actions-->
-														<div class="text-center">
-															<button type="reset" id="kt_modal_add_payment_cancel" class="btn btn-light btn-sm me-3">Discard</button>
-															<button type="submit" id="kt_modal_add_payment_submit" class="btn btn-primary btn-sm">
-																<span class="indicator-label">Submit</span>
-																<span class="indicator-progress">Please wait...
-																	<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-															</button>
-														</div>
-														<!--end::Actions-->
-													</form>
-													<!--end::Form-->
-												</div>
-												<!--end::Modal body-->
-											</div>
-											<!--end::Modal content-->
-										</div>
-										<!--end::Modal dialog-->
-									</div>
-									<!--end::Modal - New Card-->
-									<!--begin::Modal - Adjust Balance-->
-									<div class="modal fade" id="kt_modal_adjust_balance" tabindex="-1" aria-hidden="true">
-										<!--begin::Modal dialog-->
-										<div class="modal-dialog modal-dialog-centered mw-650px">
-											<!--begin::Modal content-->
-											<div class="modal-content">
-												<!--begin::Modal header-->
-												<div class="modal-header">
-													<!--begin::Modal title-->
-													<h2 class="fw-bold">Adjust Balance</h2>
-													<!--end::Modal title-->
-													<!--begin::Close-->
-													<div id="kt_modal_adjust_balance_close" class="btn btn-icon btn-sm btn-active-icon-primary">
-														<i class="ki-duotone ki-cross fs-1">
-															<span class="path1"></span>
-															<span class="path2"></span>
-														</i>
 													</div>
-													<!--end::Close-->
-												</div>
-												<!--end::Modal header-->
-												<!--begin::Modal body-->
-												<div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
-													<!--begin::Balance preview-->
-													<div class="d-flex text-center mb-9">
-														<div class="w-50 border border-dashed border-gray-300 rounded mx-2 p-4">
-															<div class="fs-6 fw-semibold mb-2 text-muted">Current Balance</div>
-															<div class="fs-2 fw-bold" kt-modal-adjust-balance="current_balance">US$ 32,487.57</div>
-														</div>
-														<div class="w-50 border border-dashed border-gray-300 rounded mx-2 p-4">
-															<div class="fs-6 fw-semibold mb-2 text-muted">New Balance
-																<span class="ms-2" data-bs-toggle="tooltip" title="Enter an amount to preview the new balance.">
-																	<i class="ki-duotone ki-information fs-7">
-																		<span class="path1"></span>
-																		<span class="path2"></span>
-																		<span class="path3"></span>
-																	</i>
-																</span>
-															</div>
-															<div class="fs-2 fw-bold" kt-modal-adjust-balance="new_balance">--</div>
-														</div>
-													</div>
-													<!--end::Balance preview-->
-													<!--begin::Form-->
-													<form id="kt_modal_adjust_balance_form" class="form" action="#">
-														<!--begin::Input group-->
-														<div class="fv-row mb-7">
-															<!--begin::Label-->
-															<label class="required fs-6 fw-semibold form-label mb-2">Adjustment type</label>
-															<!--end::Label-->
-															<!--begin::Dropdown-->
-															<select class="form-select form-select-solid fw-bold" name="adjustment" aria-label="Select an option" data-control="select2" data-dropdown-parent="#kt_modal_adjust_balance" data-placeholder="Select an option" data-hide-search="true">
-																<option></option>
-																<option value="1">Credit</option>
-																<option value="2">Debit</option>
-															</select>
-															<!--end::Dropdown-->
-														</div>
-														<!--end::Input group-->
-														<!--begin::Input group-->
-														<div class="fv-row mb-7">
-															<!--begin::Label-->
-															<label class="required fs-6 fw-semibold form-label mb-2">Amount</label>
-															<!--end::Label-->
-															<!--begin::Input-->
-															<input id="kt_modal_inputmask" type="text" class="form-control form-control-solid" name="amount" value="" />
-															<!--end::Input-->
-														</div>
-														<!--end::Input group-->
-														<!--begin::Input group-->
-														<div class="fv-row mb-7">
-															<!--begin::Label-->
-															<label class="fs-6 fw-semibold form-label mb-2">Add adjustment note</label>
-															<!--end::Label-->
-															<!--begin::Input-->
-															<textarea class="form-control form-control-solid rounded-3 mb-5"></textarea>
-															<!--end::Input-->
-														</div>
-														<!--end::Input group-->
-														<!--begin::Disclaimer-->
-														<div class="fs-7 text-muted mb-15">Please be aware that all manual balance changes will be audited by the financial team every fortnight. Please maintain your invoices and receipts until then. Thank you.</div>
-														<!--end::Disclaimer-->
-														<!--begin::Actions-->
-														<div class="text-center">
-															<button type="reset" id="kt_modal_adjust_balance_cancel" class="btn btn-light btn-sm me-3">Discard</button>
-															<button type="submit" id="kt_modal_adjust_balance_submit" class="btn btn-primary btn-sm">
-																<span class="indicator-label">Submit</span>
-																<span class="indicator-progress">Please wait...
-																	<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-															</button>
-														</div>
-														<!--end::Actions-->
-													</form>
-													<!--end::Form-->
-												</div>
-												<!--end::Modal body-->
-											</div>
-											<!--end::Modal content-->
-										</div>
-										<!--end::Modal dialog-->
-									</div>
-									<!--end::Modal - New Card-->
-									<!--begin::Modal - New Address-->
-									<div class="modal fade" id="kt_modal_update_customer" tabindex="-1" aria-hidden="true">
-										<!--begin::Modal dialog-->
-										<div class="modal-dialog modal-dialog-centered mw-650px">
-											<!--begin::Modal content-->
-											<div class="modal-content">
-												<!--begin::Form-->
-												<?php $schools->updateOneSchool($slug); ?>
-												<!--end::Form-->
-											</div>
-										</div>
-									</div>
-									<!--end::Modal - New Address-->
-									<!--begin::Modal - New Card-->
-									<div class="modal fade" id="kt_modal_new_card" tabindex="-1" aria-hidden="true">
-										<!--begin::Modal dialog-->
-										<div class="modal-dialog modal-dialog-centered mw-650px">
-											<!--begin::Modal content-->
-											<div class="modal-content">
-												<!--begin::Modal header-->
-												<div class="modal-header">
-													<!--begin::Modal title-->
-													<h2>Add New Card</h2>
-													<!--end::Modal title-->
-													<!--begin::Close-->
-													<div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
-														<i class="ki-duotone ki-cross fs-1">
-															<span class="path1"></span>
-															<span class="path2"></span>
-														</i>
-													</div>
-													<!--end::Close-->
-												</div>
-												<!--end::Modal header-->
-												<!--begin::Modal body-->
-												<div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
-													<!--begin::Form-->
-													<form id="kt_modal_new_card_form" class="form" action="#">
-														<!--begin::Input group-->
-														<div class="d-flex flex-column mb-7 fv-row">
-															<!--begin::Label-->
-															<label class="d-flex align-items-center fs-6 fw-semibold form-label mb-2">
-																<span class="required">Name On Card</span>
-																<span class="ms-1" data-bs-toggle="tooltip" title="Specify a card holder's name">
-																	<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
-																		<span class="path1"></span>
-																		<span class="path2"></span>
-																		<span class="path3"></span>
-																	</i>
-																</span>
-															</label>
-															<!--end::Label-->
-															<input type="text" class="form-control form-control-solid" placeholder="" name="card_name" value="Max Doe" />
-														</div>
-														<!--end::Input group-->
-														<!--begin::Input group-->
-														<div class="d-flex flex-column mb-7 fv-row">
-															<!--begin::Label-->
-															<label class="required fs-6 fw-semibold form-label mb-2">Card Number</label>
-															<!--end::Label-->
-															<!--begin::Input wrapper-->
-															<div class="position-relative">
-																<!--begin::Input-->
-																<input type="text" class="form-control form-control-solid" placeholder="Enter card number" name="card_number" value="4111 1111 1111 1111" />
-																<!--end::Input-->
-																<!--begin::Card logos-->
-																<div class="position-absolute translate-middle-y top-50 end-0 me-5">
-																	<img src="assets/media/svg/card-logos/visa.svg" alt="" class="h-25px" />
-																	<img src="assets/media/svg/card-logos/mastercard.svg" alt="" class="h-25px" />
-																	<img src="assets/media/svg/card-logos/american-express.svg" alt="" class="h-25px" />
-																</div>
-																<!--end::Card logos-->
-															</div>
-															<!--end::Input wrapper-->
-														</div>
-														<!--end::Input group-->
-														<!--begin::Input group-->
-														<div class="row mb-10">
-															<!--begin::Col-->
-															<div class="col-md-8 fv-row">
-																<!--begin::Label-->
-																<label class="required fs-6 fw-semibold form-label mb-2">Expiration Date</label>
-																<!--end::Label-->
-																<!--begin::Row-->
-																<div class="row fv-row">
-																	<!--begin::Col-->
-																	<div class="col-6">
-																		<select name="card_expiry_month" class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Month">
-																			<option></option>
-																			<option value="1">1</option>
-																			<option value="2">2</option>
-																			<option value="3">3</option>
-																			<option value="4">4</option>
-																			<option value="5">5</option>
-																			<option value="6">6</option>
-																			<option value="7">7</option>
-																			<option value="8">8</option>
-																			<option value="9">9</option>
-																			<option value="10">10</option>
-																			<option value="11">11</option>
-																			<option value="12">12</option>
-																		</select>
+													<!--end::Title-->
+													<!--begin::Stats-->
+													<div class="d-flex flex-wrap flex-stack">
+														<!--begin::Wrapper-->
+														<div class="d-flex flex-column flex-grow-1 pe-8">
+															<!--begin::Stats-->
+															<div class="d-flex flex-wrap">
+																<!--begin::Stat-->
+																<div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+																	<!--begin::Number-->
+																	<div class="d-flex align-items-center">
+																		<i class="fa-regular fa-clock fs-2 text-success me-2"></i>
+																		<div class="fs-2 fw-bold"><?php echo $timeSpend->saniyeyiGoster($timeSpendInfo); ?></div>
 																	</div>
-																	<!--end::Col-->
-																	<!--begin::Col-->
-																	<div class="col-6">
-																		<select name="card_expiry_year" class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Year">
-																			<option></option>
-																			<option value="2024">2024</option>
-																			<option value="2025">2025</option>
-																			<option value="2026">2026</option>
-																			<option value="2027">2027</option>
-																			<option value="2028">2028</option>
-																			<option value="2029">2029</option>
-																			<option value="2030">2030</option>
-																			<option value="2031">2031</option>
-																			<option value="2032">2032</option>
-																			<option value="2033">2033</option>
-																			<option value="2034">2034</option>
-																		</select>
-																	</div>
-																	<!--end::Col-->
+																	<!--end::Number-->
+																	<!--begin::Label-->
+																	<div class="fw-semibold fs-6 text-gray-500">Toplam Geçirilen Süre</div>
+																	<!--end::Label-->
 																</div>
-																<!--end::Row-->
-															</div>
-															<!--end::Col-->
-															<!--begin::Col-->
-															<div class="col-md-4 fv-row">
-																<!--begin::Label-->
-																<label class="d-flex align-items-center fs-6 fw-semibold form-label mb-2">
-																	<span class="required">CVV</span>
-																	<span class="ms-1" data-bs-toggle="tooltip" title="Enter a card CVV code">
-																		<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
+																<!--end::Stat-->
+																<!--begin::Stat-->
+																<div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+																	<!--begin::Number-->
+																	<div class="d-flex align-items-center">
+																		<i class="ki-duotone ki-book-open fs-2 text-success me-2">
+																			<span class="path1"></span>
+																			<span class="path2"></span>
+																			<span class="path3"></span>
+																			<span class="path4"></span>
+																		</i>
+																		<div class="fs-2 fw-bold" data-kt-countup="true" data-kt-countup-value="<?php echo count($studentPackages); ?>">0</div>
+																	</div>
+																	<!--end::Number-->
+																	<!--begin::Label-->
+																	<div class="fw-semibold fs-6 text-gray-500">Alınan Paket Sayısı</div>
+																	<!--end::Label-->
+																</div>
+																<!--end::Stat-->
+																<!--begin::Stat-->
+																<div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+																	<!--begin::Number-->
+																	<div class="d-flex align-items-center">
+																		<i class="ki-duotone ki-brifecase-tick fs-2 text-success me-2">
 																			<span class="path1"></span>
 																			<span class="path2"></span>
 																			<span class="path3"></span>
 																		</i>
-																	</span>
-																</label>
-																<!--end::Label-->
-																<!--begin::Input wrapper-->
-																<div class="position-relative">
-																	<!--begin::Input-->
-																	<input type="text" class="form-control form-control-solid" minlength="3" maxlength="4" placeholder="CVV" name="card_cvv" />
-																	<!--end::Input-->
-																	<!--begin::CVV icon-->
-																	<div class="position-absolute translate-middle-y top-50 end-0 me-3">
-																		<i class="ki-duotone ki-credit-cart fs-2hx">
-																			<span class="path1"></span>
-																			<span class="path2"></span>
-																		</i>
+																		<div class="fs-2 fw-bold" data-kt-countup="true" data-kt-countup-value="<?php echo count($studentAdditionalPackages); ?>">0</div>
 																	</div>
-																	<!--end::CVV icon-->
+																	<!--end::Number-->
+																	<!--begin::Label-->
+																	<div class="fw-semibold fs-6 text-gray-500">Alınan Ek Paket Sayısı</div>
+																	<!--end::Label-->
 																</div>
-																<!--end::Input wrapper-->
+																<!--end::Stat-->
 															</div>
-															<!--end::Col-->
+															<!--end::Stats-->
 														</div>
-														<!--end::Input group-->
-														<!--begin::Input group-->
-														<div class="d-flex flex-stack">
-															<!--begin::Label-->
-															<div class="me-5">
-																<label class="fs-6 fw-semibold form-label">Save Card for further billing?</label>
-																<div class="fs-7 fw-semibold text-muted">If you need more info, please check budget planning</div>
+														<!--end::Wrapper-->
+														<!--begin::Progress-->
+														<div class="d-flex align-items-center w-200px w-sm-300px flex-column mt-3">
+															<div class="d-flex justify-content-between w-100 mt-auto mb-2">
+																<span class="fw-semibold fs-6 text-gray-500">Profile Compleation</span>
+																<span class="fw-bold fs-6">50%</span>
 															</div>
-															<!--end::Label-->
-															<!--begin::Switch-->
-															<label class="form-check form-switch form-check-custom form-check-solid">
-																<input class="form-check-input" type="checkbox" value="1" checked="checked" />
-																<span class="form-check-label fw-semibold text-muted">Save Card</span>
-															</label>
-															<!--end::Switch-->
+															<div class="h-5px mx-3 w-100 bg-light mb-3">
+																<div class="bg-success rounded h-5px" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+															</div>
 														</div>
-														<!--end::Input group-->
-														<!--begin::Actions-->
-														<div class="text-center pt-15">
-															<button type="reset" id="kt_modal_new_card_cancel" class="btn btn-light btn-sm me-3">Discard</button>
-															<button type="submit" id="kt_modal_new_card_submit" class="btn btn-primary btn-sm">
-																<span class="indicator-label">Submit</span>
-																<span class="indicator-progress">Please wait...
-																	<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-															</button>
-														</div>
-														<!--end::Actions-->
-													</form>
-													<!--end::Form-->
+														<!--end::Progress-->
+													</div>
+													<!--end::Stats-->
 												</div>
-												<!--end::Modal body-->
+												<!--end::Info-->
 											</div>
-											<!--end::Modal content-->
+											<!--end::Details-->
+											<!--begin::Navs-->
+											<ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bold">
+												<!--begin::Nav item-->
+												<li class="nav-item mt-2">
+													<a class="nav-link text-active-primary ms-0 me-10 py-5 active" data-bs-toggle="pill" href="#genel_bakis">Genel Bakış</a>
+												</li>
+												<!--end::Nav item-->
+												<!--begin::Nav item-->
+												<li class="nav-item mt-2">
+													<a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="pill" href="#dersler">Dersler</a>
+												</li>
+												<!--end::Nav item-->
+												<!--begin::Nav item-->
+												<li class="nav-item mt-2">
+													<a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="pill" href="#ozel_dersler">Özel Dersler</a>
+												</li>
+												<!--end::Nav item-->
+												<!--begin::Nav item-->
+												<li class="nav-item mt-2">
+													<a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="pill" href="#grup_dersler">Grup Dersleri</a>
+												</li>
+												<!--end::Nav item-->
+												<!--begin::Nav item-->
+												<li class="nav-item mt-2">
+													<a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="pill" href="#paketler">Paketler</a>
+												</li>
+												<!--end::Nav item-->
+												<!--begin::Nav item-->
+												<li class="nav-item mt-2">
+													<a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="pill" href="#hareketler">Hareketler</a>
+												</li>
+												<!--end::Nav item-->
+											</ul>
+											<!--begin::Navs-->
 										</div>
-										<!--end::Modal dialog-->
 									</div>
-									<!--end::Modal - New Card-->
-									<!--end::Modals-->
+									<!--end::Navbar-->
+									<div class="tab-content">
+										<!--begin::Row-->
+										<div class="tab-pane fade show active" id="genel_bakis">
+											<div class="row g-5 g-xxl-8">
+												<!--begin::Col-->
+												<div class="col-xl-6">
+													<!--begin::List widget 20-->
+													<div class="card mb-5 mb-xl-8">
+														<!--begin::Header-->
+														<div class="card-header border-0 pt-5">
+															<h3 class="card-title align-items-start flex-column">
+																<span class="card-label fw-bold text-gray-900">Dersler</span>
+																<span class="text-muted mt-1 fw-semibold fs-7"><?php echo $studentClassName[0]['name']; ?></span>
+															</h3>
+															<!--begin::Toolbar-->
+															<!-- <div class="card-toolbar">
+																<a data-bs-toggle="pill" href="#kt_stats_widget_2_tab_22" class="btn btn-sm btn-light">Tüm Dersler</a>
+															</div> -->
+															<!--end::Toolbar-->
+														</div>
+														<!--end::Header-->
+														<!--begin::Body-->
+														<div class="card-body pt-6">
+															<?php $student->showLessonsListForStudentDetails($studentInfo['class_id'], $studentInfo['school_id']); ?>
+															<!--begin::Item-->
+														</div>
+														<!--end::Body-->
+													</div>
+													<!--end::List widget 20-->
+													<!--begin::List widget 23-->
+													<div class="card card-flush mb-5 mb-xl-8">
+														<!--begin::Header-->
+														<div class="card-header pt-7">
+															<!--begin::Title-->
+															<h3 class="card-title align-items-start flex-column">
+																<span class="card-label fw-bold text-gray-800">Özel Dersler</span>
+															</h3>
+															<!--end::Title-->
+															<!--begin::Toolbar-->
+															<div class="card-toolbar"></div>
+															<!--end::Toolbar-->
+														</div>
+														<!--end::Header-->
+														<!--begin::Body-->
+														<div class="card-body pt-5">
+															<!--begin::Items-->
+															<div class="">
+																<!--begin::Item-->
+																<div class="d-flex flex-stack">
+																	<!--begin::Section-->
+																	<div class="d-flex align-items-center me-5">
+																		<!--begin::Flag-->
+																		<i class="fa-solid fa-person-chalkboard text-muted fs-1 me-8"></i>
+																		<!--end::Flag-->
+																		<!--begin::Content-->
+																		<div class="me-5">
+																			<!--begin::Title-->
+																			<a href="#" class="text-gray-800 fw-bold text-hover-primary fs-6">Özel Ders</a>
+																			<!--end::Title-->
+																			<!--begin::Desc-->
+																			<span class="text-gray-500 fw-semibold fs-7 d-block text-start ps-0">Öğretmen</span>
+																			<!--end::Desc-->
+																		</div>
+																		<!--end::Content-->
+																	</div>
+																	<!--end::Section-->
+																	<!--begin::Wrapper-->
+																	<div class="d-flex align-items-center">
+																		<!--begin::Number-->
+																		<span class="text-gray-800 fw-bold fs-4 me-3">45</span>
+																		<!--end::Number-->
+																		<!--begin::Info-->
+																		<div class="m-0">
+																			<!--begin::Label-->
+																			<span class="badge badge-light-success fs-base">
+																				<i class="ki-duotone ki-arrow-up fs-5 text-success ms-n1">
+																					<span class="path1"></span>
+																					<span class="path2"></span>
+																				</i>Dk</span>
+																			<!--end::Label-->
+																		</div>
+																		<!--end::Info-->
+																	</div>
+																	<!--end::Wrapper-->
+																</div>
+																<!--end::Item-->
+																<!--begin::Separator-->
+																<div class="separator separator-dashed my-3"></div>
+																<!--end::Separator-->
+															</div>
+															<!--end::Items-->
+														</div>
+														<!--end: Card Body-->
+													</div>
+													<!--end::List widget 23-->
+												</div>
+												<!--end::Col-->
+												<!--begin::Col-->
+												<div class="col-xl-6">
+													<!--begin::Table widget 2-->
+													<div class="card mb-5 mb-xl-8">
+														<!--begin::Header-->
+														<div class="card-header align-items-center border-0">
+															<!--begin::Title-->
+															<h3 class="fw-bold text-gray-900 m-0">Alınan Paketler</h3>
+															<!--end::Title-->
+														</div>
+														<!--end::Header-->
+														<!--begin::Body-->
+														<div class="card-body pt-2">
+															<!--begin::Nav-->
+															<ul class="nav nav-pills nav-pills-custom mb-3">
+																<!--begin::Item-->
+																<li class="nav-item mb-3 me-3 me-lg-6">
+																	<!--begin::Link-->
+																	<a class="nav-link d-flex justify-content-between flex-column flex-center overflow-hidden active w-110px h-85px py-4" data-bs-toggle="pill" href="#kt_stats_widget_2_tab_1">
+																		<!--begin::Icon-->
+																		<div class="nav-icon">
+																			<img alt="" src="assets/media/svg/files/folder-document-dark.svg" class="" />
+																		</div>
+																		<!--end::Icon-->
+																		<!--begin::Subtitle-->
+																		<span class="nav-text text-gray-700 fw-bold fs-6 lh-1">Paketler</span>
+																		<!--end::Subtitle-->
+																		<!--begin::Bullet-->
+																		<span class="bullet-custom position-absolute bottom-0 w-100 h-4px bg-primary"></span>
+																		<!--end::Bullet-->
+																	</a>
+																	<!--end::Link-->
+																</li>
+																<!--end::Item-->
+																<!--begin::Item-->
+																<li class="nav-item mb-3 me-3 me-lg-6">
+																	<!--begin::Link-->
+																	<a class="nav-link d-flex justify-content-between flex-column flex-center overflow-hidden w-110px h-85px py-4" data-bs-toggle="pill" href="#kt_stats_widget_2_tab_2">
+																		<!--begin::Icon-->
+																		<div class="nav-icon">
+																			<img alt="" src="assets/media/svg/files/folder-document.svg" class="" />
+																		</div>
+																		<!--end::Icon-->
+																		<!--begin::Subtitle-->
+																		<span class="nav-text text-gray-700 fw-bold fs-6 lh-1">Ek Paketler</span>
+																		<!--end::Subtitle-->
+																		<!--begin::Bullet-->
+																		<span class="bullet-custom position-absolute bottom-0 w-100 h-4px bg-primary"></span>
+																		<!--end::Bullet-->
+																	</a>
+																	<!--end::Link-->
+																</li>
+																<!--end::Item-->
+															</ul>
+															<!--end::Nav-->
+															<!--begin::Tab Content-->
+															<div class="tab-content">
+																<!--begin::Tap pane-->
+																<div class="tab-pane fade show active" id="kt_stats_widget_2_tab_1">
+																	<!--begin::Table container-->
+																	<div class="table-responsive">
+																		<!--begin::Table-->
+																		<table class="table table-row-dashed align-middle gs-0 gy-4 my-0">
+																			<!--begin::Table head-->
+																			<thead>
+																				<tr class="fs-7 fw-bold text-gray-500 border-bottom-0">
+																					<th style="width: 50%;" class="ps-0 min-w-200px">PAKET ADI</th>
+																					<th style="width: 25%;" class="text-end min-w-100px">FİYATI</th>
+																					<th style="width: 25%;" class="pe-0 text-end min-w-100px">BİTİŞ TARİHİ</th>
+																				</tr>
+																			</thead>
+																			<!--end::Table head-->
+																			<!--begin::Table body-->
+																			<tbody>
+
+																				<?php $student->showPackageListForStudentDetails($getStudentId); ?>
+
+																			</tbody>
+																			<!--end::Table body-->
+																		</table>
+																		<!--end::Table-->
+																	</div>
+																	<!--end::Table container-->
+																</div>
+																<!--end::Tap pane-->
+																<!--begin::Tap pane-->
+																<div class="tab-pane fade" id="kt_stats_widget_2_tab_2">
+																	<!--begin::Table container-->
+																	<div class="table-responsive">
+																		<!--begin::Table-->
+																		<table class="table table-row-dashed align-middle gs-0 gy-4 my-0">
+																			<!--begin::Table head-->
+																			<thead>
+																				<tr class="fs-7 fw-bold text-gray-500 border-bottom-0">
+																					<th style="width: 50%;" class="ps-0 min-w-200px">PAKET ADI</th>
+																					<th style="width: 25%;" class="text-end min-w-100px">FİYATI</th>
+																					<th style="width: 25%;" class="pe-0 text-end min-w-100px">BİTİŞ TARİHİ</th>
+																				</tr>
+																			</thead>
+																			<!--end::Table head-->
+																			<!--begin::Table body-->
+																			<tbody>
+																				<?php $student->showAdditionalPackageListForStudentDetails($getStudentId); ?>
+																			</tbody>
+																			<!--end::Table body-->
+																		</table>
+																		<!--end::Table-->
+																	</div>
+																	<!--end::Table container-->
+																</div>
+																<!--end::Tap pane-->
+															</div>
+															<!--end::Tab Content-->
+														</div>
+														<!--end: Card Body-->
+													</div>
+													<!--end::Table widget 2-->
+
+													<!--begin::List widget 23-->
+													<div class="card card-flush mb-5 mb-xl-8">
+														<!--begin::Header-->
+														<div class="card-header pt-7">
+															<!--begin::Title-->
+															<h3 class="card-title align-items-start flex-column">
+																<span class="card-label fw-bold text-gray-800">Grup Dersler</span>
+															</h3>
+															<!--end::Title-->
+															<!--begin::Toolbar-->
+															<div class="card-toolbar"></div>
+															<!--end::Toolbar-->
+														</div>
+														<!--end::Header-->
+														<!--begin::Body-->
+														<div class="card-body pt-5">
+															<!--begin::Items-->
+															<div class="">
+																<!--begin::Item-->
+																<div class="d-flex flex-stack">
+																	<!--begin::Section-->
+																	<div class="d-flex align-items-center me-5">
+																		<!--begin::Flag-->
+																		<i class="fa-solid fa-users text-muted fs-1 me-8"></i>
+																		<!--end::Flag-->
+																		<!--begin::Content-->
+																		<div class="me-5">
+																			<!--begin::Title-->
+																			<a href="#" class="text-gray-800 fw-bold text-hover-primary fs-6">Grup Ders</a>
+																			<!--end::Title-->
+																			<!--begin::Desc-->
+																			<span class="text-gray-500 fw-semibold fs-7 d-block text-start ps-0">Öğretmen</span>
+																			<!--end::Desc-->
+																		</div>
+																		<!--end::Content-->
+																	</div>
+																	<!--end::Section-->
+																	<!--begin::Wrapper-->
+																	<div class="d-flex align-items-center">
+																		<!--begin::Number-->
+																		<span class="text-gray-800 fw-bold fs-4 me-3">45</span>
+																		<!--end::Number-->
+																		<!--begin::Info-->
+																		<div class="m-0">
+																			<!--begin::Label-->
+																			<span class="badge badge-light-success fs-base">
+																				<i class="ki-duotone ki-arrow-up fs-5 text-success ms-n1">
+																					<span class="path1"></span>
+																					<span class="path2"></span>
+																				</i>Dk</span>
+																			<!--end::Label-->
+																		</div>
+																		<!--end::Info-->
+																	</div>
+																	<!--end::Wrapper-->
+																</div>
+																<!--end::Item-->
+																<!--begin::Separator-->
+																<div class="separator separator-dashed my-3"></div>
+																<!--end::Separator-->
+															</div>
+															<!--end::Items-->
+														</div>
+														<!--end: Card Body-->
+													</div>
+													<!--end::List widget 23-->
+													<!--begin::Timeline widget 2-->
+													<div class="card mb-5 mb-xl-8" id="kt_timeline_widget_2_card">
+														<!--begin::Header-->
+														<div class="card-header position-relative py-0 border-bottom-2">
+															<!--begin::Nav-->
+															<ul class="nav nav-stretch nav-pills nav-pills-custom d-flex mt-3">
+																<!--begin::Item-->
+																<li class="nav-item p-0 ms-0 me-8">
+																	<!--begin::Link-->
+																	<a class="nav-link btn btn-color-muted active px-0" data-bs-toggle="pill" href="#kt_timeline_widget_2_tab_1">
+																		<!--begin::Subtitle-->
+																		<span class="nav-text fw-semibold fs-4 mb-3">Today Homeworks</span>
+																		<!--end::Subtitle-->
+																		<!--begin::Bullet-->
+																		<span class="bullet-custom position-absolute z-index-2 w-100 h-2px top-100 bottom-n100 bg-primary rounded"></span>
+																		<!--end::Bullet-->
+																	</a>
+																	<!--end::Link-->
+																</li>
+																<!--end::Item-->
+																<!--begin::Item-->
+																<li class="nav-item p-0 ms-0 me-8">
+																	<!--begin::Link-->
+																	<a class="nav-link btn btn-color-muted px-0" data-bs-toggle="pill" href="#kt_timeline_widget_2_tab_2">
+																		<!--begin::Subtitle-->
+																		<span class="nav-text fw-semibold fs-4 mb-3">Recent</span>
+																		<!--end::Subtitle-->
+																		<!--begin::Bullet-->
+																		<span class="bullet-custom position-absolute z-index-2 w-100 h-2px top-100 bottom-n100 bg-primary rounded"></span>
+																		<!--end::Bullet-->
+																	</a>
+																	<!--end::Link-->
+																</li>
+																<!--end::Item-->
+																<!--begin::Item-->
+																<li class="nav-item p-0 ms-0">
+																	<!--begin::Link-->
+																	<a class="nav-link btn btn-color-muted px-0" data-bs-toggle="pill" href="#kt_timeline_widget_2_tab_3">
+																		<!--begin::Subtitle-->
+																		<span class="nav-text fw-semibold fs-4 mb-3">Future</span>
+																		<!--end::Subtitle-->
+																		<!--begin::Bullet-->
+																		<span class="bullet-custom position-absolute z-index-2 w-100 h-2px top-100 bottom-n100 bg-primary rounded"></span>
+																		<!--end::Bullet-->
+																	</a>
+																	<!--end::Link-->
+																</li>
+																<!--end::Item-->
+															</ul>
+															<!--end::Nav-->
+														</div>
+														<!--end::Header-->
+														<!--begin::Body-->
+														<div class="card-body">
+															<!--begin::Tab Content-->
+															<div class="tab-content">
+																<!--begin::Tap pane-->
+																<div class="tab-pane fade show active" id="kt_timeline_widget_2_tab_1">
+																	<!--begin::Table container-->
+																	<div class="table-responsive">
+																		<!--begin::Table-->
+																		<table class="table align-middle gs-0 gy-4">
+																			<!--begin::Table head-->
+																			<thead>
+																				<tr>
+																					<th class="p-0 w-10px"></th>
+																					<th class="p-0 w-25px"></th>
+																					<th class="p-0 min-w-400px"></th>
+																					<th class="p-0 min-w-100px"></th>
+																					<th class="p-0 min-w-125px"></th>
+																				</tr>
+																			</thead>
+																			<!--end::Table head-->
+																			<!--begin::Table body-->
+																			<tbody>
+																				<tr>
+																					<td>
+																						<span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center h-40px bg-success"></span>
+																					</td>
+																					<td class="ps-0">
+																						<div class="form-check form-check-custom form-check-success form-check-solid">
+																							<input class="form-check-input" type="checkbox" value="" checked="checked" data-kt-element="checkbox" />
+																						</div>
+																					</td>
+																					<td>
+																						<a href="#" class="text-gray-800 text-hover-primary fw-bold fs-6">Book p. 77-85, read & complete tasks 1-6 on p. 85</a>
+																						<span class="text-gray-500 fw-bold fs-7 d-block">Physics</span>
+																					</td>
+																					<td class="text-end">
+																						<span data-kt-element="status" class="badge badge-light-success">Done</span>
+																					</td>
+																					<td class="text-end">
+																						<!--begin::Icon-->
+																						<div class="d-flex justify-content-end flex-shrink-0">
+																							<!--begin::Print-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-printer fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																									<span class="path3"></span>
+																									<span class="path4"></span>
+																									<span class="path5"></span>
+																								</i>
+																							</a>
+																							<!--end::Print-->
+																							<!--begin::Chat-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-sms fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																								</i>
+																							</a>
+																							<!--end::Chat-->
+																							<!--begin::Attach-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm">
+																								<i class="ki-duotone ki-paper-clip fs-3"></i>
+																							</a>
+																							<!--end::Attach-->
+																						</div>
+																						<!--end::Icon-->
+																					</td>
+																				</tr>
+																				<tr>
+																					<td>
+																						<span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center h-40px bg-primary"></span>
+																					</td>
+																					<td class="ps-0">
+																						<div class="form-check form-check-custom form-check-solid">
+																							<input class="form-check-input" type="checkbox" value="" data-kt-element="checkbox" />
+																						</div>
+																					</td>
+																					<td>
+																						<a href="#" class="text-gray-800 text-hover-primary fw-bold fs-6">Workbook p. 17, tasks 1-6</a>
+																						<span class="text-gray-500 fw-bold fs-7 d-block">Mathematics</span>
+																					</td>
+																					<td class="text-end">
+																						<span data-kt-element="status" class="badge badge-light-primary">In Process</span>
+																					</td>
+																					<td class="text-end">
+																						<!--begin::Icon-->
+																						<div class="d-flex justify-content-end flex-shrink-0">
+																							<!--begin::Print-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-printer fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																									<span class="path3"></span>
+																									<span class="path4"></span>
+																									<span class="path5"></span>
+																								</i>
+																							</a>
+																							<!--end::Print-->
+																							<!--begin::Chat-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-sms fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																								</i>
+																							</a>
+																							<!--end::Chat-->
+																							<!--begin::Attach-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm">
+																								<i class="ki-duotone ki-paper-clip fs-3"></i>
+																							</a>
+																							<!--end::Attach-->
+																						</div>
+																						<!--end::Icon-->
+																					</td>
+																				</tr>
+																				<tr>
+																					<td>
+																						<span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center h-40px bg-success"></span>
+																					</td>
+																					<td class="ps-0">
+																						<div class="form-check form-check-custom form-check-success form-check-solid">
+																							<input class="form-check-input" type="checkbox" value="" checked="checked" data-kt-element="checkbox" />
+																						</div>
+																					</td>
+																					<td>
+																						<a href="#" class="text-gray-800 text-hover-primary fw-bold fs-6">Learn paragraph p. 99, Exercise 1,2,3Scoping & Estimations</a>
+																						<span class="text-gray-500 fw-bold fs-7 d-block">Chemistry</span>
+																					</td>
+																					<td class="text-end">
+																						<span data-kt-element="status" class="badge badge-light-success">Done</span>
+																					</td>
+																					<td class="text-end">
+																						<!--begin::Icon-->
+																						<div class="d-flex justify-content-end flex-shrink-0">
+																							<!--begin::Print-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-printer fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																									<span class="path3"></span>
+																									<span class="path4"></span>
+																									<span class="path5"></span>
+																								</i>
+																							</a>
+																							<!--end::Print-->
+																							<!--begin::Chat-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-sms fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																								</i>
+																							</a>
+																							<!--end::Chat-->
+																							<!--begin::Attach-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm">
+																								<i class="ki-duotone ki-paper-clip fs-3"></i>
+																							</a>
+																							<!--end::Attach-->
+																						</div>
+																						<!--end::Icon-->
+																					</td>
+																				</tr>
+																				<tr>
+																					<td>
+																						<span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center h-40px bg-primary"></span>
+																					</td>
+																					<td class="ps-0">
+																						<div class="form-check form-check-custom form-check-solid">
+																							<input class="form-check-input" type="checkbox" value="" data-kt-element="checkbox" />
+																						</div>
+																					</td>
+																					<td>
+																						<a href="#" class="text-gray-800 text-hover-primary fw-bold fs-6">Write essay 1000 words “WW2 results”</a>
+																						<span class="text-gray-500 fw-bold fs-7 d-block">History</span>
+																					</td>
+																					<td class="text-end">
+																						<span data-kt-element="status" class="badge badge-light-primary">In Process</span>
+																					</td>
+																					<td class="text-end">
+																						<!--begin::Icon-->
+																						<div class="d-flex justify-content-end flex-shrink-0">
+																							<!--begin::Print-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-printer fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																									<span class="path3"></span>
+																									<span class="path4"></span>
+																									<span class="path5"></span>
+																								</i>
+																							</a>
+																							<!--end::Print-->
+																							<!--begin::Chat-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-sms fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																								</i>
+																							</a>
+																							<!--end::Chat-->
+																							<!--begin::Attach-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm">
+																								<i class="ki-duotone ki-paper-clip fs-3"></i>
+																							</a>
+																							<!--end::Attach-->
+																						</div>
+																						<!--end::Icon-->
+																					</td>
+																				</tr>
+																				<tr>
+																					<td>
+																						<span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center h-40px bg-primary"></span>
+																					</td>
+																					<td class="ps-0">
+																						<div class="form-check form-check-custom form-check-solid">
+																							<input class="form-check-input" type="checkbox" value="" data-kt-element="checkbox" />
+																						</div>
+																					</td>
+																					<td>
+																						<a href="#" class="text-gray-800 text-hover-primary fw-bold fs-6">Internal conflicts in Philip Larkin poems, read p 380-515</a>
+																						<span class="text-gray-500 fw-bold fs-7 d-block">English Language</span>
+																					</td>
+																					<td class="text-end">
+																						<span data-kt-element="status" class="badge badge-light-primary">In Process</span>
+																					</td>
+																					<td class="text-end">
+																						<!--begin::Icon-->
+																						<div class="d-flex justify-content-end flex-shrink-0">
+																							<!--begin::Print-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-printer fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																									<span class="path3"></span>
+																									<span class="path4"></span>
+																									<span class="path5"></span>
+																								</i>
+																							</a>
+																							<!--end::Print-->
+																							<!--begin::Chat-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-sms fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																								</i>
+																							</a>
+																							<!--end::Chat-->
+																							<!--begin::Attach-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm">
+																								<i class="ki-duotone ki-paper-clip fs-3"></i>
+																							</a>
+																							<!--end::Attach-->
+																						</div>
+																						<!--end::Icon-->
+																					</td>
+																				</tr>
+																			</tbody>
+																			<!--end::Table body-->
+																		</table>
+																	</div>
+																	<!--end::Table-->
+																</div>
+																<!--end::Tap pane-->
+																<!--begin::Tap pane-->
+																<div class="tab-pane fade" id="kt_timeline_widget_2_tab_2">
+																	<!--begin::Table container-->
+																	<div class="table-responsive">
+																		<!--begin::Table-->
+																		<table class="table align-middle gs-0 gy-4">
+																			<!--begin::Table head-->
+																			<thead>
+																				<tr>
+																					<th class="p-0 w-10px"></th>
+																					<th class="p-0 w-25px"></th>
+																					<th class="p-0 min-w-400px"></th>
+																					<th class="p-0 min-w-100px"></th>
+																					<th class="p-0 min-w-125px"></th>
+																				</tr>
+																			</thead>
+																			<!--end::Table head-->
+																			<!--begin::Table body-->
+																			<tbody>
+																				<tr>
+																					<td>
+																						<span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center h-40px bg-success"></span>
+																					</td>
+																					<td class="ps-0">
+																						<div class="form-check form-check-custom form-check-success form-check-solid">
+																							<input class="form-check-input" type="checkbox" value="" checked="checked" data-kt-element="checkbox" />
+																						</div>
+																					</td>
+																					<td>
+																						<a href="#" class="text-gray-800 text-hover-primary fw-bold fs-6">Book p. 77-85, read & complete tasks 1-6 on p. 85</a>
+																						<span class="text-gray-500 fw-bold fs-7 d-block">Physics</span>
+																					</td>
+																					<td class="text-end">
+																						<span data-kt-element="status" class="badge badge-light-success">Done</span>
+																					</td>
+																					<td class="text-end">
+																						<!--begin::Icon-->
+																						<div class="d-flex justify-content-end flex-shrink-0">
+																							<!--begin::Print-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-printer fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																									<span class="path3"></span>
+																									<span class="path4"></span>
+																									<span class="path5"></span>
+																								</i>
+																							</a>
+																							<!--end::Print-->
+																							<!--begin::Chat-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-sms fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																								</i>
+																							</a>
+																							<!--end::Chat-->
+																							<!--begin::Attach-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm">
+																								<i class="ki-duotone ki-paper-clip fs-3"></i>
+																							</a>
+																							<!--end::Attach-->
+																						</div>
+																						<!--end::Icon-->
+																					</td>
+																				</tr>
+																				<tr>
+																					<td>
+																						<span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center h-40px bg-primary"></span>
+																					</td>
+																					<td class="ps-0">
+																						<div class="form-check form-check-custom form-check-solid">
+																							<input class="form-check-input" type="checkbox" value="" data-kt-element="checkbox" />
+																						</div>
+																					</td>
+																					<td>
+																						<a href="#" class="text-gray-800 text-hover-primary fw-bold fs-6">Workbook p. 17, tasks 1-6</a>
+																						<span class="text-gray-500 fw-bold fs-7 d-block">Mathematics</span>
+																					</td>
+																					<td class="text-end">
+																						<span data-kt-element="status" class="badge badge-light-primary">In Process</span>
+																					</td>
+																					<td class="text-end">
+																						<!--begin::Icon-->
+																						<div class="d-flex justify-content-end flex-shrink-0">
+																							<!--begin::Print-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-printer fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																									<span class="path3"></span>
+																									<span class="path4"></span>
+																									<span class="path5"></span>
+																								</i>
+																							</a>
+																							<!--end::Print-->
+																							<!--begin::Chat-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-sms fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																								</i>
+																							</a>
+																							<!--end::Chat-->
+																							<!--begin::Attach-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm">
+																								<i class="ki-duotone ki-paper-clip fs-3"></i>
+																							</a>
+																							<!--end::Attach-->
+																						</div>
+																						<!--end::Icon-->
+																					</td>
+																				</tr>
+																				<tr>
+																					<td>
+																						<span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center h-40px bg-success"></span>
+																					</td>
+																					<td class="ps-0">
+																						<div class="form-check form-check-custom form-check-success form-check-solid">
+																							<input class="form-check-input" type="checkbox" value="" checked="checked" data-kt-element="checkbox" />
+																						</div>
+																					</td>
+																					<td>
+																						<a href="#" class="text-gray-800 text-hover-primary fw-bold fs-6">Learn paragraph p. 99, Exercise 1,2,3Scoping & Estimations</a>
+																						<span class="text-gray-500 fw-bold fs-7 d-block">Chemistry</span>
+																					</td>
+																					<td class="text-end">
+																						<span data-kt-element="status" class="badge badge-light-success">Done</span>
+																					</td>
+																					<td class="text-end">
+																						<!--begin::Icon-->
+																						<div class="d-flex justify-content-end flex-shrink-0">
+																							<!--begin::Print-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-printer fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																									<span class="path3"></span>
+																									<span class="path4"></span>
+																									<span class="path5"></span>
+																								</i>
+																							</a>
+																							<!--end::Print-->
+																							<!--begin::Chat-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-sms fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																								</i>
+																							</a>
+																							<!--end::Chat-->
+																							<!--begin::Attach-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm">
+																								<i class="ki-duotone ki-paper-clip fs-3"></i>
+																							</a>
+																							<!--end::Attach-->
+																						</div>
+																						<!--end::Icon-->
+																					</td>
+																				</tr>
+																				<tr>
+																					<td>
+																						<span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center h-40px bg-primary"></span>
+																					</td>
+																					<td class="ps-0">
+																						<div class="form-check form-check-custom form-check-solid">
+																							<input class="form-check-input" type="checkbox" value="" data-kt-element="checkbox" />
+																						</div>
+																					</td>
+																					<td>
+																						<a href="#" class="text-gray-800 text-hover-primary fw-bold fs-6">Write essay 1000 words “WW2 results”</a>
+																						<span class="text-gray-500 fw-bold fs-7 d-block">History</span>
+																					</td>
+																					<td class="text-end">
+																						<span data-kt-element="status" class="badge badge-light-primary">In Process</span>
+																					</td>
+																					<td class="text-end">
+																						<!--begin::Icon-->
+																						<div class="d-flex justify-content-end flex-shrink-0">
+																							<!--begin::Print-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-printer fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																									<span class="path3"></span>
+																									<span class="path4"></span>
+																									<span class="path5"></span>
+																								</i>
+																							</a>
+																							<!--end::Print-->
+																							<!--begin::Chat-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-sms fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																								</i>
+																							</a>
+																							<!--end::Chat-->
+																							<!--begin::Attach-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm">
+																								<i class="ki-duotone ki-paper-clip fs-3"></i>
+																							</a>
+																							<!--end::Attach-->
+																						</div>
+																						<!--end::Icon-->
+																					</td>
+																				</tr>
+																			</tbody>
+																			<!--end::Table body-->
+																		</table>
+																	</div>
+																	<!--end::Table-->
+																</div>
+																<!--end::Tap pane-->
+																<!--begin::Tap pane-->
+																<div class="tab-pane fade" id="kt_timeline_widget_2_tab_3">
+																	<!--begin::Table container-->
+																	<div class="table-responsive">
+																		<!--begin::Table-->
+																		<table class="table align-middle gs-0 gy-4">
+																			<!--begin::Table head-->
+																			<thead>
+																				<tr>
+																					<th class="p-0 w-10px"></th>
+																					<th class="p-0 w-25px"></th>
+																					<th class="p-0 min-w-400px"></th>
+																					<th class="p-0 min-w-100px"></th>
+																					<th class="p-0 min-w-125px"></th>
+																				</tr>
+																			</thead>
+																			<!--end::Table head-->
+																			<!--begin::Table body-->
+																			<tbody>
+																				<tr>
+																					<td>
+																						<span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center h-40px bg-primary"></span>
+																					</td>
+																					<td class="ps-0">
+																						<div class="form-check form-check-custom form-check-solid">
+																							<input class="form-check-input" type="checkbox" value="" data-kt-element="checkbox" />
+																						</div>
+																					</td>
+																					<td>
+																						<a href="#" class="text-gray-800 text-hover-primary fw-bold fs-6">Workbook p. 17, tasks 1-6</a>
+																						<span class="text-gray-500 fw-bold fs-7 d-block">Mathematics</span>
+																					</td>
+																					<td class="text-end">
+																						<span data-kt-element="status" class="badge badge-light-primary">In Process</span>
+																					</td>
+																					<td class="text-end">
+																						<!--begin::Icon-->
+																						<div class="d-flex justify-content-end flex-shrink-0">
+																							<!--begin::Print-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-printer fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																									<span class="path3"></span>
+																									<span class="path4"></span>
+																									<span class="path5"></span>
+																								</i>
+																							</a>
+																							<!--end::Print-->
+																							<!--begin::Chat-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-sms fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																								</i>
+																							</a>
+																							<!--end::Chat-->
+																							<!--begin::Attach-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm">
+																								<i class="ki-duotone ki-paper-clip fs-3"></i>
+																							</a>
+																							<!--end::Attach-->
+																						</div>
+																						<!--end::Icon-->
+																					</td>
+																				</tr>
+																				<tr>
+																					<td>
+																						<span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center h-40px bg-success"></span>
+																					</td>
+																					<td class="ps-0">
+																						<div class="form-check form-check-custom form-check-success form-check-solid">
+																							<input class="form-check-input" type="checkbox" value="" checked="checked" data-kt-element="checkbox" />
+																						</div>
+																					</td>
+																					<td>
+																						<a href="#" class="text-gray-800 text-hover-primary fw-bold fs-6">Learn paragraph p. 99, Exercise 1,2,3Scoping & Estimations</a>
+																						<span class="text-gray-500 fw-bold fs-7 d-block">Chemistry</span>
+																					</td>
+																					<td class="text-end">
+																						<span data-kt-element="status" class="badge badge-light-success">Done</span>
+																					</td>
+																					<td class="text-end">
+																						<!--begin::Icon-->
+																						<div class="d-flex justify-content-end flex-shrink-0">
+																							<!--begin::Print-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-printer fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																									<span class="path3"></span>
+																									<span class="path4"></span>
+																									<span class="path5"></span>
+																								</i>
+																							</a>
+																							<!--end::Print-->
+																							<!--begin::Chat-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-sms fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																								</i>
+																							</a>
+																							<!--end::Chat-->
+																							<!--begin::Attach-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm">
+																								<i class="ki-duotone ki-paper-clip fs-3"></i>
+																							</a>
+																							<!--end::Attach-->
+																						</div>
+																						<!--end::Icon-->
+																					</td>
+																				</tr>
+																				<tr>
+																					<td>
+																						<span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center h-40px bg-primary"></span>
+																					</td>
+																					<td class="ps-0">
+																						<div class="form-check form-check-custom form-check-solid">
+																							<input class="form-check-input" type="checkbox" value="" data-kt-element="checkbox" />
+																						</div>
+																					</td>
+																					<td>
+																						<a href="#" class="text-gray-800 text-hover-primary fw-bold fs-6">Write essay 1000 words “WW2 results”</a>
+																						<span class="text-gray-500 fw-bold fs-7 d-block">History</span>
+																					</td>
+																					<td class="text-end">
+																						<span data-kt-element="status" class="badge badge-light-primary">In Process</span>
+																					</td>
+																					<td class="text-end">
+																						<!--begin::Icon-->
+																						<div class="d-flex justify-content-end flex-shrink-0">
+																							<!--begin::Print-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-printer fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																									<span class="path3"></span>
+																									<span class="path4"></span>
+																									<span class="path5"></span>
+																								</i>
+																							</a>
+																							<!--end::Print-->
+																							<!--begin::Chat-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-sms fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																								</i>
+																							</a>
+																							<!--end::Chat-->
+																							<!--begin::Attach-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm">
+																								<i class="ki-duotone ki-paper-clip fs-3"></i>
+																							</a>
+																							<!--end::Attach-->
+																						</div>
+																						<!--end::Icon-->
+																					</td>
+																				</tr>
+																				<tr>
+																					<td>
+																						<span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center h-40px bg-primary"></span>
+																					</td>
+																					<td class="ps-0">
+																						<div class="form-check form-check-custom form-check-solid">
+																							<input class="form-check-input" type="checkbox" value="" data-kt-element="checkbox" />
+																						</div>
+																					</td>
+																					<td>
+																						<a href="#" class="text-gray-800 text-hover-primary fw-bold fs-6">Internal conflicts in Philip Larkin poems, read p 380-515</a>
+																						<span class="text-gray-500 fw-bold fs-7 d-block">English Language</span>
+																					</td>
+																					<td class="text-end">
+																						<span data-kt-element="status" class="badge badge-light-primary">In Process</span>
+																					</td>
+																					<td class="text-end">
+																						<!--begin::Icon-->
+																						<div class="d-flex justify-content-end flex-shrink-0">
+																							<!--begin::Print-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-printer fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																									<span class="path3"></span>
+																									<span class="path4"></span>
+																									<span class="path5"></span>
+																								</i>
+																							</a>
+																							<!--end::Print-->
+																							<!--begin::Chat-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
+																								<i class="ki-duotone ki-sms fs-3">
+																									<span class="path1"></span>
+																									<span class="path2"></span>
+																								</i>
+																							</a>
+																							<!--end::Chat-->
+																							<!--begin::Attach-->
+																							<a href="#" class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm">
+																								<i class="ki-duotone ki-paper-clip fs-3"></i>
+																							</a>
+																							<!--end::Attach-->
+																						</div>
+																						<!--end::Icon-->
+																					</td>
+																				</tr>
+																			</tbody>
+																			<!--end::Table body-->
+																		</table>
+																	</div>
+																	<!--end::Table-->
+																</div>
+																<!--end::Tap pane-->
+															</div>
+															<!--end::Tab Content-->
+														</div>
+														<!--end::Body-->
+													</div>
+													<!--end::Tables Widget 2-->
+												</div>
+												<!--end::Col-->
+											</div>
+										</div>
+										<!--end::Row-->
+										<!--begin::Row-->
+										<div class="tab-pane fade" id="dersler">
+											<div class="row g-5 g-xxl-8">
+												<?php $student->showLessonsListForStudentDetailsPage($studentInfo['class_id'], $studentInfo['school_id']); ?>
+											</div>
+										</div>
+										<!--end::Row-->
+										<!--begin::Row-->
+										<div class="tab-pane fade" id="ozel_dersler">
+											<!--begin::Özel Dersler-->
+											<div class="card mb-5 mb-lg-10">
+												<!--begin::Card header-->
+												<div class="card-header">
+													<!--begin::Heading-->
+													<div class="card-title">
+														<h3>Alınan Özel Dersler</h3>
+													</div>
+													<!--end::Heading-->
+													<!--begin::Toolbar-->
+													<div class="card-toolbar">
+														<div class="my-1 me-4">
+															<!--begin::Select-->
+															<!-- <select class="form-select form-select-sm form-select-solid w-125px" data-control="select2" data-placeholder="Select Hours" data-hide-search="true">
+																<option value="1" selected="selected">1 Hours</option>
+																<option value="2">6 Hours</option>
+																<option value="3">12 Hours</option>
+																<option value="4">24 Hours</option>
+															</select> -->
+															<!--end::Select-->
+														</div>
+														<!-- <a href="#" class="btn btn-sm btn-primary my-1">View All</a> -->
+													</div>
+													<!--end::Toolbar-->
+												</div>
+												<!--end::Card header-->
+												<!--begin::Card body-->
+												<div class="card-body p-0">
+													<!--begin::Table wrapper-->
+													<div class="table-responsive">
+														<!--begin::Table-->
+														<table class="table align-middle table-row-bordered table-row-solid gy-4 gs-9">
+															<!--begin::Thead-->
+															<thead class="border-gray-200 fs-5 fw-semibold bg-lighten">
+																<tr>
+																	<th class="min-w-250px">Adı</th>
+																	<th class="min-w-100px">Sınıf</th>
+																	<th class="min-w-100px">Ders</th>
+																	<th class="min-w-100px">Ünite</th>
+																	<th class="min-w-100px">Konu</th>
+																	<th class="min-w-100px">Alt Konu</th>
+																	<th class="min-w-150px">Öğretmen</th>
+																	<th class="min-w-150px">Fiyatı</th>
+																	<th class="min-w-150px">Zaman</th>
+																	<th class="min-w-150px">Durum</th>
+																</tr>
+															</thead>
+															<!--end::Thead-->
+															<!--begin::Tbody-->
+															<tbody class="fw-6 fw-semibold text-gray-600">
+																<tr>
+																	<td>
+																		<a href="#" class="text-hover-primary text-gray-600">Özel Ders 1</a>
+																	</td>
+																	<td>
+																		1. Sınıf
+																	</td>
+																	<td>Hayat Bilgisi</td>
+																	<td>Doğada Hayat</td>
+																	<td>Konusu</td>
+																	<td>Alt Konusu</td>
+																	<td>Öğretmen A</td>
+																	<td>400₺</td>
+																	<td>20.05.2025</td>
+																	<td>Girdi</td>
+																</tr>
+																<tr>
+																	<td>
+																		<a href="#" class="text-hover-primary text-gray-600">Özel Ders 2</a>
+																	</td>
+																	<td>
+																		1. Sınıf
+																	</td>
+																	<td>İngilizce</td>
+																	<td>1. Ünite</td>
+																	<td>Konusu</td>
+																	<td>Alt Konusu</td>
+																	<td>Öğretmen B</td>
+																	<td>400₺</td>
+																	<td>21.05.2025</td>
+																	<td>Girmedi</td>
+																</tr>
+															</tbody>
+															<!--end::Tbody-->
+														</table>
+														<!--end::Table-->
+													</div>
+													<!--end::Table wrapper-->
+												</div>
+												<!--end::Card body-->
+											</div>
+											<!--end::Özel Dersler-->
+										</div>
+										<!--end::Row-->
+										<!--begin::Row-->
+										<div class="tab-pane fade" id="grup_dersler">
+											<!--begin::Grup Dersler-->
+											<div class="card mb-5 mb-lg-10">
+												<!--begin::Card header-->
+												<div class="card-header">
+													<!--begin::Heading-->
+													<div class="card-title">
+														<h3>Alınan Grup Dersler</h3>
+													</div>
+													<!--end::Heading-->
+													<!--begin::Toolbar-->
+													<div class="card-toolbar">
+														<div class="my-1 me-4">
+															<!--begin::Select-->
+															<!-- <select class="form-select form-select-sm form-select-solid w-125px" data-control="select2" data-placeholder="Select Hours" data-hide-search="true">
+																<option value="1" selected="selected">1 Hours</option>
+																<option value="2">6 Hours</option>
+																<option value="3">12 Hours</option>
+																<option value="4">24 Hours</option>
+															</select> -->
+															<!--end::Select-->
+														</div>
+														<!-- <a href="#" class="btn btn-sm btn-primary my-1">View All</a> -->
+													</div>
+													<!--end::Toolbar-->
+												</div>
+												<!--end::Card header-->
+												<!--begin::Card body-->
+												<div class="card-body p-0">
+													<!--begin::Table wrapper-->
+													<div class="table-responsive">
+														<!--begin::Table-->
+														<table class="table align-middle table-row-bordered table-row-solid gy-4 gs-9">
+															<!--begin::Thead-->
+															<thead class="border-gray-200 fs-5 fw-semibold bg-lighten">
+																<tr>
+																	<th class="min-w-250px">Adı</th>
+																	<th class="min-w-100px">Sınıf</th>
+																	<th class="min-w-100px">Ders</th>
+																	<th class="min-w-100px">Ünite</th>
+																	<th class="min-w-100px">Konu</th>
+																	<th class="min-w-100px">Alt Konu</th>
+																	<th class="min-w-150px">Öğretmen</th>
+																	<th class="min-w-150px">Fiyatı</th>
+																	<th class="min-w-150px">Zaman</th>
+																	<th class="min-w-150px">Durum</th>
+																</tr>
+															</thead>
+															<!--end::Thead-->
+															<!--begin::Tbody-->
+															<tbody class="fw-6 fw-semibold text-gray-600">
+																<tr>
+																	<td>
+																		<a href="#" class="text-hover-primary text-gray-600">Grup Ders 1</a>
+																	</td>
+																	<td>
+																		1. Sınıf
+																	</td>
+																	<td>Hayat Bilgisi</td>
+																	<td>Doğada Hayat</td>
+																	<td>Konusu</td>
+																	<td>Alt Konusu</td>
+																	<td>Öğretmen A</td>
+																	<td>400₺</td>
+																	<td>20.05.2025</td>
+																	<td>Girdi</td>
+																</tr>
+																<tr>
+																	<td>
+																		<a href="#" class="text-hover-primary text-gray-600">Grup Ders 2</a>
+																	</td>
+																	<td>
+																		1. Sınıf
+																	</td>
+																	<td>İngilizce</td>
+																	<td>1. Ünite</td>
+																	<td>Konusu</td>
+																	<td>Alt Konusu</td>
+																	<td>Öğretmen B</td>
+																	<td>400₺</td>
+																	<td>21.05.2025</td>
+																	<td>Girmedi</td>
+																</tr>
+															</tbody>
+															<!--end::Tbody-->
+														</table>
+														<!--end::Table-->
+													</div>
+													<!--end::Table wrapper-->
+												</div>
+												<!--end::Card body-->
+											</div>
+											<!--end::Grup Dersler-->
+										</div>
+										<!--end::Row-->
+										<!--begin::Row-->
+										<div class="tab-pane fade" id="paketler">
+											<!--begin::Paketler-->
+											<div class="card mb-5 mb-lg-10">
+												<!--begin::Card header-->
+												<div class="card-header">
+													<!--begin::Heading-->
+													<div class="card-title">
+														<h3>Alınan Paketler</h3>
+													</div>
+													<!--end::Heading-->
+													<!--begin::Toolbar-->
+													<div class="card-toolbar">
+														<div class="my-1 me-4">
+															<!--begin::Select-->
+															<!-- <select class="form-select form-select-sm form-select-solid w-125px" data-control="select2" data-placeholder="Select Hours" data-hide-search="true">
+																<option value="1" selected="selected">1 Hours</option>
+																<option value="2">6 Hours</option>
+																<option value="3">12 Hours</option>
+																<option value="4">24 Hours</option>
+															</select> -->
+															<!--end::Select-->
+														</div>
+														<!-- <a href="#" class="btn btn-sm btn-primary my-1">View All</a> -->
+													</div>
+													<!--end::Toolbar-->
+												</div>
+												<!--end::Card header-->
+												<!--begin::Card body-->
+												<div class="card-body p-0">
+													<!--begin::Table wrapper-->
+													<div class="table-responsive">
+														<!--begin::Table-->
+														<table class="table align-middle table-row-bordered table-row-solid gy-4 gs-9">
+															<!--begin::Thead-->
+															<thead class="border-gray-200 fs-5 fw-semibold bg-lighten">
+																<tr>
+																	<th class="min-w-250px">Paket Adı</th>
+																	<th class="min-w-100px">Sınıf</th>
+																	<th class="min-w-150px">Fiyatı</th>
+																	<th class="min-w-150px text-end">Bitiş Tarihi</th>
+																</tr>
+															</thead>
+															<!--end::Thead-->
+															<!--begin::Tbody-->
+															<tbody class="fw-6 fw-semibold text-gray-600">
+																<?php $student->showPackageDetailsListForStudentDetails($getStudentId); ?>	
+															</tbody>
+															<!--end::Tbody-->
+														</table>
+														<!--end::Table-->
+													</div>
+													<!--end::Table wrapper-->
+												</div>
+												<!--end::Card body-->
+											</div>
+											<!--end::Paketler-->
+											<!--begin::Ek Paketler-->
+											<div class="card mb-5 mb-lg-10">
+												<!--begin::Card header-->
+												<div class="card-header">
+													<!--begin::Heading-->
+													<div class="card-title">
+														<h3>Alınan Ek Paketler</h3>
+													</div>
+													<!--end::Heading-->
+													<!--begin::Toolbar-->
+													<div class="card-toolbar">
+														<div class="my-1 me-4">
+															<!--begin::Select-->
+															<!-- <select class="form-select form-select-sm form-select-solid w-125px" data-control="select2" data-placeholder="Select Hours" data-hide-search="true">
+																<option value="1" selected="selected">1 Hours</option>
+																<option value="2">6 Hours</option>
+																<option value="3">12 Hours</option>
+																<option value="4">24 Hours</option>
+															</select> -->
+															<!--end::Select-->
+														</div>
+														<!-- <a href="#" class="btn btn-sm btn-primary my-1">View All</a> -->
+													</div>
+													<!--end::Toolbar-->
+												</div>
+												<!--end::Card header-->
+												<!--begin::Card body-->
+												<div class="card-body p-0">
+													<!--begin::Table wrapper-->
+													<div class="table-responsive">
+														<!--begin::Table-->
+														<table class="table align-middle table-row-bordered table-row-solid gy-4 gs-9">
+															<!--begin::Thead-->
+															<thead class="border-gray-200 fs-5 fw-semibold bg-lighten">
+																<tr>
+																	<th class="min-w-250px">Paket Adı</th>
+																	<th class="min-w-100px">Sınıf</th>
+																	<th class="min-w-150px">Fiyatı</th>
+																	<th class="min-w-150px text-end">Bitiş Tarihi</th>
+																</tr>
+															</thead>
+															<!--end::Thead-->
+															<!--begin::Tbody-->
+															<tbody class="fw-6 fw-semibold text-gray-600">
+																<?php $student->showAdditionalPackageDetailsListForStudentDetails($getStudentId); ?>	
+															</tbody>
+															<!--end::Tbody-->
+														</table>
+														<!--end::Table-->
+													</div>
+													<!--end::Table wrapper-->
+												</div>
+												<!--end::Card body-->
+											</div>
+											<!--end::Ek Paketler-->
+										</div>
+										<!--end::Row-->
+										<!--begin::Row-->
+										<div class="tab-pane fade" id="hareketler">
+
+											<!--begin::Login sessions-->
+											<div class="card mb-5 mb-lg-10">
+												<!--begin::Card header-->
+												<div class="card-header">
+													<!--begin::Heading-->
+													<div class="card-title">
+														<h3>Giriş Bilgileri</h3>
+													</div>
+													<!--end::Heading-->
+													<!--begin::Toolbar-->
+													<div class="card-toolbar">
+														<div class="my-1 me-4">
+															<!--begin::Select-->
+															<!-- <select class="form-select form-select-sm form-select-solid w-125px" data-control="select2" data-placeholder="Select Hours" data-hide-search="true">
+																<option value="1" selected="selected">1 Hours</option>
+																<option value="2">6 Hours</option>
+																<option value="3">12 Hours</option>
+																<option value="4">24 Hours</option>
+															</select> -->
+															<!--end::Select-->
+														</div><!-- 
+														<a href="#" class="btn btn-sm btn-primary my-1">View All</a> -->
+													</div>
+													<!--end::Toolbar-->
+												</div>
+												<!--end::Card header-->
+												<!--begin::Card body-->
+												<div class="card-body p-0">
+													<!--begin::Table wrapper-->
+													<div class="table-responsive">
+														<!--begin::Table-->
+														<table class="table align-middle table-row-bordered table-row-solid gy-4 gs-9">
+															<!--begin::Thead-->
+															<thead class="border-gray-200 fs-5 fw-semibold bg-lighten">
+																<tr>
+																	<th class="min-w-250px">Cihaz Tipi</th>
+																	<th class="min-w-100px">Cihaz Modeli</th>
+																	<th class="min-w-150px">İşletim Sistemi</th>
+																	<th class="min-w-150px">Tarayıcı</th>
+																	<th class="min-w-150px">Ekran Çözünürlüğü</th>
+																	<th class="min-w-150px">IP Adresi</th>
+																	<th class="min-w-150px">Giriş Zamanı</th>
+																	<th class="min-w-150px">Çıkış Zamanı</th>
+																</tr>
+															</thead>
+															<!--end::Thead-->
+															<!--begin::Tbody-->
+															<tbody class="fw-6 fw-semibold text-gray-600">
+																<?php $student->showLoginDetailsListForStudentDetails($getStudentId); ?>
+															</tbody>
+															<!--end::Tbody-->
+														</table>
+														<!--end::Table-->
+													</div>
+													<!--end::Table wrapper-->
+												</div>
+												<!--end::Card body-->
+											</div>
+											<!--end::Login sessions-->
+										</div>
+										<!--end::Row-->
+									</div>
 								</div>
 								<!--end::Content container-->
 							</div>
@@ -1711,7 +1700,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 					</div>
 					<!--end:::Main-->
 					<!--begin::aside-->
-						<?php include_once "views/aside.php"; ?>
+					<?php include_once "views/aside.php"; ?>
 					<!--end::aside-->
 				</div>
 				<!--end::Wrapper-->
@@ -2217,7 +2206,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 												</div>
 												<!--end::Content-->
 												<!--begin::Action-->
-												<a href="#" class="btn btn-primary btn-sm px-6 align-self-center text-nowrap">Proceed</a>
+												<a href="#" class="btn btn-primary px-6 align-self-center text-nowrap">Proceed</a>
 												<!--end::Action-->
 											</div>
 											<!--end::Wrapper-->
@@ -2657,7 +2646,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 						</div>
 						<!--end::Actions-->
 						<!--begin::Send-->
-						<button class="btn btn-primary btn-sm" type="button" data-kt-element="send">Send</button>
+						<button class="btn btn-primary" type="button" data-kt-element="send">Send</button>
 						<!--end::Send-->
 					</div>
 					<!--end::Toolbar-->
@@ -2952,7 +2941,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 					<!--end::Item-->
 					<!--end::Action-->
 					<div class="d-flex justify-content-end mt-9">
-						<a href="#" class="btn btn-primary btn-sm d-flex justify-content-end">Pleace Order</a>
+						<a href="#" class="btn btn-primary d-flex justify-content-end">Pleace Order</a>
 					</div>
 					<!--end::Action-->
 				</div>
@@ -3446,8 +3435,8 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 						<!--end::Plans-->
 						<!--begin::Actions-->
 						<div class="d-flex flex-center flex-row-fluid pt-12">
-							<button type="reset" class="btn btn-light btn-sm me-3" data-bs-dismiss="modal">Cancel</button>
-							<button type="submit" class="btn btn-primary btn-sm" id="kt_modal_upgrade_plan_btn">
+							<button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">Cancel</button>
+							<button type="submit" class="btn btn-primary" id="kt_modal_upgrade_plan_btn">
 								<!--begin::Indicator label-->
 								<span class="indicator-label">Upgrade Plan</span>
 								<!--end::Indicator label-->
@@ -4138,16 +4127,16 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 			<!--end::Modal dialog-->
 		</div>
 		<!--end::Modal - Create project-->
-		<!--begin::Modal - Create App-->
-		<div class="modal fade" id="kt_modal_create_app" tabindex="-1" aria-hidden="true">
+		<!--begin::Modal - Offer A Deal-->
+		<div class="modal fade" id="kt_modal_offer_a_deal" tabindex="-1" aria-hidden="true">
 			<!--begin::Modal dialog-->
-			<div class="modal-dialog modal-dialog-centered mw-900px">
+			<div class="modal-dialog modal-dialog-centered mw-1000px">
 				<!--begin::Modal content-->
 				<div class="modal-content">
 					<!--begin::Modal header-->
-					<div class="modal-header">
+					<div class="modal-header py-7 d-flex justify-content-between">
 						<!--begin::Modal title-->
-						<h2>Create App</h2>
+						<h2>Offer a Deal</h2>
 						<!--end::Modal title-->
 						<!--begin::Close-->
 						<div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
@@ -4158,735 +4147,419 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 						</div>
 						<!--end::Close-->
 					</div>
-					<!--end::Modal header-->
+					<!--begin::Modal header-->
 					<!--begin::Modal body-->
-					<div class="modal-body py-lg-10 px-lg-10">
+					<div class="modal-body scroll-y m-5">
 						<!--begin::Stepper-->
-						<div class="stepper stepper-pills stepper-column d-flex flex-column flex-xl-row flex-row-fluid" id="kt_modal_create_app_stepper">
-							<!--begin::Aside-->
-							<div class="d-flex justify-content-center justify-content-xl-start flex-row-auto w-100 w-xl-300px">
-								<!--begin::Nav-->
-								<div class="stepper-nav ps-lg-10">
-									<!--begin::Step 1-->
-									<div class="stepper-item current" data-kt-stepper-element="nav">
-										<!--begin::Wrapper-->
-										<div class="stepper-wrapper">
-											<!--begin::Icon-->
-											<div class="stepper-icon w-40px h-40px">
-												<i class="ki-duotone ki-check stepper-check fs-2"></i>
-												<span class="stepper-number">1</span>
-											</div>
-											<!--end::Icon-->
-											<!--begin::Label-->
-											<div class="stepper-label">
-												<h3 class="stepper-title">Details</h3>
-												<div class="stepper-desc">Name your App</div>
-											</div>
-											<!--end::Label-->
-										</div>
-										<!--end::Wrapper-->
-										<!--begin::Line-->
-										<div class="stepper-line h-40px"></div>
-										<!--end::Line-->
-									</div>
-									<!--end::Step 1-->
-									<!--begin::Step 2-->
-									<div class="stepper-item" data-kt-stepper-element="nav">
-										<!--begin::Wrapper-->
-										<div class="stepper-wrapper">
-											<!--begin::Icon-->
-											<div class="stepper-icon w-40px h-40px">
-												<i class="ki-duotone ki-check stepper-check fs-2"></i>
-												<span class="stepper-number">2</span>
-											</div>
-											<!--begin::Icon-->
-											<!--begin::Label-->
-											<div class="stepper-label">
-												<h3 class="stepper-title">Frameworks</h3>
-												<div class="stepper-desc">Define your app framework</div>
-											</div>
-											<!--begin::Label-->
-										</div>
-										<!--end::Wrapper-->
-										<!--begin::Line-->
-										<div class="stepper-line h-40px"></div>
-										<!--end::Line-->
-									</div>
-									<!--end::Step 2-->
-									<!--begin::Step 3-->
-									<div class="stepper-item" data-kt-stepper-element="nav">
-										<!--begin::Wrapper-->
-										<div class="stepper-wrapper">
-											<!--begin::Icon-->
-											<div class="stepper-icon w-40px h-40px">
-												<i class="ki-duotone ki-check stepper-check fs-2"></i>
-												<span class="stepper-number">3</span>
-											</div>
-											<!--end::Icon-->
-											<!--begin::Label-->
-											<div class="stepper-label">
-												<h3 class="stepper-title">Database</h3>
-												<div class="stepper-desc">Select the app database type</div>
-											</div>
-											<!--end::Label-->
-										</div>
-										<!--end::Wrapper-->
-										<!--begin::Line-->
-										<div class="stepper-line h-40px"></div>
-										<!--end::Line-->
-									</div>
-									<!--end::Step 3-->
-									<!--begin::Step 4-->
-									<div class="stepper-item" data-kt-stepper-element="nav">
-										<!--begin::Wrapper-->
-										<div class="stepper-wrapper">
-											<!--begin::Icon-->
-											<div class="stepper-icon w-40px h-40px">
-												<i class="ki-duotone ki-check stepper-check fs-2"></i>
-												<span class="stepper-number">4</span>
-											</div>
-											<!--end::Icon-->
-											<!--begin::Label-->
-											<div class="stepper-label">
-												<h3 class="stepper-title">Billing</h3>
-												<div class="stepper-desc">Provide payment details</div>
-											</div>
-											<!--end::Label-->
-										</div>
-										<!--end::Wrapper-->
-										<!--begin::Line-->
-										<div class="stepper-line h-40px"></div>
-										<!--end::Line-->
-									</div>
-									<!--end::Step 4-->
-									<!--begin::Step 5-->
-									<div class="stepper-item mark-completed" data-kt-stepper-element="nav">
-										<!--begin::Wrapper-->
-										<div class="stepper-wrapper">
-											<!--begin::Icon-->
-											<div class="stepper-icon w-40px h-40px">
-												<i class="ki-duotone ki-check stepper-check fs-2"></i>
-												<span class="stepper-number">5</span>
-											</div>
-											<!--end::Icon-->
-											<!--begin::Label-->
-											<div class="stepper-label">
-												<h3 class="stepper-title">Completed</h3>
-												<div class="stepper-desc">Review and Submit</div>
-											</div>
-											<!--end::Label-->
-										</div>
-										<!--end::Wrapper-->
-									</div>
-									<!--end::Step 5-->
+						<div class="stepper stepper-links d-flex flex-column" id="kt_modal_offer_a_deal_stepper">
+							<!--begin::Nav-->
+							<div class="stepper-nav justify-content-center py-2">
+								<!--begin::Step 1-->
+								<div class="stepper-item me-5 me-md-15 current" data-kt-stepper-element="nav">
+									<h3 class="stepper-title">Deal Type</h3>
 								</div>
-								<!--end::Nav-->
+								<!--end::Step 1-->
+								<!--begin::Step 2-->
+								<div class="stepper-item me-5 me-md-15" data-kt-stepper-element="nav">
+									<h3 class="stepper-title">Deal Details</h3>
+								</div>
+								<!--end::Step 2-->
+								<!--begin::Step 3-->
+								<div class="stepper-item me-5 me-md-15" data-kt-stepper-element="nav">
+									<h3 class="stepper-title">Finance Settings</h3>
+								</div>
+								<!--end::Step 3-->
+								<!--begin::Step 4-->
+								<div class="stepper-item" data-kt-stepper-element="nav">
+									<h3 class="stepper-title">Completed</h3>
+								</div>
+								<!--end::Step 4-->
 							</div>
-							<!--begin::Aside-->
-							<!--begin::Content-->
-							<div class="flex-row-fluid py-lg-5 px-lg-15">
-								<!--begin::Form-->
-								<form class="form" novalidate="novalidate" id="kt_modal_create_app_form">
-									<!--begin::Step 1-->
-									<div class="current" data-kt-stepper-element="content">
-										<div class="w-100">
-											<!--begin::Input group-->
-											<div class="fv-row mb-10">
-												<!--begin::Label-->
-												<label class="d-flex align-items-center fs-5 fw-semibold mb-2">
-													<span class="required">App Name</span>
-													<span class="ms-1" data-bs-toggle="tooltip" title="Specify your unique app name">
-														<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
-															<span class="path1"></span>
-															<span class="path2"></span>
-															<span class="path3"></span>
-														</i>
-													</span>
-												</label>
-												<!--end::Label-->
+							<!--end::Nav-->
+							<!--begin::Form-->
+							<form class="mx-auto mw-500px w-100 pt-15 pb-10" novalidate="novalidate" id="kt_modal_offer_a_deal_form">
+								<!--begin::Type-->
+								<div class="current" data-kt-stepper-element="content">
+									<!--begin::Wrapper-->
+									<div class="w-100">
+										<!--begin::Heading-->
+										<div class="mb-13">
+											<!--begin::Title-->
+											<h2 class="mb-3">Deal Type</h2>
+											<!--end::Title-->
+											<!--begin::Description-->
+											<div class="text-muted fw-semibold fs-5">If you need more info, please check out
+												<a href="#" class="link-primary fw-bold">FAQ Page</a>.
+											</div>
+											<!--end::Description-->
+										</div>
+										<!--end::Heading-->
+										<!--begin::Input group-->
+										<div class="fv-row mb-15" data-kt-buttons="true">
+											<!--begin::Option-->
+											<label class="btn btn-outline btn-outline-dashed btn-active-light-primary d-flex text-start p-6 mb-6 active">
 												<!--begin::Input-->
-												<input type="text" class="form-control form-control-lg form-control-solid" name="name" placeholder="" value="" />
+												<input class="btn-check" type="radio" checked="checked" name="offer_type" value="1" />
 												<!--end::Input-->
-											</div>
-											<!--end::Input group-->
-											<!--begin::Input group-->
-											<div class="fv-row">
 												<!--begin::Label-->
-												<label class="d-flex align-items-center fs-5 fw-semibold mb-4">
-													<span class="required">Category</span>
-													<span class="ms-1" data-bs-toggle="tooltip" title="Select your app category">
-														<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
-															<span class="path1"></span>
-															<span class="path2"></span>
-															<span class="path3"></span>
-														</i>
+												<span class="d-flex">
+													<!--begin::Icon-->
+													<i class="ki-duotone ki-profile-circle fs-3hx">
+														<span class="path1"></span>
+														<span class="path2"></span>
+														<span class="path3"></span>
+													</i>
+													<!--end::Icon-->
+													<!--begin::Info-->
+													<span class="ms-4">
+														<span class="fs-3 fw-bold text-gray-900 mb-2 d-block">Personal Deal</span>
+														<span class="fw-semibold fs-4 text-muted">If you need more info, please check it out</span>
 													</span>
-												</label>
+													<!--end::Info-->
+												</span>
 												<!--end::Label-->
-												<!--begin:Options-->
-												<div class="fv-row">
-													<!--begin:Option-->
-													<label class="d-flex flex-stack mb-5 cursor-pointer">
-														<!--begin:Label-->
-														<span class="d-flex align-items-center me-2">
-															<!--begin:Icon-->
-															<span class="symbol symbol-50px me-6">
-																<span class="symbol-label bg-light-primary">
-																	<i class="ki-duotone ki-compass fs-1 text-primary">
-																		<span class="path1"></span>
-																		<span class="path2"></span>
-																	</i>
-																</span>
-															</span>
-															<!--end:Icon-->
-															<!--begin:Info-->
-															<span class="d-flex flex-column">
-																<span class="fw-bold fs-6">Quick Online Courses</span>
-																<span class="fs-7 text-muted">Creating a clear text structure is just one SEO</span>
-															</span>
-															<!--end:Info-->
-														</span>
-														<!--end:Label-->
-														<!--begin:Input-->
-														<span class="form-check form-check-custom form-check-solid">
-															<input class="form-check-input" type="radio" name="category" value="1" />
-														</span>
-														<!--end:Input-->
-													</label>
-													<!--end::Option-->
-													<!--begin:Option-->
-													<label class="d-flex flex-stack mb-5 cursor-pointer">
-														<!--begin:Label-->
-														<span class="d-flex align-items-center me-2">
-															<!--begin:Icon-->
-															<span class="symbol symbol-50px me-6">
-																<span class="symbol-label bg-light-danger">
-																	<i class="ki-duotone ki-element-11 fs-1 text-danger">
-																		<span class="path1"></span>
-																		<span class="path2"></span>
-																		<span class="path3"></span>
-																		<span class="path4"></span>
-																	</i>
-																</span>
-															</span>
-															<!--end:Icon-->
-															<!--begin:Info-->
-															<span class="d-flex flex-column">
-																<span class="fw-bold fs-6">Face to Face Discussions</span>
-																<span class="fs-7 text-muted">Creating a clear text structure is just one aspect</span>
-															</span>
-															<!--end:Info-->
-														</span>
-														<!--end:Label-->
-														<!--begin:Input-->
-														<span class="form-check form-check-custom form-check-solid">
-															<input class="form-check-input" type="radio" name="category" value="2" />
-														</span>
-														<!--end:Input-->
-													</label>
-													<!--end::Option-->
-													<!--begin:Option-->
-													<label class="d-flex flex-stack cursor-pointer">
-														<!--begin:Label-->
-														<span class="d-flex align-items-center me-2">
-															<!--begin:Icon-->
-															<span class="symbol symbol-50px me-6">
-																<span class="symbol-label bg-light-success">
-																	<i class="ki-duotone ki-timer fs-1 text-success">
-																		<span class="path1"></span>
-																		<span class="path2"></span>
-																		<span class="path3"></span>
-																	</i>
-																</span>
-															</span>
-															<!--end:Icon-->
-															<!--begin:Info-->
-															<span class="d-flex flex-column">
-																<span class="fw-bold fs-6">Full Intro Training</span>
-																<span class="fs-7 text-muted">Creating a clear text structure copywriting</span>
-															</span>
-															<!--end:Info-->
-														</span>
-														<!--end:Label-->
-														<!--begin:Input-->
-														<span class="form-check form-check-custom form-check-solid">
-															<input class="form-check-input" type="radio" name="category" value="3" />
-														</span>
-														<!--end:Input-->
-													</label>
-													<!--end::Option-->
-												</div>
-												<!--end:Options-->
-											</div>
-											<!--end::Input group-->
-										</div>
-									</div>
-									<!--end::Step 1-->
-									<!--begin::Step 2-->
-									<div data-kt-stepper-element="content">
-										<div class="w-100">
-											<!--begin::Input group-->
-											<div class="fv-row">
-												<!--begin::Label-->
-												<label class="d-flex align-items-center fs-5 fw-semibold mb-4">
-													<span class="required">Select Framework</span>
-													<span class="ms-1" data-bs-toggle="tooltip" title="Specify your apps framework">
-														<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
-															<span class="path1"></span>
-															<span class="path2"></span>
-															<span class="path3"></span>
-														</i>
-													</span>
-												</label>
-												<!--end::Label-->
-												<!--begin:Option-->
-												<label class="d-flex flex-stack cursor-pointer mb-5">
-													<!--begin:Label-->
-													<span class="d-flex align-items-center me-2">
-														<!--begin:Icon-->
-														<span class="symbol symbol-50px me-6">
-															<span class="symbol-label bg-light-warning">
-																<i class="ki-duotone ki-html fs-2x text-warning">
-																	<span class="path1"></span>
-																	<span class="path2"></span>
-																</i>
-															</span>
-														</span>
-														<!--end:Icon-->
-														<!--begin:Info-->
-														<span class="d-flex flex-column">
-															<span class="fw-bold fs-6">HTML5</span>
-															<span class="fs-7 text-muted">Base Web Projec</span>
-														</span>
-														<!--end:Info-->
-													</span>
-													<!--end:Label-->
-													<!--begin:Input-->
-													<span class="form-check form-check-custom form-check-solid">
-														<input class="form-check-input" type="radio" checked="checked" name="framework" value="1" />
-													</span>
-													<!--end:Input-->
-												</label>
-												<!--end::Option-->
-												<!--begin:Option-->
-												<label class="d-flex flex-stack cursor-pointer mb-5">
-													<!--begin:Label-->
-													<span class="d-flex align-items-center me-2">
-														<!--begin:Icon-->
-														<span class="symbol symbol-50px me-6">
-															<span class="symbol-label bg-light-success">
-																<i class="ki-duotone ki-react fs-2x text-success">
-																	<span class="path1"></span>
-																	<span class="path2"></span>
-																</i>
-															</span>
-														</span>
-														<!--end:Icon-->
-														<!--begin:Info-->
-														<span class="d-flex flex-column">
-															<span class="fw-bold fs-6">ReactJS</span>
-															<span class="fs-7 text-muted">Robust and flexible app framework</span>
-														</span>
-														<!--end:Info-->
-													</span>
-													<!--end:Label-->
-													<!--begin:Input-->
-													<span class="form-check form-check-custom form-check-solid">
-														<input class="form-check-input" type="radio" name="framework" value="2" />
-													</span>
-													<!--end:Input-->
-												</label>
-												<!--end::Option-->
-												<!--begin:Option-->
-												<label class="d-flex flex-stack cursor-pointer mb-5">
-													<!--begin:Label-->
-													<span class="d-flex align-items-center me-2">
-														<!--begin:Icon-->
-														<span class="symbol symbol-50px me-6">
-															<span class="symbol-label bg-light-danger">
-																<i class="ki-duotone ki-angular fs-2x text-danger">
-																	<span class="path1"></span>
-																	<span class="path2"></span>
-																	<span class="path3"></span>
-																</i>
-															</span>
-														</span>
-														<!--end:Icon-->
-														<!--begin:Info-->
-														<span class="d-flex flex-column">
-															<span class="fw-bold fs-6">Angular</span>
-															<span class="fs-7 text-muted">Powerful data mangement</span>
-														</span>
-														<!--end:Info-->
-													</span>
-													<!--end:Label-->
-													<!--begin:Input-->
-													<span class="form-check form-check-custom form-check-solid">
-														<input class="form-check-input" type="radio" name="framework" value="3" />
-													</span>
-													<!--end:Input-->
-												</label>
-												<!--end::Option-->
-												<!--begin:Option-->
-												<label class="d-flex flex-stack cursor-pointer">
-													<!--begin:Label-->
-													<span class="d-flex align-items-center me-2">
-														<!--begin:Icon-->
-														<span class="symbol symbol-50px me-6">
-															<span class="symbol-label bg-light-primary">
-																<i class="ki-duotone ki-vue fs-2x text-primary">
-																	<span class="path1"></span>
-																	<span class="path2"></span>
-																</i>
-															</span>
-														</span>
-														<!--end:Icon-->
-														<!--begin:Info-->
-														<span class="d-flex flex-column">
-															<span class="fw-bold fs-6">Vue</span>
-															<span class="fs-7 text-muted">Lightweight and responsive framework</span>
-														</span>
-														<!--end:Info-->
-													</span>
-													<!--end:Label-->
-													<!--begin:Input-->
-													<span class="form-check form-check-custom form-check-solid">
-														<input class="form-check-input" type="radio" name="framework" value="4" />
-													</span>
-													<!--end:Input-->
-												</label>
-												<!--end::Option-->
-											</div>
-											<!--end::Input group-->
-										</div>
-									</div>
-									<!--end::Step 2-->
-									<!--begin::Step 3-->
-									<div data-kt-stepper-element="content">
-										<div class="w-100">
-											<!--begin::Input group-->
-											<div class="fv-row mb-10">
-												<!--begin::Label-->
-												<label class="required fs-5 fw-semibold mb-2">Database Name</label>
-												<!--end::Label-->
+											</label>
+											<!--end::Option-->
+											<!--begin::Option-->
+											<label class="btn btn-outline btn-outline-dashed btn-active-light-primary d-flex text-start p-6">
 												<!--begin::Input-->
-												<input type="text" class="form-control form-control-lg form-control-solid" name="dbname" placeholder="" value="master_db" />
+												<input class="btn-check" type="radio" name="offer_type" value="2" />
 												<!--end::Input-->
-											</div>
-											<!--end::Input group-->
-											<!--begin::Input group-->
-											<div class="fv-row">
 												<!--begin::Label-->
-												<label class="d-flex align-items-center fs-5 fw-semibold mb-4">
-													<span class="required">Select Database Engine</span>
-													<span class="ms-1" data-bs-toggle="tooltip" title="Select your app database engine">
-														<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
-															<span class="path1"></span>
-															<span class="path2"></span>
-															<span class="path3"></span>
-														</i>
+												<span class="d-flex">
+													<!--begin::Icon-->
+													<i class="ki-duotone ki-element-11 fs-3hx">
+														<span class="path1"></span>
+														<span class="path2"></span>
+														<span class="path3"></span>
+														<span class="path4"></span>
+													</i>
+													<!--end::Icon-->
+													<!--begin::Info-->
+													<span class="ms-4">
+														<span class="fs-3 fw-bold text-gray-900 mb-2 d-block">Corporate Deal</span>
+														<span class="fw-semibold fs-4 text-muted">Create corporate account to manage users</span>
 													</span>
-												</label>
+													<!--end::Info-->
+												</span>
 												<!--end::Label-->
-												<!--begin:Option-->
-												<label class="d-flex flex-stack cursor-pointer mb-5">
-													<!--begin::Label-->
-													<span class="d-flex align-items-center me-2">
-														<!--begin::Icon-->
-														<span class="symbol symbol-50px me-6">
-															<span class="symbol-label bg-light-success">
-																<i class="ki-duotone ki-note text-success fs-2x">
-																	<span class="path1"></span>
-																	<span class="path2"></span>
-																</i>
-															</span>
-														</span>
-														<!--end::Icon-->
-														<!--begin::Info-->
-														<span class="d-flex flex-column">
-															<span class="fw-bold fs-6">MySQL</span>
-															<span class="fs-7 text-muted">Basic MySQL database</span>
-														</span>
-														<!--end::Info-->
-													</span>
-													<!--end::Label-->
-													<!--begin::Input-->
-													<span class="form-check form-check-custom form-check-solid">
-														<input class="form-check-input" type="radio" name="dbengine" checked="checked" value="1" />
-													</span>
-													<!--end::Input-->
-												</label>
-												<!--end::Option-->
-												<!--begin:Option-->
-												<label class="d-flex flex-stack cursor-pointer mb-5">
-													<!--begin::Label-->
-													<span class="d-flex align-items-center me-2">
-														<!--begin::Icon-->
-														<span class="symbol symbol-50px me-6">
-															<span class="symbol-label bg-light-danger">
-																<i class="ki-duotone ki-google text-danger fs-2x">
-																	<span class="path1"></span>
-																	<span class="path2"></span>
-																</i>
-															</span>
-														</span>
-														<!--end::Icon-->
-														<!--begin::Info-->
-														<span class="d-flex flex-column">
-															<span class="fw-bold fs-6">Firebase</span>
-															<span class="fs-7 text-muted">Google based app data management</span>
-														</span>
-														<!--end::Info-->
-													</span>
-													<!--end::Label-->
-													<!--begin::Input-->
-													<span class="form-check form-check-custom form-check-solid">
-														<input class="form-check-input" type="radio" name="dbengine" value="2" />
-													</span>
-													<!--end::Input-->
-												</label>
-												<!--end::Option-->
-												<!--begin:Option-->
-												<label class="d-flex flex-stack cursor-pointer">
-													<!--begin::Label-->
-													<span class="d-flex align-items-center me-2">
-														<!--begin::Icon-->
-														<span class="symbol symbol-50px me-6">
-															<span class="symbol-label bg-light-warning">
-																<i class="ki-duotone ki-microsoft text-warning fs-2x">
-																	<span class="path1"></span>
-																	<span class="path2"></span>
-																	<span class="path3"></span>
-																	<span class="path4"></span>
-																</i>
-															</span>
-														</span>
-														<!--end::Icon-->
-														<!--begin::Info-->
-														<span class="d-flex flex-column">
-															<span class="fw-bold fs-6">DynamoDB</span>
-															<span class="fs-7 text-muted">Microsoft Fast NoSQL Database</span>
-														</span>
-														<!--end::Info-->
-													</span>
-													<!--end::Label-->
-													<!--begin::Input-->
-													<span class="form-check form-check-custom form-check-solid">
-														<input class="form-check-input" type="radio" name="dbengine" value="3" />
-													</span>
-													<!--end::Input-->
-												</label>
-												<!--end::Option-->
-											</div>
-											<!--end::Input group-->
+											</label>
+											<!--end::Option-->
 										</div>
+										<!--end::Input group-->
+										<!--begin::Actions-->
+										<div class="d-flex justify-content-end">
+											<button type="button" class="btn btn-lg btn-primary" data-kt-element="type-next">
+												<span class="indicator-label">Offer Details</span>
+												<span class="indicator-progress">Please wait...
+													<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+											</button>
+										</div>
+										<!--end::Actions-->
 									</div>
-									<!--end::Step 3-->
-									<!--begin::Step 4-->
-									<div data-kt-stepper-element="content">
-										<div class="w-100">
-											<!--begin::Input group-->
-											<div class="d-flex flex-column mb-7 fv-row">
-												<!--begin::Label-->
-												<label class="d-flex align-items-center fs-6 fw-semibold form-label mb-2">
-													<span class="required">Name On Card</span>
-													<span class="ms-1" data-bs-toggle="tooltip" title="Specify a card holder's name">
-														<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
-															<span class="path1"></span>
-															<span class="path2"></span>
-															<span class="path3"></span>
-														</i>
-													</span>
-												</label>
-												<!--end::Label-->
-												<input type="text" class="form-control form-control-solid" placeholder="" name="card_name" value="Max Doe" />
+									<!--end::Wrapper-->
+								</div>
+								<!--end::Type-->
+								<!--begin::Details-->
+								<div data-kt-stepper-element="content">
+									<!--begin::Wrapper-->
+									<div class="w-100">
+										<!--begin::Heading-->
+										<div class="mb-13">
+											<!--begin::Title-->
+											<h2 class="mb-3">Deal Details</h2>
+											<!--end::Title-->
+											<!--begin::Description-->
+											<div class="text-muted fw-semibold fs-5">If you need more info, please check out
+												<a href="#" class="link-primary fw-bold">FAQ Page</a>.
 											</div>
-											<!--end::Input group-->
-											<!--begin::Input group-->
-											<div class="d-flex flex-column mb-7 fv-row">
-												<!--begin::Label-->
-												<label class="required fs-6 fw-semibold form-label mb-2">Card Number</label>
-												<!--end::Label-->
-												<!--begin::Input wrapper-->
-												<div class="position-relative">
-													<!--begin::Input-->
-													<input type="text" class="form-control form-control-solid" placeholder="Enter card number" name="card_number" value="4111 1111 1111 1111" />
-													<!--end::Input-->
-													<!--begin::Card logos-->
-													<div class="position-absolute translate-middle-y top-50 end-0 me-5">
-														<img src="assets/media/svg/card-logos/visa.svg" alt="" class="h-25px" />
-														<img src="assets/media/svg/card-logos/mastercard.svg" alt="" class="h-25px" />
-														<img src="assets/media/svg/card-logos/american-express.svg" alt="" class="h-25px" />
-													</div>
-													<!--end::Card logos-->
-												</div>
-												<!--end::Input wrapper-->
+											<!--end::Description-->
+										</div>
+										<!--end::Heading-->
+										<!--begin::Input group-->
+										<div class="fv-row mb-8">
+											<!--begin::Label-->
+											<label class="required fs-6 fw-semibold mb-2">Customer</label>
+											<!--end::Label-->
+											<!--begin::Input-->
+											<select class="form-select form-select-solid" data-control="select2" data-placeholder="Select an option" name="details_customer">
+												<option></option>
+												<option value="1" selected="selected">Keenthemes</option>
+												<option value="2">CRM App</option>
+											</select>
+											<!--end::Input-->
+										</div>
+										<!--end::Input group-->
+										<!--begin::Input group-->
+										<div class="fv-row mb-8">
+											<!--begin::Label-->
+											<label class="required fs-6 fw-semibold mb-2">Deal Title</label>
+											<!--end::Label-->
+											<!--begin::Input-->
+											<input type="text" class="form-control form-control-solid" placeholder="Enter Deal Title" name="details_title" value="Marketing Campaign" />
+											<!--end::Input-->
+										</div>
+										<!--end::Input group-->
+										<!--begin::Input group-->
+										<div class="fv-row mb-8">
+											<!--begin::Label-->
+											<label class="fs-6 fw-semibold mb-2">Deal Description</label>
+											<!--end::Label-->
+											<!--begin::Label-->
+											<textarea class="form-control form-control-solid" rows="3" placeholder="Enter Deal Description" name="details_description">Experience share market at your fingertips with TICK PRO stock investment mobile trading app</textarea>
+											<!--end::Label-->
+										</div>
+										<!--end::Input group-->
+										<!--begin::Input group-->
+										<div class="fv-row mb-8">
+											<label class="required fs-6 fw-semibold mb-2">Activation Date</label>
+											<div class="position-relative d-flex align-items-center">
+												<!--begin::Icon-->
+												<i class="ki-duotone ki-calendar-8 fs-2 position-absolute mx-4">
+													<span class="path1"></span>
+													<span class="path2"></span>
+													<span class="path3"></span>
+													<span class="path4"></span>
+													<span class="path5"></span>
+													<span class="path6"></span>
+												</i>
+												<!--end::Icon-->
+												<!--begin::Datepicker-->
+												<input class="form-control form-control-solid ps-12" placeholder="Pick date range" name="details_activation_date" />
+												<!--end::Datepicker-->
 											</div>
-											<!--end::Input group-->
-											<!--begin::Input group-->
-											<div class="row mb-10">
-												<!--begin::Col-->
-												<div class="col-md-8 fv-row">
-													<!--begin::Label-->
-													<label class="required fs-6 fw-semibold form-label mb-2">Expiration Date</label>
-													<!--end::Label-->
-													<!--begin::Row-->
-													<div class="row fv-row">
-														<!--begin::Col-->
-														<div class="col-6">
-															<select name="card_expiry_month" class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Month">
-																<option></option>
-																<option value="1">1</option>
-																<option value="2">2</option>
-																<option value="3">3</option>
-																<option value="4">4</option>
-																<option value="5">5</option>
-																<option value="6">6</option>
-																<option value="7">7</option>
-																<option value="8">8</option>
-																<option value="9">9</option>
-																<option value="10">10</option>
-																<option value="11">11</option>
-																<option value="12">12</option>
-															</select>
-														</div>
-														<!--end::Col-->
-														<!--begin::Col-->
-														<div class="col-6">
-															<select name="card_expiry_year" class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Year">
-																<option></option>
-																<option value="2024">2024</option>
-																<option value="2025">2025</option>
-																<option value="2026">2026</option>
-																<option value="2027">2027</option>
-																<option value="2028">2028</option>
-																<option value="2029">2029</option>
-																<option value="2030">2030</option>
-																<option value="2031">2031</option>
-																<option value="2032">2032</option>
-																<option value="2033">2033</option>
-																<option value="2034">2034</option>
-															</select>
-														</div>
-														<!--end::Col-->
-													</div>
-													<!--end::Row-->
-												</div>
-												<!--end::Col-->
-												<!--begin::Col-->
-												<div class="col-md-4 fv-row">
-													<!--begin::Label-->
-													<label class="d-flex align-items-center fs-6 fw-semibold form-label mb-2">
-														<span class="required">CVV</span>
-														<span class="ms-1" data-bs-toggle="tooltip" title="Enter a card CVV code">
-															<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
-																<span class="path1"></span>
-																<span class="path2"></span>
-																<span class="path3"></span>
-															</i>
-														</span>
-													</label>
-													<!--end::Label-->
-													<!--begin::Input wrapper-->
-													<div class="position-relative">
-														<!--begin::Input-->
-														<input type="text" class="form-control form-control-solid" minlength="3" maxlength="4" placeholder="CVV" name="card_cvv" />
-														<!--end::Input-->
-														<!--begin::CVV icon-->
-														<div class="position-absolute translate-middle-y top-50 end-0 me-3">
-															<i class="ki-duotone ki-credit-cart fs-2hx">
-																<span class="path1"></span>
-																<span class="path2"></span>
-															</i>
-														</div>
-														<!--end::CVV icon-->
-													</div>
-													<!--end::Input wrapper-->
-												</div>
-												<!--end::Col-->
-											</div>
-											<!--end::Input group-->
-											<!--begin::Input group-->
+										</div>
+										<!--end::Input group-->
+										<!--begin::Input group-->
+										<div class="fv-row mb-15">
+											<!--begin::Wrapper-->
 											<div class="d-flex flex-stack">
 												<!--begin::Label-->
 												<div class="me-5">
-													<label class="fs-6 fw-semibold form-label">Save Card for further billing?</label>
+													<label class="required fs-6 fw-semibold">Notifications</label>
+													<div class="fs-7 fw-semibold text-muted">Allow Notifications by Phone or Email</div>
+												</div>
+												<!--end::Label-->
+												<!--begin::Checkboxes-->
+												<div class="d-flex">
+													<!--begin::Checkbox-->
+													<label class="form-check form-check-custom form-check-solid me-10">
+														<!--begin::Input-->
+														<input class="form-check-input h-20px w-20px" type="checkbox" value="email" name="details_notifications[]" />
+														<!--end::Input-->
+														<!--begin::Label-->
+														<span class="form-check-label fw-semibold">Email</span>
+														<!--end::Label-->
+													</label>
+													<!--end::Checkbox-->
+													<!--begin::Checkbox-->
+													<label class="form-check form-check-custom form-check-solid">
+														<!--begin::Input-->
+														<input class="form-check-input h-20px w-20px" type="checkbox" value="phone" checked="checked" name="details_notifications[]" />
+														<!--end::Input-->
+														<!--begin::Label-->
+														<span class="form-check-label fw-semibold">Phone</span>
+														<!--end::Label-->
+													</label>
+													<!--end::Checkbox-->
+												</div>
+												<!--end::Checkboxes-->
+											</div>
+											<!--begin::Wrapper-->
+										</div>
+										<!--end::Input group-->
+										<!--begin::Actions-->
+										<div class="d-flex flex-stack">
+											<button type="button" class="btn btn-lg btn-light me-3" data-kt-element="details-previous">Deal Type</button>
+											<button type="button" class="btn btn-lg btn-primary" data-kt-element="details-next">
+												<span class="indicator-label">Financing</span>
+												<span class="indicator-progress">Please wait...
+													<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+											</button>
+										</div>
+										<!--end::Actions-->
+									</div>
+									<!--end::Wrapper-->
+								</div>
+								<!--end::Details-->
+								<!--begin::Budget-->
+								<div data-kt-stepper-element="content">
+									<!--begin::Wrapper-->
+									<div class="w-100">
+										<!--begin::Heading-->
+										<div class="mb-13">
+											<!--begin::Title-->
+											<h2 class="mb-3">Finance</h2>
+											<!--end::Title-->
+											<!--begin::Description-->
+											<div class="text-muted fw-semibold fs-5">If you need more info, please check out
+												<a href="#" class="link-primary fw-bold">FAQ Page</a>.
+											</div>
+											<!--end::Description-->
+										</div>
+										<!--end::Heading-->
+										<!--begin::Input group-->
+										<div class="fv-row mb-8">
+											<!--begin::Label-->
+											<label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+												<span class="required">Setup Budget</span>
+												<span class="lh-1 ms-1" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-html="true" data-bs-content="&lt;div class=&#039;p-4 rounded bg-light&#039;&gt; &lt;div class=&#039;d-flex flex-stack text-muted mb-4&#039;&gt; &lt;i class=&quot;ki-duotone ki-bank fs-3 me-3&quot;&gt;&lt;span class=&quot;path1&quot;&gt;&lt;/span&gt;&lt;span class=&quot;path2&quot;&gt;&lt;/span&gt;&lt;/i&gt; &lt;div class=&#039;fw-bold&#039;&gt;INCBANK **** 1245 STATEMENT&lt;/div&gt; &lt;/div&gt; &lt;div class=&#039;d-flex flex-stack fw-semibold text-gray-600&#039;&gt; &lt;div&gt;Amount&lt;/div&gt; &lt;div&gt;Transaction&lt;/div&gt; &lt;/div&gt; &lt;div class=&#039;separator separator-dashed my-2&#039;&gt;&lt;/div&gt; &lt;div class=&#039;d-flex flex-stack text-gray-900 fw-bold mb-2&#039;&gt; &lt;div&gt;USD345.00&lt;/div&gt; &lt;div&gt;KEENTHEMES*&lt;/div&gt; &lt;/div&gt; &lt;div class=&#039;d-flex flex-stack text-muted mb-2&#039;&gt; &lt;div&gt;USD75.00&lt;/div&gt; &lt;div&gt;Hosting fee&lt;/div&gt; &lt;/div&gt; &lt;div class=&#039;d-flex flex-stack text-muted&#039;&gt; &lt;div&gt;USD3,950.00&lt;/div&gt; &lt;div&gt;Payrol&lt;/div&gt; &lt;/div&gt; &lt;/div&gt;">
+													<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
+														<span class="path1"></span>
+														<span class="path2"></span>
+														<span class="path3"></span>
+													</i>
+												</span>
+											</label>
+											<!--end::Label-->
+											<!--begin::Dialer-->
+											<div class="position-relative w-lg-250px" id="kt_modal_finance_setup" data-kt-dialer="true" data-kt-dialer-min="50" data-kt-dialer-max="50000" data-kt-dialer-step="100" data-kt-dialer-prefix="$" data-kt-dialer-decimals="2">
+												<!--begin::Decrease control-->
+												<button type="button" class="btn btn-icon btn-active-color-gray-700 position-absolute translate-middle-y top-50 start-0" data-kt-dialer-control="decrease">
+													<i class="ki-duotone ki-minus-circle fs-1">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</button>
+												<!--end::Decrease control-->
+												<!--begin::Input control-->
+												<input type="text" class="form-control form-control-solid border-0 ps-12" data-kt-dialer-control="input" placeholder="Amount" name="finance_setup" readonly="readonly" value="$50" />
+												<!--end::Input control-->
+												<!--begin::Increase control-->
+												<button type="button" class="btn btn-icon btn-active-color-gray-700 position-absolute translate-middle-y top-50 end-0" data-kt-dialer-control="increase">
+													<i class="ki-duotone ki-plus-circle fs-1">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</button>
+												<!--end::Increase control-->
+											</div>
+											<!--end::Dialer-->
+										</div>
+										<!--end::Input group-->
+										<!--begin::Input group-->
+										<div class="fv-row mb-8">
+											<!--begin::Label-->
+											<label class="fs-6 fw-semibold mb-2">Budget Usage</label>
+											<!--end::Label-->
+											<!--begin::Row-->
+											<div class="row g-9" data-kt-buttons="true" data-kt-buttons-target="[data-kt-button='true']">
+												<!--begin::Col-->
+												<div class="col-md-6 col-lg-12 col-xxl-6">
+													<!--begin::Option-->
+													<label class="btn btn-outline btn-outline-dashed btn-active-light-primary active d-flex text-start p-6" data-kt-button="true">
+														<!--begin::Radio-->
+														<span class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
+															<input class="form-check-input" type="radio" name="finance_usage" value="1" checked="checked" />
+														</span>
+														<!--end::Radio-->
+														<!--begin::Info-->
+														<span class="ms-5">
+															<span class="fs-4 fw-bold text-gray-800 mb-2 d-block">Precise Usage</span>
+															<span class="fw-semibold fs-7 text-gray-600">Withdraw money to your bank account per transaction under $50,000 budget</span>
+														</span>
+														<!--end::Info-->
+													</label>
+													<!--end::Option-->
+												</div>
+												<!--end::Col-->
+												<!--begin::Col-->
+												<div class="col-md-6 col-lg-12 col-xxl-6">
+													<!--begin::Option-->
+													<label class="btn btn-outline btn-outline-dashed btn-active-light-primary d-flex text-start p-6" data-kt-button="true">
+														<!--begin::Radio-->
+														<span class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
+															<input class="form-check-input" type="radio" name="finance_usage" value="2" />
+														</span>
+														<!--end::Radio-->
+														<!--begin::Info-->
+														<span class="ms-5">
+															<span class="fs-4 fw-bold text-gray-800 mb-2 d-block">Extreme Usage</span>
+															<span class="fw-semibold fs-7 text-gray-600">Withdraw money to your bank account per transaction under $50,000 budget</span>
+														</span>
+														<!--end::Info-->
+													</label>
+													<!--end::Option-->
+												</div>
+												<!--end::Col-->
+											</div>
+											<!--end::Row-->
+										</div>
+										<!--end::Input group-->
+										<!--begin::Input group-->
+										<div class="fv-row mb-15">
+											<!--begin::Wrapper-->
+											<div class="d-flex flex-stack">
+												<!--begin::Label-->
+												<div class="me-5">
+													<label class="fs-6 fw-semibold">Allow Changes in Budget</label>
 													<div class="fs-7 fw-semibold text-muted">If you need more info, please check budget planning</div>
 												</div>
 												<!--end::Label-->
 												<!--begin::Switch-->
 												<label class="form-check form-switch form-check-custom form-check-solid">
-													<input class="form-check-input" type="checkbox" value="1" checked="checked" />
-													<span class="form-check-label fw-semibold text-muted">Save Card</span>
+													<input class="form-check-input" type="checkbox" value="1" name="finance_allow" checked="checked" />
+													<span class="form-check-label fw-semibold text-muted">Allowed</span>
 												</label>
 												<!--end::Switch-->
 											</div>
-											<!--end::Input group-->
+											<!--end::Wrapper-->
 										</div>
-									</div>
-									<!--end::Step 4-->
-									<!--begin::Step 5-->
-									<div data-kt-stepper-element="content">
-										<div class="w-100 text-center">
-											<!--begin::Heading-->
-											<h1 class="fw-bold text-gray-900 mb-3">Release!</h1>
-											<!--end::Heading-->
-											<!--begin::Description-->
-											<div class="text-muted fw-semibold fs-3">Submit your app to kickstart your project.</div>
-											<!--end::Description-->
-											<!--begin::Illustration-->
-											<div class="text-center px-4 py-15">
-												<img src="assets/media/illustrations/sketchy-1/9.png" alt="" class="mw-100 mh-300px" />
-											</div>
-											<!--end::Illustration-->
-										</div>
-									</div>
-									<!--end::Step 5-->
-									<!--begin::Actions-->
-									<div class="d-flex flex-stack pt-10">
-										<!--begin::Wrapper-->
-										<div class="me-2">
-											<button type="button" class="btn btn-lg btn-light-primary me-3" data-kt-stepper-action="previous">
-												<i class="ki-duotone ki-arrow-left fs-3 me-1">
-													<span class="path1"></span>
-													<span class="path2"></span>
-												</i>Back</button>
-										</div>
-										<!--end::Wrapper-->
-										<!--begin::Wrapper-->
-										<div>
-											<button type="button" class="btn btn-lg btn-primary" data-kt-stepper-action="submit">
-												<span class="indicator-label">Submit
-													<i class="ki-duotone ki-arrow-right fs-3 ms-2 me-0">
-														<span class="path1"></span>
-														<span class="path2"></span>
-													</i></span>
+										<!--end::Input group-->
+										<!--begin::Actions-->
+										<div class="d-flex flex-stack">
+											<button type="button" class="btn btn-lg btn-light me-3" data-kt-element="finance-previous">Project Settings</button>
+											<button type="button" class="btn btn-lg btn-primary" data-kt-element="finance-next">
+												<span class="indicator-label">Build Team</span>
 												<span class="indicator-progress">Please wait...
 													<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
 											</button>
-											<button type="button" class="btn btn-lg btn-primary" data-kt-stepper-action="next">Continue
-												<i class="ki-duotone ki-arrow-right fs-3 ms-1 me-0">
-													<span class="path1"></span>
-													<span class="path2"></span>
-												</i></button>
 										</div>
-										<!--end::Wrapper-->
+										<!--end::Actions-->
 									</div>
-									<!--end::Actions-->
-								</form>
-								<!--end::Form-->
-							</div>
-							<!--end::Content-->
+									<!--end::Wrapper-->
+								</div>
+								<!--end::Budget-->
+								<!--begin::Complete-->
+								<div data-kt-stepper-element="content">
+									<!--begin::Wrapper-->
+									<div class="w-100">
+										<!--begin::Heading-->
+										<div class="mb-13">
+											<!--begin::Title-->
+											<h2 class="mb-3">Deal Created!</h2>
+											<!--end::Title-->
+											<!--begin::Description-->
+											<div class="text-muted fw-semibold fs-5">If you need more info, please check out
+												<a href="#" class="link-primary fw-bold">FAQ Page</a>.
+											</div>
+											<!--end::Description-->
+										</div>
+										<!--end::Heading-->
+										<!--begin::Actions-->
+										<div class="d-flex flex-center pb-20">
+											<button type="button" class="btn btn-lg btn-light me-3" data-kt-element="complete-start">Create New Deal</button>
+											<a href="#" class="btn btn-lg btn-primary" data-bs-toggle="tooltip" title="Coming Soon">View Deal</a>
+										</div>
+										<!--end::Actions-->
+										<!--begin::Illustration-->
+										<div class="text-center px-4">
+											<img src="assets/media/illustrations/sketchy-1/20.png" alt="" class="mw-100 mh-300px" />
+										</div>
+										<!--end::Illustration-->
+									</div>
+								</div>
+								<!--end::Complete-->
+							</form>
+							<!--end::Form-->
 						</div>
 						<!--end::Stepper-->
 					</div>
-					<!--end::Modal body-->
+					<!--begin::Modal body-->
 				</div>
-				<!--end::Modal content-->
 			</div>
-			<!--end::Modal dialog-->
 		</div>
-		<!--end::Modal - Create App-->
+		<!--end::Modal - Offer A Deal-->
 		<!--begin::Modal - Users Search-->
 		<div class="modal fade" id="kt_modal_users_search" tabindex="-1" aria-hidden="true">
 			<!--begin::Modal dialog-->
@@ -5623,13 +5296,13 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 												<!--end::Checkbox-->
 												<!--begin::Avatar-->
 												<div class="symbol symbol-35px symbol-circle">
-													<span class="symbol-label bg-light-danger text-danger fw-semibold">E</span>
+													<img alt="Pic" src="assets/media/avatars/300-25.jpg" />
 												</div>
 												<!--end::Avatar-->
 												<!--begin::Details-->
 												<div class="ms-5">
-													<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Emma Bold</a>
-													<div class="fw-semibold text-muted">emma@intenso.com</div>
+													<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Brian Cox</a>
+													<div class="fw-semibold text-muted">brian@exchange.com</div>
 												</div>
 												<!--end::Details-->
 											</div>
@@ -5650,7 +5323,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 									<!--begin::Actions-->
 									<div class="d-flex flex-center mt-15">
 										<button type="reset" id="kt_modal_users_search_reset" data-bs-dismiss="modal" class="btn btn-active-light me-3">Cancel</button>
-										<button type="submit" id="kt_modal_users_search_submit" class="btn btn-primary btn-sm">Add Selected Users</button>
+										<button type="submit" id="kt_modal_users_search_submit" class="btn btn-primary">Add Selected Users</button>
 									</div>
 									<!--end::Actions-->
 								</div>
@@ -5715,7 +5388,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 						</div>
 						<!--end::Heading-->
 						<!--begin::Google Contacts Invite-->
-						<div class="btn btn-light btn-sm-primary fw-bold w-100 mb-8">
+						<div class="btn btn-light-primary fw-bold w-100 mb-8">
 							<img alt="Logo" src="assets/media/svg/brand-logos/google-icon.svg" class="h-20px me-3" />Invite Gmail Contacts
 						</div>
 						<!--end::Google Contacts Invite-->
@@ -6188,13 +5861,13 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 									<div class="d-flex align-items-center">
 										<!--begin::Avatar-->
 										<div class="symbol symbol-35px symbol-circle">
-											<span class="symbol-label bg-light-danger text-danger fw-semibold">E</span>
+											<img alt="Pic" src="assets/media/avatars/300-5.jpg" />
 										</div>
 										<!--end::Avatar-->
 										<!--begin::Details-->
 										<div class="ms-5">
-											<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Emma Bold</a>
-											<div class="fw-semibold text-muted">emma@intenso.com</div>
+											<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">Sean Bean</a>
+											<div class="fw-semibold text-muted">sean@dellito.com</div>
 										</div>
 										<!--end::Details-->
 									</div>
@@ -6251,20 +5924,18 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 		<script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
 		<!--end::Vendors Javascript-->
 		<!--begin::Custom Javascript(used for this page only)-->
-		<script src="assets/js/custom/apps/customers/view/add-payment.js"></script>
-		<script src="assets/js/custom/apps/customers/view/adjust-balance.js"></script>
-		<script src="assets/js/custom/apps/customers/view/invoices.js"></script>
-		<script src="assets/js/custom/apps/customers/view/payment-method.js"></script>
-		<script src="assets/js/custom/apps/customers/view/payment-table.js"></script>
-		<script src="assets/js/custom/apps/customers/view/statement.js"></script>
-		<script src="assets/js/custom/apps/customers/update.js"></script>
+		<script src="assets/js/custom/pages/user-profile/general.js"></script>
 		<script src="assets/js/widgets.bundle.js"></script>
 		<script src="assets/js/custom/widgets.js"></script>
 		<script src="assets/js/custom/apps/chat/chat.js"></script>
 		<script src="assets/js/custom/utilities/modals/upgrade-plan.js"></script>
 		<script src="assets/js/custom/utilities/modals/create-account.js"></script>
 		<script src="assets/js/custom/utilities/modals/create-app.js"></script>
-		<script src="assets/js/custom/utilities/modals/new-card.js"></script>
+		<script src="assets/js/custom/utilities/modals/offer-a-deal/type.js"></script>
+		<script src="assets/js/custom/utilities/modals/offer-a-deal/details.js"></script>
+		<script src="assets/js/custom/utilities/modals/offer-a-deal/finance.js"></script>
+		<script src="assets/js/custom/utilities/modals/offer-a-deal/complete.js"></script>
+		<script src="assets/js/custom/utilities/modals/offer-a-deal/main.js"></script>
 		<script src="assets/js/custom/utilities/modals/users-search.js"></script>
 		<!--end::Custom Javascript-->
 		<!--end::Javascript-->

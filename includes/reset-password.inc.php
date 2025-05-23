@@ -95,7 +95,7 @@ try {
 
         echo json_encode([
             'success' => false,
-            'message' => 'Şifre sıfırlama e-postası gönderilemedi. Lütfen daha sonra tekrar deneyin.'
+            'message' => 'Şifre sıfırlama e-postası gönderilemedi. Lütfen daha sonra tekrar deneyin.' . $mailer->getErrorInfo()
         ]);
         exit();
     }

@@ -37136,8 +37136,8 @@ code:not([class*=language-]).code-dark {
 }
 
 .form-control.form-control-solid {
-  background-color: var(--bs-gray-100);
-  border-color: var(--bs-gray-100);
+  background-color: var(--bs-gray-300);
+  border-color: var(--bs-gray-300);
   color: var(--bs-gray-700);
   transition: color 0.2s ease;
 }
@@ -37208,8 +37208,8 @@ code:not([class*=language-]).code-dark {
   text-shadow: 0 0 0 var(--bs-gray-700);
 }
 .form-select.form-select-solid {
-  background-color: var(--bs-gray-100);
-  border-color: var(--bs-gray-100);
+  background-color: var(--bs-gray-300);
+  border-color: var(--bs-gray-300);
   color: var(--bs-gray-700);
   transition: color 0.2s ease;
 }
@@ -50419,4 +50419,17 @@ body,
 }
 .none-div{
   display: none;
+}
+
+#veriAlani .list-group-item-action{
+  transition: background-color 0.4s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#veriAlani .list-group-item-action:hover{
+  background-color: #fb5f00;
+  /* color: var(--bs-gray-900); */
+}
+
+#veriAlani .list-group-item-action:hover .text-gray-600, #veriAlani .list-group-item-action:hover h3{
+  color: #fff !important;
 }

@@ -89,7 +89,7 @@ error_reporting(E_ALL); ini_set('display_errors', 1);
                                                 <div class="fw-bold me-5">
                                                     <span class="me-2" data-kt-customer-table-select="selected_count"></span>Seçildi
                                                 </div>
-                                                <button type="button" class="btn btn-danger" data-kt-customer-table-select="delete_selected">Seçilenleri Pasif Yap</button>
+                                                <button type="button" class="btn btn-danger btn-sm" data-kt-customer-table-select="delete_selected">Seçilenleri Pasif Yap</button>
                                             </div>
                                             <!--end::Group actions-->
                                         </div>

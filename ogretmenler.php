@@ -82,7 +82,7 @@
                                             <!--begin::Toolbar-->
                                             <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
                                                 <!--begin::Add school-->
-                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_customer">Öğretmen Ekle</button>
+                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#kt_modal_add_customer">Öğretmen Ekle</button>
                                                 <!--end::Add school-->
                                             </div>
                                             <!--end::Toolbar-->
@@ -91,7 +91,7 @@
                                                 <div class="fw-bold me-5">
                                                     <span class="me-2" data-kt-customer-table-select="selected_count"></span>Seçildi
                                                 </div>
-                                                <button type="button" class="btn btn-danger" data-kt-customer-table-select="delete_selected">Seçilenleri Pasif Yap</button>
+                                                <button type="button" class="btn btn-danger btn-sm" data-kt-customer-table-select="delete_selected">Seçilenleri Pasif Yap</button>
                                             </div>
                                             <!--end::Group actions-->
                                         </div>
@@ -224,8 +224,8 @@
                                                     <!--end::Row-->
                                                     <!--begin::Actions-->
                                                     <div class="text-center">
-                                                        <button type="reset" id="kt_customers_export_cancel" class="btn btn-light me-3">Discard</button>
-                                                        <button type="submit" id="kt_customers_export_submit" class="btn btn-primary">
+                                                        <button type="reset" id="kt_customers_export_cancel" class="btn btn-light btn-sm me-3">Discard</button>
+                                                        <button type="submit" id="kt_customers_export_submit" class="btn btn-primary btn-sm">
                                                             <span class="indicator-label">Submit</span>
                                                             <span class="indicator-progress">Please wait...
                                                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -761,7 +761,7 @@
                                             </div>
                                             <!--end::Content-->
                                             <!--begin::Action-->
-                                            <a href="#" class="btn btn-primary px-6 align-self-center text-nowrap">Proceed</a>
+                                            <a href="#" class="btn btn-primary btn-sm px-6 align-self-center text-nowrap">Proceed</a>
                                             <!--end::Action-->
                                         </div>
                                         <!--end::Wrapper-->
@@ -1201,7 +1201,7 @@
                     </div>
                     <!--end::Actions-->
                     <!--begin::Send-->
-                    <button class="btn btn-primary" type="button" data-kt-element="send">Send</button>
+                    <button class="btn btn-primary btn-sm" type="button" data-kt-element="send">Send</button>
                     <!--end::Send-->
                 </div>
                 <!--end::Toolbar-->
@@ -1496,7 +1496,7 @@
                 <!--end::Item-->
                 <!--end::Action-->
                 <div class="d-flex justify-content-end mt-9">
-                    <a href="#" class="btn btn-primary d-flex justify-content-end">Pleace Order</a>
+                    <a href="#" class="btn btn-primary btn-sm d-flex justify-content-end">Pleace Order</a>
                 </div>
                 <!--end::Action-->
             </div>
@@ -1990,8 +1990,8 @@
                     <!--end::Plans-->
                     <!--begin::Actions-->
                     <div class="d-flex flex-center flex-row-fluid pt-12">
-                        <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary" id="kt_modal_upgrade_plan_btn">
+                        <button type="reset" class="btn btn-light btn-sm me-3" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm" id="kt_modal_upgrade_plan_btn">
                             <!--begin::Indicator label-->
                             <span class="indicator-label">Upgrade Plan</span>
                             <!--end::Indicator label-->
@@ -4194,7 +4194,7 @@
                                 <!--begin::Actions-->
                                 <div class="d-flex flex-center mt-15">
                                     <button type="reset" id="kt_modal_users_search_reset" data-bs-dismiss="modal" class="btn btn-active-light me-3">Cancel</button>
-                                    <button type="submit" id="kt_modal_users_search_submit" class="btn btn-primary">Add Selected Users</button>
+                                    <button type="submit" id="kt_modal_users_search_submit" class="btn btn-primary btn-sm">Add Selected Users</button>
                                 </div>
                                 <!--end::Actions-->
                             </div>
@@ -4259,7 +4259,7 @@
                     </div>
                     <!--end::Heading-->
                     <!--begin::Google Contacts Invite-->
-                    <div class="btn btn-light-primary fw-bold w-100 mb-8">
+                    <div class="btn btn-light btn-sm-primary fw-bold w-100 mb-8">
                         <img alt="Logo" src="assets/media/svg/brand-logos/google-icon.svg" class="h-20px me-3" />Invite Gmail Contacts
                     </div>
                     <!--end::Google Contacts Invite-->
