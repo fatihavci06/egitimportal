@@ -300,6 +300,12 @@ class ShowGame extends Games
         ';
 
 
+        $gameUrl = $gameInfo['game_url'];
+        $isIframe = (strpos($gameUrl, '<iframe') !== false);
+
+        if (!$isIframe) {
+            $gameUrl = '<p>Geçersiz yerleştirme kodu. Bir iframe bekleniyordu.</p>';
+        }
         $gameHtml = '
                 <tr>
                     <td>
@@ -324,7 +330,7 @@ class ShowGame extends Games
                         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 
                             menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true">
                             <div class="menu-item px-3">
-                                <a href="./okul-detay/' . $gameInfo['slug'] . '" class="menu-link px-3">Görüntüle</a>
+                                <a href="./oyun-detay/' . $gameInfo['slug'] . '" class="menu-link px-3">Görüntüle</a>
                             </div>
                             <div class="menu-item px-3">
                                 <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
@@ -332,17 +338,19 @@ class ShowGame extends Games
                         </div>
                     </td>
                 </tr>
+                
                 <tr>
                     <td colspan="8">
                         <div class="card mt-2">
-                            <div class="card-body">
-                                <div class="ratio ratio-16x9">
-                                    ' . $gameInfo['game_url'] . '
+                            <div class="card-body p-0">
+                                <div class="ratio ratio-16x9 bg-light d-flex align-items-center justify-content-center" style="background-color:rgb(44, 44, 44);">
+                                    ' . $gameUrl . '
                                 </div>
                             </div>
                         </div>
                     </td>
-                </tr>';
+                </tr>         
+                ';
         echo $gameHtml;
     }
 
