@@ -236,13 +236,13 @@ class ShowSupport extends Support
                         <input type="hidden" name="subject" value="' . $value['subject'] . '">
                         <textarea class="form-control form-control-solid placeholder-gray-600 fw-bold fs-4 ps-9 pt-7" rows="6" id="comment" name="comment" placeholder="Açıklama Yazın"></textarea>
                         <!--begin::Submit-->
-                        <button type="submit" id="solved" class="btn btn-success mt-n20 mb-20 position-relative ms-7">
+                        <button type="submit" id="solved" class="btn btn-success btn-sm mt-n20 mb-20 position-relative ms-7">
                             <span class="indicator-label">Çözümlendi</span>
                             <span class="indicator-progress">Lütfen Bekleyin...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
                             </span>
                         </button>
-                        <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary mt-n20 mb-20 position-relative float-end me-7">
+                        <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary btn-sm mt-n20 mb-20 position-relative float-end me-7">
                             <span class="indicator-label">Gönder</span>
                             <span class="indicator-progress">Lütfen Bekleyin...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
@@ -345,7 +345,7 @@ class ShowSupport extends Support
                 if($role == 1){
                     $solvedButton = "";
                 }else{
-                    $solvedButton = '<button type="submit" id="solved" class="btn btn-success mt-n20 mb-20 position-relative ms-7">
+                    $solvedButton = '<button type="submit" id="solved" class="btn btn-success btn-sm mt-n20 mb-20 position-relative ms-7">
                             <span class="indicator-label">Çözümlendi</span>
                             <span class="indicator-progress">Lütfen Bekleyin...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
@@ -365,7 +365,7 @@ class ShowSupport extends Support
                         <textarea class="form-control form-control-solid placeholder-gray-600 fw-bold fs-4 ps-9 pt-7" rows="6" id="comment" name="comment" placeholder="Açıklama Yazın"></textarea>
                         <!--begin::Submit-->
                         ' . $solvedButton . '
-                        <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary mt-n20 mb-20 position-relative float-end me-7">
+                        <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary btn-sm mt-n20 mb-20 position-relative float-end me-7">
                             <span class="indicator-label">Gönder</span>
                             <span class="indicator-progress">Lütfen Bekleyin...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
@@ -790,10 +790,10 @@ class ShowSupport extends Support
                     <!--begin::Modal footer-->
                     <div class="modal-footer flex-center">
                         <!--begin::Button-->
-                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light me-3">İptal</button>
+                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light btn-sm me-3">İptal</button>
                         <!--end::Button-->
                         <!--begin::Button-->
-                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary">
+                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary btn-sm">
                             <span class="indicator-label">Gönder</span>
                             <span class="indicator-progress">Lütfen bekleyin...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -1260,10 +1260,10 @@ class ShowSupportForUsers extends Support
                     <!--begin::Modal footer-->
                     <div class="modal-footer flex-center">
                         <!--begin::Button-->
-                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light me-3">İptal</button>
+                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light btn-sm me-3">İptal</button>
                         <!--end::Button-->
                         <!--begin::Button-->
-                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary">
+                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary btn-sm">
                             <span class="indicator-label">Gönder</span>
                             <span class="indicator-progress">Lütfen bekleyin...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>

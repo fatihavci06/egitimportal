@@ -83,8 +83,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <input type="text" id="coupon_code" name="coupon_code" id="coupon_code" class="form-control" />
                                             </div>
                                         </div>
-                                        <button class="btn btn-primary mt-5 type=" id="generate_coupon">Kupon Oluştur</button>
-                                        <button class="btn btn-primary mt-5 type=" id="coupon_submit">Kaydet</button>
+                                        <button class="btn btn-primary btn-sm mt-5 type=" id="generate_coupon">Kupon Oluştur</button>
+                                        <button class="btn btn-primary btn-sm mt-5 type=" id="coupon_submit">Kaydet</button>
                                     </form>
                                     <!--end::Card(FORM)-->
                                 </div>

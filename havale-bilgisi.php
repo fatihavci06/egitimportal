@@ -171,7 +171,7 @@ $text =  '
                         </div>
                             ' . $error . '
                         <div>
-                            <a href="index" class="btn btn-primary mt-10" role="button">Giriş Sayfası</a>
+                            <a href="index" class="btn btn-primary btn-sm mt-10" role="button">Giriş Sayfası</a>
                         </div>
                     </div>
                 </div>

@@ -436,8 +436,8 @@ class ShowPackagesForAdmin extends PackagesForAdmin
 
                 <!--begin::Modal footer-->
                 <div class="modal-footer flex-center">
-                    <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light me-3">İptal</button>
-                    <button  id="packageUpdate" class="btn btn-primary">
+                    <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light btn-sm me-3">İptal</button>
+                    <button  id="packageUpdate" class="btn btn-primary btn-sm">
                         <span class="indicator-label">Gönder</span>
                         <span class="indicator-progress">Lütfen bekleyin...
                             <span class="spinner-border spinner-border-sm align-middle ms-2"></span>

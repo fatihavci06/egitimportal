@@ -71,7 +71,7 @@
                                             <!--begin::Toolbar-->
                                             <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
                                                 <!--begin::Add school-->
-                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_customer">Sınıf Ekle</button>
+                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#kt_modal_add_customer">Sınıf Ekle</button>
                                                 <!--end::Add school-->
                                             </div>
                                             <!--end::Toolbar-->

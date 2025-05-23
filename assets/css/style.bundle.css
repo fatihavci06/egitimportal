@@ -48144,7 +48144,7 @@ body {
   padding: 0px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-size: 13px !important;
+  font-size: 14px !important;
   font-weight: 400;
   font-family: Inter, Helvetica, "sans-serif";
 }
@@ -48825,7 +48825,7 @@ body,
     margin-bottom: 0px;
   }
   :root {
-    --bs-app-sidebar-width: 295px;
+    --bs-app-sidebar-width: 330px;
     --bs-app-sidebar-width-actual: 280px;
     --bs-app-sidebar-gap-start: 0px;
     --bs-app-sidebar-gap-end: 0px;
@@ -50112,8 +50112,8 @@ body,
   margin-bottom: 0;
 }
 .app-sidebar .menu > .menu-item .menu-item > .menu-link .menu-title {
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: 0.95rem;
+  font-weight: 600;
   padding-top: 0.2rem;
   padding-bottom: 0.2rem;
 }

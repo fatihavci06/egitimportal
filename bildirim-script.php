@@ -30,7 +30,7 @@ try {
     }
 
     // Kullanıcıları al, örneğin rol = 2 (aboneler gibi)
-    $sqlUsers = "SELECT * FROM users_lnp WHERE role = 2";
+    $sqlUsers = "SELECT * FROM users_lnp WHERE role = 2 or role=10002";
     $stmtUsers = $pdo->connect()->prepare($sqlUsers);
     $stmtUsers->execute();
     $users = $stmtUsers->fetchAll(PDO::FETCH_ASSOC);

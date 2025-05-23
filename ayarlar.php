@@ -124,7 +124,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <input type="text" class="form-control" id="notification_start_day" name="notification_start_day" value="<?= $data['notification_start_day'] ?>" placeholder="Gün sayısı">
                                             </div>
                                             <div class="mb-3 mt-4">
-                                                <a href="#" id="sendTaxRateButton" class="btn btn-primary" role="button">
+                                                <a href="#" id="sendTaxRateButton" class="btn btn-primary btn-sm" role="button">
                                                     Gönder
                                                 </a>
                                             </div>

@@ -80,7 +80,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <!--begin::Toolbar-->
                                                 <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
                                                     <!--begin::Add school-->
-                                                    <a href="altkonu-ekle"><button type="button" class="btn btn-primary">Alt Konu Ekle</button></a>
+                                                    <a href="altkonu-ekle"><button type="button" class="btn btn-primary btn-sm">Alt Konu Ekle</button></a>
                                                     <!--end::Add school-->
                                                 </div>
                                                 <!--end::Toolbar-->
@@ -89,7 +89,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <div class="fw-bold me-5">
                                                         <span class="me-2" data-kt-customer-table-select="selected_count"></span>Seçildi
                                                     </div>
-                                                    <button type="button" class="btn btn-danger" data-kt-customer-table-select="delete_selected">Seçilenleri Pasif Yap</button>
+                                                    <button type="button" class="btn btn-danger btn-sm" data-kt-customer-table-select="delete_selected">Seçilenleri Pasif Yap</button>
                                                 </div>
                                                 <!--end::Group actions-->
                                             </div>

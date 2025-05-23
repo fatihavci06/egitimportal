@@ -1259,8 +1259,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 						<!--end::Plans-->
 						<!--begin::Actions-->
 						<div class="d-flex flex-center flex-row-fluid pt-12">
-							<button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">Cancel</button>
-							<button type="submit" class="btn btn-primary" id="kt_modal_upgrade_plan_btn">
+							<button type="reset" class="btn btn-light btn-sm me-3" data-bs-dismiss="modal">Cancel</button>
+							<button type="submit" class="btn btn-primary btn-sm" id="kt_modal_upgrade_plan_btn">
 								<!--begin::Indicator label-->
 								<span class="indicator-label">Upgrade Plan</span>
 								<!--end::Indicator label-->

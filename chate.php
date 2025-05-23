@@ -290,8 +290,8 @@
     <!--end::Scroll-->
     <!--begin::Actions-->
     <div class="text-center pt-15">
-        <button type="reset" class="btn btn-light me-3" data-kt-roles-modal-action="cancel">İptal</button>
-        <button type="submit" class="btn btn-primary" data-kt-roles-modal-action="submit">
+        <button type="reset" class="btn btn-light btn-sm me-3" data-kt-roles-modal-action="cancel">İptal</button>
+        <button type="submit" class="btn btn-primary btn-sm" data-kt-roles-modal-action="submit">
             <span class="indicator-label">Gönder</span>
             <span class="indicator-progress">Lütfen Bekleyin...
                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>

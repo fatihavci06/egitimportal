@@ -499,7 +499,7 @@ if (!defined('GUARD')) {
                                         </div>
                                         <!--end::Content-->
                                         <!--begin::Action-->
-                                        <a href="#" class="btn btn-primary px-6 align-self-center text-nowrap">Proceed</a>
+                                        <a href="#" class="btn btn-primary btn-sm px-6 align-self-center text-nowrap">Proceed</a>
                                         <!--end::Action-->
                                     </div>
                                     <!--end::Wrapper-->

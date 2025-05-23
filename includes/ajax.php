@@ -517,7 +517,7 @@ switch ($service) {
             $period = $_GET['period'] ?? 'daily'; // daily, weekly, monthly, yearly
 
             // Kullanıcı rolü 2 olanların sayısını al
-            $userCountStmt = $pdo->prepare("SELECT COUNT(*) FROM users_lnp WHERE role = 2");
+            $userCountStmt = $pdo->prepare("SELECT COUNT(*) FROM users_lnp WHERE role = 2 or role=10002");
             $userCountStmt->execute();
             $userCount = (int) $userCountStmt->fetchColumn();
 
@@ -553,7 +553,7 @@ switch ($service) {
             ROUND(SUM(pp.pay_amount) / ?, 2) AS avg_payment,
             ROUND(SUM(pp.kdv_amount) / ?, 2) AS avg_tax
         FROM package_payments_lnp pp
-        INNER JOIN users_lnp u ON u.id = pp.user_id AND u.role = 2
+        INNER JOIN users_lnp u ON u.id = pp.user_id AND u.role = 2 or u.role=10002
         GROUP BY $groupBy
         ORDER BY period
     ");
@@ -643,7 +643,7 @@ switch ($service) {
         LEFT JOIN package_payments_lnp pp ON pp.user_id = u.id
         LEFT JOIN packages_lnp pkg ON pkg.id = pp.pack_id
         LEFT JOIN classes_lnp cls ON cls.id = pkg.class_id
-        WHERE u.role = 2 
+        WHERE (u.role = 2  or u.role=10002)
           AND pp.created_at BETWEEN :start_date AND :stop_date
         ORDER BY u.subscribed_end DESC";
             $stmt = $pdo->prepare($sql);
@@ -689,7 +689,7 @@ switch ($service) {
                     CONCAT(p.name, ' ', p.surname) AS parent_fullname 
                 FROM users_lnp u 
                 LEFT JOIN users_lnp p ON u.parent_id = p.id 
-                WHERE u.role = 2 
+                WHERE (u.role = 2 OR u.role = 10002)
                   AND u.subscribed_end BETWEEN :start_date AND :stop_date
                 ORDER BY u.subscribed_end DESC";
 
@@ -922,7 +922,7 @@ switch ($service) {
             $daily = $pdo->query("
             SELECT DATE(created_at) AS day, COUNT(*) AS user_count
             FROM users_lnp
-            WHERE role=2 and  subscribed_end < '$today'
+            WHERE role=2 or role=10002 and  subscribed_end < '$today'
             GROUP BY day
             ORDER BY day
         ")->fetchAll(PDO::FETCH_ASSOC);
@@ -931,7 +931,7 @@ switch ($service) {
             $weekly = $pdo->query("
             SELECT CONCAT(YEAR(created_at), '-W', LPAD(WEEK(created_at, 1), 2, '0')) AS week, COUNT(*) AS user_count
             FROM users_lnp
-            WHERE role=2 and  subscribed_end < '$today'
+            WHERE role=2  or role=10002 and subscribed_end < '$today'
             GROUP BY week
             ORDER BY week
         ")->fetchAll(PDO::FETCH_ASSOC);
@@ -940,7 +940,7 @@ switch ($service) {
             $monthly = $pdo->query("
             SELECT DATE_FORMAT(created_at, '%Y-%m') AS period, COUNT(*) AS user_count
             FROM users_lnp
-            WHERE role=2 and  subscribed_end < '$today'
+            WHERE role=2 or role=10002 and  subscribed_end < '$today'
             GROUP BY period
             ORDER BY period
         ")->fetchAll(PDO::FETCH_ASSOC);
@@ -949,7 +949,7 @@ switch ($service) {
             $yearly = $pdo->query("
             SELECT YEAR(created_at) AS year, COUNT(*) AS user_count
             FROM users_lnp
-            WHERE role=2 and subscribed_end < '$today'
+            WHERE role=2  or role=10002 and subscribed_end < '$today'
             GROUP BY year
             ORDER BY year
         ")->fetchAll(PDO::FETCH_ASSOC);
@@ -973,7 +973,7 @@ switch ($service) {
             $daily = $pdo->query("
             SELECT DATE(created_at) AS day, COUNT(*) AS user_count
             FROM users_lnp
-            WHERE role=2 and  subscribed_end > '$today'
+            WHERE role=2 or role=10002 and  subscribed_end > '$today'
             GROUP BY day
             ORDER BY day
         ")->fetchAll(PDO::FETCH_ASSOC);
@@ -982,7 +982,7 @@ switch ($service) {
             $weekly = $pdo->query("
             SELECT CONCAT(YEAR(created_at), '-W', LPAD(WEEK(created_at, 1), 2, '0')) AS week, COUNT(*) AS user_count
             FROM users_lnp
-            WHERE role=2 and  subscribed_end > '$today'
+            WHERE role=2 or role=10002 and  subscribed_end > '$today'
             GROUP BY week
             ORDER BY week
         ")->fetchAll(PDO::FETCH_ASSOC);
@@ -991,7 +991,7 @@ switch ($service) {
             $monthly = $pdo->query("
             SELECT DATE_FORMAT(created_at, '%Y-%m') AS period, COUNT(*) AS user_count
             FROM users_lnp
-            WHERE role=2 and  subscribed_end > '$today'
+            WHERE role=2 or role=10002 and  subscribed_end > '$today'
             GROUP BY period
             ORDER BY period
         ")->fetchAll(PDO::FETCH_ASSOC);
@@ -1000,7 +1000,7 @@ switch ($service) {
             $yearly = $pdo->query("
             SELECT YEAR(created_at) AS year, COUNT(*) AS user_count
             FROM users_lnp
-            WHERE role=2 and subscribed_end > '$today'
+            WHERE role=2 or role=10002 and subscribed_end > '$today'
             GROUP BY year
             ORDER BY year
         ")->fetchAll(PDO::FETCH_ASSOC);

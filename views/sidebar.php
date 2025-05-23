@@ -14,7 +14,7 @@ $menu1 = new ShowMenu();
     <!--begin::Main-->
     <div class="d-flex flex-column justify-content-between h-100 hover-scroll-overlay-y my-2 mx-5 d-flex flex-column" style="margin-left:0px!important;margin-right:0px!important;" id="kt_app_sidebar_main" data-kt-scroll="true" data-kt-scroll-activate="true" data-kt-scroll-height="auto" data-kt-scroll-dependencies="#kt_app_header" data-kt-scroll-wrappers="#kt_app_main" data-kt-scroll-offset="5px">
         <!--begin::Sidebar menu-->
-        <div id="#kt_app_sidebar_menu" data-kt-menu="true" style="width:300px;" data-kt-menu-expand="false" class="flex-column-fluid menu menu-sub-indention menu-column menu-rounded menu-active-bg mb-7">
+        <div id="#kt_app_sidebar_menu" data-kt-menu="true" style="width:320px;" data-kt-menu-expand="false" class="flex-column-fluid menu menu-sub-indention menu-column menu-rounded menu-active-bg mb-7">
             <!--begin:Menu item-->
             <?php
             if ($_SESSION['role'] == 1) {

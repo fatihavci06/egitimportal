@@ -754,10 +754,10 @@ class ShowTopic extends Topics
                     <!--begin::Modal footer-->
                     <div class="modal-footer flex-center">
                         <!--begin::Button-->
-                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light me-3">İptal</button>
+                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light btn-sm me-3">İptal</button>
                         <!--end::Button-->
                         <!--begin::Button-->
-                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary">
+                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary btn-sm">
                             <span class="indicator-label">Gönder</span>
                             <span class="indicator-progress">Lütfen bekleyin...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -1111,7 +1111,7 @@ class ShowSubTopic extends SubTopics
                     }
 
                     $testList .= '<!--begin::Button-->
-                                <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary mt-6">
+                                <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary btn-sm mt-6">
                                     <span class="indicator-label">Cevapları Gönder</span>
                                     <span class="indicator-progress">Lütfen Bekleyin...
                                         <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -1195,7 +1195,7 @@ class ShowSubTopic extends SubTopics
                     }
 
                     $testList .= '<!--begin::Button-->
-                                <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary mt-6">
+                                <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary btn-sm mt-6">
                                     <span class="indicator-label">Cevapları Gönder</span>
                                     <span class="indicator-progress">Lütfen Bekleyin...
                                         <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -1661,10 +1661,10 @@ class ShowSubTopic extends SubTopics
                     <!--begin::Modal footer-->
                     <div class="modal-footer flex-center">
                         <!--begin::Button-->
-                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light me-3">İptal</button>
+                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light btn-sm me-3">İptal</button>
                         <!--end::Button-->
                         <!--begin::Button-->
-                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary">
+                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary btn-sm">
                             <span class="indicator-label">Gönder</span>
                             <span class="indicator-progress">Lütfen bekleyin...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -2045,7 +2045,7 @@ class ShowTests extends Tests
                     }
 
                     $testList .= '<!--begin::Button-->
-                                <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary mt-6">
+                                <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary btn-sm mt-6">
                                     <span class="indicator-label">Cevapları Gönder</span>
                                     <span class="indicator-progress">Lütfen Bekleyin...
                                         <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -2120,7 +2120,7 @@ class ShowTests extends Tests
                     }
 
                     $testList .= '<!--begin::Button-->
-                                <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary mt-6">
+                                <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary btn-sm mt-6">
                                     <span class="indicator-label">Cevapları Gönder</span>
                                     <span class="indicator-progress">Lütfen Bekleyin...
                                         <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -2586,10 +2586,10 @@ class ShowTests extends Tests
                     <!--begin::Modal footer-->
                     <div class="modal-footer flex-center">
                         <!--begin::Button-->
-                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light me-3">İptal</button>
+                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light btn-sm me-3">İptal</button>
                         <!--end::Button-->
                         <!--begin::Button-->
-                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary">
+                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary btn-sm">
                             <span class="indicator-label">Gönder</span>
                             <span class="indicator-progress">Lütfen bekleyin...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -2941,7 +2941,7 @@ class ShowTestsStudents extends TestsforStudents
                     }
 
                     $testList .= '<!--begin::Button-->
-                                <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary mt-6">
+                                <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary btn-sm mt-6">
                                     <span class="indicator-label">Cevapları Gönder</span>
                                     <span class="indicator-progress">Lütfen Bekleyin...
                                         <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -3016,7 +3016,7 @@ class ShowTestsStudents extends TestsforStudents
                     }
 
                     $testList .= '<!--begin::Button-->
-                                <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary mt-6">
+                                <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary btn-sm mt-6">
                                     <span class="indicator-label">Cevapları Gönder</span>
                                     <span class="indicator-progress">Lütfen Bekleyin...
                                         <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -3482,10 +3482,10 @@ class ShowTestsStudents extends TestsforStudents
                     <!--begin::Modal footer-->
                     <div class="modal-footer flex-center">
                         <!--begin::Button-->
-                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light me-3">İptal</button>
+                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light btn-sm me-3">İptal</button>
                         <!--end::Button-->
                         <!--begin::Button-->
-                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary">
+                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary btn-sm">
                             <span class="indicator-label">Gönder</span>
                             <span class="indicator-progress">Lütfen bekleyin...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -3684,7 +3684,7 @@ class ShowOneTest extends Tests
                                         <div class="fw-bold me-5">
                                             <span class="me-2" data-kt-view-roles-table-select="selected_count"></span>Selected
                                         </div>
-                                        <button type="button" class="btn btn-danger" data-kt-view-roles-table-select="delete_selected">Delete Selected</button>
+                                        <button type="button" class="btn btn-danger btn-sm" data-kt-view-roles-table-select="delete_selected">Delete Selected</button>
                                     </div>
                                     <!--end::Group actions-->
                                 </div>
