@@ -12,7 +12,7 @@ class ShowGame extends Games
         $unitInfo = $this->getGamesList();
 
         $dateFormat = new DateFormat();
-        
+
         foreach ($unitInfo as $key => $value) {
 
             $lessonList = '
@@ -23,25 +23,25 @@ class ShowGame extends Games
                             </div>
                         </td>
                         <td>
-                            <div class="cursor-pointer symbol symbol-90px symbol-lg-90px"><img src="assets/media/games/' . $value['cover_img'] . '"></div>
+                            <a href="./oyun-detay/' . $value['slug'] . '" class="cursor-pointer symbol symbol-90px symbol-lg-90px"><img src="assets/media/games/' . $value['cover_img'] . '"></a>
                         </td>
                         <td>
-                            <a href="#" class="text-gray-800 text-hover-primary mb-1">' . $value['game_name'] . '</a>
+                            <a href="./oyun-detay/' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['game_name'] . '</a>
                         </td>
                         <td>
-                            <a href="#" class="text-gray-800 text-hover-primary mb-1">' . $value['class_name'] . '</a>
+                            <a href="#" class="text-gray-800 text-hover-primary mb-1">' . ($value['class_name'] ?? '-') . '</a>
                         </td>                        
                         <td>
-                            <a href="#" class="text-gray-800 text-hover-primary mb-1">' . $value['lesson_name'] .'</a>
+                            <a href="#" class="text-gray-800 text-hover-primary mb-1">' . ($value['lesson_name'] ?? '-') . '</a>
                         </td>
                         <td>
-                            <a href="#" class="text-gray-800 text-hover-primary mb-1">' . $value['unit_name'] . '</a>
+                            <a href="#" class="text-gray-800 text-hover-primary mb-1">' . ($value['unit_name'] ?? '-') . '</a>
                         </td>
                         <td>
-                            <a href="#" class="text-gray-800 text-hover-primary mb-1">' . $value['topic_name'] . '</a>
+                            <a href="#" class="text-gray-800 text-hover-primary mb-1">' . ($value['topic_name'] ?? '-') . '</a>
                         </td>
                         <td>
-                            <a href="#" class="text-gray-800 text-hover-primary mb-1">' . $value['subtopic_name']  . '</a>
+                            <a href="#" class="text-gray-800 text-hover-primary mb-1">' . ($value['subtopic_name'] ?? '-') . '</a>
                         </td>
                                   <td class="text-end">
                             <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
@@ -290,238 +290,60 @@ class ShowGame extends Games
     public function showOneGame($slug)
     {
 
-        $unitInfo = $this->getOneGame($slug);
+        $gameInfo = $this->getOneGame($slug);
 
 
-        $lessonList = '
+        $gameHtml = '
                 <div class="mb-3">
-                    <h1 class="h3 d-inline align-middle">Böyle bir okul mevcut değil.</h1>
+                    <h1 class="h3 d-inline align-middle">Böyle bir Oyun mevcut değil.</h1>
                 </div>
         ';
 
-        foreach ($unitInfo as $value) {
 
-            $lessonList = '
-                <div class="flex-column flex-lg-row-auto w-100 w-xl-350px mb-10">
-                    <!--begin::Card-->
-                    <div class="card mb-5 mb-xl-8">
-                        <!--begin::Card body-->
-                        <div class="card-body pt-15">
-                            <!--begin::Summary-->
-                            <div class="d-flex flex-center flex-column mb-5">
-                                <!--begin::Avatar-->
-                                <!--<div class="symbol symbol-100px symbol-circle mb-7">
-                                    <img src="assets/media/avatars/300-1.jpg" alt="image" />
-                                </div>-->
-                                <!--end::Avatar-->
-                                <!--begin::Name-->
-                                <a href="#" class="fs-3 text-gray-800 text-hover-primary fw-bold mb-1">' . $value['name'] . '</a>
-                                <!--end::Name-->
-                                <!--begin::Position-->
-                                <div class="fs-5 fw-semibold text-muted mb-6">' . $value['city'] . '</div>
-                                <!--end::Position-->
-                                <!--begin::Info-->
-                                <div class="d-flex flex-wrap flex-center">
-                                    <!--begin::Stats-->
-                                    <div class="border border-gray-300 border-dashed rounded py-3 px-3 mb-3">
-                                        <div class="fs-4 fw-bold text-gray-700">
-                                            <span class="w-75px">6,900</span>
-                                            <i class="ki-duotone ki-arrow-up fs-3 text-success">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                        </div>
-                                        <div class="fw-semibold text-muted">Earnings</div>
-                                    </div>
-                                    <!--end::Stats-->
-                                    <!--begin::Stats-->
-                                    <div class="border border-gray-300 border-dashed rounded py-3 px-3 mx-4 mb-3">
-                                        <div class="fs-4 fw-bold text-gray-700">
-                                            <span class="w-50px">130</span>
-                                            <i class="ki-duotone ki-arrow-down fs-3 text-danger">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                        </div>
-                                        <div class="fw-semibold text-muted">Tasks</div>
-                                    </div>
-                                    <!--end::Stats-->
-                                    <!--begin::Stats-->
-                                    <div class="border border-gray-300 border-dashed rounded py-3 px-3 mb-3">
-                                        <div class="fs-4 fw-bold text-gray-700">
-                                            <span class="w-50px">500</span>
-                                            <i class="ki-duotone ki-arrow-up fs-3 text-success">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                        </div>
-                                        <div class="fw-semibold text-muted">Hours</div>
-                                    </div>
-                                    <!--end::Stats-->
-                                </div>
-                                <!--end::Info-->
+        $gameHtml = '
+                <tr>
+                    <td>
+                        <a href="./oyun-detay/' . $gameInfo['slug'] . '" class="cursor-pointer symbol symbol-90px symbol-lg-90px">
+                            <img src="assets/media/games/' . $gameInfo['cover_img'] . '" alt="' . $gameInfo['game_name'] . '">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="./oyun-detay/' . $gameInfo['slug'] . '" class="text-gray-800 text-hover-primary mb-1 fw-bold">' . $gameInfo['game_name'] . '</a>
+                    </td>
+                    <td><span class="text-gray-800">' . ($gameInfo['class_name'] ?? '-') . '</span></td>
+                    <td><span class="text-gray-800">' . ($gameInfo['lesson_name'] ?? '-') . '</span></td>
+                    <td><span class="text-gray-800">' . ($gameInfo['unit_name'] ?? '-') . '</span></td>
+                    <td><span class="text-gray-800">' . ($gameInfo['topic_name'] ?? '-') . '</span></td>
+                    <td><span class="text-gray-800">' . ($gameInfo['subtopic_name'] ?? '-') . '</span></td>
+                    <td class="text-end">
+                        <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
+                            data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                            İşlemler
+                            <i class="ki-duotone ki-down fs-5 ms-1"></i>
+                        </a>
+                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 
+                            menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true">
+                            <div class="menu-item px-3">
+                                <a href="./okul-detay/' . $gameInfo['slug'] . '" class="menu-link px-3">Görüntüle</a>
                             </div>
-                            <!--end::Summary-->
-                            <!--begin::Details toggle-->
-                            <div class="d-flex flex-stack fs-4 py-3">
-                                <div class="fw-bold rotate collapsible" data-bs-toggle="collapse" href="#kt_customer_view_details" role="button" aria-expanded="false" aria-controls="kt_customer_view_details">Detaylar
-                                    <span class="ms-2 rotate-180">
-                                        <i class="ki-duotone ki-down fs-3"></i>
-                                    </span>
-                                </div>
-                                <span data-bs-toggle="tooltip" data-bs-trigger="hover" title="Okul bilgilerini düzenle">
-                                    <a href="#" class="btn btn-sm btn-light-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_update_customer">Düzenle</a>
-                                </span>
-                            </div>
-                            <!--end::Details toggle-->
-                            <div class="separator separator-dashed my-3"></div>
-                            <!--begin::Details content-->
-                            <div id="kt_customer_view_details" class="collapse show">
-                                <div class="py-5 fs-6">
-                                    <!--begin::Badge-->
-                                    <!--<div class="badge badge-light-info d-inline">Premium user</div>-->
-                                    <!--end::Badge-->
-                                    <!--begin::Details item-->
-                                    <div class="fw-bold mt-5">E-posta Adresi</div>
-                                    <div class="text-gray-600">
-                                        <a href="mailto: ' . $value['email'] . '" class="text-gray-600 text-hover-primary">' . $value['email'] . '</a>
-                                    </div>
-                                    <!--end::Details item-->
-                                    <!--begin::Details item-->
-                                    <div class="fw-bold mt-5">Okul Adresi</div>
-                                    <div class="text-gray-600">' . $value['address'] . ' ' . $value['district'] . ' ' . $value['postcode'] . ' ' . $value['city'] . '</div>
-                                    <!--end::Details item-->
-                                    <!--begin::Details item-->
-                                    <div class="fw-bold mt-5">Telefon Numarası</div>
-                                    <div class="text-gray-600">
-                                        <a href="tel: ' . $value['telephone'] . '" class="text-gray-600 text-hover-primary">' . $value['telephone'] . '</a>
-                                    </div>
-                                    <!--end::Details item-->
-                                </div>
-                            </div>
-                            <!--end::Details content-->
-                        </div>
-                        <!--end::Card body-->
-                    </div>
-                    <!--end::Card-->
-                    <!--begin::Connected Accounts-->
-                    <div class="card mb-5 mb-xl-8">
-                        <!--begin::Card header-->
-                        <div class="card-header border-0">
-                            <div class="card-title">
-                                <h3 class="fw-bold m-0">Connected Accounts</h3>
+                            <div class="menu-item px-3">
+                                <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
                             </div>
                         </div>
-                        <!--end::Card header-->
-                        <!--begin::Card body-->
-                        <div class="card-body pt-2">
-                            <!--begin::Notice-->
-                            <div class="notice d-flex bg-light-primary rounded border-primary border border-dashed mb-9 p-6">
-                                <!--begin::Icon-->
-                                <i class="ki-duotone ki-design-1 fs-2tx text-primary me-4"></i>
-                                <!--end::Icon-->
-                                <!--begin::Wrapper-->
-                                <div class="d-flex flex-stack flex-grow-1">
-                                    <!--begin::Content-->
-                                    <div class="fw-semibold">
-                                        <div class="fs-6 text-gray-700">By connecting an account, you hereby agree to our
-                                            <a href="#" class="me-1">privacy policy</a>and
-                                            <a href="#">terms of use</a>.
-                                        </div>
-                                    </div>
-                                    <!--end::Content-->
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8">
+                        <div class="card mt-2">
+                            <div class="card-body">
+                                <div class="ratio ratio-16x9">
+                                    ' . $gameInfo['game_url'] . '
                                 </div>
-                                <!--end::Wrapper-->
                             </div>
-                            <!--end::Notice-->
-                            <!--begin::Items-->
-                            <div class="py-2">
-                                <!--begin::Item-->
-                                <div class="d-flex flex-stack">
-                                    <div class="d-flex">
-                                        <img src="assets/media/svg/brand-logos/google-icon.svg" class="w-30px me-6" alt="" />
-                                        <div class="d-flex flex-column">
-                                            <a href="#" class="fs-5 text-gray-900 text-hover-primary fw-bold">Google</a>
-                                            <div class="fs-6 fw-semibold text-muted">Plan properly your workflow</div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-end">
-                                        <!--begin::Switch-->
-                                        <label class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
-                                            <!--begin::Input-->
-                                            <input class="form-check-input" name="google" type="checkbox" value="1" id="kt_modal_connected_accounts_google" checked="checked" />
-                                            <!--end::Input-->
-                                            <!--begin::Label-->
-                                            <span class="form-check-label fw-semibold text-muted" for="kt_modal_connected_accounts_google"></span>
-                                            <!--end::Label-->
-                                        </label>
-                                        <!--end::Switch-->
-                                    </div>
-                                </div>
-                                <!--end::Item-->
-                                <div class="separator separator-dashed my-5"></div>
-                                <!--begin::Item-->
-                                <div class="d-flex flex-stack">
-                                    <div class="d-flex">
-                                        <img src="assets/media/svg/brand-logos/github.svg" class="w-30px me-6" alt="" />
-                                        <div class="d-flex flex-column">
-                                            <a href="#" class="fs-5 text-gray-900 text-hover-primary fw-bold">Github</a>
-                                            <div class="fs-6 fw-semibold text-muted">Keep eye on on your Repositories</div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-end">
-                                        <!--begin::Switch-->
-                                        <label class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
-                                            <!--begin::Input-->
-                                            <input class="form-check-input" name="github" type="checkbox" value="1" id="kt_modal_connected_accounts_github" checked="checked" />
-                                            <!--end::Input-->
-                                            <!--begin::Label-->
-                                            <span class="form-check-label fw-semibold text-muted" for="kt_modal_connected_accounts_github"></span>
-                                            <!--end::Label-->
-                                        </label>
-                                        <!--end::Switch-->
-                                    </div>
-                                </div>
-                                <!--end::Item-->
-                                <div class="separator separator-dashed my-5"></div>
-                                <!--begin::Item-->
-                                <div class="d-flex flex-stack">
-                                    <div class="d-flex">
-                                        <img src="assets/media/svg/brand-logos/slack-icon.svg" class="w-30px me-6" alt="" />
-                                        <div class="d-flex flex-column">
-                                            <a href="#" class="fs-5 text-gray-900 text-hover-primary fw-bold">Slack</a>
-                                            <div class="fs-6 fw-semibold text-muted">Integrate Projects Discussions</div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-end">
-                                        <!--begin::Switch-->
-                                        <label class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
-                                            <!--begin::Input-->
-                                            <input class="form-check-input" name="slack" type="checkbox" value="1" id="kt_modal_connected_accounts_slack" />
-                                            <!--end::Input-->
-                                            <!--begin::Label-->
-                                            <span class="form-check-label fw-semibold text-muted" for="kt_modal_connected_accounts_slack"></span>
-                                            <!--end::Label-->
-                                        </label>
-                                        <!--end::Switch-->
-                                    </div>
-                                </div>
-                                <!--end::Item-->
-                            </div>
-                            <!--end::Items-->
                         </div>
-                        <!--end::Card body-->
-                        <!--begin::Card footer-->
-                        <div class="card-footer border-0 d-flex justify-content-center pt-0">
-                            <button class="btn btn-sm btn-light-primary">Save Changes</button>
-                        </div>
-                        <!--end::Card footer-->
-                    </div>
-                    <!--end::Connected Accounts-->
-                </div>
-                ';
-        }
-        echo $lessonList;
+                    </td>
+                </tr>';
+        echo $gameHtml;
     }
 
     // Update Game
@@ -780,13 +602,13 @@ class ShowGame extends Games
 
 
 
-            $lessonList .=  $classForms;
+            $lessonList .= $classForms;
         }
 
 
         echo $divStart . $lessonList . $divEnd;
     }
-    
+
     // Show Topic For Students
 
     public function showGameStudent()
