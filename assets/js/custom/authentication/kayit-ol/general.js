@@ -527,7 +527,8 @@ var KTSignupGeneral = function () {
                                     });
 
                                 } else {
-                                    var oldPrice = document.getElementById("PriceWOVat").innerHTML;
+                                    var oldPrice = Number(document.getElementById("PriceWOVat").innerHTML);
+                                    var vatPercentage = Number(document.getElementById("vatPercentage").innerHTML);
                                     $('#priceWoDiscount').html(oldPrice);
                                     $('#priceWCoupon').html(oldPrice);
                                     var newPriceWVat = oldPrice + (oldPrice * (vatPercentage / 100));

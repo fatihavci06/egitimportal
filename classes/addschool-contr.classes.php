@@ -1,6 +1,7 @@
 <?php
 
 include_once 'createpassword.classes.php';
+include_once 'Mailer.php';
 
 class AddSchoolContr extends AddSchool
 {
@@ -121,6 +122,9 @@ class AddSchoolContr extends AddSchool
 			}
 
 			$this->setSchoolAdmin($this->schoolAdminName, $this->schoolAdminSurname, $slugAdmin, $this->schoolAdminEmail, $this->schoolAdminTelephone, $schoolAdminPasswordHash);
+
+			$mailer = new Mailer();
+			$mailer->sendSchoolAdminEmail($this->schoolAdminName, $this->schoolAdminSurname, $this->schoolAdminEmail, $schoolAdminPassword, $slugAdmin, $this->name);
 		}
 
 		if ($this->schoolCoordinatorName != "" and $this->schoolCoordinatorSurname != "" and $this->schoolCoordinatorEmail != "" and $this->schoolCoordinatorTelephone != "") {
@@ -153,6 +157,8 @@ class AddSchoolContr extends AddSchool
 			}
 
 			$this->setSchoolCoordinator($this->schoolCoordinatorName, $this->schoolCoordinatorSurname, $slugCoordinator, $this->schoolCoordinatorEmail, $this->schoolCoordinatorTelephone, $schoolCoordinatorPasswordHash);
+			$mailer = new Mailer();
+			$mailer->sendSchoolCoordinatorEmail($this->schoolCoordinatorName, $this->schoolCoordinatorSurname, $this->schoolCoordinatorEmail, $schoolCoordinatorPassword, $slugCoordinator, $this->name);
 		}
 
 		echo json_encode(["status" => "success", "message" => $this->name]);

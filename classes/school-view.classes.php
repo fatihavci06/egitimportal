@@ -15,6 +15,18 @@ class ShowSchool extends School
 
         foreach ($schoolInfo as $key => $value) {
 
+            if($value['id'] == 1){
+                $passive = '';
+            }else{
+                $passive = '
+                                <!--begin::Menu item-->
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
+                                </div>
+                                <!--end::Menu item-->
+                                ';
+            }
+
             $schoolList = '
                     <tr>
                         <td>
@@ -47,11 +59,7 @@ class ShowSchool extends School
                                     <a href="./okul-detay/' . $value['slug'] . '" class="menu-link px-3">Görüntüle</a>
                                 </div>
                                 <!--end::Menu item-->
-                                <!--begin::Menu item-->
-                                <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
-                                </div>
-                                <!--end::Menu item-->
+                                ' . $passive . '
                             </div>
                             <!--end::Menu-->
                         </td>

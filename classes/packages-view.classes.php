@@ -28,10 +28,10 @@ class ShowPackage extends Packages
                         <div class="col-xl-6 mb-10">
                             <label role="button">
                             <input type="radio" id="pack" name="pack" value="' . $package['id'] . '">
-                            <div class="card card-flush shadow-sm">
+                            <div class="card card-flush shadow-sm list-group-item-action">
                                 <div class="card-body text-center">
                                     <h3 class="mb-5">' . $package['name'] . '</h3>
-                                    <div class="text-gray-600 mb-2" id="monthly_fee">Aylık Birim Fiyat: ' . $this->getPackagePrice($package['id'])[0]['monthly_fee'] . ' ₺</div>
+                                    <div class="text-gray-600 mb-2" id="monthly_fee">Aylık Birim Fiyat: ' . $this->getPackagePrice($package['id'])[0]['monthly_fee'] . '₺ + KDV</div>
                                     <div class="text-gray-600 mb-2" id="subscription_period">Kaç Aylık: ' . $this->getPackagePrice($package['id'])[0]['subscription_period'] . ' </div>
                                 </div>
                             </div>
@@ -52,7 +52,7 @@ class ShowPackage extends Packages
 				<div class="fv-row mb-5">
                     <div class="fs-6 fw-bold">İndirim Kuponu</div>
                     <div class="text-gray-600 mb-2">Kupon kodu varsa giriniz.</div>
-					<input type="text" class="form-control" name="coupon_code" id="coupon_code" placeholder="Kupon Kodu"> 
+					<input type="text" class="form-control form-control-solid" name="coupon_code" id="coupon_code" placeholder="Kupon Kodu"> 
                     <button type="button" id="apply_coupon" class="btn btn-success mt-5">Kuponu Uygula</button> <button style="display:none" type="button" id="delete_coupon" class="btn btn-danger mt-5">Kuponu Kaldır</button>
 				</div>
                 ';
@@ -82,9 +82,9 @@ class ShowPackage extends Packages
             $vatPercentage = $kdv / 100;
 
             $priceTotal = '
-                        <h2 class="text-black-500 fw-semibold fs-12">KDV\'siz Tutar: <span id="PriceWOVat">' . number_format($total, 2, '.', '') . '</span> ₺</h2>
+                        <h2 class="text-black-500 fw-semibold fs-12">Paket Ücreti: <span id="PriceWOVat">' . number_format($total, 2, '.', '') . '</span>₺</h2>
                         <h2 class="text-black-500 fw-semibold fs-12">KDV Oranı: %<span id="vatPercentage">' . $kdv . '</span></h2>
-                        <h2 class="text-black-500 fw-semibold fs-12">KDV\'li Tutar: <span id="PriceWVat">' . number_format(($total + ($total * $vatPercentage)), 2, '.', '') . '</span> ₺</h2>
+                        <h2 class="text-black-500 fw-semibold fs-12">Toplam Ücret: <span id="PriceWVat">' . number_format(($total + ($total * $vatPercentage)), 2, '.', '') . '</span>₺</h2>
             ';
         }
 

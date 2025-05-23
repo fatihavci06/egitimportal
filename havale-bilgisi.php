@@ -11,8 +11,8 @@ if (!isset($_SESSION['parentFirstName'])) {
 require_once('classes/dateformat.classes.php');
 require_once('classes/dbh.classes.php');
 require_once('classes/adduser.classes.php');
-include_once "classes/packages.classes.php";
-require_once 'classes/Mailer.php';
+include_once ("classes/packages.classes.php");
+require_once ('classes/Mailer.php');
 require_once('classes/userslist.classes.php');
 
 $admin = new User();
@@ -42,15 +42,17 @@ foreach ($packInfo as $key => $value) {
 
 $price -= $price * ($cashDiscount / 100); */
 
-$vat = 10;  // %10 KDV oranı
-$price += $price * ($vat / 100); // KDV'yi ekle
-$vatAmount = $price * ($vat / 100); // KDV tutarını hesapla
-$price = number_format($price, 2, '.', ''); // İki ondalık basamakla formatla
-
 $moneyTransferDiscount = $package->getTransferDiscount();
-$moneyTransferDiscount = $moneyTransferDiscount['discount'];
+$moneyTransferDiscount = $moneyTransferDiscount['discount_rate'];
 
 $price -= $price * ($moneyTransferDiscount / 100); // Havale indirimini uygula
+$price = number_format($price, 2, '.', ''); // İki ondalık basamakla formatla
+
+$vat = $package->getVat();
+
+$vat = $vat['tax_rate'];  // %10 KDV oranı
+$price += $price * ($vat / 100); // KDV'yi ekle
+$vatAmount = $price * ($vat / 100); // KDV tutarını hesapla
 $price = number_format($price, 2, '.', ''); // İki ondalık basamakla formatla
 
 function gucluSifreUret($uzunluk = 12)
@@ -181,9 +183,9 @@ $text =  '
 $mailer = new Mailer();
 
 
+$emailResultAdmin = $mailer->sendBankTransferEmailToAdmin($veli_ad, $veli_soyad, $adminEmail, $price);
 $emailResult = $mailer->sendBankTransferEmail($veli_ad, $veli_soyad, $kullanici_mail, $price);
 
-$emailResultAdmin = $mailer->sendBankTransferEmailToAdmin($veli_ad, $veli_soyad, $adminEmail, $price);
 
 session_destroy();
 

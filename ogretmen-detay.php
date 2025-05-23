@@ -5,21 +5,21 @@ session_start();
 define('GUARD', true);
 if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 8 or $_SESSION['role'] == 4 or $_SESSION['role'] == 3)) {
 	include_once "classes/dbh.classes.php";
-	include "classes/student.classes.php";
-	include "classes/student-view.classes.php";
+	include "classes/teacher.classes.php";
+	include "classes/teacher-view.classes.php";
 	include "classes/school.classes.php";
 	include "classes/timespend.classes.php";
-	$studentId = new Student();
-	$student = new ShowStudent();
+	$teacherId = new Teacher();
+	$teacher = new ShowTeacher();
 	$timeSpend = new timeSpend();
 	$school = new School();
 	$slug = $_GET['q'];
 	include_once "views/pages-head.php";
-	$getStudentId = $studentId->getStudentId($slug);
+	$getTeacherId = $teacherId->getTeacherId($slug);
 
-	$studentInfo = $student->getOneStudent($getStudentId);
+	$teacherInfo = $teacher->getOneTeacher($getTeacherId);
 
-	$timeSpendInfo = $timeSpend->getTimeSpend($getStudentId);
+	$timeSpendInfo = $timeSpend->getTimeSpend($getTeacherId);
 
 	$schoolInfo = $school->getOneSchoolById($studentInfo['school_id']);
 

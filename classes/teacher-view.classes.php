@@ -26,7 +26,7 @@ class ShowTeacher extends Teacher
                             <div class="cursor-pointer symbol symbol-90px symbol-lg-90px"><img src="assets/media/profile/' . $value['photo'] . '"></div>
                         </td>
                         <td>
-                            <a href="./ogrenci-detay/' . $value['username'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['name'] . ' ' . $value['surname']  . '</a>
+                            <a href="./ogretmen-detay/' . $value['username'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['name'] . ' ' . $value['surname']  . '</a>
                         </td>
                         <td>
                             ' . $value['username'] . '
@@ -49,7 +49,7 @@ class ShowTeacher extends Teacher
                                 data-kt-menu="true">
                                 <!--begin::Menu item-->
                                 <div class="menu-item px-3">
-                                    <a href="./ogrenci-detay/' . $value['username'] . '" class="menu-link px-3">Görüntüle</a>
+                                    <a href="./ogretmen-detay/' . $value['username'] . '" class="menu-link px-3">Görüntüle</a>
                                 </div>
                                 <!--end::Menu item-->
                                 <!--begin::Menu item-->

@@ -46,7 +46,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 						<!--begin::Header-->
 						<div class="d-flex flex-row-fluid flex-column text-center p-5 p-lg-10 pt-lg-20">
 							<!--begin::Logo-->
-							<a href="index.html" class="py-2 py-lg-20">
+							<a href="index" class="py-2 py-lg-20">
 								<img alt="Logo" src="assets/media/logos/lineup-campus.jpg" class="h-100px h-lg-150px" />
 							</a>
 							<!--end::Logo-->
@@ -80,7 +80,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 									<h1 class="text-gray-900 mb-3">Lineup Campus'e Giriş Yap</h1>
 									<!--end::Title-->
 									<!--begin::Link-->
-									<div class="text-gray-500 fw-semibold fs-4">Yeni Misiniz?</div>
+									<div class="text-gray-800 fw-semibold fs-4">Yeni Misiniz?</div>
 									<div class="text-center mt-4">
 										<!--begin::Hesap Oluştur button-->
 										<a href="hesap-olustur" class="btn btn-primary" role="button">Hesap Oluştur</a>

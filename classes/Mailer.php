@@ -36,6 +36,13 @@ class Mailer
         $this->mail->Password   = 'Y6RrEZgH4mwfb!x3';                 // SMTP password
         $this->mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;   // Enable TLS encryption
         $this->mail->Port = 587;                              // TCP port to connect to
+        $this->mail->SMTPOptions = [
+            'ssl' => [
+                'verify_peer'       => false,
+                'verify_peer_name'  => false,
+                'allow_self_signed' => true,
+            ],
+        ];
 
 
 
@@ -329,6 +336,104 @@ class Mailer
         ";
 
         return $this->send($kullanici_mail, $subject, $htmlBody, true);
+    }
+
+    /**
+     * Send School Admin Info email
+     * 
+     * @param string $to Recipient email
+     * @param string $username Username
+     * @param string $resetLink Password reset link
+     * @return bool True if email was sent successfully, false otherwise
+     */
+    public function sendSchoolAdminEmail($admin_ad, $admin_soyad, $admin_mail, $admin_sifre, $adminUser, $school_name)
+    {
+        $subject = $school_name . " adlı okula admin olarak atandınız - Lineup Campus";
+
+        // HTML body
+        $htmlBody = "
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background-color: #f8f9fa; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
+                .content { background-color: #ffffff; padding: 20px; border-radius: 0 0 5px 5px; }
+                .button { display: inline-block; padding: 10px 20px; background-color:rgb(166, 209, 255); color: #ffffff; text-decoration: none; border-radius: 5px; }
+                .footer { margin-top: 20px; font-size: 12px; color: #6c757d; text-align: center; }
+                .text-center { text-align: center; }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <div class='header'>
+                    <h2>$school_name adlı okula admin olarak atandınız</h2>
+                </div>
+                <div class='content'>
+                    <p>Merhaba " . htmlspecialchars($admin_ad) . ' ' . htmlspecialchars($admin_soyad) . ",</p>
+                    <p>Giriş bilgileriniz aşağıda verilmiştir.</p>
+                    <p>Öğrenci Giriş Bilgisi: <br> <b>Kullanıcı adı:</b> $adminUser <br><b>Şifre:</b> $admin_sifre</p>
+                    <p><a href='https://www.oznarmaden.com/lineup'>https://www.oznarmaden.com/lineup</a></p>
+                    <p>Saygılarımızla,<br>Lineup</p>
+                </div>
+                <div class='footer'>
+                    <p>Bu otomatik bir e-postadır. Lütfen bu mesaja cevap vermeyin.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        ";
+
+        return $this->send($admin_mail, $subject, $htmlBody, true);
+    }
+
+    /**
+     * Send School Coordinator Info email
+     * 
+     * @param string $to Recipient email
+     * @param string $username Username
+     * @param string $resetLink Password reset link
+     * @return bool True if email was sent successfully, false otherwise
+     */
+    public function sendSchoolCoordinatorEmail($coordinator_ad, $coordinator_soyad, $coordinator_mail, $coordinator_sifre, $coordinatorUser, $school_name)
+    {
+        $subject = $school_name . " adlı okula eğitim koordinatörü olarak atandınız - Lineup Campus";
+
+        // HTML body
+        $htmlBody = "
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background-color: #f8f9fa; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
+                .content { background-color: #ffffff; padding: 20px; border-radius: 0 0 5px 5px; }
+                .button { display: inline-block; padding: 10px 20px; background-color:rgb(166, 209, 255); color: #ffffff; text-decoration: none; border-radius: 5px; }
+                .footer { margin-top: 20px; font-size: 12px; color: #6c757d; text-align: center; }
+                .text-center { text-align: center; }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <div class='header'>
+                    <h2>$school_name adlı okula eğitim koordinatörü olarak atandınız</h2>
+                </div>
+                <div class='content'>
+                    <p>Merhaba " . htmlspecialchars($coordinator_ad) . ' ' . htmlspecialchars($coordinator_soyad) . ",</p>
+                    <p>Giriş bilgileriniz aşağıda verilmiştir.</p>
+                    <p>Öğrenci Giriş Bilgisi: <br> <b>Kullanıcı adı:</b> $coordinatorUser <br><b>Şifre:</b> $coordinator_sifre</p>
+                    <p><a href='https://www.oznarmaden.com/lineup'>https://www.oznarmaden.com/lineup</a></p>
+                    <p>Saygılarımızla,<br>Lineup</p>
+                </div>
+                <div class='footer'>
+                    <p>Bu otomatik bir e-postadır. Lütfen bu mesaja cevap vermeyin.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        ";
+
+        return $this->send($coordinator_mail, $subject, $htmlBody, true);
     }
 
     /**

@@ -80,9 +80,7 @@ error_reporting(E_ALL); ini_set('display_errors', 1);
                                         <div class="card-toolbar">
                                             <!--begin::Toolbar-->
                                             <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
-                                                <!--begin::Add school-->
-                                                <?php if($_SESSION['role'] != 4){ ?><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_customer">Veli Ekle</button><?php } ?>
-                                                <!--end::Add school-->
+                                                
                                             </div>
                                             <!--end::Toolbar-->
                                             <!--begin::Group actions-->

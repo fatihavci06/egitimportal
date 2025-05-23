@@ -83,11 +83,6 @@ class ShowClass extends Classes
             $classList = '
                     <tr>
                         <td>
-                            <div class="form-check form-check-sm form-check-custom form-check-solid">
-                                <input class="form-check-input" type="checkbox" value="1" />
-                            </div>
-                        </td>
-                        <td>
                             <a href="#" class="text-gray-800 text-hover-primary mb-1">' . $value['name'] . '</a>
                         </td>
                         <td class="text-end">

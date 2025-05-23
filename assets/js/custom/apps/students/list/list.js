@@ -6,8 +6,8 @@ var KTCustomersList = function () {
     var datatable;
 
     var submitButton;
-    /* var filterMonth;
-     var filterPayment;*/
+    var filterMonth;
+    var filterClass;
     var table
 
     // Private functions
@@ -15,21 +15,28 @@ var KTCustomersList = function () {
         // Set date data order
         const tableRows = table.querySelectorAll('tbody tr');
 
-        tableRows.forEach(row => {
+         /* tableRows.forEach(row => {
             const dateRow = row.querySelectorAll('td');
-            const realDate = moment(dateRow[6].innerHTML, "DD MMM YYYY, LT").format(); // select date from 3rd column in table
+            const realDate = moment(dateRow[5].innerHTML, "DD MMM YYYY, LT").format(); // select date from 3rd column in table
             dateRow[5].setAttribute('data-order', realDate);
-        });
+        }); */ 
 
         // Init datatable --- more info on datatables: https://datatables.net/manual/
         datatable = $(table).DataTable({
-            "info": false,
-            'order': [[5, 'desc']], // Set default order
+            "info": true,
+            'order': [[6, 'asc'],
+            [5, 'asc']
+            ], // Set default order
             'columnDefs': [
                 { orderable: false, targets: 0 }, // Disable ordering on column 0 (checkbox)
                 { orderable: false, targets: 1 }, // Disable ordering on column 1 (photo)
-                { orderable: false, targets: 6 }, // Disable ordering on column 6 (actions)
-            ]
+                { orderable: false, targets: 7 }, // Disable ordering on column 6 (actions)
+            ],
+            "language": {
+                "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json"
+                // Eğer dil dosyasını lokal olarak yüklediyseniz:
+                // "url": "assets/plugins/custom/datatables/i18n/tr.json"
+            }
         });
 
         // Re-init functions on every table re-draw -- more info: https://datatables.net/reference/event/draw
@@ -52,8 +59,8 @@ var KTCustomersList = function () {
     // Filter Datatable
     var handleFilterDatatable = () => {
         // Select filter options
-        filterMonth = $('[data-kt-customer-table-filter="month"]');
-        filterPayment = document.querySelectorAll('[data-kt-customer-table-filter="payment_type"] [name="payment_type"]');
+        filterMonth = $('[data-kt-customer-table-filter="status"]');
+        filterClass = document.querySelectorAll('[data-kt-customer-table-filter="student_class"] [name="student_class"]');
         const filterButton = document.querySelector('[data-kt-customer-table-filter="filter"]');
 
         // Filter datatable on submit
@@ -63,7 +70,7 @@ var KTCustomersList = function () {
             let paymentValue = '';
 
             // Get payment value
-            filterPayment.forEach(r => {
+            filterClass.forEach(r => {
                 if (r.checked) {
                     paymentValue = r.value;
                 }
@@ -75,7 +82,10 @@ var KTCustomersList = function () {
             });
 
             // Build filter string from filter options
+
             const filterString = monthValue + ' ' + paymentValue;
+
+            /* const filterString = paymentValue; */
 
             // Filter datatable --- official docs reference: https://datatables.net/reference/api/search()
             datatable.search(filterString).draw();
@@ -205,7 +215,7 @@ var KTCustomersList = function () {
     }
 
     // Reset Filter
-    /*var handleResetForm = () => {
+    var handleResetForm = () => {
         // Select reset button
         const resetButton = document.querySelector('[data-kt-customer-table-filter="reset"]');
 
@@ -215,12 +225,12 @@ var KTCustomersList = function () {
             filterMonth.val(null).trigger('change');
 
             // Reset payment type
-            filterPayment[0].checked = true;
+            filterClass[0].checked = true;
 
             // Reset datatable --- official docs reference: https://datatables.net/reference/api/search()
             datatable.search('').draw();
         });
-    }*/
+    }
 
     // Init toggle toolbar
     var initToggleToolbar = () => {
@@ -337,9 +347,9 @@ var KTCustomersList = function () {
             initCustomerList();
             initToggleToolbar();
             handleSearchDatatable();
-            /*handleFilterDatatable();*/
+            handleFilterDatatable();
             handleDeleteRows();
-            /*handleResetForm();*/
+            handleResetForm();
         }
     }
 }();

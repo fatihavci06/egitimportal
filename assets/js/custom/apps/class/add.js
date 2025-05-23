@@ -207,7 +207,7 @@ var KTModalCustomersAdd = function () {
 					});
 				}
 			});
-		})
+		});
 	}
 
 	return {
