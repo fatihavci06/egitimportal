@@ -99,6 +99,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 								<!--begin::Heading-->
 								<!--begin::Input group-->
 								<div class="fv-row mb-10">
+									<input type="hidden" id="screenSize" name="resolution" class="screen">
 									<!--begin::Label-->
 									<label class="form-label fs-6 fw-bold text-gray-900">E-Posta ya da Kullanıcı Adı</label>
 									<!--end::Label-->
@@ -168,6 +169,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 		<script src="assets/plugins/global/plugins.bundle.js"></script>
 		<script src="assets/js/scripts.bundle.js"></script>
 		<script src="assets/js/eyetoggle.js"></script>
+		<script>
+
+		</script>
 		<!--end::Global Javascript Bundle-->
 		<!--begin::Custom Javascript(used for this page only)-->
 		<!--<script src="assets/js/custom/authentication/sign-in/general.js"></script>-->

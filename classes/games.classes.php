@@ -123,19 +123,39 @@ class Games extends Dbh
 
 	public function getOneGame($slug)
 	{
+		$stmt = $this->connect()->prepare('
+		SELECT 
+			g.id, 
+			g.name AS game_name,
+			g.cover_img,
+			g.game_url,
+			g.slug,
+			g.created_at,
+			g.updated_at,
+			c.name AS class_name,
+			l.name AS lesson_name,
+			u.name AS unit_name,
+			t.name AS topic_name,
+			st.name AS subtopic_name
+		FROM 
+			games_lnp g
+		LEFT JOIN classes_lnp c ON g.class_id = c.id
+		LEFT JOIN lessons_lnp l ON g.lesson_id = l.id
+		LEFT JOIN units_lnp u ON g.unit_id = u.id
+		LEFT JOIN topics_lnp t ON g.topic_id = t.id
+		LEFT JOIN subtopics_lnp st ON g.subtopic_id = st.id
+		WHERE g.slug = ?
+		LIMIT 1
+	');
 
-		$stmt = $this->connect()->prepare('SELECT * FROM games_lnp WHERE slug = ?');
-
-		if (!$stmt->execute(array($slug))) {
+		if (!$stmt->execute([$slug])) {
 			$stmt = null;
 			exit();
 		}
 
-		$unitData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$gameData = $stmt->fetch(PDO::FETCH_ASSOC); 
 
-		return $unitData;
-
-		$stmt = null;
+		return $gameData;
 	}
 
 	public function getGames()

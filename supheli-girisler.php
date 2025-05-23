@@ -5,10 +5,9 @@ session_start();
 define('GUARD', true);
 if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 4)) {
     include_once "classes/dbh.classes.php";
-    include "classes/coupon.classes.php";
-    include "classes/coupon-view.classes.php";
-    $coupons = new ShowCoupons();
-    $id = $_GET['id'];
+    include_once "classes/suspicious-logs.classes.php";
+    include_once "classes/suspicious-logs-view.classes.php";
+    $suspiciousLogs = new ShowLogs();
     include_once "views/pages-head.php";
 ?>
     <!--end::Head-->
@@ -65,23 +64,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         <div class="card-header border-0 pt-6">
                                             <!--begin::Card title-->
                                             <div class="card-title">
-                                                <!--begin::Search-->
-                                                <div class="d-flex align-items-center position-relative my-1">
-                                                    <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5">
-                                                        <span class="path1"></span>
-                                                        <span class="path2"></span>
-                                                    </i>
-                                                    <input type="text" data-kt-coupon-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder="Öğrenci Ara" />
-                                                </div>
-                                                <!--end::Search-->
                                             </div>
                                             <!--begin::Card title-->
                                             <!--begin::Card toolbar-->
                                             <div class="card-toolbar">
                                                 <!--begin::Toolbar-->
-                                                <div class="d-flex justify-content-end" data-kt-coupon-table-toolbar="base">
+                                                <div class="d-flex justify-content-end" data-kt-logs-table-toolbar="base">
                                                     <!--begin::Filter-->
-                                                    <button type="button" class="btn btn-light btn-sm-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                                    <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
                                                         <i class="ki-duotone ki-filter fs-2">
                                                             <span class="path1"></span>
                                                             <span class="path2"></span>
@@ -117,8 +107,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             <!--end::Input group-->
                                                             <!--begin::Actions-->
                                                             <div class="d-flex justify-content-end">
-                                                                <button type="reset" class="btn btn-light btn-sm btn-active-light-primary me-2" data-kt-menu-dismiss="true" data-kt-coupon-table-filter="reset">Reset</button>
-                                                                <button type="submit" class="btn btn-primary btn-sm" data-kt-menu-dismiss="true" data-kt-coupon-table-filter="filter">Apply</button>
+                                                                <button type="reset" class="btn btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true" data-kt-logs-table-filter="reset">Reset</button>
+                                                                <button type="submit" class="btn btn-primary" data-kt-menu-dismiss="true" data-kt-logs-table-filter="filter">Apply</button>
                                                             </div>
                                                             <!--end::Actions-->
                                                         </div>
@@ -126,17 +116,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     </div>
                                                     <!--end::Menu 1-->
                                                     <!--end::Filter-->
-                                                    <!--begin::Add school-->
-                                                    <?php if ($_SESSION['role'] != 4) { ?><a href="http://localhost/lineup_campus/kupon" class="btn btn-primary btn-sm">Kupon Ekle</a><?php } ?>
-                                                    <!--end::Add school-->
                                                 </div>
                                                 <!--end::Toolbar-->
                                                 <!--begin::Group actions-->
                                                 <div class="d-flex justify-content-end align-items-center d-none" data-kt-coupon-table-toolbar="selected">
                                                     <div class="fw-bold me-5">
-                                                        <span class="me-2" data-kt-coupon-table-select="selected_count"></span>Seçildi
+                                                        <span class="me-2" data-kt-logs-table-select="selected_count"></span>Seçildi
                                                     </div>
-                                                    <button type="button" class="btn btn-danger btn-sm" data-kt-coupon-table-select="delete_selected">Seçilenleri Pasif Yap</button>
+                                                    <button type="button" class="btn btn-danger" data-kt-coupon-table-select="delete_selected">Seçilenleri Pasif Yap</button>
                                                 </div>
                                                 <!--end::Group actions-->
                                             </div>
@@ -147,21 +134,20 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         <div class="card-body pt-0">
                                             <!--begin::Table-->
                                             <div class="table-responsive">
-                                                <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_coupons_table">
+                                                <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_logs_table">
                                                     <thead>
                                                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                            <th class="min-w-125px">Kupon Kodu</th>
-                                                            <th class="min-w-125px">Kupon Tipi</th>
-                                                            <th class="min-w-125px">Kupon Değeri</th>
-                                                            <th class="min-w-125px">Kupon Durumu</th>
-                                                            <th class="min-w-125px">Kupon Süresi</th>
-                                                            <th class="min-w-125px">Kupon Adedi</th>
-                                                            <th class="min-w-125px">Kullanılan Kupon Adedi</th>
-                                                            <th class="text-end min-w-70px">İşlemler</th>
+                                                            <th class="min-w-125px">Cihaz Tipi</th>
+                                                            <th class="min-w-125px">Cihaz Modeli</th>
+                                                            <th class="min-w-125px">İşletim Sistemi</th>
+                                                            <th class="min-w-125px">Tarayıcı</th>
+                                                            <th class="min-w-125px">Çözünürlük</th>
+                                                            <th class="min-w-125px">IP Adresi</th>
+                                                            <th class="min-w-125px">Deneme Zamanı</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody class="fw-semibold text-gray-600">
-                                                        <?php $coupons->getCouponList(); ?>
+                                                        <?php $suspiciousLogs->getSuspiciousLogList(); ?>
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -171,7 +157,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                     </div>
                                     <!--end::Card-->
                                     <!--begin::Modals-->
-                                   
+                                    <!--begin::Modal - Customers - Add-->
+                                    <?php if ($_SESSION['role'] == 1) {
+                                        // include_once "views/student/add_student.php";
+                                    } else {
+                                        // include_once "views/student/add_student_school.php";
+                                    } ?>
+                                    <!--end::Modal - Customers - Add-->
                                     <!--end::Modals-->
                                 </div>
                                 <!--end::Content container-->

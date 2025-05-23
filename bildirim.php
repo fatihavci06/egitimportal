@@ -9,17 +9,17 @@ define('GUARD', true);
 if (isset($_SESSION['role'])) {
 
 	include_once "classes/dbh.classes.php";
-	include_once "classes/announcement.classes.php";
-	include_once "classes/announcement-view.classes.php";
+	include_once "classes/notification.classes.php";
+	include_once "classes/notification-view.classes.php";
 	include_once "views/pages-head.php";
 
-	$announce = new ShowAnnouncement();
+	$notify = new ShowNotification();
 
-	$announce_manager = new AnnouncementManager();
+	$notify_manager = new NotificationManager();
 
-	$slug_announcement = isset($_GET['q']) ? filter_var($_GET['q'], FILTER_SANITIZE_STRING) : '';
-	$announce_data = $announce->getAnnouncementBySlug($slug_announcement);
-	$announce_manager->markAsViewed($announce_data['id'], $_SESSION['id']);
+	$slug_notification = isset($_GET['q']) ? filter_var($_GET['q'], FILTER_SANITIZE_STRING) : '';
+	$notify_data = $notify->getNotificationBySlug($slug_notification);
+	$notify_manager->markAsViewed($notify_data['id'], $_SESSION['id']);
 	?>
 
 	<body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true"
@@ -63,7 +63,7 @@ if (isset($_SESSION['role'])) {
 											</ul>
 											<h1
 												class="page-heading d-flex flex-column justify-content-center text-gray-900 fw-bolder fs-1 lh-0">
-												<?php echo $announce_data['title'] ?>
+												<?php echo $notify_data['title'] ?>
 											</h1>
 
 										</div>
@@ -76,7 +76,7 @@ if (isset($_SESSION['role'])) {
 										<div class="card-body p-lg-10">
 											<div class="d-flex flex-column flex-lg-row mb-17">
 												<div class="flex-lg-row-fluid row">
-													<?php $announce->showOneAnnouncement($slug_announcement); ?>
+													<?php $notify->showOneNotification($slug_notification); ?>
 												</div>
 											</div>
 										</div>
