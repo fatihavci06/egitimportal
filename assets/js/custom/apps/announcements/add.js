@@ -1,6 +1,5 @@
 "use strict";
 
-// Class definition
 var KTModalCustomersAdd = function () {
 	var submitButton;
 	var cancelButton;
@@ -8,25 +7,24 @@ var KTModalCustomersAdd = function () {
 	var validator;
 	var form;
 	var modal;
-	// Init form inputs
-	var handleForm = function () {
-		const usersDiv = $('#users-div');
-		const classesDiv = $('#classes-div');
-	
+	const radioOne = document.getElementById('target_type');
+	const divs = document.querySelectorAll('.none-div');
 
-		// Init form validation rules. For more info check the FormValidation plugin's official documentation:https://formvalidation.io/
+
+	var handleForm = function () {
+
 		validator = FormValidation.formValidation(
 			form,
 			{
 				fields: {
-					name: {
+					title: {
 						validators: {
 							notEmpty: {
-								message: 'Duyuru Adı zorunlu'
+								message: 'Duyuru başlığı zorunlu'
 							}
 						}
 					},
-					secim: {
+					selection: {
 						validators: {
 							choice: {
 								min: 1,
@@ -35,31 +33,7 @@ var KTModalCustomersAdd = function () {
 							}
 						}
 					},
-					/*roles: {
-						validators: {
-							callback: {
-								message: 'Lütfen bir kullanıcı grubu seçin.',
-								callback: function(input) {
-									return ($('input[name="secim"]:checked').val() === 'users' && usersDiv.is(':visible'))
-										? input.value() !== ''
-										: true;
-								}
-							}
-						}
-					},
-					classes: {
-						validators: {
-							callback: {
-								message: 'Lütfen bir sınıf seçin.',
-								callback: function(input) {
-									return ($('input[name="secim"]:checked').val() === 'classes' && classesDiv.is(':visible'))
-										? input.value() !== ''
-										: true;
-								}
-							}
-						}
-					},*/
-					announcement: {
+					content: {
 						validators: {
 							notEmpty: {
 								message: 'Duyuru metni zorunlu'
@@ -78,13 +52,6 @@ var KTModalCustomersAdd = function () {
 			}
 		);
 
-		// Revalidate country field. For more info, plase visit the official plugin site: https://select2.org/
-		$(form.querySelector('[name="country"]')).on('change', function () {
-			// Revalidate the field when an option is chosen
-			validator.revalidateField('country');
-		});
-
-		// Action buttons
 		submitButton.addEventListener('click', function (e) {
 			e.preventDefault();
 
@@ -114,7 +81,7 @@ var KTModalCustomersAdd = function () {
 								processData: false,
 								dataType: "json",
 								success: function (response) {
-									if (response.status === "success") {
+									if (response.status == "success") {
 
 										Swal.fire({
 											text: response.message + " adlı duyuru eklenmiştir!",
@@ -154,7 +121,7 @@ var KTModalCustomersAdd = function () {
 										});
 									}
 								},
-								error: function(xhr, status, error, response) {
+								error: function (xhr, status, error, response) {
 									Swal.fire({
 										text: "Bir sorun oldu!" /*+ xhr.responseText*/,
 										icon: "error",
@@ -254,13 +221,20 @@ var KTModalCustomersAdd = function () {
 			});
 		})
 	}
-
+	radioOne.addEventListener('change', (event) => {
+		divs.forEach(div => {
+			div.style.display = 'none';
+		});
+		const selectedDivId = event.target.value + '-div';
+		const selectedDiv = document.getElementById(selectedDivId);
+		if (selectedDiv) {
+			selectedDiv.style.display = 'block';
+		}
+	});
 	return {
-		// Public functions
 		init: function () {
-			// Elements
-			modal = new bootstrap.Modal(document.querySelector('#kt_modal_add_customer'));
 
+			modal = new bootstrap.Modal(document.querySelector('#kt_modal_add_customer'));
 			form = document.querySelector('#kt_modal_add_customer_form');
 			submitButton = form.querySelector('#kt_modal_add_customer_submit');
 			cancelButton = form.querySelector('#kt_modal_add_customer_cancel');
@@ -271,7 +245,7 @@ var KTModalCustomersAdd = function () {
 	};
 }();
 
-// On document ready
 KTUtil.onDOMContentLoaded(function () {
 	KTModalCustomersAdd.init();
 });
+

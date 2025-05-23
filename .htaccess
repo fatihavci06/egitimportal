@@ -25,6 +25,9 @@ RewriteRule ^test-detay-ogrenci/([A-Za-z0-9_-]+)    ./test-detay-ogrenci.php?q=$
 RewriteRule ^duyuru/([A-Za-z0-9_-]+)    ./duyuru.php?q=$1     [L,QSA]
 RewriteRule ^ogrenci-detay/([A-Za-z0-9_-]+)    ./ogrenci-detay.php?q=$1     [L,QSA]
 RewriteRule ^ogretmen-detay/([A-Za-z0-9_-]+)    ./ogretmen-detay.php?q=$1     [L,QSA]
+RewriteRule ^duyuru-detay/([A-Za-z0-9_-]+)    ./duyuru-detay.php?q=$1     [L,QSA]
+RewriteRule ^bildirim-detay/([A-Za-z0-9_-]+)    ./bildirim-detay.php?q=$1     [L,QSA]
+RewriteRule ^bildirim/([A-Za-z0-9_-]+)    ./bildirim.php?q=$1     [L,QSA]
 
 
 

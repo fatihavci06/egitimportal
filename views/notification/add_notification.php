@@ -12,116 +12,124 @@ include_once "classes/classes-view.classes.php";
 $userRole = new ShowRole();
 $classShow = new ShowClass();
 
+
 ?>
 <div class="modal fade" id="kt_modal_add_customer" tabindex="-1" aria-hidden="true">
-    <!--begin::Modal dialog-->
     <div class="modal-dialog modal-dialog-centered mw-650px">
-        <!--begin::Modal content-->
         <div class="modal-content">
-            <!--begin::Form-->
             <form class="form" action="#" id="kt_modal_add_customer_form" data-kt-redirect="bildirimler">
-                <!--begin::Modal header-->
                 <div class="modal-header" id="kt_modal_add_customer_header">
-                    <!--begin::Modal title-->
                     <h2 class="fw-bold">Bildirim Ekleyin</h2>
-                    <!--end::Modal title-->
-                    <!--begin::Close-->
                     <div id="kt_modal_add_customer_close" class="btn btn-icon btn-sm btn-active-icon-primary">
                         <i class="ki-duotone ki-cross fs-1">
                             <span class="path1"></span>
                             <span class="path2"></span>
                         </i>
                     </div>
-                    <!--end::Close-->
                 </div>
-                <!--end::Modal header-->
-                <!--begin::Modal body-->
                 <div class="modal-body py-10 px-lg-17">
-                    <!--begin::Scroll-->
                     <div class="scroll-y me-n7 pe-7" id="kt_modal_add_customer_scroll" data-kt-scroll="true"
                         data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto"
                         data-kt-scroll-dependencies="#kt_modal_add_customer_header"
                         data-kt-scroll-wrappers="#kt_modal_add_customer_scroll" data-kt-scroll-offset="300px">
-                        <!--begin::Input group-->
+
                         <div class="fv-row mb-7">
-                            <!--begin::Label-->
-                            <label class="required fs-6 fw-semibold mb-2">Bildirim Adı</label>
-                            <!--end::Label-->
-                            <!--begin::Input-->
-                            <input type="text" id="name" class="form-control form-control-solid" placeholder="Bildirim" name="name" />
-                            <!--end::Input-->
+                            <label class="required fs-6 fw-semibold mb-2">Bildirim Başlığı</label>
+                            <input type="text" id="title" class="form-control form-control-solid" placeholder="Bildirim"
+                                name="title" />
                         </div>
-                        <!--end::Input group-->
 
-                        <!--begin::Radio group-->
-                        <div class="fv-row mb-7" id="chooseOne">
-                            <!--begin::Label-->
+                        <div class="fv-row mb-7" id="target_type">
                             <div>
-                                <label class="required fs-6 fw-semibold mb-2">Bildirim Kime Yapılacak?</label>
+                                <label class="required fs-6 fw-semibold mb-2">Bilidirm Kime Yapılacak?</label>
                             </div>
-                            <!--end::Label-->
                             <label>
-                                <input class="form-check-input" type="radio" name="secim" value="1"> Herkese
+                                <input class="form-check-input" type="radio" name="target" value="all"> Herkese
                             </label>
                             <label>
-                                <input class="form-check-input ms-10" type="radio" name="secim" value="users"> Belirli Kullanıcı Grubuna
+                                <input class="form-check-input ms-10" type="radio" name="target" value="roles"> Belirli
+                                Kullanıcı Grubuna
                             </label>
                             <label>
-                                <input class="form-check-input ms-10" type="radio" name="secim" value="classes"> Belirli Sınıfa
+                                <input class="form-check-input ms-10" type="radio" name="target" value="classes">
+                                Belirli Sınıfa
                             </label>
                         </div>
-                        <!--end::Radio group-->
 
-                        <!--begin::Users -->
-                        <div id="users-div" class="none-div mb-7">
-                            <!--begin::Input-->
-                            <select id="roles" name="roles" aria-label="Kullanıcı Grubu Seçiniz" data-control="select2" data-placeholder="Kullanıcı Grubu Seçiniz..." class="form-select form-select-solid fw-bold">
+                        <div id="roles-div" class="none-div mb-7">
+                            <select id="roles" name="roles" aria-label="Kullanıcı Grubu Seçiniz" data-control="select2"
+                                data-placeholder="Kullanıcı Grubu Seçiniz..."
+                                class="form-select form-select-solid fw-bold">
                                 <option value="">Kullanıcı Grubu Seçin</option>
                                 <?php $userRole->getRoleList(); ?>
                             </select>
-                            <!--end::Input-->
                         </div>
-                        <!--end::Users -->
 
-                        <!--begin::Users -->
                         <div id="classes-div" class="none-div mb-7">
-                            <!--begin::Input-->
-                            <select id="classes" name="classes" aria-label="Sınıf Seçiniz" data-control="select2" data-placeholder="Sınıf Seçiniz..." class="form-select form-select-solid fw-bold">
+                            <select id="classes" name="classes" aria-label="Sınıf Seçiniz" data-control="select2"
+                                data-placeholder="Sınıf Seçiniz..." class="form-select form-select-solid fw-bold">
                                 <option value="">Sınıf Seçin</option>
                                 <?php $classShow->getClassSelectList(); ?>
                             </select>
-                            <!--end::Input-->
-                        </div>
-                        <!--end::Users -->
+                            <div class="fv-row mb-7">
 
-                        <!--begin::Input group-->
-                        <div class="d-flex flex-column mb-7 fv-row">
-                            <!--begin::Label-->
-                            <label class="required fs-6 fw-semibold mb-2">Bildirim</label>
-                            <!--end::Label-->
-                            <!--begin::Input-->
-                            <textarea class="form-control form-control-solid" name="notification" id="notification" ></textarea>
-                            <!--end::Input-->
+                                <label class=" fs-6 fw-semibold mb-2">Ders</label>
+
+                                <select id="lessons" name="lessons" aria-label="Ders Seçiniz" data-control="select2"
+                                    data-placeholder="Ders Seçiniz..." class="form-select form-select-solid fw-bold">
+                                </select>
+                            </div>
+                            <div class="fv-row mb-7">
+                                <label class=" fs-6 fw-semibold mb-2">Ünite</label>
+                                <select id="units" name="units" aria-label="Ünite Seçiniz" data-control="select2"
+                                    data-placeholder="Ünite Seçiniz..." class="form-select form-select-solid fw-bold">
+                                </select>
+                            </div>
+                            <div class="fv-row mb-7">
+                                <label class=" fs-6 fw-semibold mb-2">Konu</label>
+
+                                <select id="topics" name="topics" aria-label="Konu Seçiniz" data-control="select2"
+                                    data-placeholder="Konu Seçiniz..." class="form-select form-select-solid fw-bold">
+                                </select>
+                            </div>
+                            <div class="fv-row mb-7">
+                                <label class=" fs-6 fw-semibold mb-2">Altkonu</label>
+                                <select id="subtopics" name="subtopics" aria-label="Altkonu Seçiniz"
+                                    data-control="select2" data-placeholder="Altkonu Seçiniz..."
+                                    class="form-select form-select-solid fw-bold">
+                                </select>
+                            </div>
+
+
                         </div>
-                        <!--end::Scroll-->
+                        <div class="fv-row mb-7">
+                            <label class="form-label fw-bold text-gray-900 fs-6 required">Başlangıç
+                                Tarihi</label>
+                            <input type="date" class="form-control form-control-solid fw-bold pe-5"
+                                placeholder="start Date" name="start_date" id="start_date">
+                        </div>
+                        <div class="fv-row mb-7">
+                            <label class="form-label fw-bold text-gray-900 fs-6 required">Bitiş
+                                Tarihi</label>
+                            <input type="date" class="form-control form-control-solid fw-bold pe-5"
+                                placeholder="Expire date" name="expire_date" id="expire_date">
+                        </div>
+
+                        <div class="d-flex flex-column mb-7 fv-row">
+                            <label class="required fs-6 fw-semibold mb-2">Bildirim</label>
+                            <textarea class="form-control form-control-solid" name="content"
+                                id="content"></textarea>
+                        </div>
                     </div>
-                    <!--end::Modal body-->
-                    <!--begin::Modal footer-->
                     <div class="modal-footer flex-center">
-                        <!--begin::Button-->
-                        <button type="reset" id="kt_modal_add_customer_cancel" class="btn btn-light btn-sm me-3">İptal</button>
-                        <!--end::Button-->
-                        <!--begin::Button-->
-                        <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary btn-sm">
+                        <button type="reset" id="kt_modal_add_customer_cancel" class="btn btn-light me-3">İptal</button>
+                        <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary">
                             <span class="indicator-label">Gönder</span>
                             <span class="indicator-progress">Lütfen Bekleyin...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                         </button>
-                        <!--end::Button-->
                     </div>
-                    <!--end::Modal footer-->
             </form>
-            <!--end::Form-->
         </div>
     </div>
 </div>
