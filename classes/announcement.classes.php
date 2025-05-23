@@ -390,7 +390,7 @@ class AnnouncementManager extends Dbh
 		return $announcement;
 
 	}
-	public function getAnnouncementsWithViewStatus($user_id, $role_id, $class_id)
+	public function getAnnouncementsWithViewStatus($user_id, $role_id, $class_id=null)
 	{
 		$currentDate = date('Y-m-d H:i:s');
 		$query = "

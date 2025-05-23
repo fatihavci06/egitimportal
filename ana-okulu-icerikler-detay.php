@@ -1,15 +1,23 @@
 <!DOCTYPE html>
 <html lang="tr">
+    
 <?php
+
 session_start();
+
 define('GUARD', true);
+
+
 if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001 or $_SESSION['role'] == 10002)) {
+  
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
-
+   
     include_once "views/pages-head.php";
+    
     $data = new Classes();
     if ($_SESSION['role'] == 10002) {
+       
         $contentId = $_GET['id'];
         $exists = $data->permissionControl($contentId,  $_SESSION['id']);
         if (!$exists) {
@@ -20,11 +28,15 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     }
 
 ?>
+<?php
+
+?>
     <!--end::Head-->
-    <!--begin::Body-->
+    <!--begin::Body--> 
 
     <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
         <!--begin::Theme mode setup on page load-->
+        
         <script>
             var defaultThemeMode = "light";
             var themeMode;
@@ -50,12 +62,17 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
             <!--begin::Page-->
             <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
                 <!--begin::Header-->
+               
+        
                 <?php include_once "views/header.php"; ?>
+                
+               
                 <!--end::Header-->
                 <!--begin::Wrapper-->
-                <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
+                <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrappera">
                     <!--begin::Sidebar-->
                     <?php include_once "views/sidebar.php"; ?>
+                    
                     <!--end::Sidebar-->
                     <!--begin::Main-->
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
@@ -64,7 +81,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             <!--begin::Toolbar-->
                             <?php include_once "views/toolbar.php"; ?>
                             <?php
-
+                            
                             $data = $data->getMainSchoolContentById($_GET['id']);
                             function convertYoutubeToEmbed($url)
                             {
