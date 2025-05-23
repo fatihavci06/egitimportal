@@ -6,8 +6,8 @@ define('GUARD', true);
 if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
     include_once "classes/dbh.classes.php";
     include "classes/addcoupon.classes.php";
-    include "classes/school.classes.php";
-    // include "classes/school-view.classes.php";
+    // include "classes/school.classes.php";
+    //include "classes/school-view.classes.php";
     $id = $_GET['id'];
     $addCoupon = new AddCoupon();
     $coupon = $addCoupon->getCoupon($id);
@@ -243,31 +243,33 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                                         <?php if (!empty($coupon_with_users)): ?>
                                                             <div class="card-body pt-0 pb-5">
                                                                 <!--begin::Table-->
-                                                                <table class="table align-middle table-row-dashed gy-5" id="kt_table_customers_payment">
-                                                                    <thead class="border-bottom border-gray-200 fs-7 fw-bold">
-                                                                        <tr class="text-start text-muted text-uppercase gs-0">
-                                                                            <th class="min-w-100px">Öğrenci Adı</th>
-                                                                            <th>Öğrenci E-posta Adresi</th>
-                                                                            <th>Öğrenci Telefon Numarası</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody class="fs-6 fw-semibold text-gray-600">
-                                                                        <?php foreach ($coupon_with_users as $key => $value): ?>
-                                                                            if
-                                                                            <tr>
-                                                                                <td>
-                                                                                    <a href="<?= './ogrenci-detay/' . $value['user_id'] ?>" class="text-gray-600 text-hover-primary mb-1"><?= $value['name'] . ' ' . $value['surname']  ?></a>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <?= $value['email'] ?>
-                                                                                </td>
-                                                                                <td><?= $value['telephone'] ?></td>
+                                                                <div class="table-responsive">
+                                                                    <table class="table align-middle table-row-dashed gy-5" id="kt_table_customers_payment">
+                                                                        <thead class="border-bottom border-gray-200 fs-7 fw-bold">
+                                                                            <tr class="text-start text-muted text-uppercase gs-0">
+                                                                                <th class="min-w-100px">Öğrenci Adı</th>
+                                                                                <th>Öğrenci E-posta Adresi</th>
+                                                                                <th>Öğrenci Telefon Numarası</th>
                                                                             </tr>
-                                                                        <?php endforeach; ?>
+                                                                        </thead>
+                                                                        <tbody class="fs-6 fw-semibold text-gray-600">
+                                                                            <?php foreach ($coupon_with_users as $key => $value): ?>
+                                                                                if
+                                                                                <tr>
+                                                                                    <td>
+                                                                                        <a href="<?= './ogrenci-detay/' . $value['user_id'] ?>" class="text-gray-600 text-hover-primary mb-1"><?= $value['name'] . ' ' . $value['surname']  ?></a>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <?= $value['email'] ?>
+                                                                                    </td>
+                                                                                    <td><?= $value['telephone'] ?></td>
+                                                                                </tr>
+                                                                            <?php endforeach; ?>
 
-                                                                    </tbody>
-                                                                    <!--end::Table body-->
-                                                                </table>
+                                                                        </tbody>
+                                                                        <!--end::Table body-->
+                                                                    </table>
+                                                                </div>
                                                                 <!--end::Table-->
 
                                                             </div>

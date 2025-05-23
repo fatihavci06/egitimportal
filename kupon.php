@@ -163,7 +163,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
             $('#coupon_submit').on('click', function(e) {
                 e.preventDefault();
 
-                const coupon_code = $('#coupon_code').val(); // Kupon kodu
+                const coupon_code = $('#coupon_code').val();
                 const discount_type = $('input[name="discount_type"]:checked').val();
                 const discount_value = $('#discount_value').val();
                 const coupon_expires = $('#coupon_expires').val();
@@ -179,7 +179,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     return;
                 }
 
-                if (!coupon_code && !discount_value && !coupon_quantity && !$coupon_expires) {
+                if (!coupon_code || !discount_value || !coupon_quantity || !coupon_expires) {
                     Swal.fire({
                         icon: 'warning',
                         title: 'Uyarı',
