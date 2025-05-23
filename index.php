@@ -83,7 +83,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 									<div class="text-gray-500 fw-semibold fs-4">Yeni Misiniz?</div>
 									<div class="text-center mt-4">
 										<!--begin::Hesap Oluştur button-->
-										<a href="hesap-olustur" class="btn btn-primary" role="button">Hesap Oluştur</a>
+										<a href="hesap-olustur" class="btn btn-primary btn-sm" role="button">Hesap Oluştur</a>
 										<!--end::Hesap Oluştur button-->
 									</div>
 									<!--end::Link-->

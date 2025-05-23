@@ -83,10 +83,10 @@ define('GUARD', true);
                                             <!--begin::Toolbar-->
                                             <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
                                                 <!--begin::Add school-->
-                                                <?php if(!empty($waitingStudents->getWaitingMoneyTransfers())){ ?><a href="havale-beklenenler"><button type="button" class="btn btn-primary me-3" data-bs-toggle="modal">Havalesi Beklenen Öğrenciler</button></a><?php } ?>
+                                                <?php if(!empty($waitingStudents->getWaitingMoneyTransfers())){ ?><a href="havale-beklenenler"><button type="button" class="btn btn-primary btn-sm me-3" data-bs-toggle="modal">Havalesi Beklenen Öğrenciler</button></a><?php } ?>
                                                 <!--end::Add school-->
                                                 <!--begin::Filter-->
-													<button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+													<button type="button" class="btn btn-light btn-sm-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
 													<i class="ki-duotone ki-filter fs-2">
 														<span class="path1"></span>
 														<span class="path2"></span>
@@ -157,8 +157,8 @@ define('GUARD', true);
 															<!--end::Input group-->
 															<!--begin::Actions-->
 															<div class="d-flex justify-content-end">
-																<button type="reset" class="btn btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true" data-kt-customer-table-filter="reset">Reset</button>
-																<button type="submit" class="btn btn-primary" data-kt-menu-dismiss="true" data-kt-customer-table-filter="filter">Apply</button>
+																<button type="reset" class="btn btn-light btn-sm btn-active-light-primary me-2" data-kt-menu-dismiss="true" data-kt-customer-table-filter="reset">Reset</button>
+																<button type="submit" class="btn btn-primary btn-sm" data-kt-menu-dismiss="true" data-kt-customer-table-filter="filter">Apply</button>
 															</div>
 															<!--end::Actions-->
 														</div>
@@ -167,7 +167,7 @@ define('GUARD', true);
 													<!--end::Menu 1-->
 													<!--end::Filter-->
                                                 <!--begin::Add school-->
-                                                <?php if($_SESSION['role'] != 4){ ?><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_customer">Öğrenci Ekle</button><?php } ?>
+                                                <?php if($_SESSION['role'] != 4){ ?><button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#kt_modal_add_customer">Öğrenci Ekle</button><?php } ?>
                                                 <!--end::Add school-->
                                             </div>
                                             <!--end::Toolbar-->
@@ -176,7 +176,7 @@ define('GUARD', true);
                                                 <div class="fw-bold me-5">
                                                     <span class="me-2" data-kt-customer-table-select="selected_count"></span>Seçildi
                                                 </div>
-                                                <button type="button" class="btn btn-danger" data-kt-customer-table-select="delete_selected">Seçilenleri Pasif Yap</button>
+                                                <button type="button" class="btn btn-danger btn-sm" data-kt-customer-table-select="delete_selected">Seçilenleri Pasif Yap</button>
                                             </div>
                                             <!--end::Group actions-->
                                         </div>

@@ -284,7 +284,7 @@ if ($odeme_durum == "FAILURE") {
                             Giriş bilgileriniz ' . $kullanici_mail . ' adresinize gönderildi.
                         </div>
                         <div>
-                            <a href="index" class="btn btn-primary mt-10" role="button">Giriş Yap</a>
+                            <a href="index" class="btn btn-primary btn-sm mt-10" role="button">Giriş Yap</a>
                         </div>
                     </div>
                 </div>

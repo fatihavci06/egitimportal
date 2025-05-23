@@ -79,7 +79,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <!--begin::Toolbar-->
                                                 <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
                                                     <!--begin::Add school-->
-                                                    <a href="ana-okulu-icerik-ekle" class="btn btn-primary">İçerik Ekle</a>
+                                                    <a href="ana-okulu-icerik-ekle" class="btn btn-primary btn-sm">İçerik Ekle</a>
                                                     <!--end::Add school-->
 
                                                 </div>
@@ -89,7 +89,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <div class="fw-bold me-5">
                                                         <span class="me-2" data-kt-customer-table-select="selected_count"></span>Seçildi
                                                     </div>
-                                                    <button type="button" class="btn btn-danger" data-kt-customer-table-select="delete_selected">Seçilenleri Pasif Yap</button>
+                                                    <button type="button" class="btn btn-danger btn-sm" data-kt-customer-table-select="delete_selected">Seçilenleri Pasif Yap</button>
                                                 </div>
                                                 <!--end::week actions-->
                                             </div>
@@ -286,8 +286,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <!--end::Row-->
                                                         <!--begin::Actions-->
                                                         <div class="text-center">
-                                                            <button type="reset" id="kt_customers_export_cancel" class="btn btn-light me-3">Discard</button>
-                                                            <button type="submit" id="kt_customers_export_submit" class="btn btn-primary">
+                                                            <button type="reset" id="kt_customers_export_cancel" class="btn btn-light btn-sm me-3">Discard</button>
+                                                            <button type="submit" id="kt_customers_export_submit" class="btn btn-primary btn-sm">
                                                                 <span class="indicator-label">Submit</span>
                                                                 <span class="indicator-progress">Please wait...
                                                                     <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>

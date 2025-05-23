@@ -124,7 +124,7 @@ class ShowRole extends Roles
                             <!--end::Card body-->
                             <!--begin::Card footer-->
                             <div class="card-footer flex-wrap pt-0">
-                                <a href="kullanici-grup-detay?q=' . $value['slug'] . '" class="btn btn-light btn-active-primary my-1 me-2">Yetkiyi İncele</a>
+                                <a href="kullanici-grup-detay?q=' . $value['slug'] . '" class="btn btn-light btn-sm btn-active-primary my-1 me-2">Yetkiyi İncele</a>
                             </div>
                             <!--end::Card footer-->
                         </div>
@@ -276,7 +276,7 @@ class ShowRole extends Roles
                             <!--end::Card body-->
                             <!--begin::Card footer-->
                             <div class="card-footer pt-0">
-                                <button type="button" class="btn btn-light btn-active-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_update_role">Yetkileri Düzenle</button>
+                                <button type="button" class="btn btn-light btn-sm btn-active-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_update_role">Yetkileri Düzenle</button>
                             </div>
                             <!--end::Card footer-->
                         </div>
@@ -345,8 +345,8 @@ class ShowRole extends Roles
                                             <!--end::Scroll-->
                                             <!--begin::Actions-->
                                             <div class="text-center pt-15">
-                                                <button type="reset" class="btn btn-light me-3" data-kt-roles-modal-action="cancel">İptal</button>
-                                                <button type="submit" class="btn btn-primary" data-kt-roles-modal-action="submit">
+                                                <button type="reset" class="btn btn-light btn-sm me-3" data-kt-roles-modal-action="cancel">İptal</button>
+                                                <button type="submit" class="btn btn-primary btn-sm" data-kt-roles-modal-action="submit">
                                                     <span class="indicator-label">Gönder</span>
                                                     <span class="indicator-progress">Lütfen Bekleyin...
                                                         <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -395,7 +395,7 @@ class ShowRole extends Roles
                                         <div class="fw-bold me-5">
                                             <span class="me-2" data-kt-view-roles-table-select="selected_count"></span>Selected
                                         </div>
-                                        <button type="button" class="btn btn-danger" data-kt-view-roles-table-select="delete_selected">Delete Selected</button>
+                                        <button type="button" class="btn btn-danger btn-sm" data-kt-view-roles-table-select="delete_selected">Delete Selected</button>
                                     </div>
                                     <!--end::Group actions-->
                                 </div>

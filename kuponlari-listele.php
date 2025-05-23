@@ -82,7 +82,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <!--begin::Toolbar-->
                                                 <div class="d-flex justify-content-end" data-kt-coupon-table-toolbar="base">
                                                     <!--begin::Filter-->
-                                                    <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                                    <button type="button" class="btn btn-light btn-sm-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
                                                         <i class="ki-duotone ki-filter fs-2">
                                                             <span class="path1"></span>
                                                             <span class="path2"></span>
@@ -118,8 +118,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             <!--end::Input group-->
                                                             <!--begin::Actions-->
                                                             <div class="d-flex justify-content-end">
-                                                                <button type="reset" class="btn btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true" data-kt-coupon-table-filter="reset">Reset</button>
-                                                                <button type="submit" class="btn btn-primary" data-kt-menu-dismiss="true" data-kt-coupon-table-filter="filter">Apply</button>
+                                                                <button type="reset" class="btn btn-light btn-sm btn-active-light-primary me-2" data-kt-menu-dismiss="true" data-kt-coupon-table-filter="reset">Reset</button>
+                                                                <button type="submit" class="btn btn-primary btn-sm" data-kt-menu-dismiss="true" data-kt-coupon-table-filter="filter">Apply</button>
                                                             </div>
                                                             <!--end::Actions-->
                                                         </div>
@@ -128,7 +128,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <!--end::Menu 1-->
                                                     <!--end::Filter-->
                                                     <!--begin::Add school-->
-                                                    <?php if ($_SESSION['role'] != 4) { ?><a href="http://localhost/lineup_campus/kupon" class="btn btn-primary">Kupon Ekle</a><?php } ?>
+                                                    <?php if ($_SESSION['role'] != 4) { ?><a href="http://localhost/lineup_campus/kupon" class="btn btn-primary btn-sm">Kupon Ekle</a><?php } ?>
                                                     <!--end::Add school-->
                                                 </div>
                                                 <!--end::Toolbar-->
@@ -137,7 +137,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <div class="fw-bold me-5">
                                                         <span class="me-2" data-kt-coupon-table-select="selected_count"></span>Seçildi
                                                     </div>
-                                                    <button type="button" class="btn btn-danger" data-kt-coupon-table-select="delete_selected">Seçilenleri Pasif Yap</button>
+                                                    <button type="button" class="btn btn-danger btn-sm" data-kt-coupon-table-select="delete_selected">Seçilenleri Pasif Yap</button>
                                                 </div>
                                                 <!--end::Group actions-->
                                             </div>

@@ -85,8 +85,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                         <div class="row mt-4">
                                             <div class="mt-4 text-start">
-                                                <button id="filterBtn" class="btn btn-primary">Filtrele</button>
-                                                <button id="clearFilterBtn" class="btn btn-secondary">Filtreyi Temizle</button>
+                                                <button id="filterBtn" class="btn btn-primary btn-sm">Filtrele</button>
+                                                <button id="clearFilterBtn" class="btn btn-secondary btn-sm">Filtreyi Temizle</button>
                                             </div>
                                         </div>
                                     </div>

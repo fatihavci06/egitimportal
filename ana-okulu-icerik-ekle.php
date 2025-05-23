@@ -232,7 +232,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                     <div class="row mt-5">
                                         <div class="col-lg-11"></div>
                                         <div class="col-lg-1">
-                                            <button type="button" id="submitForm" class="btn btn-primary">Kaydet</button>
+                                            <button type="button" id="submitForm" class="btn btn-primary btn-sm">Kaydet</button>
 
                                         </div>
                                     </div>

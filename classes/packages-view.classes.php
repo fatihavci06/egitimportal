@@ -53,7 +53,7 @@ class ShowPackage extends Packages
                     <div class="fs-6 fw-bold">İndirim Kuponu</div>
                     <div class="text-gray-600 mb-2">Kupon kodu varsa giriniz.</div>
 					<input type="text" class="form-control" name="coupon_code" id="coupon_code" placeholder="Kupon Kodu"> 
-                    <button type="button" id="apply_coupon" class="btn btn-success mt-5">Kuponu Uygula</button> <button style="display:none" type="button" id="delete_coupon" class="btn btn-danger mt-5">Kuponu Kaldır</button>
+                    <button type="button" id="apply_coupon" class="btn btn-success btn-sm mt-5">Kuponu Uygula</button> <button style="display:none" type="button" id="delete_coupon" class="btn btn-danger btn-sm mt-5">Kuponu Kaldır</button>
 				</div>
                 ';
 
@@ -436,8 +436,8 @@ class ShowPackagesForAdmin extends PackagesForAdmin
 
                 <!--begin::Modal footer-->
                 <div class="modal-footer flex-center">
-                    <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light me-3">İptal</button>
-                    <button  id="packageUpdate" class="btn btn-primary">
+                    <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light btn-sm me-3">İptal</button>
+                    <button  id="packageUpdate" class="btn btn-primary btn-sm">
                         <span class="indicator-label">Gönder</span>
                         <span class="indicator-progress">Lütfen bekleyin...
                             <span class="spinner-border spinner-border-sm align-middle ms-2"></span>

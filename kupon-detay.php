@@ -380,8 +380,8 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                                         <!--end::Input group-->
                                                         <!--begin::Actions-->
                                                         <div class="text-center">
-                                                            <button type="reset" id="kt_modal_add_payment_cancel" class="btn btn-light me-3">Discard</button>
-                                                            <button type="submit" id="kt_modal_add_payment_submit" class="btn btn-primary">
+                                                            <button type="reset" id="kt_modal_add_payment_cancel" class="btn btn-light btn-sm me-3">Discard</button>
+                                                            <button type="submit" id="kt_modal_add_payment_submit" class="btn btn-primary btn-sm">
                                                                 <span class="indicator-label">Submit</span>
                                                                 <span class="indicator-progress">Please wait...
                                                                     <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -482,8 +482,8 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                                         <!--end::Disclaimer-->
                                                         <!--begin::Actions-->
                                                         <div class="text-center">
-                                                            <button type="reset" id="kt_modal_adjust_balance_cancel" class="btn btn-light me-3">Discard</button>
-                                                            <button type="submit" id="kt_modal_adjust_balance_submit" class="btn btn-primary">
+                                                            <button type="reset" id="kt_modal_adjust_balance_cancel" class="btn btn-light btn-sm me-3">Discard</button>
+                                                            <button type="submit" id="kt_modal_adjust_balance_submit" class="btn btn-primary btn-sm">
                                                                 <span class="indicator-label">Submit</span>
                                                                 <span class="indicator-progress">Please wait...
                                                                     <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -677,8 +677,8 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                                         <!--end::Input group-->
                                                         <!--begin::Actions-->
                                                         <div class="text-center pt-15">
-                                                            <button type="reset" id="kt_modal_new_card_cancel" class="btn btn-light me-3">Discard</button>
-                                                            <button type="submit" id="kt_modal_new_card_submit" class="btn btn-primary">
+                                                            <button type="reset" id="kt_modal_new_card_cancel" class="btn btn-light btn-sm me-3">Discard</button>
+                                                            <button type="submit" id="kt_modal_new_card_submit" class="btn btn-primary btn-sm">
                                                                 <span class="indicator-label">Submit</span>
                                                                 <span class="indicator-progress">Please wait...
                                                                     <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -1214,7 +1214,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                                 </div>
                                                 <!--end::Content-->
                                                 <!--begin::Action-->
-                                                <a href="#" class="btn btn-primary px-6 align-self-center text-nowrap">Proceed</a>
+                                                <a href="#" class="btn btn-primary btn-sm px-6 align-self-center text-nowrap">Proceed</a>
                                                 <!--end::Action-->
                                             </div>
                                             <!--end::Wrapper-->
@@ -1654,7 +1654,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                         </div>
                         <!--end::Actions-->
                         <!--begin::Send-->
-                        <button class="btn btn-primary" type="button" data-kt-element="send">Send</button>
+                        <button class="btn btn-primary btn-sm" type="button" data-kt-element="send">Send</button>
                         <!--end::Send-->
                     </div>
                     <!--end::Toolbar-->
@@ -1949,7 +1949,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                     <!--end::Item-->
                     <!--end::Action-->
                     <div class="d-flex justify-content-end mt-9">
-                        <a href="#" class="btn btn-primary d-flex justify-content-end">Pleace Order</a>
+                        <a href="#" class="btn btn-primary btn-sm d-flex justify-content-end">Pleace Order</a>
                     </div>
                     <!--end::Action-->
                 </div>
@@ -2443,8 +2443,8 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                         <!--end::Plans-->
                         <!--begin::Actions-->
                         <div class="d-flex flex-center flex-row-fluid pt-12">
-                            <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary" id="kt_modal_upgrade_plan_btn">
+                            <button type="reset" class="btn btn-light btn-sm me-3" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary btn-sm" id="kt_modal_upgrade_plan_btn">
                                 <!--begin::Indicator label-->
                                 <span class="indicator-label">Upgrade Plan</span>
                                 <!--end::Indicator label-->
@@ -4647,7 +4647,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                                     <!--begin::Actions-->
                                     <div class="d-flex flex-center mt-15">
                                         <button type="reset" id="kt_modal_users_search_reset" data-bs-dismiss="modal" class="btn btn-active-light me-3">Cancel</button>
-                                        <button type="submit" id="kt_modal_users_search_submit" class="btn btn-primary">Add Selected Users</button>
+                                        <button type="submit" id="kt_modal_users_search_submit" class="btn btn-primary btn-sm">Add Selected Users</button>
                                     </div>
                                     <!--end::Actions-->
                                 </div>
@@ -4712,7 +4712,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
                         </div>
                         <!--end::Heading-->
                         <!--begin::Google Contacts Invite-->
-                        <div class="btn btn-light-primary fw-bold w-100 mb-8">
+                        <div class="btn btn-light btn-sm-primary fw-bold w-100 mb-8">
                             <img alt="Logo" src="assets/media/svg/brand-logos/google-icon.svg" class="h-20px me-3" />Invite Gmail Contacts
                         </div>
                         <!--end::Google Contacts Invite-->

@@ -372,7 +372,7 @@ if (!defined('GUARD')) {
                 </div>
                 <!--end::Actions-->
                 <!--begin::Send-->
-                <button class="btn btn-primary" type="button" data-kt-element="send">Send</button>
+                <button class="btn btn-primary btn-sm" type="button" data-kt-element="send">Send</button>
                 <!--end::Send-->
             </div>
             <!--end::Toolbar-->
