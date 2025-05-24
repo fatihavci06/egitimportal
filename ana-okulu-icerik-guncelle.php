@@ -470,12 +470,39 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     selectedRoles.each(function() {
                         formData.append('roles[]', $(this).val());
                     });
-                    $('input[name="wordWallTitles[]"]').each(function(index) {
-                        formData.append(`wordWallTitles[${index}]`, $(this).val());
+                    let isValid = true;
+                    let errorMessage = '';
+
+                    $('#dynamicFields .input-group').each(function(index) {
+                        const titleInput = $(this).find('input[name="wordWallTitles[]"]');
+                        const urlInput = $(this).find('input[name="wordWallUrls[]"]');
+
+                        const titleValue = titleInput.val().trim();
+                        const urlValue = urlInput.val().trim();
+
+                        if (urlValue !== '' && titleValue === '') {
+                            isValid = false;
+                            errorMessage = 'Lütfen bağlantı girilen her satır için bir başlık yazınız.';
+                            return false; // döngüyü kır
+                        }
                     });
 
-                    $('input[name="wordWallUrls[]"]').each(function(index) {
-                        formData.append(`wordWallUrls[${index}]`, $(this).val());
+                    if (!isValid) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Eksik Alan',
+                            text: errorMessage
+                        });
+                        return; // form gönderimini durdur
+                    }
+
+                    // 🔽 Validasyon geçerse FormData eklemesi yapılabilir
+                    $('#dynamicFields .input-group').each(function(index) {
+                        const title = $(this).find('input[name="wordWallTitles[]"]').val();
+                        const url = $(this).find('input[name="wordWallUrls[]"]').val();
+
+                        formData.append(`wordWallTitles[${index}]`, title);
+                        formData.append(`wordWallUrls[${index}]`, url);
                     });
                     formData.append('id', $('#id').val());
                     formData.append('month', $('#month').val());

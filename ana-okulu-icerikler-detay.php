@@ -4,7 +4,6 @@
 <?php
 
 session_start();
-
 define('GUARD', true);
 
 
