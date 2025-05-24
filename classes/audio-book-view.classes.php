@@ -298,6 +298,13 @@ class ShowAudioBook extends AudioBooks
                 </div>
         ';
 
+        $bookUrl = $audioBookInfo['book_url'];
+        $isIframe = (strpos($bookUrl, '<iframe') !== false);
+
+        if (!$isIframe) {
+            $bookUrl = '<p>Geçersiz yerleştirme kodu. Bir iframe bekleniyordu.</p>';
+        }
+
         $bookHtml = '
                 <tr>
                     <td>
@@ -334,8 +341,8 @@ class ShowAudioBook extends AudioBooks
                     <td colspan="8">
                         <div class="card mt-2">
                             <div class="card-body">'
-                             .$audioBookInfo['book_url'].   
-                            '</div>
+                        . $bookUrl .
+                        '</div>
                         </div>
                     </td>
                 </tr>

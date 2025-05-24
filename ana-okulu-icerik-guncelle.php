@@ -190,21 +190,24 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             <input class="form-check-input" type="radio" name="secim" value="primary_img" checked> İlk Görsel
                                                         </label>
                                                         <label>
-                                                            <input class="form-check-input" type="radio" name="secim" value="video_link" > Video URL
+                                                            <input class="form-check-input" type="radio" name="secim" value="video_link"> Video URL
                                                         </label>
                                                         <label>
-                                                            <input class="form-check-input" type="radio" name="secim" value="files" > Dosya Yükle
+                                                            <input class="form-check-input" type="radio" name="secim" value="files"> Dosya Yükle
                                                         </label>
                                                         <label>
-                                                            <input class="form-check-input" type="radio" name="secim" value="content" > Text
+                                                            <input class="form-check-input" type="radio" name="secim" value="content"> Text
+                                                        </label>
+                                                        <label>
+                                                            <input class="form-check-input ms-10" type="radio" name="secim" value="wordwall"> Interaktif Oyun
                                                         </label>
                                                     </div>
 
-                                                    <div id="videoInput" class="mb-4" style="display:none;" >
+                                                    <div id="videoInput" class="mb-4" style="display:none;">
                                                         <label for="video_url">Video Link (Youtube):</label>
                                                         <input type="text" class="form-control" name="video_url" id="video_url" value="<?= htmlspecialchars($data['video_url'] ?? '') ?>">
                                                     </div>
-                                                    <div id="primary_image" class="mb-4" >
+                                                    <div id="primary_image" class="mb-4">
                                                         <label for="primary_img">Görsel:</label>
                                                         <input type="file" class="form-control" name="images[]" id="images" multiple accept=".png,.jpeg,.jpg,.svg">
                                                         <div class="row mt-4">
@@ -215,7 +218,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                             <div class="card-body">
                                                                                 <h5 class="card-title">Dosya ID: <?= $img['id'] ?></h5>
                                                                                 <p><strong>Dosya Yolu:</strong> <a href="<?= $img['file_path'] ?>" target="_blank">Dosyayı Görüntüle</a></p>
-                                                                                
+
                                                                                 <button type="button" class="btn btn-danger btn-sm delete-img" data-img-id="<?= $img['id'] ?>">Dosyayı Sil</button>
                                                                             </div>
                                                                         </div>
@@ -224,7 +227,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             </div>
                                                         </div>
                                                     </div>
-
+                                                    <div id="textInput" class="mb-4" style="display:none;">
+                                                        <label for="content">Metin İçeriği:</label>
+                                                        <textarea class="form-control" name="content" id="content" rows="4"><?= htmlspecialchars($data['content'] ?? '') ?></textarea>
+                                                    </div>
                                                     <div id="fileInput" class="mb-4" style="display:none;">
 
                                                         <label for="file_path">Dosya Yükle:</label>
@@ -255,10 +261,34 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     </div>
 
 
-                                                    <div id="textInput" class="mb-4" style="display:none;">
-                                                        <label for="content">Metin İçeriği:</label>
-                                                        <textarea class="form-control" name="content" id="content" rows="4"><?= htmlspecialchars($data['content'] ?? '') ?></textarea>
+
+                                                    <div id="wordwallInputs" class="mb-4" style="display:none;">
+                                                        <label>WordWall Iframe Linkleri:</label>
+
+                                                        <div id="dynamicFields">
+                                                            <?php if (!empty($data['wordwalls'])): ?>
+                                                                <?php foreach ($data['wordwalls'] as $index => $wordwall): ?>
+                                                                    <div class="input-group mb-2" data-index="<?= $index ?>">
+                                                                        <input type="text" name="wordWallTitles[]" class="form-control me-2" placeholder="Başlık"
+                                                                            value="<?= htmlspecialchars($wordwall['wordwall_title']) ?>">
+                                                                        <input type="text" name="wordWallUrls[]" class="form-control me-2" placeholder="URL"
+                                                                            value="<?= htmlspecialchars($wordwall['wordwall_url']) ?>">
+                                                                        <button type="button" class="btn btn-danger removeField">Sil</button>
+                                                                    </div>
+                                                                <?php endforeach; ?>
+                                                            <?php else: ?>
+                                                                <!-- Eğer veritabanından veri gelmemişse varsayılan 1 alan göster -->
+                                                                <div class="input-group mb-2" data-index="0">
+                                                                    <input type="text" name="wordWallTitles[]" class="form-control me-2" placeholder="Başlık">
+                                                                    <input type="text" name="wordWallUrls[]" class="form-control me-2" placeholder="URL">
+                                                                    <button type="button" class="btn btn-danger removeField">Sil</button>
+                                                                </div>
+                                                            <?php endif; ?>
+                                                        </div>
+
+                                                        <button type="button" id="addField" class="btn btn-sm btn-primary mt-2">Ekle</button>
                                                     </div>
+
                                                 </div>
 
 
@@ -332,6 +362,21 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/js/custom/utilities/modals/users-search.js"></script>
         <script>
             $(document).ready(function() {
+                let fieldCount = 0;
+
+                $('#addField').on('click', function() {
+                    fieldCount++;
+                    $('#dynamicFields').append(`
+                    <div class="input-group mb-2" data-index="${fieldCount}">
+                        <input type="text" name="wordWallTitles[]" class="form-control me-2" placeholder="Başlık">
+                        <input type="text" name="wordWallUrls[]" class="form-control me-2" placeholder="URL">
+                        <button type="button" class="btn btn-danger removeField">Sil</button>
+                    </div>
+                `);
+                });
+                $('#dynamicFields').on('click', '.removeField', function() {
+                    $(this).closest('.input-group').remove();
+                });
                 $('#file_path').on('change', function() {
                     const files = this.files;
                     const container = $('#fileDescriptions');
@@ -352,7 +397,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     let selected = $(this).val();
 
                     // Tüm inputları gizle
-                    $('#videoInput, #fileInput, #textInput,#primary_image').hide();
+                    $('#videoInput, #fileInput, #textInput,#primary_image, #wordwallInputs').hide();
 
                     // Seçime göre ilgili inputu göster
                     if (selected === 'video_link') {
@@ -365,6 +410,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         $('#fileInput').show();
                     } else if (selected === 'content') {
                         $('#textInput').show();
+                    } else if (selected === 'wordwall') {
+                        $('#wordwallInputs').show();;
                     }
                 });
                 $('#submitForm').on('click', function(e) {
@@ -422,6 +469,40 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     // roles (çoklu)
                     selectedRoles.each(function() {
                         formData.append('roles[]', $(this).val());
+                    });
+                    let isValid = true;
+                    let errorMessage = '';
+
+                    $('#dynamicFields .input-group').each(function(index) {
+                        const titleInput = $(this).find('input[name="wordWallTitles[]"]');
+                        const urlInput = $(this).find('input[name="wordWallUrls[]"]');
+
+                        const titleValue = titleInput.val().trim();
+                        const urlValue = urlInput.val().trim();
+
+                        if (urlValue !== '' && titleValue === '') {
+                            isValid = false;
+                            errorMessage = 'Lütfen bağlantı girilen her satır için bir başlık yazınız.';
+                            return false; // döngüyü kır
+                        }
+                    });
+
+                    if (!isValid) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Eksik Alan',
+                            text: errorMessage
+                        });
+                        return; // form gönderimini durdur
+                    }
+
+                    // 🔽 Validasyon geçerse FormData eklemesi yapılabilir
+                    $('#dynamicFields .input-group').each(function(index) {
+                        const title = $(this).find('input[name="wordWallTitles[]"]').val();
+                        const url = $(this).find('input[name="wordWallUrls[]"]').val();
+
+                        formData.append(`wordWallTitles[${index}]`, title);
+                        formData.append(`wordWallUrls[${index}]`, url);
                     });
                     formData.append('id', $('#id').val());
                     formData.append('month', $('#month').val());

@@ -10,3 +10,10 @@ togglePassword.addEventListener('click', function () {
   eyeIcon.classList.toggle('bi-eye');
   eyeIcon.classList.toggle('bi-eye-slash');
 });
+
+
+//Screen Size
+  const screenSize = document.querySelector("#screenSize");
+
+  sizes = window.screen.width + 'x' + window.screen.height;
+  screenSize.value = sizes;

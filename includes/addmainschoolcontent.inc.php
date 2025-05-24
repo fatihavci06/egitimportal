@@ -73,7 +73,7 @@ try {
     $rolesStr = implode(',', $roles);
 
     if ($service === 'update' && $id) {
-      
+
         // Güncelleme işlemi
         $sql = "UPDATE main_school_content_lnp SET
 			roles = :roles,
@@ -106,8 +106,8 @@ try {
         ]);
 
 
-       
-         if (!empty($file_urls)) {
+
+        if (!empty($file_urls)) {
             // Eski dosyaları sil
 
             $descriptions = $_POST['descriptions'] ?? null;
@@ -122,6 +122,33 @@ try {
                     ':file_path' => $url,
                     ':description' => $description
                 ]);
+            }
+        }
+
+
+        if (isset($_POST['wordWallTitles']) && isset($_POST['wordWallUrls'])) {
+          
+            $titles = $_POST['wordWallTitles']; // ['Başlık1', 'Başlık2', ...]
+            $urls = $_POST['wordWallUrls'];     // ['url1', 'url2', ...]
+
+            // Temel güvenlik filtresi
+            $titles = array_map('strip_tags', $titles);
+            $urls = array_map('strip_tags', $urls);
+            $stmtDelete = $pdo->prepare("DELETE FROM mainschool_wordwall_lnp WHERE main_id = :main_id");
+            $stmtDelete->execute([':main_id' => $id]);
+            // Kayıt işlemi (örneğin veritabanına veya dosyaya yazabilirsiniz)
+            for ($i = 0; $i < count($titles); $i++) {
+                $title = trim($titles[$i]);
+                $url = trim($urls[$i]);
+
+                if ($title !== '' && $url !== '') {
+                    $stmtFile = $pdo->prepare("INSERT INTO mainschool_wordwall_lnp (main_id, wordwall_title,wordwall_url) VALUES (:main_id, :wordwall_title ,:wordwall_url)");
+                    $stmtFile->execute([
+                        ':main_id' => $id,
+                        ':wordwall_title' => $title,
+                        ':wordwall_url' => $url
+                    ]);
+                }
             }
         }
 
@@ -166,9 +193,9 @@ try {
                 ]);
             }
         }
-         if (!empty($image_urls)) {
+        if (!empty($image_urls)) {
 
-            
+
 
 
             foreach ($image_urls as $index => $url) {
@@ -179,7 +206,31 @@ try {
                 ]);
             }
         }
-        
+        if (isset($_POST['wordWallTitles']) && isset($_POST['wordWallUrls'])) {
+
+            $titles = $_POST['wordWallTitles']; // ['Başlık1', 'Başlık2', ...]
+            $urls = $_POST['wordWallUrls'];     // ['url1', 'url2', ...]
+
+            // Temel güvenlik filtresi
+            $titles = array_map('strip_tags', $titles);
+            $urls = array_map('strip_tags', $urls);
+
+            // Kayıt işlemi (örneğin veritabanına veya dosyaya yazabilirsiniz)
+            for ($i = 0; $i < count($titles); $i++) {
+                $title = trim($titles[$i]);
+                $url = trim($urls[$i]);
+
+                if ($title !== '' && $url !== '') {
+                    $stmtFile = $pdo->prepare("INSERT INTO mainschool_wordwall_lnp (main_id, wordwall_title,wordwall_url) VALUES (:main_id, :wordwall_title ,:wordwall_url)");
+                    $stmtFile->execute([
+                        ':main_id' => $mainId,
+                        ':wordwall_title' => $title,
+                        ':wordwall_url' => $url
+                    ]);
+                }
+            }
+        }
+
 
         echo json_encode(['status' => 'success', 'message' => 'Ekleme başarılı!']);
     }

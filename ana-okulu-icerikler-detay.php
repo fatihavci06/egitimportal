@@ -1,15 +1,22 @@
 <!DOCTYPE html>
 <html lang="tr">
+    
 <?php
+
 session_start();
 define('GUARD', true);
+
+
 if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001 or $_SESSION['role'] == 10002)) {
+  
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
-
+   
     include_once "views/pages-head.php";
+    
     $data = new Classes();
     if ($_SESSION['role'] == 10002) {
+       
         $contentId = $_GET['id'];
         $exists = $data->permissionControl($contentId,  $_SESSION['id']);
         if (!$exists) {
@@ -20,11 +27,15 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     }
 
 ?>
+<?php
+
+?>
     <!--end::Head-->
-    <!--begin::Body-->
+    <!--begin::Body--> 
 
     <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
         <!--begin::Theme mode setup on page load-->
+        
         <script>
             var defaultThemeMode = "light";
             var themeMode;
@@ -50,12 +61,17 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
             <!--begin::Page-->
             <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
                 <!--begin::Header-->
+               
+        
                 <?php include_once "views/header.php"; ?>
+                
+               
                 <!--end::Header-->
                 <!--begin::Wrapper-->
-                <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
+                <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrappera">
                     <!--begin::Sidebar-->
                     <?php include_once "views/sidebar.php"; ?>
+                    
                     <!--end::Sidebar-->
                     <!--begin::Main-->
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
@@ -64,7 +80,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             <!--begin::Toolbar-->
                             <?php include_once "views/toolbar.php"; ?>
                             <?php
-
+                            
                             $data = $data->getMainSchoolContentById($_GET['id']);
                             function convertYoutubeToEmbed($url)
                             {
@@ -91,20 +107,21 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             <!-- Video Tab -->
                                             <div class="tab-pane fade show active" id="video" role="tabpanel" aria-labelledby="video-tab">
                                                 <div class="row">
-                                                    <?php 
-                                                    
-                                                    if(isset($data['images'])&& count($data['images'])>0){
-                                                    foreach ($data['images'] as $img): ?>
-                                                        <div class="col-md-12 mb-4">
-                                                            <div class="card shadow-sm">
-                                                                <div class="card-body p-0" style="height: 700px;">
-                                                                    <img src="<?= $img['file_path'] ?>" alt="Yüklenen Görsel"
-                                                                        class="w-100 h-100 rounded shadow"
-                                                                        style="object-fit: cover;">
+                                                    <?php
+
+                                                    if (isset($data['images']) && count($data['images']) > 0) {
+                                                        foreach ($data['images'] as $img): ?>
+                                                            <div class="col-md-12 mb-4">
+                                                                <div class="card shadow-sm">
+                                                                    <div class="card-body p-0" style="height: 700px;">
+                                                                        <img src="<?= $img['file_path'] ?>" alt="Yüklenen Görsel"
+                                                                            class="w-100 h-100 rounded shadow"
+                                                                            style="object-fit: cover;">
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    <?php endforeach; } ?>
+                                                    <?php endforeach;
+                                                    } ?>
                                                 </div>
                                                 <div class="row mt-4" id="videoContent">
                                                     <?php
@@ -123,6 +140,22 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <p>Geçersiz YouTube linki.</p>
                                                     <?php endif; ?>
 
+                                                </div>
+                                                <div class="row mt-4">
+                                                    <?php
+
+                                                    if (isset($data['wordwalls']) && count($data['wordwalls']) > 0) {
+                                                        foreach ($data['wordwalls'] as $wordWall): ?>
+                                                            <div class="col-md-12 mb-4">
+                                                                <div class="card shadow-sm">
+                                                                    <h3 class="card-title mt-4 mb-4"><?=$wordWall['wordwall_title'];?></h3>
+                                                                    <div class="card-body p-0" style="height: 400px;">
+                                                                        <iframe style="max-width:100%" src="<?=$wordWall['wordwall_url']?>" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                    <?php endforeach;
+                                                    } ?>
                                                 </div>
                                                 <div class="row " style="font-size:17px; margin-top:35px;">
                                                     <p id="contentDescription">

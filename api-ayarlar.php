@@ -6,7 +6,7 @@ define('GUARD', true);
 if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001)) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
-
+    include_once "classes/sms.classes.php";
     include_once "views/pages-head.php";
 
 
@@ -60,30 +60,47 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <!--begin::Card-->
-                                    <div class="card col-6">
+                                    <div class="card col-12">
                                         <!--begin::Card header-->
 
                                         <!--end::Card header-->
                                         <!--begin::Card body-->
                                         <div class="card-body  pt-0">
-                                            <?php
-                                            $data = new Classes();
-                                            $data = $data->getSMSApiSettings();
-                                            ?>
-                                            <h3 class="mt-4">SMS API Ayarları</h3>
-                                            <div class="mb-3 mt-4">
-                                                <label for="tax_rate" class="form-label">Kullanıcı Adı</label>
-                                                <input type="text" class="form-control" id="username" name="username" value="<?= $data['username']; ?>" placeholder="KDV Oranı ">
-                                            </div>
+                                            <div class="row">
+                                                <div class="col-8">
+                                                    <?php
+                                                    $data = new Classes();
+                                                    $data = $data->getSMSApiSettings();
+                                                    ?>
+                                                    <h3 class="mt-4">SMS API Ayarları</h3>
+                                                    <div class="mb-3 mt-4">
+                                                        <label for="username" class="form-label">Kullanıcı Adı</label>
+                                                        <input type="text" class="form-control" id="username" name="username" value="<?= $data['username']; ?>" placeholder="KDV Oranı ">
+                                                    </div>
 
-                                            <div class="mb-3 mt-4">
-                                                <label for="discount_rate" class="form-label">Şifre</label>
-                                                <input type="password" class="form-control" id="password" name="password" value="<?= $data['password']; ?>" placeholder="KDV Oranı ">
-                                            </div>
-                                            <div class="mb-3 mt-4">
-                                                <a href="#" id="sendSmsSettings" class=" btn btn-primary" role="button">
-                                                    Gönder
-                                                </a>
+                                                    <div class="mb-3 mt-4">
+                                                        <label for="password" class="form-label">Şifre</label>
+                                                        <input type="password" class="form-control" id="password" name="password" value="<?= $data['password']; ?>" placeholder="KDV Oranı ">
+                                                    </div>
+                                                    <div class="mb-3 mt-4">
+                                                        <label for="msgheader" class="form-label">SMS Başlığı</label>
+                                                        <input type="text" class="form-control" id="msgheader" name="msgheader" value="<?= $data['msgheader']; ?>" placeholder="KDV Oranı ">
+                                                    </div>
+                                                    <div class="mb-3 mt-4">
+                                                        <a href="#" id="sendSmsSettings" class=" btn btn-primary" role="button">
+                                                            Gönder
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="col-4 mt-3">
+                                                    <?php
+                                                        $sms=new Sms();
+                                                        $sms=$sms->getBalance();
+                                                        
+                                                    ?>
+                                                   <h3> <span class="badge badge-success"><?=$sms?></span></h3>
+
+                                                </div>
                                             </div>
                                             <!--end::Table-->
                                         </div>
@@ -173,8 +190,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                     var username = $('#username').val();
                     var password = $('#password').val();
+                    var msgheader = $('#msgheader').val();
 
-                    if (!username || !password) {
+                    if (!username || !password || !msgheader) {
                         Swal.fire({
                             icon: 'warning',
                             title: 'Eksik Bilgi',
@@ -188,7 +206,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         type: 'POST',
                         data: {
                             username: username,
-                            password: password
+                            password: password,
+                            msgheader: msgheader
                         },
                         success: function(response) {
                             Swal.fire({

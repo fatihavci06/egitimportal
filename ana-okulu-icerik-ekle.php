@@ -198,6 +198,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <label>
                                                         <input class="form-check-input ms-10" type="radio" name="secim" value="content"> Text
                                                     </label>
+                                                    <label>
+                                                        <input class="form-check-input ms-10" type="radio" name="secim" value="wordwall"> Interaktif Oyun
+                                                    </label>
                                                 </div>
 
                                                 <!-- Video URL input -->
@@ -215,6 +218,18 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <label for="file_path">Dosya Yükle:</label>
                                                     <input type="file" class="form-control" name="file_path[]" id="files" multiple accept=".xls,.xlsx,.doc,.docx,.ppt,.pptx,.png,.jpeg,.jpg,.svg">
                                                     <div id="fileDescriptions"></div>
+                                                </div>
+                                                <!-- Video URL input -->
+                                                <div id="wordwallInputs" class="mb-4" style="display:none;">
+                                                    <label>WordWall Iframe Linkleri:</label>
+                                                    <div id="dynamicFields">
+                                                        <div class="input-group mb-2" data-index="0">
+                                                            <input type="text" name="wordWallTitles[]" class="form-control me-2" placeholder="Başlık">
+                                                            <input type="text" name="wordWallUrls[]" class="form-control me-2" placeholder="URL">
+                                                            <button type="button" class="btn btn-danger removeField">Sil</button>
+                                                        </div>
+                                                    </div>
+                                                    <button type="button" id="addField" class="btn btn-sm btn-primary mt-2">Ekle</button>
                                                 </div>
 
                                                 <!-- Açıklama alanlarının ekleneceği yer -->
@@ -296,13 +311,27 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/js/custom/utilities/modals/users-search.js"></script>
         <script>
             $(document).ready(function() {
-              
 
+                let fieldCount = 0;
+
+                $('#addField').on('click', function() {
+                    fieldCount++;
+                    $('#dynamicFields').append(`
+                    <div class="input-group mb-2" data-index="${fieldCount}">
+                        <input type="text" name="wordWallTitles[]" class="form-control me-2" placeholder="Başlık">
+                        <input type="text" name="wordWallUrls[]" class="form-control me-2" placeholder="URL">
+                        <button type="button" class="btn btn-danger removeField">Sil</button>
+                    </div>
+                `);
+                });
+                $('#dynamicFields').on('click', '.removeField', function() {
+                    $(this).closest('.input-group').remove();
+                });
                 tinymce.init({
                     selector: '.tinymce-editor',
                     // diğer ayarlar...
                 });
-                 
+
                 $('#files').on('change', function() {
                     const files = this.files;
                     const container = $('#fileDescriptions');
@@ -323,7 +352,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     let selected = $(this).val();
 
                     // Tüm inputları gizle
-                    $('#videoInput, #fileInput,#primary_image, #textInput').hide();
+                    $('#videoInput, #fileInput,#primary_image, #textInput, #wordwallInputs').hide();
 
                     // Seçime göre ilgili inputu göster
                     if (selected === 'video_link') {
@@ -336,12 +365,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         $('#fileInput').show();
                     } else if (selected === 'content') {
                         $('#textInput').show();
+                    } else if (selected === 'wordwall') {
+                        $('#wordwallInputs').show();
                     }
                 });
                 $('#submitForm').on('click', function(e) {
                     e.preventDefault();
-                     const content = tinymce.get('mcontent').getContent();
-             
+                    const content = tinymce.get('mcontent').getContent();
+
                     // ✅ roles kontrolü (en az 1 seçim)
                     const selectedRoles = $('#roles option:selected');
                     if (selectedRoles.length === 0) {
@@ -395,7 +426,40 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     selectedRoles.each(function() {
                         formData.append('roles[]', $(this).val());
                     });
+                    let isValid = true;
+                    let errorMessage = '';
 
+                    $('#dynamicFields .input-group').each(function(index) {
+                        const titleInput = $(this).find('input[name="wordWallTitles[]"]');
+                        const urlInput = $(this).find('input[name="wordWallUrls[]"]');
+
+                        const titleValue = titleInput.val().trim();
+                        const urlValue = urlInput.val().trim();
+
+                        if (urlValue !== '' && titleValue === '') {
+                            isValid = false;
+                            errorMessage = 'Lütfen bağlantı girilen her satır için bir başlık yazınız.';
+                            return false; // döngüyü kır
+                        }
+                    });
+
+                    if (!isValid) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Eksik Alan',
+                            text: errorMessage
+                        });
+                        return; // form gönderimini durdur
+                    }
+
+                    // 🔽 Validasyon geçerse FormData eklemesi yapılabilir
+                    $('#dynamicFields .input-group').each(function(index) {
+                        const title = $(this).find('input[name="wordWallTitles[]"]').val();
+                        const url = $(this).find('input[name="wordWallUrls[]"]').val();
+
+                        formData.append(`wordWallTitles[${index}]`, title);
+                        formData.append(`wordWallUrls[${index}]`, url);
+                    });
 
                     formData.append('month', $('#month').val());
                     formData.append('week', $('#week').val());

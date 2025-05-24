@@ -39,7 +39,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                 <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
                     <?php include_once "views/sidebar.php"; ?>
 
-                    
+
 
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
                         <div class="d-flex flex-column flex-column-fluid">
@@ -51,20 +51,21 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
 
                                         <div class="row mt-4">
                                             <div class="col-lg-4">
-                                                <label for="start_date" class="form-label">Başlangıç Tarihi</label>
-                                                <input type="date" class="form-control" id="start_date" name="start_date">
-                                            </div>
-                                             <div class="col-lg-4">
-                                                
-                                                <label for="stop_date" class="form-label">Bitiş Tarihi</label>
-                                                <input type="date" class="form-control" id="stop_date" name="stop_date">
+                                                <label for="duration" class="form-label">Süre</label>
+                                                <select class="form-control" id="duration" name="duration">
+                                                    <option value="">Seçiniz</option>
+                                                    <option value="1">1 Aylık</option>
+                                                    <option value="2">2 Aylık</option>
+                                                    <option value="3">3 Aylık</option>
+                                                </select>
                                             </div>
                                         </div>
+
 
                                         <div class="row mt-4">
                                             <div class="mt-4 text-start">
                                                 <button id="filterBtn" class="btn btn-primary btn-sm">Filtrele</button>
-                                                <button id="clearFilterBtn" class="btn btn-secondary btn-sm">Filtreyi Temizle</button>
+                                                <!-- <button id="clearFilterBtn" class="btn btn-secondary btn-sm">Filtreyi Temizle</button> -->
                                             </div>
                                         </div>
 
@@ -78,7 +79,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                     <th>Veli Adı Soyadı</th>
                                                     <th>Veli İletişim Numarası</th>
                                                     <th>Paket Bitiş Tarihi</th>
-                                                    
+
                                                 </tr>
                                             </thead>
                                             <tbody></tbody>
@@ -117,9 +118,27 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                 $('#filterBtn').on('click', function(e) {
                     e.preventDefault();
 
+                    const selectedDuration = $('#duration').val();
+
+                    if (!selectedDuration) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Uyarı',
+                            text: 'Lütfen süre seçiniz.'
+                        });
+                        return;
+                    }
+
+                    const today = new Date();
+                    const startDate = today.toISOString().split('T')[0];
+
+                    const stopDate = new Date();
+                    stopDate.setMonth(stopDate.getMonth() + parseInt(selectedDuration));
+                    const formattedStopDate = stopDate.toISOString().split('T')[0];
+
                     const data = {
-                        stop_date: $('#stop_date').val(),
-                        start_date: $('#start_date').val()
+                        start_date: startDate,
+                        stop_date: formattedStopDate
                     };
 
                     $.ajax({
@@ -159,7 +178,6 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                             }
                         },
                         error: function(xhr, status, error) {
-                            // error.message doğrudan burada undefined olabilir, bu yüzden response'dan alıyoruz
                             let errorMessage = 'Bilinmeyen hata oluştu';
 
                             if (xhr.responseJSON && xhr.responseJSON.message) {
@@ -169,11 +187,11 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                     let json = JSON.parse(xhr.responseText);
                                     if (json.message) errorMessage = json.message;
                                 } catch (e) {
-                                    // JSON parse edilemedi, errorMessage değişmeden kalır
+                                    // JSON parse edilemedi
                                 }
                             }
 
-                            console.log(errorMessage); // Hata mesajını konsola yazdır
+                            console.log(errorMessage);
 
                             Swal.fire({
                                 icon: 'error',
@@ -184,9 +202,9 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                     });
                 });
 
+
                 $('#clearFilterBtn').on('click', function() {
-                    $('#start_date').val('');
-                    $('#start_date').val('');
+                    $('#duration').val('');
 
                     if ($.fn.DataTable.isDataTable('#paymentList')) {
                         $('#paymentList').DataTable().clear().draw();

@@ -146,8 +146,8 @@ switch ($service) {
         $notifyEmail = isset($_POST['notifyEmail']) ? cleanInput($_POST['notifyEmail']) : null;
         $notificationStartDay = isset($_POST['notificationStartDay']) ? cleanInput($_POST['notificationStartDay']) : null;
         $notificationCount = isset($_POST['notificationCount']) ? cleanInput($_POST['notificationCount']) : null;
-        $smsTemplate=isset($_POST['smsTemplate']) ? cleanInput($_POST['smsTemplate']) : null;
-       
+        $smsTemplate = isset($_POST['smsTemplate']) ? cleanInput($_POST['smsTemplate']) : null;
+
         try {
             if (!$taxRatio) {
                 throw new Exception('Vergi oranı boş olamaz!');
@@ -177,13 +177,13 @@ switch ($service) {
             if ($exists) {
                 // Güncelleme
                 $updateStmt = $pdo->prepare("UPDATE settings_lnp SET tax_rate = ?, discount_rate = ?,sms_template=?, notify_sms = ?, notify_email = ?, notification_start_day = ?, notification_count = ? WHERE school_id = 1");
-                $updateStmt->execute([$taxRatio, $discountRatio,$smsTemplate, $notifySms, $notifyEmail, $notificationStartDay, $notificationCount]);
+                $updateStmt->execute([$taxRatio, $discountRatio, $smsTemplate, $notifySms, $notifyEmail, $notificationStartDay, $notificationCount]);
 
                 jsonResponse(200, 'success', 'Ayarlar güncellendi.');
             } else {
                 // Yeni kayıt ekleme
                 $insertStmt = $pdo->prepare("INSERT INTO settings_lnp (school_id, tax_rate, discount_rate, notify_sms, notify_email, notification_start_day, notification_count,sms_template) VALUES (1, ?, ?, ?, ?, ?, ?,?)");
-                $insertStmt->execute([$taxRatio, $discountRatio, $notifySms, $notifyEmail, $notificationStartDay, $notificationCount,$smsTemplate]);
+                $insertStmt->execute([$taxRatio, $discountRatio, $notifySms, $notifyEmail, $notificationStartDay, $notificationCount, $smsTemplate]);
 
                 jsonResponse(200, 'success', 'Ayarlar kaydedildi.');
             }
@@ -490,8 +490,8 @@ switch ($service) {
                 SELECT 
                     DATE_FORMAT(pp.created_at, ?) AS period,
                     pt.name AS payment_type,
-                    SUM(pp.pay_amount) AS total_payment,
-                    SUM(pp.kdv_amount) AS total_tax
+                    ROUND(SUM(pp.pay_amount), 2) AS total_payment,
+                    ROUND(SUM(pp.kdv_amount), 2) AS total_tax
                 FROM package_payments_lnp pp
                 LEFT JOIN payment_types_lnp pt ON pt.id = pp.payment_type
                 GROUP BY period, pt.name
@@ -502,9 +502,9 @@ switch ($service) {
         }
 
         $response = [
-            'daily' => getGroupedByPeriod($pdo, '%Y-%m-%d'),
-            'weekly' => getGroupedByPeriod($pdo, '%x-W%v'),
-            'monthly' => getGroupedByPeriod($pdo, '%Y-%m'),
+            'daily' => getGroupedByPeriod($pdo, '%d-%m-%Y'),
+            'weekly' => getGroupedByPeriod($pdo, '%x-HAFTA %v'),
+            'monthly' => getGroupedByPeriod($pdo, '%m-%Y'),
             'yearly' => getGroupedByPeriod($pdo, '%Y')
         ];
 
@@ -529,12 +529,12 @@ switch ($service) {
             // Tarih formatı ve GROUP BY ifadesi
             switch ($period) {
                 case 'weekly':
-                    $dateFormat = '%x-W%v';
+                    $dateFormat = '%x-HAFTA %v';
                     $groupBy = "YEARWEEK(pp.created_at, 3)";
                     break;
                 case 'monthly':
-                    $dateFormat = '%Y-%m';
-                    $groupBy = "DATE_FORMAT(pp.created_at, '%Y-%m')";
+                    $dateFormat = '%m-%Y';
+                    $groupBy = "DATE_FORMAT(pp.created_at, '%m-%Y')";
                     break;
                 case 'yearly':
                     $dateFormat = '%Y';
@@ -542,7 +542,7 @@ switch ($service) {
                     break;
                 case 'daily':
                 default:
-                    $dateFormat = '%Y-%m-%d';
+                    $dateFormat = '%d-%m-%Y';
                     $groupBy = "DATE(pp.created_at)";
                     break;
             }
@@ -553,7 +553,7 @@ switch ($service) {
             ROUND(SUM(pp.pay_amount) / ?, 2) AS avg_payment,
             ROUND(SUM(pp.kdv_amount) / ?, 2) AS avg_tax
         FROM package_payments_lnp pp
-        INNER JOIN users_lnp u ON u.id = pp.user_id AND u.role = 2 or u.role=10002
+        INNER JOIN users_lnp u ON u.id = pp.user_id AND (u.role = 2 or u.role=10002)
         GROUP BY $groupBy
         ORDER BY period
     ");
@@ -569,7 +569,7 @@ switch ($service) {
     case 'graphicreport':
         try {
             $daily = $pdo->query("
-    SELECT DATE(created_at) AS day, 
+    SELECT DATE_FORMAT(created_at, '%d-%m-%Y') AS day,  
            SUM(pay_amount) AS total_payment, 
            ROUND(SUM(kdv_amount), 0) AS total_tax 
     FROM package_payments_lnp 
@@ -578,7 +578,7 @@ switch ($service) {
 ")->fetchAll(PDO::FETCH_ASSOC);
 
             $weekly = $pdo->query("
-    SELECT CONCAT(YEAR(created_at), '-W', LPAD(WEEK(created_at, 1), 2, '0')) AS week, 
+    SELECT CONCAT(YEAR(created_at), ' HAFTA ', LPAD(WEEK(created_at, 1), 2, '0')) AS week,  
            SUM(pay_amount) AS total_payment, 
            ROUND(SUM(kdv_amount), 0) AS total_tax 
     FROM package_payments_lnp 
@@ -587,7 +587,7 @@ switch ($service) {
 ")->fetchAll(PDO::FETCH_ASSOC);
 
             $monthly = $pdo->query("
-    SELECT DATE_FORMAT(created_at, '%Y-%m') AS period, 
+    SELECT DATE_FORMAT(created_at, '%m-%Y') AS period, 
            SUM(pay_amount) AS total_payment, 
            ROUND(SUM(kdv_amount), 0) AS total_tax 
     FROM package_payments_lnp 
@@ -684,7 +684,7 @@ switch ($service) {
                     u.id, 
                     u.parent_id, 
                     CONCAT(u.name, ' ', u.surname) AS fullname, 
-                    u.subscribed_end, 
+                     DATE_FORMAT(u.subscribed_end, '%d-%m-%Y') AS subscribed_end, 
                     u.telephone AS parent_phone, 
                     CONCAT(p.name, ' ', p.surname) AS parent_fullname 
                 FROM users_lnp u 
@@ -738,7 +738,7 @@ switch ($service) {
         LEFT JOIN users_lnp u ON pp.user_id = u.id
         LEFT JOIN payment_types_lnp pt ON pp.payment_type = pt.id
         LEFT JOIN payment_status_lnp ps ON ps.id = pp.payment_status
-        WHERE u.id = :user_id");
+        WHERE u.id = :user_id ORDER BY pp.created_at desc");
 
             $stmt->execute(['user_id' => $studentId]);
         } else {
@@ -747,7 +747,7 @@ switch ($service) {
             u.id as id,
             CONCAT(u.name, ' ', u.surname) as fullname,
             pp.order_no as order_no,
-            pp.created_at as payment_date,
+            DATE_FORMAT(pp.created_at, '%d-%m-%Y %H:%i:%s') as payment_date,
             pt.name as payment_type,
             pp.pay_amount as payment_total,
             pp.kdv_amount as tax,
@@ -755,7 +755,7 @@ switch ($service) {
         FROM `package_payments_lnp` pp
         LEFT JOIN users_lnp u ON pp.user_id = u.id
         LEFT JOIN payment_types_lnp pt ON pp.payment_type = pt.id
-        LEFT JOIN payment_status_lnp ps ON ps.id = pp.payment_status");
+        LEFT JOIN payment_status_lnp ps ON ps.id = pp.payment_status ORDER BY pp.id desc");
 
             $stmt->execute();
         }
@@ -820,7 +820,7 @@ switch ($service) {
         }
 
         // Sorguyu hazırla ve çalıştır
-        $sql = "
+       $sql = "
     SELECT 
         main_school_content_lnp.*, 
         classes_lnp.name as class_name 
@@ -830,6 +830,7 @@ switch ($service) {
         classes_lnp 
         ON main_school_content_lnp.main_school_class_id = classes_lnp.id
     $whereSQL
+    ORDER BY main_school_content_lnp.id DESC
 ";
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
@@ -877,12 +878,16 @@ switch ($service) {
     case 'sms-settings':
         $username = $_POST['username'];
         $password = $_POST['password'];
+        $msgheader = $_POST['msgheader'];
         try {
             if (!$username) {
                 throw new Exception('username adı boş olamaz');
             }
             if (!$password) {
                 throw new Exception('password boş olamaz');
+            }
+            if (!$msgheader) {
+                throw new Exception('msgheader boş olamaz');
             }
 
 
@@ -891,18 +896,18 @@ switch ($service) {
 
             if ($check->rowCount() > 0) {
                 // Varsa güncelle (ilk kaydı güncelle)
-                $stmt = $pdo->prepare("UPDATE sms_settings_lnp SET username = ?, password = ? LIMIT 1");
-                $stmt->execute([$username, $password]);
+                $stmt = $pdo->prepare("UPDATE sms_settings_lnp SET username = ?, password = ?, msgheader=? LIMIT 1");
+                $stmt->execute([$username, $password,$msgheader]);
             } else {
                 // Yoksa yeni kayıt ekle
-                $stmt = $pdo->prepare("INSERT INTO sms_settings_lnp (username, password) VALUES (?, ?)");
-                $stmt->execute([$username, $password]);
+                $stmt = $pdo->prepare("INSERT INTO sms_settings_lnp (username, password,msgheader) VALUES (?, ?,?)");
+                $stmt->execute([$username, $password,$msgheader]);
             }
 
             if ($stmt->rowCount() > 0) {
                 jsonResponse(200, 'success', 'Ayarlar başarıyla kaydedildi veya güncellendi.');
             } else {
-                jsonResponse(500, 'error', 'İşlem gerçekleştirilemedi.');
+                jsonResponse(500, 'error', 'Aynı bilgileri gönderdiniz.');
             }
         } catch (Exception $e) {
             http_response_code(422); // Veya uygun bir HTTP kodu
@@ -918,41 +923,48 @@ switch ($service) {
         try {
             $today = date('Y-m-d');
 
-            // Günlük
-            $daily = $pdo->query("
-            SELECT DATE(created_at) AS day, COUNT(*) AS user_count
-            FROM users_lnp
-            WHERE role=2 or role=10002 and  subscribed_end < '$today'
-            GROUP BY day
-            ORDER BY day
-        ")->fetchAll(PDO::FETCH_ASSOC);
+            $dailyStmt = $pdo->prepare("
+                SELECT DATE_FORMAT(subscribed_end, '%d-%m-%Y') AS day, COUNT(*) AS user_count
+                FROM users_lnp
+                WHERE (role = 2 OR role = 10002) AND subscribed_end < :today
+                GROUP BY day
+                ORDER BY day
+            ");
+            $dailyStmt->execute(['today' => $today]);
+            $daily = $dailyStmt->fetchAll(PDO::FETCH_ASSOC);
 
             // Haftalık
-            $weekly = $pdo->query("
-            SELECT CONCAT(YEAR(created_at), '-W', LPAD(WEEK(created_at, 1), 2, '0')) AS week, COUNT(*) AS user_count
-            FROM users_lnp
-            WHERE role=2  or role=10002 and subscribed_end < '$today'
-            GROUP BY week
-            ORDER BY week
-        ")->fetchAll(PDO::FETCH_ASSOC);
+            $weeklyStmt = $pdo->prepare("
+                SELECT CONCAT(YEAR(subscribed_end), ' HAFTA ', LPAD(WEEK(subscribed_end, 1), 2, '0')) AS week, COUNT(*) AS user_count
+                FROM users_lnp
+                WHERE (role = 2 OR role = 10002) AND subscribed_end < :today
+                GROUP BY week
+                ORDER BY week
+            ");
+            $weeklyStmt->execute(['today' => $today]);
+            $weekly = $weeklyStmt->fetchAll(PDO::FETCH_ASSOC);
 
             // Aylık
-            $monthly = $pdo->query("
-            SELECT DATE_FORMAT(created_at, '%Y-%m') AS period, COUNT(*) AS user_count
-            FROM users_lnp
-            WHERE role=2 or role=10002 and  subscribed_end < '$today'
-            GROUP BY period
-            ORDER BY period
-        ")->fetchAll(PDO::FETCH_ASSOC);
+            $monthlyStmt = $pdo->prepare("
+                SELECT DATE_FORMAT(subscribed_end, '%m-%Y') AS period, COUNT(*) AS user_count
+                FROM users_lnp
+                WHERE (role = 2 OR role = 10002) AND subscribed_end < :today
+                GROUP BY period
+                ORDER BY period
+            ");
+            $monthlyStmt->execute(['today' => $today]);
+            $monthly = $monthlyStmt->fetchAll(PDO::FETCH_ASSOC);
 
             // Yıllık
-            $yearly = $pdo->query("
-            SELECT YEAR(created_at) AS year, COUNT(*) AS user_count
-            FROM users_lnp
-            WHERE role=2  or role=10002 and subscribed_end < '$today'
-            GROUP BY year
-            ORDER BY year
-        ")->fetchAll(PDO::FETCH_ASSOC);
+            $yearlyStmt = $pdo->prepare("
+                SELECT YEAR(subscribed_end) AS year, COUNT(*) AS user_count
+                FROM users_lnp
+                WHERE (role = 2 OR role = 10002) AND subscribed_end < :today
+                GROUP BY year
+                ORDER BY year
+            ");
+            $yearlyStmt->execute(['today' => $today]);
+            $yearly = $yearlyStmt->fetchAll(PDO::FETCH_ASSOC);
 
             echo json_encode([
                 'status' => 'success',
@@ -971,27 +983,28 @@ switch ($service) {
 
             // Günlük
             $daily = $pdo->query("
-            SELECT DATE(created_at) AS day, COUNT(*) AS user_count
+            SELECT  DATE_FORMAT(created_at, '%d-%m-%Y') AS day, COUNT(*) AS user_count
             FROM users_lnp
-            WHERE role=2 or role=10002 and  subscribed_end > '$today'
+            WHERE (role=2 or role=10002) and  subscribed_end > '$today'
             GROUP BY day
             ORDER BY day
         ")->fetchAll(PDO::FETCH_ASSOC);
 
             // Haftalık
             $weekly = $pdo->query("
-            SELECT CONCAT(YEAR(created_at), '-W', LPAD(WEEK(created_at, 1), 2, '0')) AS week, COUNT(*) AS user_count
-            FROM users_lnp
-            WHERE role=2 or role=10002 and  subscribed_end > '$today'
-            GROUP BY week
-            ORDER BY week
-        ")->fetchAll(PDO::FETCH_ASSOC);
+    SELECT CONCAT(YEAR(created_at), ' HAFTA ', LPAD(WEEK(created_at, 1), 2, '0')) AS week, 
+           COUNT(*) AS user_count
+    FROM users_lnp
+    WHERE (role = 2 OR role = 10002) AND subscribed_end > '$today'
+    GROUP BY week
+    ORDER BY YEAR(created_at), WEEK(created_at, 1)
+")->fetchAll(PDO::FETCH_ASSOC);
 
             // Aylık
             $monthly = $pdo->query("
-            SELECT DATE_FORMAT(created_at, '%Y-%m') AS period, COUNT(*) AS user_count
+            SELECT DATE_FORMAT(created_at, '%m-%Y') AS period, COUNT(*) AS user_count
             FROM users_lnp
-            WHERE role=2 or role=10002 and  subscribed_end > '$today'
+            WHERE (role=2 or role=10002) and  subscribed_end > '$today'
             GROUP BY period
             ORDER BY period
         ")->fetchAll(PDO::FETCH_ASSOC);
@@ -1000,7 +1013,7 @@ switch ($service) {
             $yearly = $pdo->query("
             SELECT YEAR(created_at) AS year, COUNT(*) AS user_count
             FROM users_lnp
-            WHERE role=2 or role=10002 and subscribed_end > '$today'
+            WHERE (role=2 or role=10002) and subscribed_end > '$today'
             GROUP BY year
             ORDER BY year
         ")->fetchAll(PDO::FETCH_ASSOC);
