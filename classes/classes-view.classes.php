@@ -65,7 +65,7 @@ class ShowClass extends Classes
             $classList = '
                     <tr>
                         <td>
-                            <a href="#" class="text-gray-800 text-hover-primary mb-1">' . $value['name'] . '</a>
+                            ' . $value['name'] . '
                         </td>
                     </tr>
                 ';
@@ -82,13 +82,15 @@ class ShowClass extends Classes
 
         $dateFormat = new DateFormat();
 
+        $classList = '';
+
         foreach ($classInfo as $key => $value) {
 
-            $classList = '
+            $classList .= '
                     <option value="' . $value['id'] . '">' . $value['name'] . '</option>
                 ';
-            echo $classList;
         }
+            return $classList;
     }
 
     public function getClassSelectListForCreateAccount()

@@ -125,9 +125,9 @@ class ShowAnnouncement extends AnnouncementManager
 
 
 
+            $html = "";
         foreach ($viewers as $viewer) {
             $fullName = htmlspecialchars($viewer['full_name'] ?? ($viewer['name'] . ' ' . $viewer['surname']));
-            $html = "";
             $html .= '
             <tr>
                 <td>' . $fullName . '</td>

@@ -4,6 +4,21 @@ include_once "dateformat.classes.php";
 class ShowSchool extends School
 {
 
+    // Get School List for Filter
+    public function getSchoolListFilter()
+    {
+
+        $schoolInfo = $this->getSchoolsList();
+
+        $schoolList = '';
+
+        foreach ($schoolInfo as $key => $value) {
+
+            $schoolList .= '<option value="' . $value['name'] . '">' . $value['name'] . '</option>';
+        }
+        echo $schoolList;
+    }
+
     // Get School List
 
     public function getSchoolList()
@@ -15,9 +30,9 @@ class ShowSchool extends School
 
         foreach ($schoolInfo as $key => $value) {
 
-            if($value['id'] == 1){
+            if ($value['id'] == 1) {
                 $passive = '';
-            }else{
+            } else {
                 $passive = '
                                 <!--begin::Menu item-->
                                 <div class="menu-item px-3">
@@ -92,24 +107,30 @@ class ShowSchool extends School
 
         $schoolInfo = $this->getOneSchool($slug);
 
+        if (count($schoolInfo) == 0) {
 
-        $schoolList = '
+            $schoolList = header("Location: http://localhost/lineup_campus/404.php"); // 404 sayfasına yönlendir
+            echo $schoolList;
+            return;
+        }
+
+        /* $schoolList = '
                 <div class="mb-3">
                     <h1 class="h3 d-inline align-middle">Böyle bir okul mevcut değil.</h1>
                 </div>
-        ';
+        '; */
 
         foreach ($schoolInfo as $value) {
 
-            $getAdminInfo = $this->getSchoolAdmin($value['id']);  
-            $getCoordinatorInfo = $this->getSchoolCoordinator($value['id']);  
-            $getStudentsInfo = $this->getSchoolStudents($value['id']);  
-            $getTeachersInfo = $this->getSchoolTeachers($value['id']); 
+            $getAdminInfo = $this->getSchoolAdmin($value['id']);
+            $getCoordinatorInfo = $this->getSchoolCoordinator($value['id']);
+            $getStudentsInfo = $this->getSchoolStudents($value['id']);
+            $getTeachersInfo = $this->getSchoolTeachers($value['id']);
 
             $coordinatorInfo = '';
             $adminInfo = '';
 
-            if(count($getAdminInfo) > 0){
+            if (count($getAdminInfo) > 0) {
                 $adminName = $getAdminInfo[0]['name'] . ' ' . $getAdminInfo[0]['surname'];
                 $adminEmail = $getAdminInfo[0]['email'];
                 $adminTelephone = $getAdminInfo[0]['telephone'];
@@ -124,7 +145,7 @@ class ShowSchool extends School
                             <!--end::Details item-->';
             }
 
-            if(count($getCoordinatorInfo) > 0){
+            if (count($getCoordinatorInfo) > 0) {
                 $coordinatorName = $getCoordinatorInfo[0]['name'] . ' ' . $getCoordinatorInfo[0]['surname'];
                 $coordinatorEmail = $getCoordinatorInfo[0]['email'];
                 $coordinatorTelephone = $getCoordinatorInfo[0]['telephone'];
@@ -277,8 +298,8 @@ class ShowSchool extends School
                                 <label class="required fs-6 fw-semibold mb-2">Okul Adı</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <input type="text" id="name" class="form-control form-control-solid" value="'. $value['name'] .'" name="name" />
-                                    <input type="hidden" name="old_slug" id="old_slug" value="'. $value['slug'] .'" />
+                                <input type="text" id="name" class="form-control form-control-solid" value="' . $value['name'] . '" name="name" />
+                                    <input type="hidden" name="old_slug" id="old_slug" value="' . $value['slug'] . '" />
                                 <!--end::Input-->
                             </div>
 
@@ -290,7 +311,7 @@ class ShowSchool extends School
                                     <label class="required fs-6 fw-semibold mb-2">Adres</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input class="form-control form-control-solid" name="address" id="address" value="'. $value['address'] .'" />
+                                    <input class="form-control form-control-solid" name="address" id="address" value="' . $value['address'] . '" />
                                     <!--end::Input-->
                                 </div>
                                 <!--begin::Input group-->
@@ -301,7 +322,7 @@ class ShowSchool extends School
                                         <label class="required fs-6 fw-semibold mb-2">İlçe</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input class="form-control form-control-solid" name="district" id="district" value="'. $value['district'] .'" />
+                                        <input class="form-control form-control-solid" name="district" id="district" value="' . $value['district'] . '" />
                                         <!--end::Input-->
                                     </div>
                                     <!--end::Col-->
@@ -311,7 +332,7 @@ class ShowSchool extends School
                                         <label class="fs-6 fw-semibold mb-2">Posta Kodu</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input class="form-control form-control-solid" name="postcode" id="postcode" value="'. $value['postcode'] .'" />
+                                        <input class="form-control form-control-solid" name="postcode" id="postcode" value="' . $value['postcode'] . '" />
                                         <!--end::Input-->
                                     </div>
                                     <!--end::Col-->
@@ -327,7 +348,7 @@ class ShowSchool extends School
                                     <!--begin::Input-->
                                     <select id="city" name="city" aria-label="Sehir Seçiniz" data-control="select2" data-dropdown-parent="#kt_modal_update_customer"
                                         class="form-select form-select-solid fw-bold">
-                                        <option value="'. $value['city'] .'">'. $value['city'] .'</option>
+                                        <option value="' . $value['city'] . '">' . $value['city'] . '</option>
                                         <option value="Adana">Adana</option>
                                         <option value="Adıyaman">Adıyaman</option>
                                         <option value="Afyonkarahisar">Afyonkarahisar</option>
@@ -421,8 +442,8 @@ class ShowSchool extends School
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input type="email" class="form-control form-control-solid" name="email" id="email" value="'. $value['email'] .'" />
-                                    <input type="hidden" name="email_old" id="email_old" value="'. $value['email'] .'" />
+                                    <input type="email" class="form-control form-control-solid" name="email" id="email" value="' . $value['email'] . '" />
+                                    <input type="hidden" name="email_old" id="email_old" value="' . $value['email'] . '" />
                                     <!--end::Input-->
                                 </div>
                                 <!--end::Input group-->
@@ -432,7 +453,7 @@ class ShowSchool extends School
                                     <label class="required fs-6 fw-semibold mb-2">Telefon Numarası</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input type="number" class="form-control form-control-solid" value="'. $value['telephone'] .'" id="telephone" name="telephone" />
+                                    <input type="number" class="form-control form-control-solid" value="' . $value['telephone'] . '" id="telephone" name="telephone" />
                                     <!--end::Input-->
                                 </div>
                                 <!--end::Input group-->
@@ -497,7 +518,8 @@ class ShowSchool extends School
 
     // List of Schools Students
 
-    public function showSchoolTeachersList($slug){
+    public function showSchoolTeachersList($slug)
+    {
 
         $schoolInfo = $this->getOneSchool($slug);
 
@@ -507,16 +529,16 @@ class ShowSchool extends School
 
         $dateFormat = new DateFormat();
 
-        foreach ($teachersInfo as $key => $value){
+        foreach ($teachersInfo as $key => $value) {
             $teacherData = '<tr>
                                 <td>
                                     <a href="#" class="text-gray-600 text-hover-primary mb-1"> ' . $value['name'] . ' ' . $value['surname'] . '</a>
                                 </td>
                                 <td>
-                                    <a href="mailto'. $value['email'] .'" class="text-gray-600 text-hover-primary mb-1"> ' . $value['email'] . '</a>
+                                    <a href="mailto' . $value['email'] . '" class="text-gray-600 text-hover-primary mb-1"> ' . $value['email'] . '</a>
                                 </td>
                                 <td>
-                                    <a href="tel'. $value['telephone'] .'" class="text-gray-600 text-hover-primary mb-1"> ' . $value['telephone'] . '</a>
+                                    <a href="tel' . $value['telephone'] . '" class="text-gray-600 text-hover-primary mb-1"> ' . $value['telephone'] . '</a>
                                 </td>
                                 <td class="pe-0 text-end">
                                     <a href="#" class="btn btn-sm btn-light image.png btn-active-light-primary" data-kt-menu-trigger="click"
@@ -526,12 +548,12 @@ class ShowSchool extends School
                             </tr>';
             echo $teacherData;
         }
-
     }
 
     // List of Schools Teachers
 
-    public function showSchoolStudentsList($slug){
+    public function showSchoolStudentsList($slug)
+    {
 
         $schoolInfo = $this->getOneSchool($slug);
 
@@ -541,13 +563,13 @@ class ShowSchool extends School
 
         $dateFormat = new DateFormat();
 
-        foreach ($studentsInfo as $key => $value){
+        foreach ($studentsInfo as $key => $value) {
             $studentData = '<tr>
                                 <td>
                                     <a href="ogrenci-detay/' . $value['username'] . '" class="text-gray-600 text-hover-primary mb-1"> ' . $value['name'] . ' ' . $value['surname'] . '</a>
                                 </td>
                                 <td>
-                                    <a href="mailto'. $value['email'] .'" class="text-gray-600 text-hover-primary mb-1"> ' . $value['email'] . '</a>
+                                    <a href="mailto:' . $value['email'] . '" class="text-gray-600 text-hover-primary mb-1"> ' . $value['email'] . '</a>
                                 </td>
                                 <td>' . $dateFormat->changeDate($value['subscribed_end']) . '</td>
                                 <td class="pe-0 text-end">
@@ -573,6 +595,5 @@ class ShowSchool extends School
                             </tr>';
             echo $studentData;
         }
-
     }
 }

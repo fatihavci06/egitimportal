@@ -65,6 +65,40 @@ class Topics extends Dbh
 		$stmt = null;
 	}
 
+	public function getTopicsByUnitId($unitId)
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM topics_lnp WHERE unit_id = ?');
+
+		if (!$stmt->execute(array($unitId))) {
+			$stmt = null;
+			exit();
+		}
+
+		$getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $getData;
+
+		$stmt = null;
+	}
+
+	public function getTopicsByUnitIdWithDetails($unitId)
+	{
+
+		$stmt = $this->connect()->prepare('SELECT topics_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName FROM topics_lnp INNER JOIN classes_lnp ON topics_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON topics_lnp.lesson_id = lessons_lnp.id INNER JOIN units_lnp ON topics_lnp.unit_id = units_lnp.id WHERE topics_lnp.unit_id = ?');
+
+		if (!$stmt->execute(array($unitId))) {
+			$stmt = null;
+			exit();
+		}
+
+		$getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $getData;
+
+		$stmt = null;
+	}
+
 	public function getTopics()
 	{
 
@@ -293,6 +327,40 @@ class SubTopics extends Dbh
 		$stmt = null;
 	}
 
+	public function getSubTopicsByUnitIdWithDetails($unitId)
+	{
+
+		$stmt = $this->connect()->prepare('SELECT subtopics_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName FROM subtopics_lnp INNER JOIN topics_lnp ON subtopics_lnp.topic_id = topics_lnp.id INNER JOIN classes_lnp ON topics_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON topics_lnp.lesson_id = lessons_lnp.id INNER JOIN units_lnp ON topics_lnp.unit_id = units_lnp.id WHERE subtopics_lnp.unit_id = ?');
+
+		if (!$stmt->execute(array($unitId))) {
+			$stmt = null;
+			exit();
+		}
+
+		$getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $getData;
+
+		$stmt = null;
+	}
+
+	public function getSubTopicsByUnitId($unitId)
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM subtopics_lnp WHERE unit_id = ?');
+
+		if (!$stmt->execute(array($unitId))) {
+			$stmt = null;
+			exit();
+		}
+
+		$getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $getData;
+
+		$stmt = null;
+	}
+
 	public function getTopics()
 	{
 
@@ -335,6 +403,8 @@ class SubTopics extends Dbh
 
 		$stmt = null;
 	}
+
+
 	public function getSubtopicForTopic($class, $lessons, $units, $topics)
 	{
 		if ($_SESSION['role'] == 1) {
@@ -360,6 +430,8 @@ class SubTopics extends Dbh
 
 		$stmt = null;
 	}
+
+
 	public function showSubTopicsStudent($slug)
 	{
 

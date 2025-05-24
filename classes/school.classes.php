@@ -4,7 +4,7 @@ class School extends Dbh {
 
 	protected function getSchoolsList(){
 
-		$stmt = $this->connect()->prepare('SELECT id, name, slug, created_at, email, telephone, city FROM schools_lnp WHERE active = ?');
+		$stmt = $this->connect()->prepare('SELECT id, name, slug, created_at, email, telephone, city FROM schools_lnp WHERE active = ? ORDER BY id ASC');
 
 		if(!$stmt->execute(array("1"))){
 			$stmt = null;

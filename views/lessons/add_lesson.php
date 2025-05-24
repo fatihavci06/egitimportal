@@ -55,7 +55,7 @@ $chooseClass = new ShowClass();
                             <!--begin::Input-->
                             <select id="classes" name="classes" aria-label="Sınıf Seçiniz" data-control="select2" data-placeholder="Sınıf Seçiniz..." multiple="multiple" class="form-select form-select-solid fw-bold">
                                 <option value="">Sınıf Seçin</option>
-                                <?php $chooseClass->getClassSelectList(); ?>
+                                <?php echo $chooseClass->getClassSelectList(); ?>
                             </select>
                             <!--end::Input-->
                         </div>

@@ -11,6 +11,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     include_once "classes/student-view.classes.php";
     $waitingStudents = new Student();
     $students = new ShowStudent();
+    $schools = new ShowSchool();
     include_once "views/pages-head.php";
 ?>
     <!--end::Head-->
@@ -117,6 +118,18 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                 <!--end::Input-->
                                                             </div>
                                                             <!--end::Input group-->
+                                                            <div class="mb-10">
+                                                                <!--begin::Label-->
+                                                                <label class="form-label fs-5 fw-semibold mb-3">Okul:</label>
+                                                                <!--end::Label-->
+                                                                <!--begin::Input-->
+                                                                <select class="form-select form-select-solid fw-bold" data-kt-select2="true" data-placeholder="Okul Seçin" data-allow-clear="true" data-kt-customer-table-filter="school" data-dropdown-parent="#kt-toolbar-filter">
+                                                                    <option></option>
+                                                                    <?php $schools->getSchoolListFilter(); ?>
+                                                                </select>
+                                                                <!--end::Input-->
+                                                            </div>
+                                                            <!--end::Input group-->
                                                             <!--begin::Input group-->
                                                             <div class="mb-10">
                                                                 <!--begin::Label-->
@@ -178,6 +191,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <th class="min-w-125px">Öğrenci Adı</th>
                                                         <th class="min-w-125px">E-posta Adresi</th>
                                                         <th class="min-w-125px">Sınıfı</th>
+                                                        <th class="min-w-125px">Okulu</th>
                                                         <th class="min-w-125px">Paket Bitiş Tarihi</th>
                                                         <th class="min-w-125px">Durum</th>
                                                         <th class="text-end min-w-70px">İşlemler</th>

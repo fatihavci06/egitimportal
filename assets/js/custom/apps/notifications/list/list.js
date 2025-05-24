@@ -53,7 +53,13 @@ var KTCustomersList = function () {
 
                 const customerName = parent.querySelectorAll('td')[1].innerText;
                 const announceId = parent.getAttribute('id');
-                const activeStatus = parent.querySelectorAll('td')[2].innerText;
+                var activeStatus = parent.querySelectorAll('td')[2].innerText;
+
+                if (activeStatus === "Aktif") {
+                    activeStatus = "pasif";
+                } else {
+                    activeStatus = "aktif";
+                }
 
 
                 Swal.fire({
@@ -61,7 +67,7 @@ var KTCustomersList = function () {
                     icon: "warning",
                     showCancelButton: true,
                     buttonsStyling: false,
-                    confirmButtonText: "Evet," + activeStatus + " yap!",
+                    confirmButtonText: "Evet, " + activeStatus + " yap!",
                     cancelButtonText: "Hayır, iptal et",
                     customClass: {
                         confirmButton: "btn fw-bold btn-danger",
@@ -72,17 +78,17 @@ var KTCustomersList = function () {
 
                         sendAlterRequest(
                             { id: announceId },
-                            `işlem tamamlandı.`,
+                            `İşlem tamamlandı.`,
                             function () {
-                                datatable.row($(parent)).remove().draw();
+                                //datatable.row($(parent)).remove().draw();
                             }
                         );
                     } else if (result.dismiss === 'cancel') {
                         Swal.fire({
-                            text: "işlem tamamlanmadı",
+                            text: "İşlem tamamlanmadı",
                             icon: "error",
                             buttonsStyling: false,
-                            confirmButtonText: "Ok, got it!",
+                            confirmButtonText: "Tamam, anladım!",
                             customClass: {
                                 confirmButton: "btn fw-bold btn-primary",
                             }
@@ -205,7 +211,12 @@ var KTCustomersList = function () {
                         customClass: {
                             confirmButton: "btn btn-primary"
                         }
-                    }).then(onSuccess);
+                    }).then(() => {
+                        if (typeof onSuccess === 'function') {
+                            onSuccess();
+                        }
+                        location.reload();
+                    });
                 } else {
                     Swal.fire({
                         text: response.message,

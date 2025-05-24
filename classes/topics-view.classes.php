@@ -803,8 +803,54 @@ class ShowTopic extends Topics
 
         echo $divStart . $topicList . $divEnd;
     }
-}
 
+    // Get Topics For Unit Detail
+
+    public function showTopicsListForUnitDetail($slug){
+
+        $unitInfo = new Units();
+
+        $unitInfo = $unitInfo->getOneUnitForDetails($slug);
+
+        $unitId = $unitInfo[0]['id'];
+
+        $topicInfo = $this->getTopicsByUnitIdWithDetails($unitId);
+
+        foreach ($topicInfo as $key => $value) {
+            $topicData = '<tr>
+                                <td>
+                                    <a href="./konu-detay/' . $value['slug'] . '" class="text-gray-600 text-hover-primary mb-1"> ' . $value['name'] .  '</a>
+                                </td>
+                                <td>
+                                    ' . $value['lessonName'] . '</a>
+                                </td>
+                                <td>' . $value['className'] . '</td>
+                                <td class="pe-0 text-end">
+                                    <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
+                                        data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
+                                        <i class="ki-duotone ki-down fs-5 ms-1"></i></a>
+                                    <!--begin::Menu-->
+                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
+                                        data-kt-menu="true">
+                                        <!--begin::Menu item-->
+                                        <div class="menu-item px-3">
+                                            <a href="./konu-detay/' . $value['slug'] . '" class="menu-link px-3">Görüntüle</a>
+                                        </div>
+                                        <!--end::Menu item-->
+                                        <!--begin::Menu item-->
+                                        <div class="menu-item px-3">
+                                            <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
+                                        </div>
+                                        <!--end::Menu item-->
+                                    </div>
+                                    <!--end::Menu-->
+                                </td>
+                            </tr>';
+            echo $topicData;
+        }
+    }
+
+}
 
 class ShowSubTopic extends SubTopics
 {
@@ -1741,6 +1787,53 @@ class ShowSubTopic extends SubTopics
         }
 
         echo json_encode($subtopics);
+    }
+    
+
+    // Get Sub Topics For Unit Detail
+
+    public function showSubTopicsListForUnitDetail($slug){
+
+        $unitInfo = new Units();
+
+        $unitInfo = $unitInfo->getOneUnitForDetails($slug);
+
+        $unitId = $unitInfo[0]['id'];
+
+        $topicInfo = $this->getSubTopicsByUnitIdWithDetails($unitId);
+
+        foreach ($topicInfo as $key => $value) {
+            $topicData = '<tr>
+                                <td>
+                                    <a href="./alt-konu-detay/' . $value['slug'] . '" class="text-gray-600 text-hover-primary mb-1"> ' . $value['name'] .  '</a>
+                                </td>
+                                <td>
+                                    ' . $value['lessonName'] . '</a>
+                                </td>
+                                <td>' . $value['className'] . '</td>
+                                <td class="pe-0 text-end">
+                                    <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
+                                        data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
+                                        <i class="ki-duotone ki-down fs-5 ms-1"></i></a>
+                                    <!--begin::Menu-->
+                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
+                                        data-kt-menu="true">
+                                        <!--begin::Menu item-->
+                                        <div class="menu-item px-3">
+                                            <a href="./alt-konu-detay/' . $value['slug'] . '" class="menu-link px-3">Görüntüle</a>
+                                        </div>
+                                        <!--end::Menu item-->
+                                        <!--begin::Menu item-->
+                                        <div class="menu-item px-3">
+                                            <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
+                                        </div>
+                                        <!--end::Menu item-->
+                                    </div>
+                                    <!--end::Menu-->
+                                </td>
+                            </tr>';
+            echo $topicData;
+        }
     }
 }
 

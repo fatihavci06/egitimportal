@@ -619,7 +619,7 @@ class ShowGame extends Games
 
         $unitInfo = $this->getOneGame($active_slug);
 
-        foreach ($unitInfo as $key => $value) {
+        /* foreach ($unitInfo as $key => $value) { */
 
             //$youtubeID = $this->getYouTubeVideoId($value['video_url']);
 
@@ -630,12 +630,12 @@ class ShowGame extends Games
                         <h4 class="fs-1 text-gray-800 w-bolder mb-6">Oyun İçeriği</h4>
                         <!--end::Title-->
                         <!--begin::Text-->
-                        <p class="fw-semibold fs-4 text-gray-600 mb-2">' . $value['game_url'] . '</p>
+                        <p class="fw-semibold fs-4 text-gray-600 mb-2">' . $unitInfo['game_url'] . '</p>
                         <!--end::Text-->
                     </div>
                 ';
             echo $lessonList;
-        }
+        /* } */
     }
 
     // Get Games For Topic List
