@@ -878,12 +878,16 @@ switch ($service) {
     case 'sms-settings':
         $username = $_POST['username'];
         $password = $_POST['password'];
+        $msgheader = $_POST['msgheader'];
         try {
             if (!$username) {
                 throw new Exception('username adı boş olamaz');
             }
             if (!$password) {
                 throw new Exception('password boş olamaz');
+            }
+            if (!$msgheader) {
+                throw new Exception('msgheader boş olamaz');
             }
 
 
@@ -892,12 +896,12 @@ switch ($service) {
 
             if ($check->rowCount() > 0) {
                 // Varsa güncelle (ilk kaydı güncelle)
-                $stmt = $pdo->prepare("UPDATE sms_settings_lnp SET username = ?, password = ? LIMIT 1");
-                $stmt->execute([$username, $password]);
+                $stmt = $pdo->prepare("UPDATE sms_settings_lnp SET username = ?, password = ?, msgheader=? LIMIT 1");
+                $stmt->execute([$username, $password,$msgheader]);
             } else {
                 // Yoksa yeni kayıt ekle
-                $stmt = $pdo->prepare("INSERT INTO sms_settings_lnp (username, password) VALUES (?, ?)");
-                $stmt->execute([$username, $password]);
+                $stmt = $pdo->prepare("INSERT INTO sms_settings_lnp (username, password,msgheader) VALUES (?, ?,?)");
+                $stmt->execute([$username, $password,$msgheader]);
             }
 
             if ($stmt->rowCount() > 0) {

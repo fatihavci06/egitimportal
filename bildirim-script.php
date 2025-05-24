@@ -1,6 +1,7 @@
 <?php
 include_once "classes/dbh.classes.php";
 include_once "classes/classes.classes.php";
+include_once "classes/sms.classes.php";
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -100,9 +101,11 @@ try {
 // SMS gönderim fonksiyonu (örnek)
 function sendSms($phoneNumber, $message)
 {
+    $sms=new Sms();
+    $sms->sendSms($phoneNumber,$message);
     if (!$phoneNumber) return;
-    // Burada kendi SMS API çağrını yap
-    echo "SMS gönderildi: {$phoneNumber} - Mesaj: {$message}\n";
+   
+     $sms->sendSms($phoneNumber,$message);
 }
 
 // Email gönderim fonksiyonu (örnek)
