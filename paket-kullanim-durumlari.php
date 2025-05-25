@@ -65,6 +65,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     <div class="container mt-5">
                       <h2>En Çok Tercih Edilen 10 Paket</h2>
                       <div id="chart"></div>
+                      <div id="table-container"></div>
 
 
 
@@ -128,76 +129,140 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     <!--end::Javascript-->
   </body>
   <!--end::Body-->
-  <script>
+ <script>
+    // Grafik çizme fonksiyonu
+    function renderChart(data) {
+        // X-axis etiketleri: class_name ve package_name
+        const labels = data.map(item => `${item.class_name} - ${item.package_name}`);
+
+        // Buyer count değerleri (y ekseni)
+        const buyerCounts = data.map(item => Number(item.buyer_count));
+
+        const options = {
+            chart: {
+                type: 'bar',
+                height: 400
+            },
+            series: [{
+                name: 'Satın Alan Kişi Sayısı', // Türkçe
+                data: buyerCounts
+            }],
+            xaxis: {
+                categories: labels,
+                labels: {
+                    rotate: 0, // Yazıları dik olarak (0 derece) yapıyoruz
+                    style: {
+                        fontSize: '9px',
+                        whiteSpace: 'normal', // Satır kaydırmaya izin verir
+                    }
+                },
+                title: {
+                    text: 'Sınıf - Paket Adı' // Türkçe
+                }
+            },
+            yaxis: {
+                title: {
+                    text: 'Satın Alan Kişi Sayısı' // Türkçe
+                }
+            },
+            tooltip: {
+                y: {
+                    formatter: function(val, { dataPointIndex }) {
+                        const item = data[dataPointIndex];
+                        return `${val} kişi<br>Sınıf: ${item.class_name}<br>Paket: ${item.package_name}`; // Türkçe
+                    }
+                }
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '50%',
+                    endingShape: 'rounded'
+                }
+            }
+        };
+
+        // Eğer mevcut bir chart nesnesi varsa onu yok et
+        // Bu, ApexCharts'ın eski grafik nesnelerinin bellekten düzgün bir şekilde temizlenmesini sağlar.
+        if (window.myTopPackagesChart) { // Bu rapor için farklı bir global değişken adı
+            window.myTopPackagesChart.destroy();
+        }
+        const chartElement = document.querySelector("#chart");
+        if (chartElement) {
+            window.myTopPackagesChart = new ApexCharts(chartElement, options);
+            window.myTopPackagesChart.render();
+        }
+    }
+
+    // Tablo oluşturma fonksiyonu
+    function renderTable(data) {
+        let tableHTML = '<h4 class="mt-5 mb-3">En Çok Satan Paketler Tablosu</h4>'; // Türkçe başlık
+        tableHTML += '<table class="table table-bordered table-striped table-hover">';
+        tableHTML += '<thead>';
+        tableHTML += '<tr>';
+        tableHTML += '<th>Sıra</th>'; // Türkçe
+        tableHTML += '<th>Sınıf Adı</th>'; // Türkçe
+        tableHTML += '<th>Paket Adı</th>'; // Türkçe
+        tableHTML += '<th>Satın Alan Kişi Sayısı</th>'; // Türkçe
+        tableHTML += '</tr>';
+        tableHTML += '</thead>';
+        tableHTML += '<tbody>';
+
+        let totalBuyerCount = 0; // Toplam kişi sayısı için
+
+        data.forEach((item, index) => {
+            tableHTML += '<tr>';
+            tableHTML += `<td>${index + 1}</td>`; // Sıra numarası
+            tableHTML += `<td>${item.class_name}</td>`;
+            tableHTML += `<td>${item.package_name}</td>`;
+            tableHTML += `<td>${item.buyer_count}</td>`;
+            tableHTML += '</tr>';
+
+            totalBuyerCount += Number(item.buyer_count);
+        });
+
+        tableHTML += '</tbody>';
+        
+        // Toplam satırı ekle
+        tableHTML += '<tfoot>';
+        tableHTML += '<tr>';
+        tableHTML += '<th colspan="3" class="text-end">Toplam Satın Alan Kişi Sayısı:</th>'; // Türkçe başlık
+        tableHTML += `<th>${totalBuyerCount}</th>`;
+        tableHTML += '</tr>';
+        tableHTML += '</tfoot>';
+
+        tableHTML += '</table>';
+
+        document.querySelector("#table-container").innerHTML = tableHTML;
+    }
+
+    // Veriyi çekme ve hem grafik hem de tabloyu render etme
     fetch('includes/ajax.php?service=toppackages')
       .then(res => res.json())
       .then(data => {
         if (data.status !== 'success') {
-          alert('Veri alınamadı: ' + (data.message || 'Bilinmeyen hata'));
+          alert('Veri alınamadı: ' + (data.message || 'Bilinmeyen hata')); // Türkçe hata mesajı
+          document.querySelector("#chart").innerHTML = '<h4>Veri yüklenemedi.</h4>';
+          document.querySelector("#table-container").innerHTML = '<h4>Veri yüklenemedi.</h4>';
           return;
         }
 
         const realData = data.data;
 
-        // X-axis etiketleri: class_name ve package_name
-        const labels = realData.map(item => `${item.class_name} - ${item.package_name}`);
+        // PHP tarafından sıralı geldiği varsayımıyla, JavaScript tarafında ek sıralamaya gerek yok.
+        // Eğer PHP'den sıralı gelmiyorsa, burada sort edilebilir:
+        // realData.sort((a, b) => b.buyer_count - a.buyer_count); // Çoktan aza sırala
 
-        // Buyer count değerleri (y ekseni)
-        const buyerCounts = realData.map(item => Number(item.buyer_count));
-
-        const options = {
-          chart: {
-            type: 'bar',
-            height: 400
-          },
-          series: [{
-            name: 'Satın Alan Kişi Sayısı',
-            data: buyerCounts
-          }],
-          xaxis: {
-            categories: labels,
-            labels: {
-              rotate: 0, // Yazıları dik olarak (0 derece) yapıyoruz
-              style: {
-                fontSize: '9px',
-                whiteSpace: 'normal', // Satır kaydırmaya izin verir
-                // wordWrap: 'break-word', // gerekirse eklenebilir
-                // maxWidth: 100          // opsiyonel, genişliği kısıtlayabilirsin
-              }
-            },
-            title: {
-              text: 'Sınıf - Paket Adı'
-            }
-          },
-          yaxis: {
-            title: {
-              text: 'Satın Alan Kişi Sayısı'
-            }
-          },
-          tooltip: {
-            y: {
-              formatter: function(val, {
-                dataPointIndex
-              }) {
-                const item = realData[dataPointIndex];
-                return `${val} kişi<br>Class: ${item.class_name}<br>Package: ${item.package_name}`;
-              }
-            }
-          },
-          plotOptions: {
-            bar: {
-              horizontal: false,
-              columnWidth: '50%',
-              endingShape: 'rounded'
-            }
-          }
-        };
-
-        var chart = new ApexCharts(document.querySelector("#chart"), options);
-        chart.render();
+        renderChart(realData); // Grafiği çiz
+        renderTable(realData); // Tabloyu oluştur
       })
-      .catch(err => alert('Hata: ' + err.message));
-  </script>
+      .catch(err => {
+        alert('Veri alınırken bir hata oluştu: ' + err.message); // Türkçe hata mesajı
+        console.error("Fetch Hatası:", err);
+        document.querySelector("#chart").innerHTML = '<h4>Veri yüklenirken bir hata oluştu.</h4>';
+        document.querySelector("#table-container").innerHTML = '<h4>Veri yüklenirken bir hata oluştu.</h4>';
+      });
+</script>
 
 
 

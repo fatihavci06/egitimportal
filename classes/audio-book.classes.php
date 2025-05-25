@@ -12,6 +12,7 @@ class AudioBooks extends Dbh
 		g.cover_img,
 		g.book_url,
 		g.slug,
+		g.is_active,
 		g.created_at,
 		g.updated_at,
 		c.name AS class_name,
@@ -105,15 +106,20 @@ class AudioBooks extends Dbh
 
 	public function getOneAudioBook($slug)
 	{
-	$stmt = $this->connect()->prepare('
+		$stmt = $this->connect()->prepare('
 		SELECT 
 			g.id, 
 			g.name AS book_name,
 			g.cover_img,
 			g.book_url,
-			g.slug,
+			g.class_id,
+			g.lesson_id,
+			g.unit_id,
+			g.topic_id,
+			g.subtopic_id,
 			g.created_at,
 			g.updated_at,
+			g.is_active,
 			c.name AS class_name,
 			l.name AS lesson_name,
 			u.name AS unit_name,
@@ -135,11 +141,94 @@ class AudioBooks extends Dbh
 			exit();
 		}
 
-		$bookData = $stmt->fetch(PDO::FETCH_ASSOC); 
+		$bookData = $stmt->fetch(PDO::FETCH_ASSOC);
 
 		return $bookData;
 	}
+	public function getOneAudioBookById($id)
+	{
+		$stmt = $this->connect()->prepare('
+		SELECT 
+			g.id, 
+			g.name AS book_name,
+			g.cover_img,
+			g.book_url,
+			g.class_id,
+			g.lesson_id,
+			g.unit_id,
+			g.topic_id,
+			g.subtopic_id,
+			g.created_at,
+			g.updated_at,
+			g.is_active,
+			c.name AS class_name,
+			l.name AS lesson_name,
+			u.name AS unit_name,
+			t.name AS topic_name,
+			st.name AS subtopic_name
+		FROM 
+			audio_book_lnp g
+		LEFT JOIN classes_lnp c ON g.class_id = c.id
+		LEFT JOIN lessons_lnp l ON g.lesson_id = l.id
+		LEFT JOIN units_lnp u ON g.unit_id = u.id
+		LEFT JOIN topics_lnp t ON g.topic_id = t.id
+		LEFT JOIN subtopics_lnp st ON g.subtopic_id = st.id
+		WHERE g.id = ?
+		LIMIT 1
+	');
 
+		if (!$stmt->execute([$id])) {
+			$stmt = null;
+			exit();
+		}
+
+		$bookData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return $bookData;
+	}
+	public function updateAudioBookStatus($id, $isActive)
+	{
+		$db = $this->connect();
+
+		try {
+			$stmt = $db->prepare("
+            UPDATE audio_book_lnp
+            SET is_active = :is_active
+            WHERE id = :book_id
+        ");
+
+			return $stmt->execute([
+				':is_active' => $isActive,
+				':book_id' => $id
+			]);
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+	public function updateAudioBookStatusArray($ids, $isActive)
+	{
+		$db = $this->connect();
+
+		if (empty($ids)) {
+			return false;
+		}
+
+		$placeholders = implode(',', array_fill(0, count($ids), '?'));
+
+		try {
+			$stmt = $db->prepare("
+            UPDATE audio_book_lnp
+            SET is_active = ?
+            WHERE id IN ($placeholders)
+        ");
+
+			$params = array_merge([$isActive], $ids);
+
+			return $stmt->execute($params);
+		} catch (Exception $e) {
+			return false;
+		}
+	}
 	public function getAudioBooks()
 	{
 
@@ -216,7 +305,6 @@ class AudioBooks extends Dbh
 	}
 
 }
-
 class AudioBooksStudent extends Dbh
 {
 

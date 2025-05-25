@@ -87,8 +87,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <div class="d-flex justify-content-end"
                                                     data-kt-customer-table-toolbar="base">
                                                     <!--begin::Add school-->
-                                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                                        data-bs-target="#kt_modal_add_customer">Oyun Ekle</button>
+                                                    <button type="button" class="btn btn-primary btn-sm"
+                                                        data-bs-toggle="modal" data-bs-target="#kt_modal_add_customer">Oyun
+                                                        Ekle</button>
                                                     <!--end::Add school-->
                                                 </div>
                                                 <!--end::Toolbar-->
@@ -124,9 +125,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                     value="1" />
                                                             </div>
                                                         </th>
-                                                        <th class="min-w-125px">Görsel</th>
+                                                        <th class="min-w-40px">Görsel</th>
                                                         <th class="min-w-125px">Oyun Adı</th>
-                                                        <th class="min-w-125px">Sınıf</th>
+                                                        <th class="min-w-40px">Durum</th>
+                                                        <th class="min-w-80px">Sınıf</th>
                                                         <th class="min-w-125px">Ders</th>
                                                         <th class="min-w-125px">Ünite</th>
                                                         <th class="min-w-125px">Konu</th>

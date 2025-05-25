@@ -2,13 +2,13 @@
 
 // Class definition
 var KTModalUpdateCustomer = function () {
-    var element;
     var submitButton;
     var cancelButton;
     var closeButton;
-	var validator;
+    var validator;
     var form;
     var modal;
+    var element;
 
     // Init form inputs
     var initForm = function () {
@@ -20,52 +20,41 @@ var KTModalUpdateCustomer = function () {
                     'name': {
                         validators: {
                             notEmpty: {
-                                message: 'Okul Adı zorunlu'
+                                message: 'Sesli Kitap Adı zorunlu'
                             }
                         }
                     },
-                    'email': {
+                    'iframe': {
                         validators: {
                             notEmpty: {
-                                message: 'E-posta adresi zorunlu'
+                                message: 'iframe Kodu zorunlu'
                             }
                         }
                     },
-                    'city': {
+                    'classes': {
                         validators: {
-                            notEmpty: {
-                                message: 'Şehir zorunlu'
-                            }
                         }
                     },
-                    'address': {
+                    'lessons': {
                         validators: {
-                            notEmpty: {
-                                message: 'Adres zorunlu'
-                            }
+
                         }
                     },
-                    'telephone': {
+                    'units': {
                         validators: {
-                            notEmpty: {
-                                message: 'Telefon Numarası zorunlu'
-                            }
+
                         }
                     },
-                    'district': {
+                    'topics': {
                         validators: {
-                            notEmpty: {
-                                message: 'İlçe zorunlu'
-                            }
+
                         }
                     },
-                    /*'postcode': {
+                    'subtopics': {
                         validators: {
-                            notEmpty: {
-                                message: 'Postcode is required'
-                            }
+
                         }
-                    }*/
+                    },
                 },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
@@ -78,65 +67,37 @@ var KTModalUpdateCustomer = function () {
             }
         );
 
-        // Revalidate country field. For more info, plase visit the official plugin site: https://select2.org/
-        $(form.querySelector('[name="country"]')).on('change', function () {
-            // Revalidate the field when an option is chosen
-            validator.revalidateField('country');
-        });
-
-        // Action buttons
         submitButton.addEventListener('click', function (e) {
-            // Prevent default button action
             e.preventDefault();
 
-            // Validate form before submit
             if (validator) {
                 validator.validate().then(function (status) {
                     console.log('validated!');
 
                     if (status == 'Valid') {
-
-                        // Show loading indication
                         submitButton.setAttribute('data-kt-indicator', 'on');
 
-                        // Disable submit button whilst loading
                         submitButton.disabled = true;
 
-                        // Simulate form submission
                         setTimeout(function () {
-                            // Simulate form submission
                             submitButton.removeAttribute('data-kt-indicator');
 
-                            var name = $("#name").val();
-                            var old_slug = $("#old_slug").val();
-                            var address = $("#address").val();
-                            var district = $("#district").val();
-                            var postcode = $("#postcode").val();
-                            var city = $("#city").val();
-                            var email = $("#email").val();
-                            var email_old = $("#email_old").val();
-                            var telephone = $("#telephone").val();
+                            const form = document.getElementById('kt_modal_update_customer_form');
+
+                            var formData = new FormData(form);
 
                             $.ajax({
                                 type: "POST",
-                                url: "includes/updateschool.inc.php",
-                                data: {
-                                    name: name,
-                                    old_slug: old_slug,
-                                    address: address,
-                                    district: district,
-                                    postcode: postcode,
-                                    city: city,
-                                    email: email,
-                                    email_old: email_old,
-                                    telephone: telephone
-                                },
+                                url: "includes/update_audiobook.inc.php",
+                                data: formData,
+                                contentType: false,
+                                processData: false,
                                 dataType: "json",
                                 success: function (response) {
-                                    if (response.status === "success") {
+                                    if (response.status == "success") {
 
                                         Swal.fire({
-                                            text: response.message + " adlı okul güncellenmiştir!",
+                                            text: response.message + " adlı duyuru eklenmiştir!",
                                             icon: "success",
                                             buttonsStyling: false,
                                             confirmButtonText: "Tamam, anladım!",
@@ -175,7 +136,7 @@ var KTModalUpdateCustomer = function () {
                                 },
                                 error: function (xhr, status, error, response) {
                                     Swal.fire({
-                                        text: error + "Bir sorun oldu!",
+                                        text: "Bir sorun oldu!" /*+ xhr.responseText*/,
                                         icon: "error",
                                         buttonsStyling: false,
                                         confirmButtonText: "Tamam, anladım!",
@@ -192,10 +153,7 @@ var KTModalUpdateCustomer = function () {
                                     //alert(status + "0");
 
                                 },
-
                             });
-
-                            //form.submit(); // Submit form
                         }, 2000);
                     } else {
                         Swal.fire({
@@ -216,7 +174,7 @@ var KTModalUpdateCustomer = function () {
             e.preventDefault();
 
             Swal.fire({
-                text: "İptal etmek istediğinizden emin misiniz??",
+                text: "İptal etmek istediğinizden emin misiniz?",
                 icon: "warning",
                 showCancelButton: true,
                 buttonsStyling: false,
@@ -275,16 +233,148 @@ var KTModalUpdateCustomer = function () {
                 }
             });
         });
+
+        function updateSelect2(selector, data, emptyText) {
+            const $element = $(selector);
+            if (data.length > 0) {
+                $element.select2({ data });
+            } else {
+                $element.html(`<option value="">${emptyText}</option>`);
+            }
+        }
+
+        function showErrorAlert(error, xhr) {
+            Swal.fire({
+                text: error.responseText || xhr.responseText || error,
+                icon: "error",
+                buttonsStyling: false,
+                confirmButtonText: "Tamam, anladım!",
+                customClass: {
+                    confirmButton: "btn btn-primary"
+                }
+            }).then(() => {
+                submitButton.disabled = false;
+            });
+        }
+
+        function sendAjaxRequest(url, requestData, onSuccess) {
+            $.ajax({
+                allowClear: true,
+                type: "POST",
+                url,
+                data: requestData,
+                dataType: "json",
+                success: onSuccess,
+                error: showErrorAlert
+            });
+        }
+
+        $(form.querySelector('[name="classes"]')).on('change', function () {
+            validator.revalidateField('classes');
+
+            const classVal = $("#classes").val();
+
+            sendAjaxRequest("includes/select_for_lesson.inc.php", { class: classVal }, function (data) {
+                updateSelect2('#lessons', data, 'Ders Yok');
+                updateSelect2('#units', [], 'Ünite Yok');
+                updateSelect2('#topics', [], 'Konu Yok');
+                updateSelect2('#subtopics', [], 'Altkonu Yok');
+            });
+        });
+
+        $(form.querySelector('[name="lessons"]')).on('change', function () {
+            validator.revalidateField('classes');
+            validator.revalidateField('lessons');
+
+            const requestData = {
+                class: $("#classes").val(),
+                lesson: $("#lessons").val()
+            };
+
+            sendAjaxRequest("includes/select_for_unit.inc.php", requestData, function (data) {
+                updateSelect2('#units', data, 'Ünite Yok');
+                updateSelect2('#topics', [], 'Konu Yok');
+                updateSelect2('#subtopics', [], 'Altkonu Yok');
+            });
+        });
+
+        $(form.querySelector('[name="units"]')).on('change', function () {
+            validator.revalidateField('classes');
+            validator.revalidateField('lessons');
+
+            const requestData = {
+                class: $("#classes").val(),
+                lesson: $("#lessons").val(),
+                unit: $("#units").val()
+            };
+
+            sendAjaxRequest("includes/select_for_topic.inc.php", requestData, function (data) {
+                updateSelect2('#topics', data, 'Konu Yok');
+                updateSelect2('#subtopics', [], 'Altkonu Yok');
+            });
+        });
+
+        $(form.querySelector('[name="topics"]')).on('change', function () {
+            validator.revalidateField('classes');
+            validator.revalidateField('lessons');
+
+            const requestData = {
+                class: $("#classes").val(),
+                lesson: $("#lessons").val(),
+                unit: $("#units").val(),
+                topics: $("#topics").val()
+            };
+
+            sendAjaxRequest("includes/select_for_subtopic.inc.php", requestData, function (data) {
+                updateSelect2('#subtopics', data, 'Altkonu Yok');
+            });
+        });
+
+        $(document).ready(function () {
+            const classVal = $("#classes").val();
+            const lessonVal = $("#lessons").val();
+            const unitVal = $("#units").val();
+            const topicVal = $("#topics").val();
+
+            if (classVal) {
+                sendAjaxRequest("includes/select_for_lesson.inc.php", { class: classVal }, function (lessonsData) {
+                    updateSelect2('#lessons', lessonsData, 'Ders Yok');
+
+                    if (lessonVal) {
+                        sendAjaxRequest("includes/select_for_unit.inc.php", { class: classVal, lesson: lessonVal }, function (unitsData) {
+                            updateSelect2('#units', unitsData, 'Ünite Yok');
+
+                            if (unitVal) {
+                                sendAjaxRequest("includes/select_for_topic.inc.php", { class: classVal, lesson: lessonVal, unit: unitVal }, function (topicsData) {
+                                    updateSelect2('#topics', topicsData, 'Konu Yok');
+
+                                    if (topicVal) {
+                                        sendAjaxRequest("includes/select_for_subtopic.inc.php", {
+                                            class: classVal,
+                                            lesson: lessonVal,
+                                            unit: unitVal,
+                                            topics: topicVal
+                                        }, function (subtopicsData) {
+                                            updateSelect2('#subtopics', subtopicsData, 'Altkonu Yok');
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
     }
 
     return {
-        // Public functions
         init: function () {
-            // Elements
+
             element = document.querySelector('#kt_modal_update_customer');
             modal = new bootstrap.Modal(element);
-
             form = element.querySelector('#kt_modal_update_customer_form');
+
             submitButton = form.querySelector('#kt_modal_update_customer_submit');
             cancelButton = form.querySelector('#kt_modal_update_customer_cancel');
             closeButton = element.querySelector('#kt_modal_update_customer_close');
