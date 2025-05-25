@@ -2,15 +2,17 @@
 
 class UpdateActiveStudentContr extends UpdateActiveStudent {
 
-	private $username;
+	private $email;
+	private $statusVal;
 
-	public function __construct($username){
-		$this->username = $username;
+	public function __construct($email, $statusVal){
+		$this->email = $email;
+		$this->statusVal = $statusVal;
 	}
 
 	public function updateActiveStudentDb() {
 
-		$this->setStudentActive($this->username);
+		$this->setStudentActive($this->email, $this->statusVal);
 	}
 
 

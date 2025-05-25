@@ -1,7 +1,6 @@
 <?php
 include_once "dateformat.classes.php";
 
-$schoolList = new School();
 
 class ShowStudent extends Student
 {
@@ -46,11 +45,13 @@ class ShowStudent extends Student
 
             if ($value['userActive'] == 1) {
                 $aktifArama = 'data-filter="Aktif"';
-                $aktifYazi = 'Aktif';
+                $aktifYazi = '<span class="badge badge-light-success">Aktif</span>';
             } else {
                 $aktifArama = 'data-filter="Passive"';
-                $aktifYazi = 'Pasif';
+                $aktifYazi = '<span class="badge badge-light-danger">Pasif</span>';
             }
+
+            $alter_button = $value['active'] ? "Pasif Yap" : "Aktif Yap";
 
             $studentList .= '
                     <tr>
@@ -90,7 +91,7 @@ class ShowStudent extends Student
                                 <!--end::Menu item-->
                                 <!--begin::Menu item-->
                                 <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
+                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">' . $alter_button . '</a>
                                 </div>
                                 <!--end::Menu item-->
                             </div>

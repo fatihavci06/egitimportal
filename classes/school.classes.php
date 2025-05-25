@@ -19,6 +19,23 @@ class School extends Dbh {
 		
 	}
 
+	protected function getSchoolsListPassiveInclude(){
+
+		$stmt = $this->connect()->prepare('SELECT id, name, slug, created_at, email, telephone, city FROM schools_lnp ORDER BY id ASC');
+
+		if(!$stmt->execute(array())){
+			$stmt = null;
+			exit();
+		}
+
+        $schoolData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $schoolData;
+
+		$stmt = null;
+		
+	}
+
 	public function getOneSchool($slug){
 
 		$stmt = $this->connect()->prepare('SELECT * FROM schools_lnp WHERE slug = ?');

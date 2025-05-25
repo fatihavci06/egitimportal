@@ -60,6 +60,50 @@ class ShowPackage extends Packages
         echo json_encode([$packages, $coupons]);
     }
 
+    // Get Packages For Add Student Page
+
+    public function showPackagesStudentsPage($class)
+    {
+
+        $packageInfo = $this->getPackage($class);
+
+        $i = 0;
+        $total = count($packageInfo);
+
+        $packages = "";
+
+        foreach ($packageInfo as $package) {
+
+            if ($i === 0) {
+                $packages .= ' <label class="form-label fw-bold text-gray-900 fs-6">Paket Seçin</label> 
+                <div class="row fv-row mb-7 fv-plugins-icon-container">';
+            }
+
+            $packages .= '
+                        <div class="col-xl-6 mb-10">
+                            <label role="button">
+                            <input type="radio" id="pack" name="pack" value="' . $package['id'] . '">
+                            <div class="card card-flush shadow-sm list-group-item-action">
+                                <div class="card-body text-center">
+                                    <h3>' . $package['name'] . '</h3>
+                                </div>
+                            </div>
+                            </label>
+                        </div>
+
+            ';
+
+            if ($i === ($total - 1)) {
+                $packages .= '</div>
+                ';
+            }
+
+            $i++;
+        }
+
+        echo json_encode([$packages]);
+    }
+
 
     // Show Total Price
 

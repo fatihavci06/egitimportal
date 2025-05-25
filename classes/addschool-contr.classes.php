@@ -1,6 +1,7 @@
 <?php
 
 include_once 'createpassword.classes.php';
+include_once 'adduser.classes.php';
 include_once 'Mailer.php';
 
 class AddSchoolContr extends AddSchool
@@ -73,7 +74,7 @@ class AddSchoolContr extends AddSchool
 
 		if (!empty($this->schoolAdminEmail)) {
 
-			$emailRes2 = $this->checkUser($this->schoolAdminEmail);
+			$emailRes2 = $this->checkEmail($this->schoolAdminEmail);
 
 			if (count($emailRes2) > 0) {
 				echo json_encode(["status" => "error", "message" => "Hata: Bu e-posta daha önce kullanılmış!"]);
@@ -92,6 +93,8 @@ class AddSchoolContr extends AddSchool
 
 		$this->setSchool($slug, $this->name, $this->address, $this->district, $this->postcode, $this->city, $this->email, $this->telephone);
 
+		$usersInfo = new AddUser();
+
 		if ($this->schoolAdminName != "" and $this->schoolAdminSurname != "" and $this->schoolAdminEmail != "" and $this->schoolAdminTelephone != "") {
 			$createPassword = new CreatePassword();
 			$schoolAdminPassword = $createPassword->gucluSifreUret(15);
@@ -104,11 +107,11 @@ class AddSchoolContr extends AddSchool
 			$slugAdminSurname = $slugAdminSurname->slugify($this->schoolAdminSurname);
 
 			$slugAdmin = $slugAdminName . "-" . $slugAdminSurname;
-			$slugAdminRes = $this->checkSlug($slugAdmin);
+			$slugAdminRes = $usersInfo->checkUsername($slugAdmin);
 			if (count($slugAdminRes) > 0) {
 				$ech = end($slugAdminRes);
 
-				$output = substr($ech['slug'], -1, strrpos($ech['slug'], '-'));
+				$output = substr($ech['username'], -1, strrpos($ech['username'], '-'));
 
 				if (!is_numeric($output)) {
 					$output = 1;
@@ -139,11 +142,11 @@ class AddSchoolContr extends AddSchool
 			$slugCoordinatorSurname = $slugCoordinatorSurname->slugify($this->schoolCoordinatorSurname);
 
 			$slugCoordinator = $slugCoordinatorName . "-" . $slugCoordinatorSurname;
-			$slugCoordinatorRes = $this->checkSlug($slugCoordinator);
+			$slugCoordinatorRes = $usersInfo->checkUsername($slugCoordinator);
 			if (count($slugCoordinatorRes) > 0) {
 				$ech = end($slugCoordinatorRes);
 
-				$output = substr($ech['slug'], -1, strrpos($ech['slug'], '-'));
+				$output = substr($ech['username'], -1, strrpos($ech['username'], '-'));
 
 				if (!is_numeric($output)) {
 					$output = 1;

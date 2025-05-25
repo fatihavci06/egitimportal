@@ -215,7 +215,7 @@ $chooseSchool = new ShowSchool();
                                     data-placeholder="Sınıf Seçiniz..." data-dropdown-parent="#kt_modal_add_customer"
                                     class="form-select form-select-solid fw-bold">
                                     <option value="">Sınıf Seçin</option>
-                                    <?php $chooseClass->getClassSelectList(); ?>
+                                    <?php echo $chooseClass->getClassSelectList(); ?>
                                 </select>
                                 <!--end::Input-->
                             </div>

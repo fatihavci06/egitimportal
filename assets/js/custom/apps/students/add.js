@@ -9,6 +9,34 @@ var KTModalCustomersAdd = function () {
 	var form;
 	var modal;
 
+    const maxLength = 11;
+
+    const inputElement = $('#tckn');
+
+    // Karakter girişini engelleme
+    inputElement.on('input', function () {
+        if (this.value.length > maxLength) {
+            this.value = this.value.slice(0, maxLength);
+        }
+    });
+	
+    const inputTel = $('#telephone');
+
+    // Karakter girişini engelleme
+    inputTel.on('input', function () {
+        if (this.value.length > maxLength) {
+            this.value = this.value.slice(0, maxLength);
+        }
+    });
+
+    const sayiGirisInput = document.getElementById("telephone");
+
+    sayiGirisInput.addEventListener("input", function (e) {
+        const girilenDeger = e.target.value;
+        const sadeceRakam = girilenDeger.replace(/[^0-9]/g, ""); // Sadece rakamları al
+        e.target.value = sadeceRakam; // Giriş değerini güncelle
+    });
+
 	// Init form inputs
 	var handleForm = function () {
 		// Init form validation rules. For more info check the FormValidation plugin's official documentation:https://formvalidation.io/
@@ -44,6 +72,65 @@ var KTModalCustomersAdd = function () {
 							}
 						}
 					},
+                    'tckn': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Türkiye Cumuriyeti Kimlik Numarası zorunlu'
+                            },
+                            stringLength: {
+                                min: 11,
+                                max: 11,
+                                message: 'Türkiye Cumuriyeti Kimlik Numarası 11 haneli olmalıdır'
+                            },
+                            digits: {
+                                message: 'Türkiye Cumuriyeti Kimlik Numarası sadece rakamlardan oluşmalıdır'
+                            },
+                            callback: {
+                                message: 'Geçersiz Türkiye Cumuriyeti Kimlik Numarası',
+                                callback: function (input) {
+                                    const value = input.value.trim();
+                                    if (value.length !== 11 || !/^\d+$/.test(value)) {
+                                        return {
+                                            valid: false,
+                                        };
+                                    }
+
+                                    const digits = value.split('').map(Number);
+                                    let sumOdd = 0;
+                                    let sumEven = 0;
+                                    for (let i = 0; i < 9; i++) {
+                                        if ((i + 1) % 2 === 1) {
+                                            sumOdd += digits[i];
+                                        } else {
+                                            sumEven += digits[i];
+                                        }
+                                    }
+
+                                    const digit10 = ((sumOdd * 7) - sumEven) % 10;
+                                    if (digit10 !== digits[9]) {
+                                        return {
+                                            valid: false,
+                                        };
+                                    }
+
+                                    let sumAll = 0;
+                                    for (let i = 0; i < 10; i++) {
+                                        sumAll += digits[i];
+                                    }
+                                    const digit11 = sumAll % 10;
+                                    if (digit11 !== digits[10]) {
+                                        return {
+                                            valid: false,
+                                        };
+                                    }
+
+                                    return {
+                                        valid: true,
+                                    };
+                                },
+                            },
+                        },
+                    },
 					'birthdate': {
 						validators: {
 							notEmpty: {
@@ -51,23 +138,33 @@ var KTModalCustomersAdd = function () {
 							}
 						}
 					},
-					'email': {
-						validators: {
+                    'email': {
+                        validators: {
+                            regexp: {
+                                regexp: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                message: 'Geçerli bir e-posta adresi değil',
+                            },
+                            notEmpty: {
+                                message: 'E-posta adresi zorunlu'
+                            }
+                        }
+                    },
+                    'telephone': {
+                        validators: {
+                            regexp: {
+                                regexp: /^0/,
+                                message: 'Telefon numarası 0 ile başlamalıdır'
+                            },
+                            stringLength: {
+                                min: 11,
+                                max: 11,
+                                message: 'Telefon numarası 11 haneli olmalıdır'
+                            },
 							notEmpty: {
-								message: 'E-posta adresi zorunlu'
-							},
-							emailAddress: {
-							  message: 'Geçerli bir e-posta adresi girin'
+								message: 'Telefon numarası zorunlu'
 							}
-						}
-					},
-					'telephone': {
-						validators: {
-							notEmpty: {
-								message: 'Telefon Numarası zorunlu'
-							}
-						}
-					},
+                        }
+                    },
 					'school': {
 						validators: {
 							notEmpty: {
@@ -82,13 +179,41 @@ var KTModalCustomersAdd = function () {
 							}
 						}
 					},
-					'password': {
-						validators: {
-							notEmpty: {
-								message: 'Parola zorunlu'
-							}
-						}
-					},
+                    'parent-first-name': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Veli Adı zorunlu'
+                            }
+                        }
+                    },
+                    'parent-last-name': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Veli Soyadı zorunlu'
+                            }
+                        }
+                    },
+                    'address': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Adres zorunlu'
+                            }
+                        }
+                    },
+                    'district': {
+                        validators: {
+                            notEmpty: {
+                                message: 'İlçe zorunlu'
+                            }
+                        }
+                    },
+                    'city': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Şehir zorunlu'
+                            }
+                        }
+                    },
 				},
 				plugins: {
 					trigger: new FormValidation.plugins.Trigger(),
@@ -258,6 +383,38 @@ var KTModalCustomersAdd = function () {
 				}
 			});
 		});
+
+		
+
+    $('#classAdd').change(function () {
+        var secilenDeger = $(this).val();
+
+        if (secilenDeger !== "") {
+            $.ajax({
+                url: 'includes/getclasses.inc.php?from=addstudent',
+                type: 'POST',
+                data: { secim: secilenDeger },
+                success: function (response) {
+                    $('#veriAlani').html(response);
+                    validator.addField('pack', {
+                        validators: {
+                            notEmpty: {
+                                message: 'Paket Seçimi zorunlu'
+                            }
+                        }
+                    });
+
+                },
+                error: function (xhr, status, error) {
+                    console.error("Hata oluştu: " + error);
+                    $('#veriAlani').html("<p>Veri yüklenirken bir hata oluştu.</p>");
+                }
+            });
+        } else {
+            $('#veriAlani').html("");
+        }
+
+    });
 
 		closeButton.addEventListener('click', function (e) {
 			e.preventDefault();

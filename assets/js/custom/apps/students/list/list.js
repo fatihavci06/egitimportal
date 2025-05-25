@@ -24,7 +24,7 @@ var KTCustomersList = function () {
 
         // Init datatable --- more info on datatables: https://datatables.net/manual/
         datatable = $(table).DataTable({
-            "info": true,
+            "info": false,
             'order': [[7, 'asc'],
             [5, 'asc']
             ], // Set default order
@@ -34,7 +34,7 @@ var KTCustomersList = function () {
                 { orderable: false, targets: 8 }, // Disable ordering on column 6 (actions)
             ],
             "language": {
-                "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json"
+                //"url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json"
                 // Eğer dil dosyasını lokal olarak yüklediyseniz:
                 // "url": "assets/plugins/custom/datatables/i18n/tr.json"
             }
@@ -110,15 +110,25 @@ var KTCustomersList = function () {
 
                 // Get customer name
                 const customerName = parent.querySelectorAll('td')[2].innerText;
-                const username = parent.querySelectorAll('td')[3].innerText;
+                const email = parent.querySelectorAll('td')[3].innerText;
+
+                var activeStatus = parent.querySelectorAll('td')[7].innerText;
+
+                if (activeStatus === "Aktif") {
+                    var activeStatus = "pasif";
+                    var statusVal = 0;
+                } else {
+                    var activeStatus = "aktif";
+                    var statusVal = 1;
+                }
 
                 // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
                 Swal.fire({
-                    text: customerName + " isimli öğrenciyi pasif yapmak istediğinizden emin misiniz?",
+                    text: customerName + " isimli öğrenciyi " + activeStatus + " yapmak istediğinizden emin misiniz?",
                     icon: "warning",
                     showCancelButton: true,
                     buttonsStyling: false,
-                    confirmButtonText: "Evet, pasif yap!",
+                    confirmButtonText: "Evet, " + activeStatus + " yap!",
                     cancelButtonText: "Hayır, iptal et",
                     customClass: {
                         confirmButton: "btn fw-bold btn-danger",
@@ -131,14 +141,15 @@ var KTCustomersList = function () {
                             type: "POST",
                             url: "includes/update_active_student.inc.php",
                             data: {
-                                username: username
+                                email: email,
+                                statusVal: statusVal,
                             },
                             dataType: "json",
                             success: function (response) {
                                 if (response.status === "success") {
 
                                     Swal.fire({
-                                        text: customerName + " adlı öğrenci pasif hale gelmiştir!",
+                                        text: customerName + " adlı öğrenci " + activeStatus + " hale gelmiştir!",
                                         icon: "success",
                                         buttonsStyling: false,
                                         confirmButtonText: "Tamam, anladım!",
@@ -148,7 +159,8 @@ var KTCustomersList = function () {
                                     }).then(function (result) {
                                         if (result.isConfirmed) {
                                             // Remove current row
-                                            datatable.row($(parent)).remove().draw();
+                                            //datatable.row($(parent)).remove().draw();
+                                            location.reload();
                                         }
                                     });
                                 } else {

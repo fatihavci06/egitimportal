@@ -105,4 +105,36 @@ class User extends Dbh
 
 		$stmt = null;
 	}
+
+	public function getSchoolAdmin($school_id)
+	{
+		$stmt = $this->connect()->prepare('SELECT name, surname, email, telephone FROM users_lnp WHERE school_id = ? AND role = ?');
+
+		if (!$stmt->execute(array($school_id, "8"))) {
+			$stmt = null;
+			exit();
+		}
+
+		$getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $getData;
+
+		$stmt = null;
+	}
+
+	public function getSchoolCoordinator($school_id)
+	{
+		$stmt = $this->connect()->prepare('SELECT name, surname, email, telephone FROM users_lnp WHERE school_id = ? AND role = ?');
+
+		if (!$stmt->execute(array($school_id, "3"))) {
+			$stmt = null;
+			exit();
+		}
+
+		$getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $getData;
+
+		$stmt = null;
+	}
 }

@@ -6,8 +6,9 @@ var KTCustomersList = function () {
     var datatable;
     
 	var submitButton;
-    /* var filterMonth;
-     var filterPayment;*/
+    var filterMonth;
+    var filterClass;
+    var filterSchool;
     var table
 
     // Private functions
@@ -49,37 +50,42 @@ var KTCustomersList = function () {
     }
 
     // Filter Datatable
-    /* var handleFilterDatatable = () => {
-         // Select filter options
-         filterMonth = $('[data-kt-customer-table-filter="month"]');
-         filterPayment = document.querySelectorAll('[data-kt-customer-table-filter="payment_type"] [name="payment_type"]');
-         const filterButton = document.querySelector('[data-kt-customer-table-filter="filter"]');
- 
-         // Filter datatable on submit
-         filterButton.addEventListener('click', function () {
-             // Get filter values
-             const monthValue = filterMonth.val();
-             let paymentValue = '';
- 
-             // Get payment value
-             filterPayment.forEach(r => {
-                 if (r.checked) {
-                     paymentValue = r.value;
-                 }
- 
-                 // Reset payment value if "All" is selected
-                 if (paymentValue === 'all') {
-                     paymentValue = '';
-                 }
-             });
- 
-             // Build filter string from filter options
-             const filterString = monthValue + ' ' + paymentValue;
- 
-             // Filter datatable --- official docs reference: https://datatables.net/reference/api/search()
-             datatable.search(filterString).draw();
-         });
-     }*/
+    var handleFilterDatatable = () => {
+        // Select filter options
+        filterMonth = $('[data-kt-customer-table-filter="status"]');
+        filterSchool = $('[data-kt-customer-table-filter="school"]');
+        filterClass = document.querySelectorAll('[data-kt-customer-table-filter="student_class"] [name="student_class"]');
+        const filterButton = document.querySelector('[data-kt-customer-table-filter="filter"]');
+
+        // Filter datatable on submit
+        filterButton.addEventListener('click', function () {
+            // Get filter values
+            const monthValue = filterMonth.val();
+            const schoolValue = filterSchool.val();
+            let paymentValue = '';
+
+            // Get payment value
+            filterClass.forEach(r => {
+                if (r.checked) {
+                    paymentValue = r.value;
+                }
+
+                // Reset payment value if "All" is selected
+                if (paymentValue === 'all') {
+                    paymentValue = '';
+                }
+            });
+
+            // Build filter string from filter options
+
+            const filterString = schoolValue + ' ' + monthValue + ' ' + paymentValue;
+
+            /* const filterString = paymentValue; */
+
+            // Filter datatable --- official docs reference: https://datatables.net/reference/api/search()
+            datatable.search(filterString).draw();
+        });
+    }
 
     // Delete customer
     var handleDeleteRows = () => {
@@ -96,15 +102,25 @@ var KTCustomersList = function () {
 
                 // Get customer name
                 const customerName = parent.querySelectorAll('td')[2].innerText;
-                const username = parent.querySelectorAll('td')[3].innerText;
+                const email = parent.querySelectorAll('td')[3].innerText;
+
+                var activeStatus = parent.querySelectorAll('td')[8].innerText;
+
+                if (activeStatus === "Aktif") {
+                    var activeStatus = "pasif";
+                    var statusVal = 0;
+                } else {
+                    var activeStatus = "aktif";
+                    var statusVal = 1;
+                }
 
                 // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
                 Swal.fire({
-                    text: customerName + " isimli öğrenciyi pasif yapmak istediğinizden emin misiniz?",
+                    text: customerName + " isimli öğretmeni " + activeStatus + " yapmak istediğinizden emin misiniz?",
                     icon: "warning",
                     showCancelButton: true,
                     buttonsStyling: false,
-                    confirmButtonText: "Evet, pasif yap!",
+                    confirmButtonText: "Evet, " + activeStatus + " yap!",
                     cancelButtonText: "Hayır, iptal et",
                     customClass: {
                         confirmButton: "btn fw-bold btn-danger",
@@ -117,14 +133,15 @@ var KTCustomersList = function () {
                             type: "POST",
                             url: "includes/update_active_student.inc.php",
                             data: {
-                                username: username
+                                email: email,
+                                statusVal: statusVal,
                             },
                             dataType: "json",
                             success: function (response) {
                                 if (response.status === "success") {
 
                                     Swal.fire({
-                                        text: customerName + " adlı öğrenci pasif hale gelmiştir!",
+                                        text: customerName + " adlı öğretmen " + activeStatus + " hale gelmiştir!",
                                         icon: "success",
                                         buttonsStyling: false,
                                         confirmButtonText: "Tamam, anladım!",
@@ -134,7 +151,8 @@ var KTCustomersList = function () {
                                     }).then(function (result) {
                                         if (result.isConfirmed) {
                                             // Remove current row
-                                            datatable.row($(parent)).remove().draw();
+                                            //datatable.row($(parent)).remove().draw();
+                                            location.reload();
                                         }
                                     });
                                 } else {
@@ -204,7 +222,7 @@ var KTCustomersList = function () {
     }
 
     // Reset Filter
-    /*var handleResetForm = () => {
+    var handleResetForm = () => {
         // Select reset button
         const resetButton = document.querySelector('[data-kt-customer-table-filter="reset"]');
 
@@ -214,12 +232,12 @@ var KTCustomersList = function () {
             filterMonth.val(null).trigger('change');
 
             // Reset payment type
-            filterPayment[0].checked = true;
+            filterClass[0].checked = true;
 
             // Reset datatable --- official docs reference: https://datatables.net/reference/api/search()
             datatable.search('').draw();
         });
-    }*/
+    }
 
     // Init toggle toolbar
     var initToggleToolbar = () => {
@@ -336,9 +354,9 @@ var KTCustomersList = function () {
             initCustomerList();
             initToggleToolbar();
             handleSearchDatatable();
-            /*handleFilterDatatable();*/
+            handleFilterDatatable();
             handleDeleteRows();
-            /*handleResetForm();*/
+            handleResetForm();
         }
     }
 }();

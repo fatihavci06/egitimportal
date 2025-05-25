@@ -15,6 +15,18 @@ class ShowTeacher extends Teacher
 
         foreach ($schoolInfo as $key => $value) {
 
+            $sinifArama = 'data-filter="' . $value['classSlug'] . '"';
+
+            if ($value['active'] == 1) {
+                $aktifArama = 'data-filter="Aktif"';
+                $aktifYazi = '<span class="badge badge-light-success">Aktif</span>';
+            } else {
+                $aktifArama = 'data-filter="Passive"';
+                $aktifYazi = '<span class="badge badge-light-danger">Pasif</span>';
+            }
+
+            $alter_button = $value['active'] ? "Pasif Yap" : "Aktif Yap";
+
             $studentList = '
                     <tr>
                         <td>
@@ -22,14 +34,11 @@ class ShowTeacher extends Teacher
                                 <input class="form-check-input" type="checkbox" value="1" />
                             </div>
                         </td>
-                        <td>
+                        <td '. $aktifArama . '>
                             <div class="cursor-pointer symbol symbol-90px symbol-lg-90px"><img src="assets/media/profile/' . $value['photo'] . '"></div>
                         </td>
                         <td>
                             <a href="./ogretmen-detay/' . $value['username'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['name'] . ' ' . $value['surname']  . '</a>
-                        </td>
-                        <td>
-                            ' . $value['username'] . '
                         </td>
                         <td>
                             <a href="mailto:' . $value['email'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['email'] . '</a>
@@ -37,9 +46,10 @@ class ShowTeacher extends Teacher
                         <td>
                             <a href="tel:' . $value['telephone'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['telephone'] . '</a>
                         </td>
-                        <td>' . $value['schoolName'] . '</td>
-                        <td>' . $value['className'] . '</td>
+                        <td data-filter="' . $value['schoolName'] . '">' . $value['schoolName'] . '</td>
+                        <td ' . $sinifArama . '>' . $value['className'] . '</td>
                         <td>' . $value['lessonName'] . '</td>
+                        <td>' . $aktifYazi . '</td>
                         <td class="text-end">
                             <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
@@ -54,7 +64,7 @@ class ShowTeacher extends Teacher
                                 <!--end::Menu item-->
                                 <!--begin::Menu item-->
                                 <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
+                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">' . $alter_button . '</a>
                                 </div>
                                 <!--end::Menu item-->
                             </div>

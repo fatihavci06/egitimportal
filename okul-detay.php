@@ -7,6 +7,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 	include_once "classes/dbh.classes.php";
 	include "classes/school.classes.php";
 	include "classes/school-view.classes.php";
+	include "classes/userslist.classes.php";
 	$schools = new ShowSchool();
 	$slug = $_GET['q'];
 	include_once "views/pages-head.php";

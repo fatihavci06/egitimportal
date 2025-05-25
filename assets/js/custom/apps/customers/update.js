@@ -108,6 +108,7 @@ var KTModalUpdateCustomer = function () {
                             submitButton.removeAttribute('data-kt-indicator');
 
                             var name = $("#name").val();
+                            var schId = $("#schId").val();
                             var old_slug = $("#old_slug").val();
                             var address = $("#address").val();
                             var district = $("#district").val();
@@ -116,12 +117,29 @@ var KTModalUpdateCustomer = function () {
                             var email = $("#email").val();
                             var email_old = $("#email_old").val();
                             var telephone = $("#telephone").val();
+                            
+                            var schoolAdminName = $("#schoolAdminName").val();
+                            var schoolAdminSurname = $("#schoolAdminSurname").val();
+                            var schoolAdminEmail = $("#schoolAdminEmail").val();
+                            var schoolAdminTelephone = $("#schoolAdminTelephone").val();
+                            var old_admin_email = $("#old_admin_email").val();
+                            var old_admin_name = $("#old_admin_name").val();
+                            var old_admin_surname = $("#old_admin_surname").val();
+
+                            var schoolCoordinatorName = $("#schoolCoordinatorName").val();
+                            var schoolCoordinatorSurname = $("#schoolCoordinatorSurname").val();
+                            var schoolCoordinatorEmail = $("#schoolCoordinatorEmail").val();
+                            var schoolCoordinatorTelephone = $("#schoolCoordinatorTelephone").val();
+                            var old_coord_email = $("#old_coord_email").val();
+                            var old_coord_name = $("#old_coord_name").val();
+                            var old_coord_surname = $("#old_coord_surname").val();
 
                             $.ajax({
                                 type: "POST",
                                 url: "includes/updateschool.inc.php",
                                 data: {
                                     name: name,
+                                    schId: schId,
                                     old_slug: old_slug,
                                     address: address,
                                     district: district,
@@ -129,7 +147,21 @@ var KTModalUpdateCustomer = function () {
                                     city: city,
                                     email: email,
                                     email_old: email_old,
-                                    telephone: telephone
+                                    telephone: telephone,
+                                    schoolAdminName: schoolAdminName,
+                                    schoolAdminSurname: schoolAdminSurname,
+                                    schoolAdminEmail: schoolAdminEmail,
+                                    schoolAdminTelephone: schoolAdminTelephone,
+                                    schoolCoordinatorName: schoolCoordinatorName,
+                                    schoolCoordinatorSurname: schoolCoordinatorSurname,
+                                    schoolCoordinatorEmail: schoolCoordinatorEmail,
+                                    schoolCoordinatorTelephone: schoolCoordinatorTelephone,
+                                    old_admin_email: old_admin_email,
+                                    old_coord_email: old_coord_email,
+                                    old_admin_name: old_admin_name,
+                                    old_admin_surname: old_admin_surname,
+                                    old_coord_name: old_coord_name,
+                                    old_coord_surname: old_coord_surname
                                 },
                                 dataType: "json",
                                 success: function (response) {

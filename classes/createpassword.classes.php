@@ -29,7 +29,7 @@ class CreatePassword
 
 		// Gerekli karakter türlerinin olduğundan emin ol
 		if (!$ozelKarakterVar || !$harfVar || !$rakamVar) {
-			return gucluSifreUret($uzunluk); // Eksik karakter varsa yeniden üret
+			return $this->gucluSifreUret($uzunluk); // Eksik karakter varsa yeniden üret
 		}
 
 		return $sifre;

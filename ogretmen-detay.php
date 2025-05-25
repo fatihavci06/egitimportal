@@ -21,13 +21,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 	$timeSpendInfo = $timeSpend->getTimeSpend($getTeacherId);
 
-	$schoolInfo = $school->getOneSchoolById($studentInfo['school_id']);
+	$schoolInfo = $school->getOneSchoolById($teacherInfo['school_id']);
 
-	$studentPackages = $student->getStudentPackages($getStudentId);
+	$studentPackages = $teacher->getStudentPackages($getTeacherId);
 
-	$studentAdditionalPackages = $student->getStudentAdditionalPackages($getStudentId);
+	$studentAdditionalPackages = $teacher->getStudentAdditionalPackages($getTeacherId);
 
-	$studentClassName = $student->getStudentClass($studentInfo['class_id']);
+	$studentClassName = $teacher->getStudentClass($teacherInfo['class_id']);
 ?>
 
 	<!--end::Head-->

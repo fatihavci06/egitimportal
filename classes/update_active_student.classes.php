@@ -4,10 +4,10 @@ session_start();
 
 class UpdateActiveStudent extends Dbh {
 
-	protected function setStudentActive($username){
-		$stmt = $this->connect()->prepare('UPDATE users_lnp SET active=? WHERE username=?');
+	protected function setStudentActive($email, $statusVal){
+		$stmt = $this->connect()->prepare('UPDATE users_lnp SET active=? WHERE email=?');
 
-		if(!$stmt->execute([0, $username])){
+		if(!$stmt->execute([$statusVal, $email])){
 			$stmt = null;
 			header("location: ../admin.php?error=stmtfailed");
 			exit();

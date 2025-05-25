@@ -8,7 +8,7 @@ class ShowSchool extends School
     public function getSchoolListFilter()
     {
 
-        $schoolInfo = $this->getSchoolsList();
+        $schoolInfo = $this->getSchoolsListPassiveInclude();
 
         $schoolList = '';
 
@@ -108,7 +108,6 @@ class ShowSchool extends School
         $schoolInfo = $this->getOneSchool($slug);
 
         if (count($schoolInfo) == 0) {
-
             $schoolList = header("Location: http://localhost/lineup_campus/404.php"); // 404 sayfasına yönlendir
             echo $schoolList;
             return;
@@ -260,6 +259,11 @@ class ShowSchool extends School
 
         $schoolInfo = $this->getOneSchool($slug);
 
+        $users = new User();
+
+        $adminInfo = $users->getSchoolAdmin($schoolInfo[0]['id']);
+        $coordinatorInfo = $users->getSchoolCoordinator($schoolInfo[0]['id']);
+
         foreach ($schoolInfo as $value) {
 
             $schoolList = '
@@ -300,6 +304,7 @@ class ShowSchool extends School
                                 <!--begin::Input-->
                                 <input type="text" id="name" class="form-control form-control-solid" value="' . $value['name'] . '" name="name" />
                                     <input type="hidden" name="old_slug" id="old_slug" value="' . $value['slug'] . '" />
+                                    <input type="hidden" name="schId" id="schId" value="' . $value['id'] . '" />
                                 <!--end::Input-->
                             </div>
 
@@ -457,6 +462,82 @@ class ShowSchool extends School
                                     <!--end::Input-->
                                 </div>
                                 <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="row fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="fs-6 fw-semibold mb-2">Okul Admini</label>
+                                <!--end::Label-->
+                                <!--begin::Col-->
+                                <div class="col-md-6 fv-row mb-7">
+                                    <!--begin::Input-->
+                                    <input type="text" id="schoolAdminName" class="form-control form-control-solid" placeholder="Adı" value="' . ($adminInfo[0]['name'] ?? '') . '" name="schoolAdminName" />
+                                    <input type="hidden" name="old_admin_name" id="old_admin_name" value="' . ($adminInfo[0]['name'] ?? '') . '" />
+                                    <!--end::Input-->
+                                </div>
+                                <!--end::Col-->
+                                <!--begin::Col-->
+                                <div class="col-md-6 fv-row mb-7">
+                                    <!--begin::Input-->
+                                    <input type="text" id="schoolAdminSurname" class="form-control form-control-solid" placeholder="Soyadı" value="' . ($adminInfo[0]['surname'] ?? '') . '" name="schoolAdminSurname" />
+                                    <input type="hidden" name="old_admin_surname" id="old_admin_surname" value="' . ($adminInfo[0]['surname'] ?? '') . '" />
+                                    <!--end::Input-->
+                                </div>
+                                <!--end::Col-->
+                                <!--begin::Col-->
+                                <div class="col-md-6 fv-row mb-7">
+                                    <!--begin::Input-->
+                                    <input type="text" id="schoolAdminEmail" class="form-control form-control-solid" placeholder="E-Posta Adresi" value="' . ($adminInfo[0]['email'] ?? '') . '" name="schoolAdminEmail" />
+                                    <input type="hidden" name="old_admin_email" id="old_admin_email" value="' . ($adminInfo[0]['email'] ?? '') . '" />
+                                    <!--end::Input-->
+                                </div>
+                                <!--end::Col-->
+                                <!--begin::Col-->
+                                <div class="col-md-6 fv-row">
+                                    <!--begin::Input-->
+                                    <input type="text" id="schoolAdminTelephone" class="form-control form-control-solid" placeholder="Telefon Numarası (05001234578)" value="' . ($adminInfo[0]['telephone'] ?? '') . '" name="schoolAdminTelephone" />
+                                    <!--end::Input-->
+                                </div>
+                                <!--end::Col-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="row fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="fs-6 fw-semibold mb-2">Okul Eğitim Koordinatörü</label>
+                                <!--end::Label-->
+                                <!--begin::Col-->
+                                <div class="col-md-6 fv-row mb-7">
+                                    <!--begin::Input-->
+                                    <input type="text" id="schoolCoordinatorName" class="form-control form-control-solid" placeholder="Adı" value="' . ($coordinatorInfo[0]['name'] ?? '') . '" name="schoolCoordinatorName" />
+                                    <input type="hidden" name="old_coord_name" id="old_coord_name" value="' . ($coordinatorInfo[0]['name'] ?? '') . '" />
+                                    <!--end::Input-->
+                                </div>
+                                <!--end::Col-->
+                                <!--begin::Col-->
+                                <div class="col-md-6 fv-row mb-7">
+                                    <!--begin::Input-->
+                                    <input type="text" id="schoolCoordinatorSurname" class="form-control form-control-solid" placeholder="Soyadı" value="' . ($coordinatorInfo[0]['surname'] ?? '') . '" name="schoolCoordinatorSurname" />
+                                    <input type="hidden" name="old_coord_surname" id="old_coord_surname" value="' . ($coordinatorInfo[0]['surname'] ?? '') . '" />
+                                    <!--end::Input-->
+                                </div>
+                                <!--end::Col-->
+                                <!--begin::Col-->
+                                <div class="col-md-6 fv-row mb-7">
+                                    <!--begin::Input-->
+                                    <input type="text" id="schoolCoordinatorEmail" class="form-control form-control-solid" placeholder="E-Posta Adresi" value="' . ($coordinatorInfo[0]['email'] ?? '') . '" name="schoolCoordinatorEmail" />
+                                    <input type="hidden" name="old_coord_email" id="old_coord_email" value="' . ($coordinatorInfo[0]['email'] ?? '') . '" />
+                                    <!--end::Input-->
+                                </div>
+                                <!--end::Col-->
+                                <!--begin::Col-->
+                                <div class="col-md-6 fv-row">
+                                    <!--begin::Input-->
+                                    <input type="text" id="schoolCoordinatorTelephone" class="form-control form-control-solid" placeholder="Telefon Numarası (05001234578)" value="' . ($coordinatorInfo[0]['telephone'] ?? '') . '" name="schoolCoordinatorTelephone" />
+                                    <!--end::Input-->
+                                </div>
+                                <!--end::Col-->
+                            </div>
+                            <!--end::Input group-->
                             </div>
                             <!--end::User form-->
                         </div>

@@ -160,7 +160,8 @@ include_once "views/pages-head.php";
 								</div>
 								<!--end::Col-->
 							</div>
-							<!--end::Input group--><!--begin::Input group-->
+							<!--end::Input group-->
+							<!--begin::Input group-->
 							<div class="d-flex flex-column mb-7 fv-row">
 								<!--begin::Label-->
 								<label class="required fs-6 fw-semibold mb-2">Adres</label>

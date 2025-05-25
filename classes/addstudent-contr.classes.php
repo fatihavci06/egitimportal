@@ -15,9 +15,16 @@ class AddStudentContr extends AddStudent
 	private $telephone;
 	private $school;
 	private $classes;
-	private $password;
+	private $parentFirstName;
+	private $parentLastName;
+	private $address;
+	private $district;
+	private $postcode;
+	private $city;
+	private $tckn;
+	private $pack;
 
-	public function __construct($photoSize, $photoName, $fileTmpName, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $password)
+	public function __construct($photoSize, $photoName, $fileTmpName, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $parentFirstName, $parentLastName, $address, $district, $postcode, $city, $tckn, $pack)
 	{
 		$this->photoSize = $photoSize;
 		$this->photoName = $photoName;
@@ -31,7 +38,14 @@ class AddStudentContr extends AddStudent
 		$this->telephone = $telephone;
 		$this->school = $school;
 		$this->classes = $classes;
-		$this->password = $password;
+		$this->parentFirstName = $parentFirstName;
+		$this->parentLastName = $parentLastName;
+		$this->address = $address;
+		$this->district = $district;
+		$this->postcode = $postcode;
+		$this->city = $city;
+		$this->tckn = $tckn;
+		$this->pack = $pack;
 	}
 
 	public function addStudentDb()
@@ -58,16 +72,23 @@ class AddStudentContr extends AddStudent
 			$slug = $slug;
 		}*/
 
-		if($this->fileTmpName != NULL){
+		if ($this->fileTmpName != NULL) {
 			$imageSent = new ImageUpload();
 			$img = $imageSent->profileImage($this->photoName, $this->photoSize, $this->fileTmpName, $slug);
 			$imgName = $img['image'];
-		}else{
-			if($this->gender == "Kız"){
+		} else {
+			if ($this->gender == "Kız") {
 				$imgName = 'kiz.jpg';
-			}else{
+			} else {
 				$imgName = 'erkek.jpg';
 			}
+		}
+
+		$tcknControl = $this->checkTckn($this->tckn);
+
+		if (count($tcknControl) > 0) {
+			echo json_encode(["status" => "error", "message" => "Hata: Bu Türkiye Cumhuriyeti Kimlik Numarası <br>daha önce kullanılmış!"]);
+			die();
 		}
 
 		$usernameRes = $this->checkUsername($this->username);
@@ -84,6 +105,41 @@ class AddStudentContr extends AddStudent
 			die();
 		}
 
-		$this->setStudent($imgName, $this->name, $this->surname, $this->username, $this->gender, $this->birthdate, $this->email, $this->telephone, $this->school, $this->classes, $this->password);
+		$telephoneRes = $this->checkTelephone($this->telephone);
+
+		if (count($telephoneRes) > 0) {
+			echo json_encode(["status" => "error", "message" => "Hata: Bu telefon numarası <br>daha önce kullanılmış!"]);
+			die();
+		}
+
+		$package = new Packages();
+
+		$packInfo = $package->getPackagePrice(htmlspecialchars(trim($this->pack)));
+
+		foreach ($packInfo as $key => $value) {
+			$period = $value['subscription_period'];
+		}
+
+		$suAn = new DateTime();
+
+		$bitis = $suAn->modify('+' . $period . ' month');
+
+		$nowTime = date('Y-m-d H:i:s');
+
+		$endTime = $bitis->format('Y-m-d H:i:s');
+
+		$genratedPassword = new CreatePassword();
+		$passwordStudent = $genratedPassword->gucluSifreUret(15);
+		$passwordStudentHash = password_hash($passwordStudent, PASSWORD_DEFAULT);
+
+		$passwordParent = $genratedPassword->gucluSifreUret(15);
+		$passwordParentHash = password_hash($passwordParent, PASSWORD_DEFAULT);
+
+		$parentUsername = $this->username . "-veli";
+
+		$this->setStudent($imgName, $this->name, $this->surname, $this->username, $this->gender, $this->birthdate, $this->email, $this->telephone, $this->school, $this->classes, $this->parentFirstName, $this->parentLastName, $this->address, $this->district, $this->postcode, $this->city, $passwordStudentHash, $passwordParentHash, $parentUsername, $this->tckn, $nowTime, $endTime, $this->pack);
+
+		$mailer = new Mailer();
+		$mailer->sendLoginInfoEmail($this->parentFirstName, $this->parentLastName, $this->email, $passwordStudent, $passwordParent, $parentUsername, $this->username);
 	}
 }
