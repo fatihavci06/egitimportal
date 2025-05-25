@@ -9,7 +9,7 @@ ini_set('display_errors', '1');
     include_once "classes/dbh.classes.php";
 	include_once "classes/audio-book.classes.php";
 	include_once "classes/audio-book-view.classes.php";
-    $games = new ShowAudioBooks();
+    $games = new ShowAudioBook();
     include_once "views/pages-head.php";
 ?>
 <!--end::Head-->
@@ -70,7 +70,7 @@ ini_set('display_errors', '1');
 											<!--begin::Layout-->
 											<div class="d-flex flex-column flex-lg-row mb-17">
 												<!--begin::Content-->
-												<?php $games->showGameStudent(); ?>
+												<?php $games->showAudioBookStudent(); ?>
 												<!--end::Content-->
 											</div>
 											<!--end::Layout-->

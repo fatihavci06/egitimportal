@@ -1,6 +1,8 @@
 <?php
 include_once "dateformat.classes.php";
 
+$schoolList = new School();
+
 class ShowStudent extends Student
 {
 
@@ -68,6 +70,9 @@ class ShowStudent extends Student
                         </td>
                         <td ' . $sinifArama . '>
                             ' . $value['className'] . '
+                        </td>
+                        <td data-filter="' . $value['schoolName'] . '">
+                            ' . $value['schoolName'] . '
                         </td>
                         <td  data-order="' . $dateFormat->forDB($value['subscribed_end']) . '">' . $dateFormat->changeDate($value['subscribed_end']) . '</td>
                         <td>' . $aktifYazi . '</td>

@@ -114,6 +114,23 @@ class Units extends Dbh
 		$stmt = null;
 	}
 
+	public function getOneUnitForDetails($slug)
+	{
+
+		$stmt = $this->connect()->prepare('SELECT units_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, lessons_lnp.id AS lessonId FROM units_lnp INNER JOIN classes_lnp ON units_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON units_lnp.lesson_id = lessons_lnp.id WHERE units_lnp.slug = ?');
+
+		if (!$stmt->execute(array($slug))) {
+			$stmt = null;
+			exit();
+		}
+
+		$unitData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $unitData;
+
+		$stmt = null;
+	}
+
 	public function getUnits()
 	{
 

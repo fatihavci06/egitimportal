@@ -8,6 +8,7 @@ var KTCustomersList = function () {
     var submitButton;
     var filterMonth;
     var filterClass;
+    var filterSchool;
     var table
 
     // Private functions
@@ -24,13 +25,13 @@ var KTCustomersList = function () {
         // Init datatable --- more info on datatables: https://datatables.net/manual/
         datatable = $(table).DataTable({
             "info": true,
-            'order': [[6, 'asc'],
+            'order': [[7, 'asc'],
             [5, 'asc']
             ], // Set default order
             'columnDefs': [
                 { orderable: false, targets: 0 }, // Disable ordering on column 0 (checkbox)
                 { orderable: false, targets: 1 }, // Disable ordering on column 1 (photo)
-                { orderable: false, targets: 7 }, // Disable ordering on column 6 (actions)
+                { orderable: false, targets: 8 }, // Disable ordering on column 6 (actions)
             ],
             "language": {
                 "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json"
@@ -60,6 +61,7 @@ var KTCustomersList = function () {
     var handleFilterDatatable = () => {
         // Select filter options
         filterMonth = $('[data-kt-customer-table-filter="status"]');
+        filterSchool = $('[data-kt-customer-table-filter="school"]');
         filterClass = document.querySelectorAll('[data-kt-customer-table-filter="student_class"] [name="student_class"]');
         const filterButton = document.querySelector('[data-kt-customer-table-filter="filter"]');
 
@@ -67,6 +69,7 @@ var KTCustomersList = function () {
         filterButton.addEventListener('click', function () {
             // Get filter values
             const monthValue = filterMonth.val();
+            const schoolValue = filterSchool.val();
             let paymentValue = '';
 
             // Get payment value
@@ -83,7 +86,7 @@ var KTCustomersList = function () {
 
             // Build filter string from filter options
 
-            const filterString = monthValue + ' ' + paymentValue;
+            const filterString = schoolValue + ' ' + monthValue + ' ' + paymentValue;
 
             /* const filterString = paymentValue; */
 

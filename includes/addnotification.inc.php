@@ -19,7 +19,7 @@ include_once "../classes/slug.classes.php";
 
 try {
 
-	if (!$input) {
+	if (!isset($input)) {
 		$input = $_POST;
 	}
 	$requiredFields = ['title', 'content', 'start_date', 'expire_date'];
