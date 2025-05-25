@@ -71,7 +71,26 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                       </select>
 
 
-<div id="chart"></div>
+                      <div id="chart"></div>
+                      <div class="table-container">
+                        <h3 id="table-title"></h3>
+                        <table id="data-table" border="1" style="width:100%; border-collapse: collapse; margin-top: 20px;" class="table table-bordered table-striped table-hover">
+                          <thead>
+                            <tr>
+                              <th id="table-header-label"></th>
+                              <th>Kullanıcı Sayısı</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                          </tbody>
+                          <tfoot>
+                            <tr>
+                              <td><b>Toplam</b></td>
+                              <td id="total-user-count"></td>
+                            </tr>
+                          </tfoot>
+                        </table>
+                      </div>
 
                     </div>
 
@@ -132,95 +151,139 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     <!--end::Javascript-->
   </body>
   <!--end::Body-->
- <script>
-  let chart; // ApexCharts örneğini dışarıda tanımlıyoruz
-  let chartData = null; // API'den gelen tüm veriyi saklayacağız
+  <script>
+    let chart; // ApexCharts örneğini dışarıda tanımlıyoruz
+    let chartData = null; // API'den gelen tüm veriyi saklayacağız
 
-  // Grafik oluşturma fonksiyonu
-  function renderChart(dataArray, title) {
-    const labels = dataArray.map(item => item.day || item.week || item.period || item.year);
-    const counts = dataArray.map(item => Number(item.user_count));
+    // Tablo oluşturma fonksiyonu
+    function renderTable(dataArray, title, labelKey) {
+      const tableBody = document.querySelector("#data-table tbody");
+      tableBody.innerHTML = ''; // Önceki verileri temizle
 
-    const options = {
-      chart: {
-        type: 'bar',
-        height: 400
-      },
-      series: [{
-        name: 'Aboneliği Bitmiş Kullanıcı Sayısı',
-        data: counts
-      }],
-      xaxis: {
-        categories: labels,
-        labels: {
-          rotate: -45,
-          style: {
-            fontSize: '12px'
+      let totalUserCount = 0;
+
+      // Label anahtarının Türkçe karşılıklarını tanımlayalım
+      const labelTextMap = {
+        day: "Gün",
+        week: "Hafta",
+        period: "Ay",
+        year: "Yıl"
+      };
+      const currentLabelText = labelTextMap[labelKey] || "Dönem"; // Varsayılan olarak "Dönem"
+
+      document.getElementById('table-header-label').textContent = currentLabelText; // Tablo başlığını güncelle
+
+      dataArray.forEach(item => {
+        const row = tableBody.insertRow();
+        const labelCell = row.insertCell();
+        const countCell = row.insertCell();
+
+        labelCell.textContent = item[labelKey];
+        countCell.textContent = Number(item.user_count);
+
+        totalUserCount += Number(item.user_count);
+      });
+
+      document.getElementById('total-user-count').textContent = totalUserCount;
+      document.getElementById('table-title').textContent = title;
+    }
+
+    // Grafik oluşturma fonksiyonu
+    function renderChart(dataArray, title, labelKey) {
+      const labels = dataArray.map(item => item[labelKey]);
+      const counts = dataArray.map(item => Number(item.user_count));
+
+      const options = {
+        chart: {
+          type: 'bar',
+          height: 400
+        },
+        series: [{
+          name: 'Aboneliği Bitmiş Kullanıcı Sayısı',
+          data: counts
+        }],
+        xaxis: {
+          categories: labels,
+          labels: {
+            rotate: -45,
+            style: {
+              fontSize: '12px'
+            }
+          }
+        },
+        yaxis: {
+          title: {
+            text: 'Kullanıcı Sayısı'
+          }
+        },
+        title: {
+          text: title,
+          align: 'center'
+        },
+        tooltip: {
+          y: {
+            formatter: val => `${val} kişi`
+          }
+        },
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '50%',
+            endingShape: 'rounded'
           }
         }
-      },
-      yaxis: {
-        title: {
-          text: 'Kullanıcı Sayısı'
-        }
-      },
-      title: {
-        text: title,
-        align: 'center'
-      },
-      tooltip: {
-        y: {
-          formatter: val => `${val} kişi`
-        }
-      },
-      plotOptions: {
-        bar: {
-          horizontal: false,
-          columnWidth: '50%',
-          endingShape: 'rounded'
-        }
-      }
-    };
-
-    if (chart) {
-      chart.updateOptions(options);
-    } else {
-      chart = new ApexCharts(document.querySelector("#chart"), options);
-      chart.render();
-    }
-  }
-
-  // Seçim değiştiğinde grafiği güncelle
-  document.getElementById('time-range').addEventListener('change', function () {
-    const selected = this.value;
-    if (chartData && chartData[selected]) {
-      const titleMap = {
-        daily: "Aboneliği Bitmiş Kullanıcılar",
-        weekly: "Aboneliği Bitmiş Kullanıcılar",
-        monthly: "Aboneliği Bitmiş Kullanıcılar",
-        yearly: "Aboneliği Bitmiş Kullanıcılar"
       };
-      renderChart(chartData[selected], titleMap[selected]);
-    }
-  });
 
-  // Veriyi çek ve başlangıç grafiğini oluştur
-  fetch('includes/ajax.php?service=expired-user-count-report')
-    .then(res => res.json())
-    .then(data => {
-      if (data.status !== 'success') {
-        alert('Veri alınamadı: ' + (data.message || 'Bilinmeyen hata'));
-        return;
+      if (chart) {
+        chart.updateOptions(options);
+      } else {
+        chart = new ApexCharts(document.querySelector("#chart"), options);
+        chart.render();
       }
+    }
 
-      chartData = data;
+    // Seçim değiştiğinde grafiği ve tabloyu güncelle
+    document.getElementById('time-range').addEventListener('change', function() {
+      const selected = this.value;
+      if (chartData && chartData[selected]) {
+        const titleMap = {
+          daily: "Günlük Aboneliği Bitmiş Kullanıcılar",
+          weekly: "Haftalık Aboneliği Bitmiş Kullanıcılar",
+          monthly: "Aylık Aboneliği Bitmiş Kullanıcılar",
+          yearly: "Yıllık Aboneliği Bitmiş Kullanıcılar"
+        };
+        const labelKeyMap = {
+          daily: "day",
+          weekly: "week",
+          monthly: "period",
+          yearly: "year"
+        };
+        const currentTitle = titleMap[selected];
+        const currentLabelKey = labelKeyMap[selected];
 
-      // Varsayılan olarak günlük veriyi göster
-      document.getElementById('time-range').value = 'daily';
-      renderChart(data.daily, 'Aboneliği Bitmiş Kullanıcılar');
-    })
-    .catch(err => alert('Hata: ' + err.message));
-</script>
+        renderChart(chartData[selected], currentTitle, currentLabelKey);
+        renderTable(chartData[selected], currentTitle + " Detayları", currentLabelKey);
+      }
+    });
+
+    // Veriyi çek ve başlangıç grafiğini oluştur
+    fetch('includes/ajax.php?service=expired-user-count-report')
+      .then(res => res.json())
+      .then(data => {
+        if (data.status !== 'success') {
+          alert('Veri alınamadı: ' + (data.message || 'Bilinmeyen hata'));
+          return;
+        }
+
+        chartData = data;
+
+        // Varsayılan olarak günlük veriyi göster
+        document.getElementById('time-range').value = 'daily';
+        renderChart(data.daily, 'Günlük Aboneliği Bitmiş Kullanıcılar', 'day');
+        renderTable(data.daily, 'Günlük Aboneliği Bitmiş Kullanıcılar Detayları', 'day');
+      })
+      .catch(err => alert('Hata: ' + err.message));
+  </script>
 
 
 

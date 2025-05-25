@@ -71,6 +71,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                           <button data-period="yearly" class="btn btn-primary btn-sm btn-sm">Yıllık</button>
                         </div>
                         <div id="chart"></div> <!-- EKLENDİ -->
+                        <div id="table-container"></div>
                       </div>
 
 
@@ -139,10 +140,20 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
   <script>
     let chartInstance = null;
 
-    function renderChart(data) {
+    // Grafik çizme fonksiyonu
+    function renderChart(data, periodType) { // periodType parametresini ekledik
       const categories = data.map(d => d.period);
       const avgPayments = data.map(d => parseFloat(d.avg_payment));
       const avgTaxes = data.map(d => parseFloat(d.avg_tax));
+
+      // periodType için Türkçe karşılıklar
+      const periodTypeTranslations = {
+          daily: 'Günlük',
+          weekly: 'Haftalık',
+          monthly: 'Aylık',
+          yearly: 'Yıllık'
+      };
+      const displayPeriodType = periodTypeTranslations[periodType] || periodType;
 
       const options = {
         chart: {
@@ -150,28 +161,28 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
           height: 400,
         },
         series: [{
-            name: 'Ortalama Ödeme (TL)',
+            name: 'Ortalama Ödeme (₺)', // Türkçe isim ve para birimi
             data: avgPayments
           },
           {
-            name: 'Ortalama Vergi (TL)',
+            name: 'Ortalama Vergi (₺)', // Türkçe isim ve para birimi
             data: avgTaxes
           }
         ],
         xaxis: {
           categories: categories,
           title: {
-            text: 'Tarih'
+            text: `${displayPeriodType} Bazında` // Türkçe başlık
           }
         },
         yaxis: {
           title: {
-            text: 'Tutar (TL)'
+            text: 'Tutar (₺)' // Türkçe başlık
           }
         },
         tooltip: {
           y: {
-            formatter: val => val.toFixed(2) + ' TL'
+            formatter: val => val.toFixed(2) + ' ₺'
           }
         },
         legend: {
@@ -182,7 +193,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
       if (chartInstance) {
         chartInstance.updateOptions({
           series: options.series,
-          xaxis: options.xaxis
+          xaxis: options.xaxis,
+          title: options.xaxis.title, // Başlık güncellemesi için
+          yaxis: options.yaxis // Y ekseni başlık güncellemesi için
         });
       } else {
         chartInstance = new ApexCharts(document.querySelector("#chart"), options);
@@ -190,6 +203,64 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
       }
     }
 
+    // Tablo oluşturma fonksiyonu
+    function renderTable(data, periodType) {
+        // periodType için Türkçe karşılıklar
+        const periodTypeTranslations = {
+            daily: 'Günlük',
+            weekly: 'Haftalık',
+            monthly: 'Aylık',
+            yearly: 'Yıllık'
+        };
+        const displayPeriodType = periodTypeTranslations[periodType] || periodType;
+
+        let tableHTML = `<h4 class="mt-5 mb-3">${displayPeriodType} Ortalama Ödeme ve Vergi Tablosu</h4>`;
+        tableHTML += '<table class="table table-bordered table-striped table-hover">';
+        tableHTML += '<thead>';
+        tableHTML += '<tr>';
+        tableHTML += `<th>Dönem (${displayPeriodType})</th>`; // Türkçe başlık
+        tableHTML += '<th>Ortalama Ödeme (₺)</th>'; // Türkçe başlık
+        tableHTML += '<th>Ortalama Vergi (₺)</th>'; // Türkçe başlık
+        tableHTML += '</tr>';
+        tableHTML += '</thead>';
+        tableHTML += '<tbody>';
+
+        let totalAvgPayment = 0; // Toplam ortalama ödeme için değişken
+        let totalAvgTax = 0;     // Toplam ortalama vergi için değişken
+
+        data.forEach(item => {
+            const avgPayment = parseFloat(item.avg_payment);
+            const avgTax = parseFloat(item.avg_tax);
+
+            tableHTML += '<tr>';
+            tableHTML += `<td>${item.period}</td>`;
+            tableHTML += `<td>${avgPayment.toFixed(2)} ₺</td>`;
+            tableHTML += `<td>${avgTax.toFixed(2)} ₺</td>`;
+            tableHTML += '</tr>';
+
+            totalAvgPayment += avgPayment;
+            totalAvgTax += avgTax;
+        });
+
+        tableHTML += '</tbody>';
+        // Toplam satırı ekle (ortalama değerlerin ortalamasını almak yerine, genellikle dönem başına ortalamaları gösteririz)
+        // Eğer genel ortalama hesaplanacaksa, veri sayısına bölünmelidir.
+        // Burada basitçe görüntülenen ortalamaların toplamını alalım, bu da ortalamanın ortalaması anlamına gelir.
+        tableHTML += '<tfoot>';
+        tableHTML += '<tr>';
+        tableHTML += '<th class="text-end">Ortalamaların Toplamı:</th>'; // Türkçe başlık
+        tableHTML += `<th>${totalAvgPayment.toFixed(2)} ₺</th>`;
+        tableHTML += `<th>${totalAvgTax.toFixed(2)} ₺</th>`;
+        tableHTML += '</tr>';
+        tableHTML += '</tfoot>';
+
+
+        tableHTML += '</table>';
+
+        document.querySelector("#table-container").innerHTML = tableHTML;
+    }
+
+    // Raporu ve tabloyu getirme fonksiyonu
     function fetchReport(period) {
       $.ajax({
         url: 'includes/ajax.php?service=userpaymentreport',
@@ -201,21 +272,28 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         dataType: 'json',
         success: function(res) {
           if (res && Array.isArray(res.data)) {
-            renderChart(res.data);
+            renderChart(res.data, period); // period parametresini chart'a gönder
+            renderTable(res.data, period); // period parametresini tabloya gönder
           } else {
-            alert('Geçersiz veri alındı!');
+            alert('Geçersiz veya boş veri alındı!'); // Türkçe mesaj
+            document.querySelector("#chart").innerHTML = ''; // Grafiği temizle
+            document.querySelector("#table-container").innerHTML = '<h4>Bu dönem için veri bulunamadı.</h4>'; // Tabloyu temizle
           }
         },
         error: function(xhr, status, error) {
-          alert('Veri alınırken hata oluştu.');
+          alert('Veri alınırken bir hata oluştu. Lütfen konsolu kontrol edin.'); // Türkçe mesaj
           console.error("AJAX Hatası:", status, error);
+          document.querySelector("#chart").innerHTML = ''; // Hata durumunda grafiği temizle
+          document.querySelector("#table-container").innerHTML = '<h4>Veri yüklenirken bir hata oluştu.</h4>'; // Hata durumunda tabloyu temizle
         }
       });
     }
 
     $(function() {
+      // Sayfa yüklendiğinde varsayılan olarak günlük raporu getir
       fetchReport('daily');
 
+      // Buton tıklama olayları
       $('.buttons button').click(function() {
         $('.buttons button').removeClass('active');
         $(this).addClass('active');
@@ -223,7 +301,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         fetchReport(period);
       });
     });
-  </script>
+</script>
 
 
 </html>

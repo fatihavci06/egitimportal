@@ -106,6 +106,7 @@ function sendSms($phoneNumber, $message)
     if (!$phoneNumber) return;
    
      $sms->sendSms($phoneNumber,$message);
+     echo "Sms gönderildi: {$phoneNumber} - Konu: {$message}\n";
 }
 
 // Email gönderim fonksiyonu (örnek)

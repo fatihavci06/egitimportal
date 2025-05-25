@@ -12,6 +12,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
   <!--end::Head-->
   <!--begin::Body-->
   <script src="assets/js/custom/apexcharts.js"></script>
+
   <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
     <!--begin::Theme mode setup on page load-->
     <script>
@@ -71,6 +72,26 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 
 <div id="chart"></div>
+<div class="table-container">
+    <h3 id="table-title"></h3>
+    <table id="data-table" border="1" style="width:100%; border-collapse: collapse; margin-top: 20px;" class="table table-bordered table-striped table-hover">
+        <thead>
+            <tr>
+                <th id="table-header-label"></th>
+                <th>Kullanıcı Sayısı</th>
+            </tr>
+        </thead>
+        <tbody>
+            </tbody>
+        <tfoot>
+            <tr>
+                <td><b>Toplam</b></td>
+                <td id="total-user-count"></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
 
                     </div>
 
@@ -131,94 +152,126 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     <!--end::Javascript-->
   </body>
   <!--end::Body-->
- <script>
-  let chart; // ApexCharts örneğini dışarıda tanımlıyoruz
-  let chartData = null; // API'den gelen tüm veriyi saklayacağız
+<script>
+    let chart; // ApexCharts örneğini dışarıda tanımlıyoruz
+    let chartData = null; // API'den gelen tüm veriyi saklayacağız
 
-  // Grafik oluşturma fonksiyonu
-  function renderChart(dataArray, title) {
-    const labels = dataArray.map(item => item.day || item.week || item.period || item.year);
-    const counts = dataArray.map(item => Number(item.user_count));
+    // Tablo oluşturma fonksiyonu
+    function renderTable(dataArray, title, labelKey) {
+        const tableBody = document.querySelector("#data-table tbody");
+        tableBody.innerHTML = ''; // Önceki verileri temizle
 
-    const options = {
-      chart: {
-        type: 'bar',
-        height: 400
-      },
-      series: [{
-        name: 'Toplam Kullanıcı Sayısı',
-        data: counts
-      }],
-      xaxis: {
-        categories: labels,
-        labels: {
-          rotate: -45,
-          style: {
-            fontSize: '12px'
-          }
-        }
-      },
-      yaxis: {
-        title: {
-          text: 'Kullanıcı Sayısı'
-        }
-      },
-      title: {
-        text: title,
-        align: 'center'
-      },
-      tooltip: {
-        y: {
-          formatter: val => `${val} kişi`
-        }
-      },
-      plotOptions: {
-        bar: {
-          horizontal: false,
-          columnWidth: '50%',
-          endingShape: 'rounded'
-        }
-      }
-    };
+        let totalUserCount = 0;
 
-    if (chart) {
-      chart.updateOptions(options);
-    } else {
-      chart = new ApexCharts(document.querySelector("#chart"), options);
-      chart.render();
+        dataArray.forEach(item => {
+            const row = tableBody.insertRow();
+            const labelCell = row.insertCell();
+            const countCell = row.insertCell();
+
+            labelCell.textContent = item[labelKey];
+            countCell.textContent = Number(item.user_count);
+
+            totalUserCount += Number(item.user_count);
+        });
+
+        document.getElementById('total-user-count').textContent = totalUserCount;
+        document.getElementById('table-title').textContent = title;
+        document.getElementById('table-header-label').textContent = labelKey.charAt(0).toUpperCase() + labelKey.slice(1); // İlk harfi büyük yap
     }
-  }
 
-  // Seçim değiştiğinde grafiği güncelle
-  document.getElementById('time-range').addEventListener('change', function () {
-    const selected = this.value;
-    if (chartData && chartData[selected]) {
-      const titleMap = {
-        daily: "Günlük Toplam Kullanıcılar",
-        weekly: "Haftalık Toplam Kullanıcılar",
-        monthly: "Aylık Toplam Kullanıcılar",
-        yearly: "Yıllık Toplam Kullanıcılar"
-      };
-      renderChart(chartData[selected], titleMap[selected]);
+
+    // Grafik oluşturma fonksiyonu
+    function renderChart(dataArray, title, labelKey) {
+        const labels = dataArray.map(item => item[labelKey]);
+        const counts = dataArray.map(item => Number(item.user_count));
+
+        const options = {
+            chart: {
+                type: 'bar',
+                height: 400
+            },
+            series: [{
+                name: 'Toplam Kullanıcı Sayısı',
+                data: counts
+            }],
+            xaxis: {
+                categories: labels,
+                labels: {
+                    rotate: -45,
+                    style: {
+                        fontSize: '12px'
+                    }
+                }
+            },
+            yaxis: {
+                title: {
+                    text: 'Kullanıcı Sayısı'
+                }
+            },
+            title: {
+                text: title,
+                align: 'center'
+            },
+            tooltip: {
+                y: {
+                    formatter: val => `${val} kişi`
+                }
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '50%',
+                    endingShape: 'rounded'
+                }
+            }
+        };
+
+        if (chart) {
+            chart.updateOptions(options);
+        } else {
+            chart = new ApexCharts(document.querySelector("#chart"), options);
+            chart.render();
+        }
     }
-  });
 
-  // Veriyi çek ve başlangıç grafiğini oluştur
-  fetch('includes/ajax.php?service=active-user-count-report')
-    .then(res => res.json())
-    .then(data => {
-      if (data.status !== 'success') {
-        alert('Veri alınamadı: ' + (data.message || 'Bilinmeyen hata'));
-        return;
-      }
+    // Seçim değiştiğinde grafiği ve tabloyu güncelle
+    document.getElementById('time-range').addEventListener('change', function () {
+        const selected = this.value;
+        if (chartData && chartData[selected]) {
+            const titleMap = {
+                daily: "Günlük Toplam Kullanıcılar",
+                weekly: "Haftalık Toplam Kullanıcılar",
+                monthly: "Aylık Toplam Kullanıcılar",
+                yearly: "Yıllık Toplam Kullanıcılar"
+            };
+            const labelKeyMap = {
+                daily: "day",
+                weekly: "week",
+                monthly: "period", // Eğer aylık veride 'period' kullanılıyorsa
+                yearly: "year"
+            };
+            renderChart(chartData[selected], titleMap[selected], labelKeyMap[selected]);
+            renderTable(chartData[selected], titleMap[selected] + " Detayları", labelKeyMap[selected]);
+        }
+    });
 
-      chartData = data;
+    // Veriyi çek ve başlangıç grafiğini oluştur
+    fetch('includes/ajax.php?service=active-user-count-report')
+        .then(res => res.json())
+        .then(data => {
+            if (data.status !== 'success') {
+                alert('Veri alınamadı: ' + (data.message || 'Bilinmeyen hata'));
+                return;
+            }
 
-      // Varsayılan olarak günlük veriyi göster
-      document.getElementById('time-range').value = 'daily';
-      renderChart(data.daily, 'Günlük Toplam Kullanıcılar');
-    })
-    .catch(err => alert('Hata: ' + err.message));
+            chartData = data;
+
+            // Varsayılan olarak günlük veriyi göster
+            document.getElementById('time-range').value = 'daily';
+            renderChart(data.daily, 'Günlük Toplam Kullanıcılar', 'day');
+            renderTable(data.daily, 'Günlük Toplam Kullanıcılar Detayları', 'day');
+        })
+        .catch(err => alert('Hata: ' + err.message));
 </script>
 
 

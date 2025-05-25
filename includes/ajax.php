@@ -484,131 +484,221 @@ switch ($service) {
         }
         break;
     case 'paymenttypegraphicreport':
-        function getGroupedByPeriod($pdo, $dateFormat)
-        {
-            $stmt = $pdo->prepare("
-                SELECT 
-                    DATE_FORMAT(pp.created_at, ?) AS period,
-                    pt.name AS payment_type,
-                    ROUND(SUM(pp.pay_amount), 2) AS total_payment,
-                    ROUND(SUM(pp.kdv_amount), 2) AS total_tax
-                FROM package_payments_lnp pp
-                LEFT JOIN payment_types_lnp pt ON pt.id = pp.payment_type
-                GROUP BY period, pt.name
-                ORDER BY period
-            ");
-            $stmt->execute([$dateFormat]);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    case 'paymenttypegraphicreport':
+    function getGroupedByPeriodAndLimited($pdo, $dateFormat, $orderColumn, $limit)
+    {
+        $selectPeriod = "DATE_FORMAT(pp.created_at, ?) AS period";
+        $groupByPeriod = "period"; // 'period' alias'ı üzerinden grupla
+        $orderByClause = "";
+        $params = [$dateFormat]; // Varsayılan parametre
+
+        if ($orderColumn === 'period_date_daily') {
+            $orderByClause = "ORDER BY STR_TO_DATE(DATE_FORMAT(pp.created_at, '%d-%m-%Y'), '%d-%m-%Y') DESC";
+            $groupByPeriod = "DATE_FORMAT(pp.created_at, '%d-%m-%Y')"; // GROUP BY için direkt format
+        } elseif ($orderColumn === 'period_date_weekly') {
+            $orderByClause = "ORDER BY YEAR(pp.created_at) DESC, WEEK(pp.created_at, 1) DESC";
+            $groupByPeriod = "YEAR(pp.created_at), WEEK(pp.created_at, 1)"; // GROUP BY için yıl ve hafta
+            // Haftalık format için tek bir placeholder olduğu için $params değişmez.
+        } elseif ($orderColumn === 'period_date_monthly') {
+            // Sıralama için YYYY-MM formatını, görüntüleme için MM-YYYY formatını kullanıyoruz.
+            // Bu durumda SELECT içinde iki ayrı DATE_FORMAT olacak.
+            $selectPeriod = "DATE_FORMAT(pp.created_at, '%Y-%m') AS period_sort, DATE_FORMAT(pp.created_at, ?) AS period";
+            $groupByPeriod = "period_sort"; // Gruplamayı period_sort üzerinden yapıyoruz
+            $orderByClause = "ORDER BY period_sort DESC";
+            // Parametre olarak sadece '?' için olan formatı gönderiyoruz
+            $params = ['%m-%Y']; // Burada sadece 'period' için olan '?' dolduruluyor
+        } elseif ($orderColumn === 'period_date_yearly') {
+            $orderByClause = "ORDER BY YEAR(pp.created_at) DESC";
+            $groupByPeriod = "YEAR(pp.created_at)"; // GROUP BY için yıl
+            // Yıllık format için tek bir placeholder olduğu için $params değişmez.
+        } else {
+            // Varsayılan sıralama: created_at'a göre azalan
+            $orderByClause = "ORDER BY pp.created_at DESC";
+            $groupByPeriod = "period"; // Varsayılan olarak period alias'ı üzerinden grupla
         }
+        
+        $sql = "
+            SELECT
+                {$selectPeriod},
+                pt.name AS payment_type,
+                ROUND(SUM(pp.pay_amount), 2) AS total_payment,
+                ROUND(SUM(pp.kdv_amount), 2) AS total_tax
+            FROM package_payments_lnp pp
+            LEFT JOIN payment_types_lnp pt ON pt.id = pp.payment_type
+            GROUP BY {$groupByPeriod}, pt.name
+            {$orderByClause}
+            LIMIT {$limit}
+        ";
 
-        $response = [
-            'daily' => getGroupedByPeriod($pdo, '%d-%m-%Y'),
-            'weekly' => getGroupedByPeriod($pdo, '%x-HAFTA %v'),
-            'monthly' => getGroupedByPeriod($pdo, '%m-%Y'),
-            'yearly' => getGroupedByPeriod($pdo, '%Y')
-        ];
+        $stmt = $pdo->prepare($sql);
+        // Parametrelerin doğru şekilde bind edildiğinden emin olalım
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
-        header('Content-Type: application/json');
-        echo json_encode($response);
-        break;
+    try {
+        // Son 30 günlük kayıtları al (tarihe göre azalan, sonra ters çevrilir)
+        $daily = getGroupedByPeriodAndLimited($pdo, '%d-%m-%Y', 'period_date_daily', 30);
+        $daily = array_reverse($daily); // En eskiden en yeniye sırala
+
+        // Son 30 haftalık kayıtları al (yıla ve haftaya göre azalan, sonra ters çevrilir)
+        $weekly = getGroupedByPeriodAndLimited($pdo, '%x-HAFTA %v', 'period_date_weekly', 30);
+        $weekly = array_reverse($weekly); // En eskiden en yeniye sırala
+
+        // Son 30 aylık kayıtları al (YYYY-MM'ye göre azalan, sonra ters çevrilir)
+        $monthly = getGroupedByPeriodAndLimited($pdo, '%m-%Y', 'period_date_monthly', 30);
+        $monthly = array_reverse($monthly); // En eskiden en yeniye sırala
+
+        // Son 30 yıllık kayıtları al (yıla göre azalan, sonra ters çevrilir)
+        $yearly = getGroupedByPeriodAndLimited($pdo, '%Y', 'period_date_yearly', 30);
+        $yearly = array_reverse($yearly); // En eskiden en yeniye sırala
+
+        echo json_encode([
+            'daily' => $daily,
+            'weekly' => $weekly,
+            'monthly' => $monthly,
+            'yearly' => $yearly
+        ]);
+    } catch (Exception $e) {
+        // Hata durumunda loglama veya daha detaylı hata mesajı döndürmek iyi bir uygulama olabilir.
+        error_log("Payment Type Graphic Report Error: " . $e->getMessage());
+        echo json_encode(['error' => 'Sunucu hatası oluştu. Lütfen yöneticinize başvurun.']);
+    }
+    break;
     case 'userpaymentreport':
-        if ($_GET['action'] === 'kullaniciBasinaGelir') {
+    if ($_GET['action'] === 'kullaniciBasinaGelir') {
 
-            $period = $_GET['period'] ?? 'daily'; // daily, weekly, monthly, yearly
+        $period = $_GET['period'] ?? 'daily'; // daily, weekly, monthly, yearly
+        $limit = 30; // Son 30 kaydı alacağız
 
-            // Kullanıcı rolü 2 olanların sayısını al
-            $userCountStmt = $pdo->prepare("SELECT COUNT(*) FROM users_lnp WHERE role = 2 or role=10002");
-            $userCountStmt->execute();
-            $userCount = (int) $userCountStmt->fetchColumn();
+        // Kullanıcı rolü 2 veya 10002 olanların sayısını al
+        $userCountStmt = $pdo->prepare("SELECT COUNT(*) FROM users_lnp WHERE role = 2 OR role = 10002");
+        $userCountStmt->execute();
+        $userCount = (int) $userCountStmt->fetchColumn();
 
-            if ($userCount === 0) {
-                echo json_encode(['data' => []]);
-                exit;
-            }
-
-            // Tarih formatı ve GROUP BY ifadesi
-            switch ($period) {
-                case 'weekly':
-                    $dateFormat = '%x-HAFTA %v';
-                    $groupBy = "YEARWEEK(pp.created_at, 3)";
-                    break;
-                case 'monthly':
-                    $dateFormat = '%m-%Y';
-                    $groupBy = "DATE_FORMAT(pp.created_at, '%m-%Y')";
-                    break;
-                case 'yearly':
-                    $dateFormat = '%Y';
-                    $groupBy = "YEAR(pp.created_at)";
-                    break;
-                case 'daily':
-                default:
-                    $dateFormat = '%d-%m-%Y';
-                    $groupBy = "DATE(pp.created_at)";
-                    break;
-            }
-
-            $stmt = $pdo->prepare("
-        SELECT 
-            DATE_FORMAT(pp.created_at, ?) AS period,
-            ROUND(SUM(pp.pay_amount) / ?, 2) AS avg_payment,
-            ROUND(SUM(pp.kdv_amount) / ?, 2) AS avg_tax
-        FROM package_payments_lnp pp
-        INNER JOIN users_lnp u ON u.id = pp.user_id AND (u.role = 2 or u.role=10002)
-        GROUP BY $groupBy
-        ORDER BY period
-    ");
-
-            $stmt->execute([$dateFormat, $userCount, $userCount]);
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            echo json_encode(['data' => $result]);
+        if ($userCount === 0) {
+            echo json_encode(['data' => []]);
             exit;
         }
-        break;
+
+        // Tarih formatı, GROUP BY ifadesi ve ORDER BY ifadesi
+        $dateFormat = '';
+        $groupBy = '';
+        $orderBy = '';
+        $selectPeriodForSort = ''; // Sıralama için kullanılacak gizli sütun
+
+        switch ($period) {
+            case 'weekly':
+                $dateFormat = '%x-HAFTA %v'; // Görüntüleme formatı: Yıl-HAFTA HaftaNo
+                // Sıralama için yıl ve hafta numarası kullan
+                $selectPeriodForSort = "YEAR(pp.created_at) AS period_sort_year, WEEK(pp.created_at, 1) AS period_sort_week,";
+                $groupBy = "period_sort_year, period_sort_week";
+                $orderBy = "ORDER BY period_sort_year DESC, period_sort_week DESC";
+                break;
+            case 'monthly':
+                $dateFormat = '%m-%Y'; // Görüntüleme formatı: Ay-Yıl
+                // Sıralama için YYYY-MM formatını kullan
+                $selectPeriodForSort = "DATE_FORMAT(pp.created_at, '%Y-%m') AS period_sort,";
+                $groupBy = "period_sort";
+                $orderBy = "ORDER BY period_sort DESC";
+                break;
+            case 'yearly':
+                $dateFormat = '%Y'; // Görüntüleme formatı: Yıl
+                // Sıralama için yıl kullan
+                $selectPeriodForSort = "YEAR(pp.created_at) AS period_sort_year,";
+                $groupBy = "period_sort_year";
+                $orderBy = "ORDER BY period_sort_year DESC";
+                break;
+            case 'daily':
+            default:
+                $dateFormat = '%d-%m-%Y'; // Görüntüleme formatı: Gün-Ay-Yıl
+                // Sıralama için gerçek tarih değerini kullan
+                $selectPeriodForSort = "DATE(pp.created_at) AS period_sort_date,";
+                $groupBy = "period_sort_date";
+                $orderBy = "ORDER BY period_sort_date DESC";
+                break;
+        }
+
+        $sql = "
+            SELECT
+                {$selectPeriodForSort}
+                DATE_FORMAT(pp.created_at, ?) AS period,
+                ROUND(SUM(pp.pay_amount) / ?, 2) AS avg_payment,
+                ROUND(SUM(pp.kdv_amount) / ?, 2) AS avg_tax
+            FROM package_payments_lnp pp
+            INNER JOIN users_lnp u ON u.id = pp.user_id AND (u.role = 2 OR u.role = 10002)
+            GROUP BY $groupBy
+            $orderBy
+            LIMIT $limit
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        // Parametreleri doğru sırada gönder
+        $stmt->execute([$dateFormat, $userCount, $userCount]);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // JavaScript tarafında en eskiden en yeniye doğru sıralama beklediğimiz için veriyi ters çeviriyoruz
+        $result = array_reverse($result);
+
+        echo json_encode(['data' => $result]);
+        exit;
+    }
+    break;
 
     case 'graphicreport':
         try {
+            // Günlük veriler (son 20 gün)
             $daily = $pdo->query("
-    SELECT DATE_FORMAT(created_at, '%d-%m-%Y') AS day,  
-           SUM(pay_amount) AS total_payment, 
-           ROUND(SUM(kdv_amount), 0) AS total_tax 
-    FROM package_payments_lnp 
-    GROUP BY day 
-    ORDER BY day
-")->fetchAll(PDO::FETCH_ASSOC);
+            SELECT DATE_FORMAT(created_at, '%d-%m-%Y') AS day,
+                   SUM(pay_amount) AS total_payment,
+                   ROUND(SUM(kdv_amount), 0) AS total_tax
+            FROM package_payments_lnp
+            GROUP BY day
+            ORDER BY STR_TO_DATE(day, '%d-%m-%Y') DESC -- Tarih olarak azalan sıralama
+            LIMIT 30
+        ")->fetchAll(PDO::FETCH_ASSOC);
 
+            // Haftalık veriler (son 20 hafta)
             $weekly = $pdo->query("
-    SELECT CONCAT(YEAR(created_at), ' HAFTA ', LPAD(WEEK(created_at, 1), 2, '0')) AS week,  
-           SUM(pay_amount) AS total_payment, 
-           ROUND(SUM(kdv_amount), 0) AS total_tax 
-    FROM package_payments_lnp 
-    GROUP BY week 
-    ORDER BY week
-")->fetchAll(PDO::FETCH_ASSOC);
+            SELECT CONCAT(YEAR(created_at), ' HAFTA ', LPAD(WEEK(created_at, 1), 2, '0')) AS week,
+                   SUM(pay_amount) AS total_payment,
+                   ROUND(SUM(kdv_amount), 0) AS total_tax
+            FROM package_payments_lnp
+            GROUP BY week
+            ORDER BY YEAR(created_at) DESC, WEEK(created_at, 1) DESC -- Yıla ve haftaya göre azalan
+            LIMIT 30
+        ")->fetchAll(PDO::FETCH_ASSOC);
 
+            // Aylık veriler (son 20 ay)
             $monthly = $pdo->query("
-    SELECT DATE_FORMAT(created_at, '%m-%Y') AS period, 
-           SUM(pay_amount) AS total_payment, 
-           ROUND(SUM(kdv_amount), 0) AS total_tax 
-    FROM package_payments_lnp 
-    GROUP BY period 
-    ORDER BY period
-")->fetchAll(PDO::FETCH_ASSOC);
+            SELECT DATE_FORMAT(created_at, '%Y-%m') AS period_sort, -- Sıralama için YYYY-MM formatı
+                   DATE_FORMAT(created_at, '%m-%Y') AS period,     -- Görüntüleme için MM-YYYY formatı
+                   SUM(pay_amount) AS total_payment,
+                   ROUND(SUM(kdv_amount), 0) AS total_tax
+            FROM package_payments_lnp
+            GROUP BY period_sort
+            ORDER BY period_sort DESC -- YYYY-MM'ye göre azalan sıralama
+            LIMIT 30
+        ")->fetchAll(PDO::FETCH_ASSOC);
 
+            // Yıllık veriler (son 20 yıl)
             $yearly = $pdo->query("
-    SELECT YEAR(created_at) AS year, 
-           SUM(pay_amount) AS total_payment, 
-           ROUND(SUM(kdv_amount), 0) AS total_tax 
-    FROM package_payments_lnp 
-    GROUP BY year 
-    ORDER BY year
-")->fetchAll(PDO::FETCH_ASSOC);
+            SELECT YEAR(created_at) AS year,
+                   SUM(pay_amount) AS total_payment,
+                   ROUND(SUM(kdv_amount), 0) AS total_tax
+            FROM package_payments_lnp
+            GROUP BY year
+            ORDER BY year DESC -- Yıla göre azalan sıralama
+            LIMIT 30
+        ")->fetchAll(PDO::FETCH_ASSOC);
 
+            // JavaScript tarafına gönderirken verileri tersine çeviriyoruz ki en eski en başta olsun
+            // Çünkü SQL'de DESC ile en yeniyi çektik, JS'de ise artan sıralama bekliyoruz.
             echo json_encode([
-                'daily' => $daily,
-                'weekly' => $weekly,
-                'monthly' => $monthly,
-                'yearly' => $yearly
+                'daily' => array_reverse($daily),
+                'weekly' => array_reverse($weekly),
+                'monthly' => array_reverse($monthly),
+                'yearly' => array_reverse($yearly)
             ]);
         } catch (Exception $e) {
             echo json_encode(['error' => $e->getMessage()]);
@@ -820,7 +910,7 @@ switch ($service) {
         }
 
         // Sorguyu hazırla ve çalıştır
-       $sql = "
+        $sql = "
     SELECT 
         main_school_content_lnp.*, 
         classes_lnp.name as class_name 
@@ -897,11 +987,11 @@ switch ($service) {
             if ($check->rowCount() > 0) {
                 // Varsa güncelle (ilk kaydı güncelle)
                 $stmt = $pdo->prepare("UPDATE sms_settings_lnp SET username = ?, password = ?, msgheader=? LIMIT 1");
-                $stmt->execute([$username, $password,$msgheader]);
+                $stmt->execute([$username, $password, $msgheader]);
             } else {
                 // Yoksa yeni kayıt ekle
                 $stmt = $pdo->prepare("INSERT INTO sms_settings_lnp (username, password,msgheader) VALUES (?, ?,?)");
-                $stmt->execute([$username, $password,$msgheader]);
+                $stmt->execute([$username, $password, $msgheader]);
             }
 
             if ($stmt->rowCount() > 0) {
@@ -920,115 +1010,125 @@ switch ($service) {
 
         break;
     case 'expired-user-count-report':
-        try {
-            $today = date('Y-m-d');
+    try {
+        $today = date('Y-m-d');
 
-            $dailyStmt = $pdo->prepare("
-                SELECT DATE_FORMAT(subscribed_end, '%d-%m-%Y') AS day, COUNT(*) AS user_count
-                FROM users_lnp
-                WHERE (role = 2 OR role = 10002) AND subscribed_end < :today
-                GROUP BY day
-                ORDER BY day
-            ");
-            $dailyStmt->execute(['today' => $today]);
-            $daily = $dailyStmt->fetchAll(PDO::FETCH_ASSOC);
-
-            // Haftalık
-            $weeklyStmt = $pdo->prepare("
-                SELECT CONCAT(YEAR(subscribed_end), ' HAFTA ', LPAD(WEEK(subscribed_end, 1), 2, '0')) AS week, COUNT(*) AS user_count
-                FROM users_lnp
-                WHERE (role = 2 OR role = 10002) AND subscribed_end < :today
-                GROUP BY week
-                ORDER BY week
-            ");
-            $weeklyStmt->execute(['today' => $today]);
-            $weekly = $weeklyStmt->fetchAll(PDO::FETCH_ASSOC);
-
-            // Aylık
-            $monthlyStmt = $pdo->prepare("
-                SELECT DATE_FORMAT(subscribed_end, '%m-%Y') AS period, COUNT(*) AS user_count
-                FROM users_lnp
-                WHERE (role = 2 OR role = 10002) AND subscribed_end < :today
-                GROUP BY period
-                ORDER BY period
-            ");
-            $monthlyStmt->execute(['today' => $today]);
-            $monthly = $monthlyStmt->fetchAll(PDO::FETCH_ASSOC);
-
-            // Yıllık
-            $yearlyStmt = $pdo->prepare("
-                SELECT YEAR(subscribed_end) AS year, COUNT(*) AS user_count
-                FROM users_lnp
-                WHERE (role = 2 OR role = 10002) AND subscribed_end < :today
-                GROUP BY year
-                ORDER BY year
-            ");
-            $yearlyStmt->execute(['today' => $today]);
-            $yearly = $yearlyStmt->fetchAll(PDO::FETCH_ASSOC);
-
-            echo json_encode([
-                'status' => 'success',
-                'daily' => $daily,
-                'weekly' => $weekly,
-                'monthly' => $monthly,
-                'yearly' => $yearly,
-            ]);
-        } catch (Exception $e) {
-            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
-        }
-        break;
-    case 'active-user-count-report':
-        try {
-            $today = date('Y-m-d');
-
-            // Günlük
-            $daily = $pdo->query("
-            SELECT  DATE_FORMAT(created_at, '%d-%m-%Y') AS day, COUNT(*) AS user_count
+        // Günlük - Son 30 kayıt
+        // Aboneliği bitiş tarihine göre tersten sıralayıp son 30 günü alırız.
+        $dailyStmt = $pdo->prepare("
+            SELECT DATE_FORMAT(subscribed_end, '%d-%m-%Y') AS day, COUNT(*) AS user_count
             FROM users_lnp
-            WHERE (role=2 or role=10002) and  subscribed_end > '$today'
+            WHERE (role = 2 OR role = 10002) AND subscribed_end < :today
             GROUP BY day
-            ORDER BY day
+            ORDER BY subscribed_end DESC -- En son bitiş tarihinden eskiye doğru sırala
+            LIMIT 30 -- Sadece son 30 kaydı getir
+        ");
+        $dailyStmt->execute(['today' => $today]);
+        $daily = $dailyStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Haftalık - Son 30 kayıt
+        $weeklyStmt = $pdo->prepare("
+            SELECT CONCAT(YEAR(subscribed_end), ' HAFTA ', LPAD(WEEK(subscribed_end, 1), 2, '0')) AS week, COUNT(*) AS user_count
+            FROM users_lnp
+            WHERE (role = 2 OR role = 10002) AND subscribed_end < :today
+            GROUP BY week
+            ORDER BY YEAR(subscribed_end) DESC, WEEK(subscribed_end, 1) DESC -- En son haftadan eskiye doğru sırala
+            LIMIT 30 -- Sadece son 30 kaydı getir
+        ");
+        $weeklyStmt->execute(['today' => $today]);
+        $weekly = $weeklyStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Aylık - Son 30 kayıt
+        $monthlyStmt = $pdo->prepare("
+            SELECT DATE_FORMAT(subscribed_end, '%m-%Y') AS period, COUNT(*) AS user_count
+            FROM users_lnp
+            WHERE (role = 2 OR role = 10002) AND subscribed_end < :today
+            GROUP BY period
+            ORDER BY subscribed_end DESC -- En son aydan eskiye doğru sırala
+            LIMIT 30 -- Sadece son 30 kaydı getir
+        ");
+        $monthlyStmt->execute(['today' => $today]);
+        $monthly = $monthlyStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Yıllık - Son 30 kayıt
+        $yearlyStmt = $pdo->prepare("
+            SELECT YEAR(subscribed_end) AS year, COUNT(*) AS user_count
+            FROM users_lnp
+            WHERE (role = 2 OR role = 10002) AND subscribed_end < :today
+            GROUP BY year
+            ORDER BY year DESC -- En son yıldan eskiye doğru sırala
+            LIMIT 30 -- Sadece son 30 kaydı getir
+        ");
+        $yearlyStmt->execute(['today' => $today]);
+        $yearly = $yearlyStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            'status' => 'success',
+            'daily' => $daily,
+            'weekly' => $weekly,
+            'monthly' => $monthly,
+            'yearly' => $yearly,
+        ]);
+    } catch (Exception $e) {
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+    break;
+    case 'active-user-count-report':
+    try {
+        $today = date('Y-m-d');
+
+        // Günlük - Son 30 kayıt
+        $daily = $pdo->query("
+            SELECT DATE_FORMAT(created_at, '%d-%m-%Y') AS day, COUNT(*) AS user_count
+            FROM users_lnp
+            WHERE (role=2 or role=10002) AND subscribed_end > '$today'
+            GROUP BY day
+            ORDER BY created_at DESC -- En son tarihten eskiye doğru sırala
+            LIMIT 30 -- Sadece son 30 kaydı getir
         ")->fetchAll(PDO::FETCH_ASSOC);
 
-            // Haftalık
-            $weekly = $pdo->query("
-    SELECT CONCAT(YEAR(created_at), ' HAFTA ', LPAD(WEEK(created_at, 1), 2, '0')) AS week, 
-           COUNT(*) AS user_count
-    FROM users_lnp
-    WHERE (role = 2 OR role = 10002) AND subscribed_end > '$today'
-    GROUP BY week
-    ORDER BY YEAR(created_at), WEEK(created_at, 1)
-")->fetchAll(PDO::FETCH_ASSOC);
+        // Haftalık - Son 30 kayıt
+        $weekly = $pdo->query("
+            SELECT CONCAT(YEAR(created_at), ' HAFTA ', LPAD(WEEK(created_at, 1), 2, '0')) AS week,
+                   COUNT(*) AS user_count
+            FROM users_lnp
+            WHERE (role = 2 OR role = 10002) AND subscribed_end > '$today'
+            GROUP BY week
+            ORDER BY YEAR(created_at) DESC, WEEK(created_at, 1) DESC -- En son haftadan eskiye doğru sırala
+            LIMIT 30 -- Sadece son 30 kaydı getir
+        ")->fetchAll(PDO::FETCH_ASSOC);
 
-            // Aylık
-            $monthly = $pdo->query("
+        // Aylık - Son 30 kayıt
+        $monthly = $pdo->query("
             SELECT DATE_FORMAT(created_at, '%m-%Y') AS period, COUNT(*) AS user_count
             FROM users_lnp
-            WHERE (role=2 or role=10002) and  subscribed_end > '$today'
+            WHERE (role=2 or role=10002) AND subscribed_end > '$today'
             GROUP BY period
-            ORDER BY period
+            ORDER BY created_at DESC -- En son aydan eskiye doğru sırala
+            LIMIT 30 -- Sadece son 30 kaydı getir
         ")->fetchAll(PDO::FETCH_ASSOC);
 
-            // Yıllık
-            $yearly = $pdo->query("
+        // Yıllık - Son 30 kayıt
+        $yearly = $pdo->query("
             SELECT YEAR(created_at) AS year, COUNT(*) AS user_count
             FROM users_lnp
-            WHERE (role=2 or role=10002) and subscribed_end > '$today'
+            WHERE (role=2 or role=10002) AND subscribed_end > '$today'
             GROUP BY year
-            ORDER BY year
+            ORDER BY year DESC -- En son yıldan eskiye doğru sırala
+            LIMIT 30 -- Sadece son 30 kaydı getir
         ")->fetchAll(PDO::FETCH_ASSOC);
 
-            echo json_encode([
-                'status' => 'success',
-                'daily' => $daily,
-                'weekly' => $weekly,
-                'monthly' => $monthly,
-                'yearly' => $yearly,
-            ]);
-        } catch (Exception $e) {
-            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
-        }
-        break;
+        echo json_encode([
+            'status' => 'success',
+            'daily' => $daily,
+            'weekly' => $weekly,
+            'monthly' => $monthly,
+            'yearly' => $yearly,
+        ]);
+    } catch (Exception $e) {
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+    break;
 
 
     // Diğer servisler buraya eklenebilir

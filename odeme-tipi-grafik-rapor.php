@@ -74,7 +74,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </div>
 
                                             <div id="chart" style="max-width: 1000px; margin: auto;"></div>
-                                        </div>
+                                          <div id="table-container"></div>
+                                          </div>
 
 
 
@@ -134,74 +135,208 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     </body>
     <!--end::Body-->
    <script>
+    // Grafik çizme fonksiyonu
     function renderChart(data, periodType) {
-      const periods = [...new Set(data.map(item => item.period))];
-      const paymentTypes = [...new Set(data.map(item => item.payment_type))];
+        const periods = [...new Set(data.map(item => item.period))];
+        const paymentTypes = [...new Set(data.map(item => item.payment_type))];
 
-      const series = [];
+        const series = [];
 
-      paymentTypes.forEach(type => {
-        // Ödeme
-        series.push({
-          name: `${type} - Ödeme`,
-          data: periods.map(period => {
-            const found = data.find(d => d.period === period && d.payment_type === type);
-            return found ? parseFloat(found.total_payment) : 0;
-          })
+        paymentTypes.forEach(type => {
+            // Ödeme serisi
+            series.push({
+                name: `${type} - Ödeme`,
+                data: periods.map(period => {
+                    const found = data.find(d => d.period === period && d.payment_type === type);
+                    return found ? parseFloat(found.total_payment) : 0;
+                })
+            });
+
+            // KDV serisi
+            series.push({
+                name: `${type} - KDV`,
+                data: periods.map(period => {
+                    const found = data.find(d => d.period === period && d.payment_type === type);
+                    return found ? parseFloat(found.total_tax) : 0;
+                })
+            });
         });
 
-        // KDV
-        series.push({
-          name: `${type} - KDV`,
-          data: periods.map(period => {
-            const found = data.find(d => d.period === period && d.payment_type === type);
-            return found ? parseFloat(found.total_tax) : 0;
-          })
-        });
-      });
+        // periodType için Türkçe karşılıkları
+        const periodTypeTranslations = {
+            daily: 'Günlük',
+            weekly: 'Haftalık',
+            monthly: 'Aylık',
+            yearly: 'Yıllık'
+        };
+        const displayPeriodType = periodTypeTranslations[periodType] || periodType; // Eğer eşleşme yoksa orijinali kullan
 
-      const options = {
-        chart: {
-          type: 'bar',
-          height: 500,
-          stacked: true
-        },
-        series: series,
-        xaxis: {
-          categories: periods,
-          title: { text: `${periodType} bazında` }
-        },
-        yaxis: {
-          title: { text: '₺ Tutar' }
-        },
-        tooltip: {
-          y: {
-            formatter: val => val.toFixed(2) + ' ₺'
-          }
-        },
-        legend: {
-          position: 'top'
+        const options = {
+            chart: {
+                type: 'bar',
+                height: 500,
+                stacked: true // Yığılmış bar chart
+            },
+            series: series,
+            xaxis: {
+                categories: periods,
+                title: { text: `${displayPeriodType} Bazında` } // Türkçe başlık
+            },
+            yaxis: {
+                title: { text: 'Tutar (₺)' } // Türkçe başlık
+            },
+            tooltip: {
+                y: {
+                    formatter: val => val.toFixed(2) + ' ₺'
+                }
+            },
+            legend: {
+                position: 'top'
+            }
+        };
+
+        // Eğer mevcut bir chart nesnesi varsa onu yok et
+        if (window.myPaymentTypeChart) {
+            window.myPaymentTypeChart.destroy();
         }
-      };
-
-      const chart = new ApexCharts(document.querySelector("#chart"), options);
-      chart.render();
+        const chartElement = document.querySelector("#chart");
+        if (chartElement) {
+            window.myPaymentTypeChart = new ApexCharts(chartElement, options);
+            window.myPaymentTypeChart.render();
+        }
     }
 
-    function loadChart(periodType = 'monthly') {
-      $.getJSON('includes/ajax.php?service=paymenttypegraphicreport', function (response) {
-        const data = response[periodType];
-        document.querySelector("#chart").innerHTML = ''; // önceki grafiği temizle
-        renderChart(data, periodType);
-      });
+    // Tablo oluşturma fonksiyonu (payment_type bazında)
+    function renderTable(data, periodType) {
+        const periods = [...new Set(data.map(item => item.period))];
+        const paymentTypes = [...new Set(data.map(item => item.payment_type))];
+
+        // periodType için Türkçe karşılıkları
+        const periodTypeTranslations = {
+            daily: 'Günlük',
+            weekly: 'Haftalık',
+            monthly: 'Aylık',
+            yearly: 'Yıllık'
+        };
+        const displayPeriodType = periodTypeTranslations[periodType] || periodType;
+
+        let tableHTML = '<h4 class="mt-5 mb-3">Ödeme Tipi Bazında Özet Tablosu</h4>';
+        tableHTML += '<table class="table table-bordered table-striped table-hover">';
+        tableHTML += '<thead>';
+        tableHTML += '<tr>';
+        tableHTML += `<th>Dönem (${displayPeriodType})</th>`; // Türkçe başlık
+        paymentTypes.forEach(type => {
+            tableHTML += `<th colspan="2" class="text-center">${type}</th>`;
+        });
+        tableHTML += `<th colspan="2" class="text-center">Genel Toplam</th>`; // Türkçe başlık
+        tableHTML += '</tr>';
+        tableHTML += '<tr>';
+        tableHTML += '<th></th>'; // Boş köşe
+        paymentTypes.forEach(type => {
+            tableHTML += '<th>Ödeme</th>'; // Türkçe başlık
+            tableHTML += '<th>KDV</th>'; // Türkçe başlık
+        });
+        tableHTML += '<th>Toplam Ödeme</th>'; // Türkçe başlık
+        tableHTML += '<th>Toplam KDV</th>'; // Türkçe başlık
+        tableHTML += '</tr>';
+        tableHTML += '</thead>';
+        tableHTML += '<tbody>';
+
+        let overallTotalPayment = 0;
+        let overallTotalTax = 0;
+
+        periods.forEach(period => {
+            tableHTML += '<tr>';
+            tableHTML += `<td>${period}</td>`;
+            let periodTotalPayment = 0;
+            let periodTotalTax = 0;
+
+            paymentTypes.forEach(type => {
+                const found = data.find(d => d.period === period && d.payment_type === type);
+                const totalPayment = found ? parseFloat(found.total_payment) : 0;
+                const totalTax = found ? parseFloat(found.total_tax) : 0;
+
+                tableHTML += `<td>${totalPayment.toFixed(2)} ₺</td>`;
+                tableHTML += `<td>${totalTax.toFixed(2)} ₺</td>`;
+
+                periodTotalPayment += totalPayment;
+                periodTotalTax += totalTax;
+            });
+            
+            // Dönem bazında toplamları ekle
+            tableHTML += `<td>${periodTotalPayment.toFixed(2)} ₺</td>`;
+            tableHTML += `<td>${periodTotalTax.toFixed(2)} ₺</td>`;
+
+            overallTotalPayment += periodTotalPayment;
+            overallTotalTax += periodTotalTax;
+
+            tableHTML += '</tr>';
+        });
+
+        tableHTML += '</tbody>';
+
+        // En alt toplam satırı
+        tableHTML += '<tfoot>';
+        tableHTML += '<tr>';
+        tableHTML += `<th class="text-end">Genel Toplam:</th>`; // Türkçe başlık
+        paymentTypes.forEach(type => {
+             tableHTML += `<th colspan="2"></th>`; 
+        });
+        tableHTML += `<th>${overallTotalPayment.toFixed(2)} ₺</th>`;
+        tableHTML += `<th>${overallTotalTax.toFixed(2)} ₺</th>`;
+        tableHTML += '</tr>';
+        tableHTML += '</tfoot>';
+
+        tableHTML += '</table>';
+
+        document.querySelector("#table-container").innerHTML = tableHTML;
     }
 
-    $('#periodSelect').on('change', function () {
-      loadChart(this.value);
+    // Hem grafik hem de tabloyu yükleyen ana fonksiyon
+    function loadChartAndTable(periodType = 'monthly') {
+        $.getJSON('includes/ajax.php?service=paymenttypegraphicreport', function (response) {
+            if (response.error) {
+                alert("API Hatası: " + response.error);
+                return;
+            }
+
+            let data = response[periodType];
+            if (!data) {
+                alert("Veri bulunamadı: " + periodType);
+                document.querySelector("#chart").innerHTML = '';
+                document.querySelector("#table-container").innerHTML = '<h4>Bu dönem için veri bulunamadı.</h4>';
+                return;
+            }
+
+            // Aylık ise kronolojik sıralama (PHP tarafından tersine çevrilmiş olarak geldiği varsayılır)
+            // Eğer PHP tarafında tersine çevrilmiyorsa, bu sıralama bloğunu aktif edebilirsiniz.
+            /*
+            if (periodType === 'monthly') {
+                data.sort((a, b) => {
+                    const dateA = new Date(a.period + '-01');
+                    const dateB = new Date(b.period + '-01');
+                    return dateA - dateB;
+                });
+            }
+            */
+
+            document.querySelector("#chart").innerHTML = '';
+            document.querySelector("#table-container").innerHTML = '';
+
+            renderChart(data, periodType); // Grafiği çiz
+            renderTable(data, periodType); // Tabloyu oluştur
+        });
+    }
+
+    // Olay dinleyicileri ve ilk yükleme
+    $(document).ready(function() {
+        $('#periodSelect').on('change', function () {
+            loadChartAndTable(this.value);
+        });
+
+        loadChartAndTable(); // sayfa ilk açıldığında aylık olarak yükle
     });
-
-    loadChart(); // sayfa ilk açıldığında aylık olarak yükle
-  </script>
+</script>
 
 </html>
 <?php } else {

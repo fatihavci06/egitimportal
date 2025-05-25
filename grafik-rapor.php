@@ -11,7 +11,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 ?>
     <!--end::Head-->
     <!--begin::Body-->
-     <script src="assets/js/custom/apexcharts.js"></script>
+    <script src="assets/js/custom/apexcharts.js"></script>
 
     <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
         <!--begin::Theme mode setup on page load-->
@@ -68,40 +68,42 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <select id="viewType" class="form-select w-25">
                                                     <option value="daily">Günlük</option>
                                                     <option value="weekly">Haftalık</option>
-                                                    <option value="monthly">Aylık</option>
+                                                    <option value="monthly" selected>Aylık</option>
                                                     <option value="yearly">Yıllık</option>
                                                 </select>
                                             </div>
                                             <div id="chart"></div>
+                                            <div id="table-container"></div>
                                         </div>
-
-
-
-
-
                                     </div>
 
 
 
 
+
                                 </div>
-                                <!--end::Card-->
+
+
+
+
                             </div>
-                            <!--end::Content container-->
+                            <!--end::Card-->
                         </div>
-                        <!--end::Content-->
+                        <!--end::Content container-->
                     </div>
-                    <!--end::Content wrapper-->
-                    <!--begin::Footer-->
-                    <?php include_once "views/footer.php"; ?>
-                    <!--end::Footer-->
+                    <!--end::Content-->
                 </div>
-                <!--end:::Main-->
-                <!--begin::aside-->
-                <?php include_once "views/aside.php"; ?>
-                <!--end::aside-->
+                <!--end::Content wrapper-->
+                <!--begin::Footer-->
+                <?php include_once "views/footer.php"; ?>
+                <!--end::Footer-->
             </div>
-            <!--end::Wrapper-->
+            <!--end:::Main-->
+            <!--begin::aside-->
+            <?php include_once "views/aside.php"; ?>
+            <!--end::aside-->
+        </div>
+        <!--end::Wrapper-->
         </div>
         <!--end::Page-->
         </div>
@@ -132,83 +134,163 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <!--end::Javascript-->
     </body>
     <!--end::Body-->
-    <script>
-        function renderChart(data, labelKey) {
-            const labels = data.map(item => item[labelKey]);
-            const paymentSeries = data.map(item => parseFloat(item.total_payment));
-            const taxSeries = data.map(item => parseFloat(item.total_tax));
+   <script>
+    // Grafik çizme fonksiyonu (mevcut kodunuzdan alındı)
+    function renderChart(data, labelKey, periodType) { // periodType parametresini ekledik
+        const labels = data.map(item => item[labelKey]);
+        const paymentSeries = data.map(item => parseFloat(item.total_payment));
+        const taxSeries = data.map(item => parseFloat(item.total_tax));
 
-            const options = {
-                chart: {
-                    type: 'bar',
-                    height: 400
-                },
-                series: [{
-                        name: 'Ödeme',
-                        data: paymentSeries
-                    },
-                    {
-                        name: 'Vergi',
-                        data: taxSeries
-                    }
-                ],
-                xaxis: {
-                    categories: labels,
-                    title: {
-                        text: labelKey.toUpperCase()
-                    }
-                },
-                dataLabels: {
-                    enabled: false
-                },
-                tooltip: {
-                    y: {
-                        formatter: val => val.toFixed(2) + " ₺"
-                    }
+        // periodType için Türkçe karşılıkları
+        const periodTypeTranslations = {
+            daily: 'Günlük',
+            weekly: 'Haftalık',
+            monthly: 'Aylık',
+            yearly: 'Yıllık'
+        };
+        const displayPeriodType = periodTypeTranslations[periodType] || periodType; // Eğer eşleşme yoksa orijinali kullan
+
+        const options = {
+            chart: {
+                type: 'bar',
+                height: 400
+            },
+            series: [{
+                name: 'Ödeme', // Türkçe
+                data: paymentSeries
+            }, {
+                name: 'Vergi', // Türkçe
+                data: taxSeries
+            }],
+            xaxis: {
+                categories: labels,
+                title: {
+                    text: `${displayPeriodType} Bazında` // Türkçe başlık
                 }
-            };
+            },
+            dataLabels: {
+                enabled: false
+            },
+            tooltip: {
+                y: {
+                    formatter: val => val.toFixed(2) + " ₺"
+                }
+            },
+            yaxis: {
+                title: {
+                    text: 'Tutar (₺)' // Türkçe Y ekseni başlığı
+                }
+            }
+        };
 
-            const chart = new ApexCharts(document.querySelector("#chart"), options);
-            chart.render();
+        // Eğer mevcut bir chart nesnesi varsa onu yok et
+        // Bu, ApexCharts'ın eski grafik nesnelerinin bellekten düzgün bir şekilde temizlenmesini sağlar.
+        if (window.myPaymentChart) {
+            window.myPaymentChart.destroy();
         }
-
-        function loadChart(viewType) {
-            $.getJSON("includes/ajax.php?service=graphicreport", function(response) {
-                if (response.error) {
-                    alert("API Hatası: " + response.error);
-                    return;
-                }
-
-                const data = response[viewType];
-                if (!data) {
-                    alert("Veri bulunamadı: " + viewType);
-                    return;
-                }
-
-                // Önceki chart varsa temizle
-                document.querySelector("#chart").innerHTML = '';
-
-                const labelKey = {
-                    daily: 'day',
-                    weekly: 'week',
-                    monthly: 'period',
-                    yearly: 'year'
-                } [viewType];
-
-                renderChart(data, labelKey);
-            });
+        const chartElement = document.querySelector("#chart");
+        if (chartElement) {
+             window.myPaymentChart = new ApexCharts(chartElement, options);
+             window.myPaymentChart.render();
         }
+    }
 
-        // Sayfa yüklendiğinde ilk grafik
-        $(document).ready(function() {
-            loadChart($('#viewType').val());
+    // Tablo oluşturma fonksiyonu
+    function renderTable(data, periodType, labelKey) {
+        let totalPaymentSum = 0;
+        let totalTaxSum = 0;
 
-            // Seçim değişince grafik güncelle
-            $('#viewType').on('change', function() {
-                loadChart($(this).val());
-            });
+        // periodType için Türkçe karşılıkları
+        const periodTypeTranslations = {
+            daily: 'Günlük',
+            weekly: 'Haftalık',
+            monthly: 'Aylık',
+            yearly: 'Yıllık'
+        };
+        const displayPeriodType = periodTypeTranslations[periodType] || periodType;
+
+        let tableHTML = '<h4 class="mt-5 mb-3">Ödeme ve Vergi Tablosu</h4>'; // Türkçe başlık
+        tableHTML += '<table class="table table-bordered table-striped table-hover">';
+        tableHTML += '<thead>';
+        tableHTML += '<tr>';
+        tableHTML += `<th>Dönem (${displayPeriodType})</th>`; // Türkçe dönem başlığı
+        tableHTML += '<th>Toplam Ödeme (₺)</th>'; // Türkçe başlık
+        tableHTML += '<th>Toplam KDV (₺)</th>'; // Türkçe başlık
+        tableHTML += '</tr>';
+        tableHTML += '</thead>';
+        tableHTML += '<tbody>';
+
+        data.forEach(item => {
+            const periodLabel = item[labelKey];
+            const payment = parseFloat(item.total_payment);
+            const tax = parseFloat(item.total_tax);
+
+            totalPaymentSum += payment;
+            totalTaxSum += tax;
+
+            tableHTML += '<tr>';
+            tableHTML += `<td>${periodLabel}</td>`;
+            tableHTML += `<td>${payment.toFixed(2)}</td>`;
+            tableHTML += `<td>${tax.toFixed(2)}</td>`;
+            tableHTML += '</tr>';
         });
-    </script>
+
+        tableHTML += '</tbody>';
+        
+        // Toplam satırı ekle
+        tableHTML += '<tfoot>';
+        tableHTML += '<tr>';
+        tableHTML += '<th colspan="1" class="text-end">Genel Toplam:</th>'; // Türkçe başlık
+        tableHTML += `<th>${totalPaymentSum.toFixed(2)} ₺</th>`;
+        tableHTML += `<th>${totalTaxSum.toFixed(2)} ₺</th>`;
+        tableHTML += '</tr>';
+        tableHTML += '</tfoot>';
+
+        tableHTML += '</table>';
+
+        document.querySelector("#table-container").innerHTML = tableHTML;
+    }
+
+    // Hem grafik hem de tabloyu yükleyen ana fonksiyon
+    function loadChartAndTable(viewType) {
+        $.getJSON("includes/ajax.php?service=graphicreport", function(response) {
+            if (response.error) {
+                alert("API Hatası: " + response.error);
+                return;
+            }
+
+            let data = response[viewType];
+            if (!data) {
+                alert("Veri bulunamadı: " + viewType);
+                document.querySelector("#chart").innerHTML = '';
+                document.querySelector("#table-container").innerHTML = '<h4>Bu dönem için veri bulunamadı.</h4>';
+                return;
+            }
+
+            document.querySelector("#chart").innerHTML = '';
+            document.querySelector("#table-container").innerHTML = '';
+
+            const labelKey = {
+                daily: 'day',
+                weekly: 'week',
+                monthly: 'period',
+                yearly: 'year'
+            }[viewType];
+
+            renderChart(data, labelKey, viewType); // viewType'ı renderChart'a da gönderiyoruz
+            renderTable(data, viewType, labelKey);
+        });
+    }
+
+    // Sayfa yüklendiğinde ilk grafik ve tabloyu yükle
+    $(document).ready(function() {
+        loadChartAndTable('monthly');
+
+        $('#viewType').on('change', function() {
+            loadChartAndTable($(this).val());
+        });
+    });
+</script>
 
 </html>
 <?php } else {
