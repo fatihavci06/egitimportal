@@ -243,6 +243,28 @@ var KTModalUpdateCustomer = function () {
             }
         }
 
+        function updateSelectWhenChange(selector, data, emptyText) {
+            const $element = $(selector);
+
+            // Clear existing options
+            $element.empty();
+
+            if (data.length > 0) {
+                // Add new options from data
+                $element.select2({
+                    data: data,
+                    placeholder: emptyText
+                });
+
+                // Set the selected value to 0
+                $element.val('0').trigger('change');
+            } else {
+                // Add empty option
+                $element.html(`<option value="">${emptyText}</option>`);
+                $element.select2({ placeholder: emptyText });
+            }
+        }
+
         function showErrorAlert(error, xhr) {
             Swal.fire({
                 text: error.responseText || xhr.responseText || error,
@@ -275,10 +297,10 @@ var KTModalUpdateCustomer = function () {
             const classVal = $("#classes").val();
 
             sendAjaxRequest("includes/select_for_lesson.inc.php", { class: classVal }, function (data) {
-                updateSelect2('#lessons', data, 'Ders Yok');
-                updateSelect2('#units', [], 'Ünite Yok');
-                updateSelect2('#topics', [], 'Konu Yok');
-                updateSelect2('#subtopics', [], 'Altkonu Yok');
+                updateSelectWhenChange('#lessons', data, 'Ders Yok');
+                updateSelectWhenChange('#units', [], 'Ünite Yok');
+                updateSelectWhenChange('#topics', [], 'Konu Yok');
+                updateSelectWhenChange('#subtopics', [], 'Altkonu Yok');
             });
         });
 
@@ -292,9 +314,9 @@ var KTModalUpdateCustomer = function () {
             };
 
             sendAjaxRequest("includes/select_for_unit.inc.php", requestData, function (data) {
-                updateSelect2('#units', data, 'Ünite Yok');
-                updateSelect2('#topics', [], 'Konu Yok');
-                updateSelect2('#subtopics', [], 'Altkonu Yok');
+                updateSelectWhenChange('#units', data, 'Ünite Yok');
+                updateSelectWhenChange('#topics', [], 'Konu Yok');
+                updateSelectWhenChange('#subtopics', [], 'Altkonu Yok');
             });
         });
 
@@ -309,8 +331,8 @@ var KTModalUpdateCustomer = function () {
             };
 
             sendAjaxRequest("includes/select_for_topic.inc.php", requestData, function (data) {
-                updateSelect2('#topics', data, 'Konu Yok');
-                updateSelect2('#subtopics', [], 'Altkonu Yok');
+                updateSelectWhenChange('#topics', data, 'Konu Yok');
+                updateSelectWhenChange('#subtopics', [], 'Altkonu Yok');
             });
         });
 
@@ -326,7 +348,7 @@ var KTModalUpdateCustomer = function () {
             };
 
             sendAjaxRequest("includes/select_for_subtopic.inc.php", requestData, function (data) {
-                updateSelect2('#subtopics', data, 'Altkonu Yok');
+                updateSelectWhenChange('#subtopics', data, 'Altkonu Yok');
             });
         });
 

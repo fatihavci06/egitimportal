@@ -109,6 +109,7 @@ class AudioBooks extends Dbh
 		$stmt = $this->connect()->prepare('
 		SELECT 
 			g.id, 
+			g.slug,
 			g.name AS book_name,
 			g.cover_img,
 			g.book_url,

@@ -66,44 +66,46 @@ class AddAudioBookContr extends AddAudioBook
 
 		$this->setAudioBook($imgName, $slug, $this->name, $this->iframe, $this->classAdd, $this->lesson, $this->unit, $this->topic, $this->subtopic);
 	}
-	public function updateAudioBookDb($id)
+	public function updateAudioBookDb($oldAudioBook)
 	{
 
+		$nameChanged = ($this->name !== $oldAudioBook['book_name']);
+		$photoUploaded = ($this->fileTmpName != NULL);
+		$imgName = $oldAudioBook['cover_img'];
+		$slug = $oldAudioBook['slug'];
 
-		$slugName = new Slug($this->name);
-		$slug = $slugName->slugify($this->name);
+		if ($nameChanged) {
+			$slugName = new Slug($this->name);
+			$slug = $slugName->slugify($this->name);
 
 
-		$slugRes = $this->checkSlug($slug);
+			$slugRes = $this->checkSlug($slug);
 
 
-		if (count($slugRes) > 0) {
-			$ech = end($slugRes);
+			if (count($slugRes) > 0) {
+				$ech = end($slugRes);
 
-			$output = substr($ech['slug'], -1, strrpos($ech['slug'], '-'));
+				$output = substr($ech['slug'], -1, strrpos($ech['slug'], '-'));
 
-			if (!is_numeric($output)) {
-				$output = 1;
+				if (!is_numeric($output)) {
+					$output = 1;
+				} else {
+					$output = $output + 1;
+				}
+
+				$slug = $slug . "-" . $output;
 			} else {
-				$output = $output + 1;
+				$slug = $slug;
 			}
-
-			$slug = $slug . "-" . $output;
-		} else {
-			$slug = $slug;
 		}
 
-
-		if ($this->fileTmpName != NULL) {
+		if ($photoUploaded) {
 			$imageSent = new ImageUpload();
 			$img = $imageSent->audioBookImage($this->photoName, $this->photoSize, $this->fileTmpName, $slug);
 			$imgName = $img['image'];
-		} else {
-			$imgName = 'sesli-kitap.jpg';
 		}
 
-
-		$this->updateAudioBook($id, $imgName, $slug, $this->name, $this->iframe, $this->classAdd, $this->lesson, $this->unit, $this->topic, $this->subtopic);
+		$this->updateAudioBook($oldAudioBook['id'], $imgName, $slug, $this->name, $this->iframe, $this->classAdd, $this->lesson, $this->unit, $this->topic, $this->subtopic);
 	}
 
 }

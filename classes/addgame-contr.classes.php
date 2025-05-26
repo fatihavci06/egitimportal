@@ -65,44 +65,48 @@ class AddGameContr extends AddGame
 	}
 
 
-	public function updateGameDb($id)
+	public function updateGameDb($oldGame)
 	{
+		$nameChanged = ($this->name !== $oldGame['game_name']);
+		$photoUploaded = ($this->fileTmpName != NULL);
+		$imgName = $oldGame['cover_img'];
+		$slug = $oldGame['slug'];
+
+		if ($nameChanged) {
+
+			$slugName = new Slug($this->name);
+			$slug = $slugName->slugify($this->name);
 
 
-		$slugName = new Slug($this->name);
-		$slug = $slugName->slugify($this->name);
+			$slugRes = $this->checkSlug($slug);
 
 
-		$slugRes = $this->checkSlug($slug);
+			if (count($slugRes) > 0) {
+				$ech = end($slugRes);
 
+				$output = substr($ech['slug'], -1, strrpos($ech['slug'], '-'));
 
-		if (count($slugRes) > 0) {
-			$ech = end($slugRes);
+				if (!is_numeric($output)) {
+					$output = 1;
+				} else {
+					$output = $output + 1;
+				}
 
-			$output = substr($ech['slug'], -1, strrpos($ech['slug'], '-'));
-
-			if (!is_numeric($output)) {
-				$output = 1;
+				$slug = $slug . "-" . $output;
 			} else {
-				$output = $output + 1;
+				$slug = $slug;
 			}
-
-			$slug = $slug . "-" . $output;
-		} else {
-			$slug = $slug;
 		}
 
 
-		if ($this->fileTmpName != NULL) {
+		if ($photoUploaded) {
 			$imageSent = new ImageUpload();
 			$img = $imageSent->gameImage($this->photoName, $this->photoSize, $this->fileTmpName, $slug);
 			$imgName = $img['image'];
-		} else {
-			$imgName = 'gameDefault.jpg';
 		}
 
 
-		$this->updateGame($id, $imgName, $slug, $this->name, $this->iframe, $this->classAdd, $this->lesson, $this->unit, $this->topic, $this->subtopic);
+		$this->updateGame($oldGame['id'], $imgName, $slug, $this->name, $this->iframe, $this->classAdd, $this->lesson, $this->unit, $this->topic, $this->subtopic);
 	}
 
 }

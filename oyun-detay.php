@@ -308,6 +308,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             } else {
                                                                 echo '<option selected value="' . $currentGame['subtopic_id'] . '">' .
                                                                     $currentGame['subtopic_name'] . ' - Önceden seçilen</option>';
+                                                                echo '<option value="0">Hepsi</option>';
+   
                                                             }
                                                             ?>
                                                         </select>
