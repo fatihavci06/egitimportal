@@ -31,6 +31,7 @@ class UpdateActiveSchool extends Dbh
 			$stmt2 = $pdo->prepare('SELECT id FROM schools_lnp WHERE email=?');
 			$stmt2->execute([$email]);
 			$schoolId = $stmt2->fetch(PDO::FETCH_ASSOC);
+			
 
 			$stmt2 = null;
 

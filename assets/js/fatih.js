@@ -1,6 +1,7 @@
 
 
 function handleDelete({ id, url, reload = true, customSuccess, customError }) {
+   
     Swal.fire({
         title: "Emin misiniz?",
         text: "Bu işlem geri alınamaz!",
@@ -20,6 +21,7 @@ function handleDelete({ id, url, reload = true, customSuccess, customError }) {
                 data: { id },
                 dataType: "json",
                 success: function (response) {
+                    console.log(response);
                     if (response.status === "success") {
                         Swal.fire({
                             title: "Başarılı!",

@@ -3,7 +3,7 @@
 class Classes extends Dbh
 {
 
-	protected function getClassesList()
+	public function getClassesList()
 	{
 
 		$stmt = $this->connect()->prepare('SELECT id, name, slug FROM classes_lnp where class_type=0 ORDER BY orderBY ASC');
@@ -17,6 +17,8 @@ class Classes extends Dbh
 
 		return $classData;
 	}
+
+	
 
 	protected function getClassesListForCreateAccount()
 	{

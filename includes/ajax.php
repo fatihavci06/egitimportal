@@ -485,39 +485,39 @@ switch ($service) {
         break;
     case 'paymenttypegraphicreport':
     case 'paymenttypegraphicreport':
-    function getGroupedByPeriodAndLimited($pdo, $dateFormat, $orderColumn, $limit)
-    {
-        $selectPeriod = "DATE_FORMAT(pp.created_at, ?) AS period";
-        $groupByPeriod = "period"; // 'period' alias'ı üzerinden grupla
-        $orderByClause = "";
-        $params = [$dateFormat]; // Varsayılan parametre
+        function getGroupedByPeriodAndLimited($pdo, $dateFormat, $orderColumn, $limit)
+        {
+            $selectPeriod = "DATE_FORMAT(pp.created_at, ?) AS period";
+            $groupByPeriod = "period"; // 'period' alias'ı üzerinden grupla
+            $orderByClause = "";
+            $params = [$dateFormat]; // Varsayılan parametre
 
-        if ($orderColumn === 'period_date_daily') {
-            $orderByClause = "ORDER BY STR_TO_DATE(DATE_FORMAT(pp.created_at, '%d-%m-%Y'), '%d-%m-%Y') DESC";
-            $groupByPeriod = "DATE_FORMAT(pp.created_at, '%d-%m-%Y')"; // GROUP BY için direkt format
-        } elseif ($orderColumn === 'period_date_weekly') {
-            $orderByClause = "ORDER BY YEAR(pp.created_at) DESC, WEEK(pp.created_at, 1) DESC";
-            $groupByPeriod = "YEAR(pp.created_at), WEEK(pp.created_at, 1)"; // GROUP BY için yıl ve hafta
-            // Haftalık format için tek bir placeholder olduğu için $params değişmez.
-        } elseif ($orderColumn === 'period_date_monthly') {
-            // Sıralama için YYYY-MM formatını, görüntüleme için MM-YYYY formatını kullanıyoruz.
-            // Bu durumda SELECT içinde iki ayrı DATE_FORMAT olacak.
-            $selectPeriod = "DATE_FORMAT(pp.created_at, '%Y-%m') AS period_sort, DATE_FORMAT(pp.created_at, ?) AS period";
-            $groupByPeriod = "period_sort"; // Gruplamayı period_sort üzerinden yapıyoruz
-            $orderByClause = "ORDER BY period_sort DESC";
-            // Parametre olarak sadece '?' için olan formatı gönderiyoruz
-            $params = ['%m-%Y']; // Burada sadece 'period' için olan '?' dolduruluyor
-        } elseif ($orderColumn === 'period_date_yearly') {
-            $orderByClause = "ORDER BY YEAR(pp.created_at) DESC";
-            $groupByPeriod = "YEAR(pp.created_at)"; // GROUP BY için yıl
-            // Yıllık format için tek bir placeholder olduğu için $params değişmez.
-        } else {
-            // Varsayılan sıralama: created_at'a göre azalan
-            $orderByClause = "ORDER BY pp.created_at DESC";
-            $groupByPeriod = "period"; // Varsayılan olarak period alias'ı üzerinden grupla
-        }
-        
-        $sql = "
+            if ($orderColumn === 'period_date_daily') {
+                $orderByClause = "ORDER BY STR_TO_DATE(DATE_FORMAT(pp.created_at, '%d-%m-%Y'), '%d-%m-%Y') DESC";
+                $groupByPeriod = "DATE_FORMAT(pp.created_at, '%d-%m-%Y')"; // GROUP BY için direkt format
+            } elseif ($orderColumn === 'period_date_weekly') {
+                $orderByClause = "ORDER BY YEAR(pp.created_at) DESC, WEEK(pp.created_at, 1) DESC";
+                $groupByPeriod = "YEAR(pp.created_at), WEEK(pp.created_at, 1)"; // GROUP BY için yıl ve hafta
+                // Haftalık format için tek bir placeholder olduğu için $params değişmez.
+            } elseif ($orderColumn === 'period_date_monthly') {
+                // Sıralama için YYYY-MM formatını, görüntüleme için MM-YYYY formatını kullanıyoruz.
+                // Bu durumda SELECT içinde iki ayrı DATE_FORMAT olacak.
+                $selectPeriod = "DATE_FORMAT(pp.created_at, '%Y-%m') AS period_sort, DATE_FORMAT(pp.created_at, ?) AS period";
+                $groupByPeriod = "period_sort"; // Gruplamayı period_sort üzerinden yapıyoruz
+                $orderByClause = "ORDER BY period_sort DESC";
+                // Parametre olarak sadece '?' için olan formatı gönderiyoruz
+                $params = ['%m-%Y']; // Burada sadece 'period' için olan '?' dolduruluyor
+            } elseif ($orderColumn === 'period_date_yearly') {
+                $orderByClause = "ORDER BY YEAR(pp.created_at) DESC";
+                $groupByPeriod = "YEAR(pp.created_at)"; // GROUP BY için yıl
+                // Yıllık format için tek bir placeholder olduğu için $params değişmez.
+            } else {
+                // Varsayılan sıralama: created_at'a göre azalan
+                $orderByClause = "ORDER BY pp.created_at DESC";
+                $groupByPeriod = "period"; // Varsayılan olarak period alias'ı üzerinden grupla
+            }
+
+            $sql = "
             SELECT
                 {$selectPeriod},
                 pt.name AS payment_type,
@@ -530,96 +530,96 @@ switch ($service) {
             LIMIT {$limit}
         ";
 
-        $stmt = $pdo->prepare($sql);
-        // Parametrelerin doğru şekilde bind edildiğinden emin olalım
-        $stmt->execute($params);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+            $stmt = $pdo->prepare($sql);
+            // Parametrelerin doğru şekilde bind edildiğinden emin olalım
+            $stmt->execute($params);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
 
-    try {
-        // Son 30 günlük kayıtları al (tarihe göre azalan, sonra ters çevrilir)
-        $daily = getGroupedByPeriodAndLimited($pdo, '%d-%m-%Y', 'period_date_daily', 30);
-        $daily = array_reverse($daily); // En eskiden en yeniye sırala
+        try {
+            // Son 30 günlük kayıtları al (tarihe göre azalan, sonra ters çevrilir)
+            $daily = getGroupedByPeriodAndLimited($pdo, '%d-%m-%Y', 'period_date_daily', 30);
+            $daily = array_reverse($daily); // En eskiden en yeniye sırala
 
-        // Son 30 haftalık kayıtları al (yıla ve haftaya göre azalan, sonra ters çevrilir)
-        $weekly = getGroupedByPeriodAndLimited($pdo, '%x-HAFTA %v', 'period_date_weekly', 30);
-        $weekly = array_reverse($weekly); // En eskiden en yeniye sırala
+            // Son 30 haftalık kayıtları al (yıla ve haftaya göre azalan, sonra ters çevrilir)
+            $weekly = getGroupedByPeriodAndLimited($pdo, '%x-HAFTA %v', 'period_date_weekly', 30);
+            $weekly = array_reverse($weekly); // En eskiden en yeniye sırala
 
-        // Son 30 aylık kayıtları al (YYYY-MM'ye göre azalan, sonra ters çevrilir)
-        $monthly = getGroupedByPeriodAndLimited($pdo, '%m-%Y', 'period_date_monthly', 30);
-        $monthly = array_reverse($monthly); // En eskiden en yeniye sırala
+            // Son 30 aylık kayıtları al (YYYY-MM'ye göre azalan, sonra ters çevrilir)
+            $monthly = getGroupedByPeriodAndLimited($pdo, '%m-%Y', 'period_date_monthly', 30);
+            $monthly = array_reverse($monthly); // En eskiden en yeniye sırala
 
-        // Son 30 yıllık kayıtları al (yıla göre azalan, sonra ters çevrilir)
-        $yearly = getGroupedByPeriodAndLimited($pdo, '%Y', 'period_date_yearly', 30);
-        $yearly = array_reverse($yearly); // En eskiden en yeniye sırala
+            // Son 30 yıllık kayıtları al (yıla göre azalan, sonra ters çevrilir)
+            $yearly = getGroupedByPeriodAndLimited($pdo, '%Y', 'period_date_yearly', 30);
+            $yearly = array_reverse($yearly); // En eskiden en yeniye sırala
 
-        echo json_encode([
-            'daily' => $daily,
-            'weekly' => $weekly,
-            'monthly' => $monthly,
-            'yearly' => $yearly
-        ]);
-    } catch (Exception $e) {
-        // Hata durumunda loglama veya daha detaylı hata mesajı döndürmek iyi bir uygulama olabilir.
-        error_log("Payment Type Graphic Report Error: " . $e->getMessage());
-        echo json_encode(['error' => 'Sunucu hatası oluştu. Lütfen yöneticinize başvurun.']);
-    }
-    break;
+            echo json_encode([
+                'daily' => $daily,
+                'weekly' => $weekly,
+                'monthly' => $monthly,
+                'yearly' => $yearly
+            ]);
+        } catch (Exception $e) {
+            // Hata durumunda loglama veya daha detaylı hata mesajı döndürmek iyi bir uygulama olabilir.
+            error_log("Payment Type Graphic Report Error: " . $e->getMessage());
+            echo json_encode(['error' => 'Sunucu hatası oluştu. Lütfen yöneticinize başvurun.']);
+        }
+        break;
     case 'userpaymentreport':
-    if ($_GET['action'] === 'kullaniciBasinaGelir') {
+        if ($_GET['action'] === 'kullaniciBasinaGelir') {
 
-        $period = $_GET['period'] ?? 'daily'; // daily, weekly, monthly, yearly
-        $limit = 30; // Son 30 kaydı alacağız
+            $period = $_GET['period'] ?? 'daily'; // daily, weekly, monthly, yearly
+            $limit = 30; // Son 30 kaydı alacağız
 
-        // Kullanıcı rolü 2 veya 10002 olanların sayısını al
-        $userCountStmt = $pdo->prepare("SELECT COUNT(*) FROM users_lnp WHERE role = 2 OR role = 10002");
-        $userCountStmt->execute();
-        $userCount = (int) $userCountStmt->fetchColumn();
+            // Kullanıcı rolü 2 veya 10002 olanların sayısını al
+            $userCountStmt = $pdo->prepare("SELECT COUNT(*) FROM users_lnp WHERE role = 2 OR role = 10002");
+            $userCountStmt->execute();
+            $userCount = (int) $userCountStmt->fetchColumn();
 
-        if ($userCount === 0) {
-            echo json_encode(['data' => []]);
-            exit;
-        }
+            if ($userCount === 0) {
+                echo json_encode(['data' => []]);
+                exit;
+            }
 
-        // Tarih formatı, GROUP BY ifadesi ve ORDER BY ifadesi
-        $dateFormat = '';
-        $groupBy = '';
-        $orderBy = '';
-        $selectPeriodForSort = ''; // Sıralama için kullanılacak gizli sütun
+            // Tarih formatı, GROUP BY ifadesi ve ORDER BY ifadesi
+            $dateFormat = '';
+            $groupBy = '';
+            $orderBy = '';
+            $selectPeriodForSort = ''; // Sıralama için kullanılacak gizli sütun
 
-        switch ($period) {
-            case 'weekly':
-                $dateFormat = '%x-HAFTA %v'; // Görüntüleme formatı: Yıl-HAFTA HaftaNo
-                // Sıralama için yıl ve hafta numarası kullan
-                $selectPeriodForSort = "YEAR(pp.created_at) AS period_sort_year, WEEK(pp.created_at, 1) AS period_sort_week,";
-                $groupBy = "period_sort_year, period_sort_week";
-                $orderBy = "ORDER BY period_sort_year DESC, period_sort_week DESC";
-                break;
-            case 'monthly':
-                $dateFormat = '%m-%Y'; // Görüntüleme formatı: Ay-Yıl
-                // Sıralama için YYYY-MM formatını kullan
-                $selectPeriodForSort = "DATE_FORMAT(pp.created_at, '%Y-%m') AS period_sort,";
-                $groupBy = "period_sort";
-                $orderBy = "ORDER BY period_sort DESC";
-                break;
-            case 'yearly':
-                $dateFormat = '%Y'; // Görüntüleme formatı: Yıl
-                // Sıralama için yıl kullan
-                $selectPeriodForSort = "YEAR(pp.created_at) AS period_sort_year,";
-                $groupBy = "period_sort_year";
-                $orderBy = "ORDER BY period_sort_year DESC";
-                break;
-            case 'daily':
-            default:
-                $dateFormat = '%d-%m-%Y'; // Görüntüleme formatı: Gün-Ay-Yıl
-                // Sıralama için gerçek tarih değerini kullan
-                $selectPeriodForSort = "DATE(pp.created_at) AS period_sort_date,";
-                $groupBy = "period_sort_date";
-                $orderBy = "ORDER BY period_sort_date DESC";
-                break;
-        }
+            switch ($period) {
+                case 'weekly':
+                    $dateFormat = '%x-HAFTA %v'; // Görüntüleme formatı: Yıl-HAFTA HaftaNo
+                    // Sıralama için yıl ve hafta numarası kullan
+                    $selectPeriodForSort = "YEAR(pp.created_at) AS period_sort_year, WEEK(pp.created_at, 1) AS period_sort_week,";
+                    $groupBy = "period_sort_year, period_sort_week";
+                    $orderBy = "ORDER BY period_sort_year DESC, period_sort_week DESC";
+                    break;
+                case 'monthly':
+                    $dateFormat = '%m-%Y'; // Görüntüleme formatı: Ay-Yıl
+                    // Sıralama için YYYY-MM formatını kullan
+                    $selectPeriodForSort = "DATE_FORMAT(pp.created_at, '%Y-%m') AS period_sort,";
+                    $groupBy = "period_sort";
+                    $orderBy = "ORDER BY period_sort DESC";
+                    break;
+                case 'yearly':
+                    $dateFormat = '%Y'; // Görüntüleme formatı: Yıl
+                    // Sıralama için yıl kullan
+                    $selectPeriodForSort = "YEAR(pp.created_at) AS period_sort_year,";
+                    $groupBy = "period_sort_year";
+                    $orderBy = "ORDER BY period_sort_year DESC";
+                    break;
+                case 'daily':
+                default:
+                    $dateFormat = '%d-%m-%Y'; // Görüntüleme formatı: Gün-Ay-Yıl
+                    // Sıralama için gerçek tarih değerini kullan
+                    $selectPeriodForSort = "DATE(pp.created_at) AS period_sort_date,";
+                    $groupBy = "period_sort_date";
+                    $orderBy = "ORDER BY period_sort_date DESC";
+                    break;
+            }
 
-        $sql = "
+            $sql = "
             SELECT
                 {$selectPeriodForSort}
                 DATE_FORMAT(pp.created_at, ?) AS period,
@@ -632,18 +632,18 @@ switch ($service) {
             LIMIT $limit
         ";
 
-        $stmt = $pdo->prepare($sql);
-        // Parametreleri doğru sırada gönder
-        $stmt->execute([$dateFormat, $userCount, $userCount]);
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt = $pdo->prepare($sql);
+            // Parametreleri doğru sırada gönder
+            $stmt->execute([$dateFormat, $userCount, $userCount]);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // JavaScript tarafında en eskiden en yeniye doğru sıralama beklediğimiz için veriyi ters çeviriyoruz
-        $result = array_reverse($result);
+            // JavaScript tarafında en eskiden en yeniye doğru sıralama beklediğimiz için veriyi ters çeviriyoruz
+            $result = array_reverse($result);
 
-        echo json_encode(['data' => $result]);
-        exit;
-    }
-    break;
+            echo json_encode(['data' => $result]);
+            exit;
+        }
+        break;
 
     case 'graphicreport':
         try {
@@ -1010,12 +1010,12 @@ switch ($service) {
 
         break;
     case 'expired-user-count-report':
-    try {
-        $today = date('Y-m-d');
+        try {
+            $today = date('Y-m-d');
 
-        // Günlük - Son 30 kayıt
-        // Aboneliği bitiş tarihine göre tersten sıralayıp son 30 günü alırız.
-        $dailyStmt = $pdo->prepare("
+            // Günlük - Son 30 kayıt
+            // Aboneliği bitiş tarihine göre tersten sıralayıp son 30 günü alırız.
+            $dailyStmt = $pdo->prepare("
             SELECT DATE_FORMAT(subscribed_end, '%d-%m-%Y') AS day, COUNT(*) AS user_count
             FROM users_lnp
             WHERE (role = 2 OR role = 10002) AND subscribed_end < :today
@@ -1023,11 +1023,11 @@ switch ($service) {
             ORDER BY subscribed_end DESC -- En son bitiş tarihinden eskiye doğru sırala
             LIMIT 30 -- Sadece son 30 kaydı getir
         ");
-        $dailyStmt->execute(['today' => $today]);
-        $daily = $dailyStmt->fetchAll(PDO::FETCH_ASSOC);
+            $dailyStmt->execute(['today' => $today]);
+            $daily = $dailyStmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Haftalık - Son 30 kayıt
-        $weeklyStmt = $pdo->prepare("
+            // Haftalık - Son 30 kayıt
+            $weeklyStmt = $pdo->prepare("
             SELECT CONCAT(YEAR(subscribed_end), ' HAFTA ', LPAD(WEEK(subscribed_end, 1), 2, '0')) AS week, COUNT(*) AS user_count
             FROM users_lnp
             WHERE (role = 2 OR role = 10002) AND subscribed_end < :today
@@ -1035,11 +1035,11 @@ switch ($service) {
             ORDER BY YEAR(subscribed_end) DESC, WEEK(subscribed_end, 1) DESC -- En son haftadan eskiye doğru sırala
             LIMIT 30 -- Sadece son 30 kaydı getir
         ");
-        $weeklyStmt->execute(['today' => $today]);
-        $weekly = $weeklyStmt->fetchAll(PDO::FETCH_ASSOC);
+            $weeklyStmt->execute(['today' => $today]);
+            $weekly = $weeklyStmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Aylık - Son 30 kayıt
-        $monthlyStmt = $pdo->prepare("
+            // Aylık - Son 30 kayıt
+            $monthlyStmt = $pdo->prepare("
             SELECT DATE_FORMAT(subscribed_end, '%m-%Y') AS period, COUNT(*) AS user_count
             FROM users_lnp
             WHERE (role = 2 OR role = 10002) AND subscribed_end < :today
@@ -1047,11 +1047,11 @@ switch ($service) {
             ORDER BY subscribed_end DESC -- En son aydan eskiye doğru sırala
             LIMIT 30 -- Sadece son 30 kaydı getir
         ");
-        $monthlyStmt->execute(['today' => $today]);
-        $monthly = $monthlyStmt->fetchAll(PDO::FETCH_ASSOC);
+            $monthlyStmt->execute(['today' => $today]);
+            $monthly = $monthlyStmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Yıllık - Son 30 kayıt
-        $yearlyStmt = $pdo->prepare("
+            // Yıllık - Son 30 kayıt
+            $yearlyStmt = $pdo->prepare("
             SELECT YEAR(subscribed_end) AS year, COUNT(*) AS user_count
             FROM users_lnp
             WHERE (role = 2 OR role = 10002) AND subscribed_end < :today
@@ -1059,26 +1059,26 @@ switch ($service) {
             ORDER BY year DESC -- En son yıldan eskiye doğru sırala
             LIMIT 30 -- Sadece son 30 kaydı getir
         ");
-        $yearlyStmt->execute(['today' => $today]);
-        $yearly = $yearlyStmt->fetchAll(PDO::FETCH_ASSOC);
+            $yearlyStmt->execute(['today' => $today]);
+            $yearly = $yearlyStmt->fetchAll(PDO::FETCH_ASSOC);
 
-        echo json_encode([
-            'status' => 'success',
-            'daily' => $daily,
-            'weekly' => $weekly,
-            'monthly' => $monthly,
-            'yearly' => $yearly,
-        ]);
-    } catch (Exception $e) {
-        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
-    }
-    break;
+            echo json_encode([
+                'status' => 'success',
+                'daily' => $daily,
+                'weekly' => $weekly,
+                'monthly' => $monthly,
+                'yearly' => $yearly,
+            ]);
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        break;
     case 'active-user-count-report':
-    try {
-        $today = date('Y-m-d');
+        try {
+            $today = date('Y-m-d');
 
-        // Günlük - Son 30 kayıt
-        $daily = $pdo->query("
+            // Günlük - Son 30 kayıt
+            $daily = $pdo->query("
             SELECT DATE_FORMAT(created_at, '%d-%m-%Y') AS day, COUNT(*) AS user_count
             FROM users_lnp
             WHERE (role=2 or role=10002) AND subscribed_end > '$today'
@@ -1087,8 +1087,8 @@ switch ($service) {
             LIMIT 30 -- Sadece son 30 kaydı getir
         ")->fetchAll(PDO::FETCH_ASSOC);
 
-        // Haftalık - Son 30 kayıt
-        $weekly = $pdo->query("
+            // Haftalık - Son 30 kayıt
+            $weekly = $pdo->query("
             SELECT CONCAT(YEAR(created_at), ' HAFTA ', LPAD(WEEK(created_at, 1), 2, '0')) AS week,
                    COUNT(*) AS user_count
             FROM users_lnp
@@ -1098,8 +1098,8 @@ switch ($service) {
             LIMIT 30 -- Sadece son 30 kaydı getir
         ")->fetchAll(PDO::FETCH_ASSOC);
 
-        // Aylık - Son 30 kayıt
-        $monthly = $pdo->query("
+            // Aylık - Son 30 kayıt
+            $monthly = $pdo->query("
             SELECT DATE_FORMAT(created_at, '%m-%Y') AS period, COUNT(*) AS user_count
             FROM users_lnp
             WHERE (role=2 or role=10002) AND subscribed_end > '$today'
@@ -1108,8 +1108,8 @@ switch ($service) {
             LIMIT 30 -- Sadece son 30 kaydı getir
         ")->fetchAll(PDO::FETCH_ASSOC);
 
-        // Yıllık - Son 30 kayıt
-        $yearly = $pdo->query("
+            // Yıllık - Son 30 kayıt
+            $yearly = $pdo->query("
             SELECT YEAR(created_at) AS year, COUNT(*) AS user_count
             FROM users_lnp
             WHERE (role=2 or role=10002) AND subscribed_end > '$today'
@@ -1118,17 +1118,338 @@ switch ($service) {
             LIMIT 30 -- Sadece son 30 kaydı getir
         ")->fetchAll(PDO::FETCH_ASSOC);
 
-        echo json_encode([
-            'status' => 'success',
-            'daily' => $daily,
-            'weekly' => $weekly,
-            'monthly' => $monthly,
-            'yearly' => $yearly,
-        ]);
-    } catch (Exception $e) {
-        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
-    }
-    break;
+            echo json_encode([
+                'status' => 'success',
+                'daily' => $daily,
+                'weekly' => $weekly,
+                'monthly' => $monthly,
+                'yearly' => $yearly,
+            ]);
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        break;
+    case 'getLessonList':
+        $classId = $_POST['class_id'] ?? null;
+        if (!$classId || !is_numeric($classId)) {
+
+            echo json_encode(['status' => 'error', 'message' => 'Geçersiz sınıf ID']);
+            exit;
+        }
+        try {
+            $stmt = $pdo->prepare("
+            SELECT id, name 
+            FROM lessons_lnp 
+            WHERE class_id = :exact
+               OR class_id LIKE :start
+               OR class_id LIKE :middle
+               OR class_id LIKE :end
+            ORDER BY name ASC
+        ");
+
+            $stmt->execute([
+                ':exact'  => (string)$classId,
+                ':start'  => $classId . ';%',
+                ':middle' => '%;' . $classId . ';%',
+                ':end'    => '%;' . $classId,
+            ]);
+
+            $data['lessons'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt2 = $pdo->prepare("
+            SELECT option_count 
+            FROM test_class_option_count 
+            WHERE class_id = :class_id LIMIT 1
+        ");
+            $stmt2->execute([
+                ':class_id'  => $classId
+            ]);
+            $optionCount = $stmt2->fetch(PDO::FETCH_ASSOC);
+            $data['optionCount'] = $optionCount['option_count'] ?? 3;
+
+            if ($data) {
+                echo json_encode(['status' => 'success', 'data' => $data]);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Ders bulunamadı.']);
+            }
+        } catch (PDOException $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası: ' . $e->getMessage()]);
+        }
+        break;
+    case 'getUnitList':
+        $lessonId = $_POST['lesson_id'] ?? null;
+        $classId = $_POST['class_id'] ?? null;
+        if (!$lessonId || !is_numeric($lessonId)) {
+            echo json_encode(['status' => 'error', 'message' => 'Geçersiz ders ID']);
+            exit;
+        }
+        try {
+            $stmt = $pdo->prepare("SELECT * FROM `units_lnp` where lesson_id=? and class_id=? ORDER BY name ASC");
+            $stmt->execute([$lessonId, $classId]);
+
+            $lessons = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if ($lessons) {
+                echo json_encode(['status' => 'success', 'data' => $lessons]);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Ders bulunamadı.']);
+            }
+        } catch (Exception $e) {
+            http_response_code(422); // Veya uygun bir HTTP kodu
+            echo json_encode([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+            exit();
+        }
+        break;
+    case 'getTopicList':
+        $lessonId = $_POST['lesson_id'] ?? null;
+        $classId = $_POST['class_id'] ?? null;
+        $unitId = $_POST['unit_id'] ?? null;
+
+        try {
+            $stmt = $pdo->prepare("SELECT * FROM `topics_lnp` where lesson_id=? and class_id=? and unit_id=? ORDER BY name ASC");
+            $stmt->execute([$lessonId, $classId, $unitId]);
+
+            $lessons = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if ($lessons) {
+                echo json_encode(['status' => 'success', 'data' => $lessons]);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Ders bulunamadı.']);
+            }
+        } catch (Exception $e) {
+            http_response_code(422); // Veya uygun bir HTTP kodu
+            echo json_encode([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+            exit();
+        }
+        break;
+    case 'getSubtopicList':
+        $lessonId = $_POST['lesson_id'] ?? null;
+        $classId = $_POST['class_id'] ?? null;
+        $unitId = $_POST['unit_id'] ?? null;
+        $topicId = $_POST['topic_id'] ?? null;
+
+        try {
+            $stmt = $pdo->prepare("SELECT * FROM `subtopics_lnp` where lesson_id=? and class_id=? and unit_id=? and topic_id=? ORDER BY name ASC");
+            $stmt->execute([$lessonId, $classId, $unitId, $topicId]);
+
+            $lessons = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if ($lessons) {
+                echo json_encode(['status' => 'success', 'data' => $lessons]);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Ders bulunamadı.']);
+            }
+        } catch (Exception $e) {
+            http_response_code(422); // Veya uygun bir HTTP kodu
+            echo json_encode([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+            exit();
+        }
+        break;
+    case 'testAdd':
+        $classId = $_POST['class_id'] ?? null;
+        $lessonId = $_POST['lesson_id'] ?? null;
+        $unitId = $_POST['unit_id'] ?? null;
+        $topicId = $_POST['topic_id'] ?? null;
+        $subtopicId = $_POST['subtopic_id'] ?? null;
+
+        $title = $_POST['title'] ?? null;
+        $startDate = $_POST['start_date'] ?? null;
+        $endDate = $_POST['end_date'] ?? null;
+        $pdo->beginTransaction();
+        try {
+            // Dosya işlemleri
+            $filePath = null;
+
+            if (isset($_FILES['cover_img']) && $_FILES['cover_img']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = __DIR__ . '/../uploads/test/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0755, true);
+                }
+
+                $fileTmpPath = $_FILES['cover_img']['tmp_name'];
+                $fileName = basename($_FILES['cover_img']['name']);
+                $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+                $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'];
+                if (!in_array($extension, $allowedExtensions)) {
+                    throw new Exception('İzin verilmeyen dosya uzantısı.');
+                }
+
+                $newFileName = uniqid('test_', true) . '.' . $extension;
+                $destination = $uploadDir . $newFileName;
+
+                if (!move_uploaded_file($fileTmpPath, $destination)) {
+                    throw new Exception('Dosya yüklenemedi.');
+                }
+
+                $filePath = 'uploads/test/' . $newFileName; // Veritabanı için yol
+            }
+
+            // Veritabanı bağlantısı
+
+
+            $stmt = $pdo->prepare("
+            INSERT INTO tests_lnp 
+            (class_id, lesson_id, unit_id, topic_id, subtopic_id, test_title, start_date, end_date, cover_img)
+            VALUES
+            (:class_id, :lesson_id, :unit_id, :topic_id, :subtopic_id, :title, :start_date, :end_date, :file_path)
+        ");
+
+            $stmt->execute([
+                ':class_id'    => $classId,
+                ':lesson_id'   => $lessonId,
+                ':unit_id'     => $unitId,
+                ':topic_id'    => $topicId,
+                ':subtopic_id' => $subtopicId,
+                ':title'       => $title,
+                ':start_date'  => $startDate,
+                ':end_date'    => $endDate,
+                ':file_path'   => $filePath
+            ]);
+
+            $testId = $pdo->lastInsertId(); // tests_lnp kaydından sonra geldi
+
+            foreach ($_POST['questions'] as $qIndex => $question) {
+                // Soru ekle
+                $stmt = $pdo->prepare("
+            INSERT INTO test_questions_lnp (test_id, question_text, correct_answer)
+            VALUES (:test_id, :question_text, :correct_answer)
+        ");
+                $stmt->execute([
+                    ':test_id' => $testId,
+                    ':question_text' => $question['text'],
+                    ':correct_answer' => $question['correct_answer'],
+                ]);
+
+                $questionId = $pdo->lastInsertId();
+
+                // Videolar
+                if (!empty($question['videos'])) {
+                    $videoStmt = $pdo->prepare("
+                INSERT INTO test_question_videos_lnp (question_id, video_url)
+                VALUES (:question_id, :video_url)
+            ");
+
+                    foreach ($question['videos'] as $video) {
+                        $videoStmt->execute([
+                            ':question_id' => $questionId,
+                            ':video_url' => $video
+                        ]);
+                    }
+                }
+
+                // Görseller (gelen files)
+                if (isset($_FILES['questions']['name'][$qIndex]['images'])) {
+                    $images = $_FILES['questions']['name'][$qIndex]['images'];
+                    $tmpNames = $_FILES['questions']['tmp_name'][$qIndex]['images'];
+                    $errors = $_FILES['questions']['error'][$qIndex]['images'];
+
+                    $uploadDir = __DIR__ . '/../uploads/questions/';
+                    if (!is_dir($uploadDir)) {
+                        mkdir($uploadDir, 0755, true);
+                    }
+
+                    foreach ($images as $i => $imgName) {
+                        if ($errors[$i] === UPLOAD_ERR_OK) {
+                            $extension = strtolower(pathinfo($imgName, PATHINFO_EXTENSION));
+                            $newFileName = uniqid('img_', true) . '.' . $extension;
+                            $destination = $uploadDir . $newFileName;
+
+                            if (!move_uploaded_file($tmpNames[$i], $destination)) {
+                                throw new Exception('Soru görseli yüklenemedi.');
+                            }
+
+                            $imagePath = 'uploads/questions/' . $newFileName;
+
+                            $stmt = $pdo->prepare("
+                        INSERT INTO test_question_files_lnp (question_id, file_path)
+                        VALUES (:question_id, :file_path)
+                    ");
+                            $stmt->execute([
+                                ':question_id' => $questionId,
+                                ':file_path' => $imagePath
+                            ]);
+                        }
+                    }
+                }
+
+                // Şıklar
+                if (isset($question['options']) && is_array($question['options'])) {
+                    foreach ($question['options'] as $optionKey => $option) {
+                        $stmt = $pdo->prepare("
+                    INSERT INTO test_question_options_lnp (question_id, option_key, option_text)
+                    VALUES (:question_id, :option_key, :option_text)
+                ");
+                        $stmt->execute([
+                            ':question_id' => $questionId,
+                            ':option_key' => $optionKey,
+                            ':option_text' => $option['text'],
+                        ]);
+
+                        $optionId = $pdo->lastInsertId();
+                      
+
+                        // Eğer option dosyaları varsa (örneğin ses)
+                        if (isset($_FILES['questions']['name'][$qIndex]['options'][$optionKey]['images']) && is_array($_FILES['questions']['name'][$qIndex]['options'][$optionKey]['images'])) {
+                            // Her bir görsel dosyasını döngüye al
+                            foreach ($_FILES['questions']['name'][$qIndex]['options'][$optionKey]['images'] as $imgIndex => $fileName) {
+                                $optTmpName = $_FILES['questions']['tmp_name'][$qIndex]['options'][$optionKey]['images'][$imgIndex];
+                                $optError = $_FILES['questions']['error'][$qIndex]['options'][$optionKey]['images'][$imgIndex];
+
+                                if ($optError === UPLOAD_ERR_OK) {
+                                    $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION)); // $fileName kullanıldı
+                                    $newFileName = uniqid('optfile_', true) . '.' . $extension;
+                                    $destination = $uploadDir . $newFileName; // $uploadDir tanımlı olmalı
+
+                                    if (!move_uploaded_file($optTmpName, $destination)) {
+                                        // Hata yönetimi: Dosya taşınamadıysa
+                                        throw new Exception('Seçenek dosyası yüklenemedi: ' . $fileName);
+                                    }
+
+                                    // Veritabanına kaydetme (option_id'nin geçerli olduğundan emin olun)
+                                    // $optionId'nin bu döngüden önce ilgili seçeneğe ait olarak alındığı varsayılır.
+                                    $stmt = $pdo->prepare("
+                        INSERT INTO test_question_option_files_lnp (option_id, file_path)
+                        VALUES (:option_id, :file_path)
+                    ");
+                                    $stmt->execute([
+                                        ':option_id' => $optionId, // Bu değişkenin scope'unu ve doğruluğunu kontrol edin
+                                        ':file_path' => 'uploads/questions/' . $newFileName
+                                    ]);
+                                } else if ($optError !== UPLOAD_ERR_NO_FILE) {
+                                    // Yükleme sırasında oluşan diğer hatalar (örn: boyut, tip vb.)
+                                    throw new Exception('Seçenek dosyası yükleme hatası: Kod ' . $optError);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            $pdo->commit();
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Test ve sorular başarıyla eklendi.'
+            ]);
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            http_response_code(422);
+            echo json_encode([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
+        break;
+
+
 
 
     // Diğer servisler buraya eklenebilir
