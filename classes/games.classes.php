@@ -7,7 +7,7 @@ class Games extends Dbh
 	{
 		$stmt = $this->connect()->prepare('
 		SELECT 
-		g.id, 
+		g.id,
 		g.name AS game_name,
 		g.cover_img,
 		g.game_url,
@@ -126,7 +126,8 @@ class Games extends Dbh
 	{
 		$stmt = $this->connect()->prepare('
 		SELECT 
-			g.id, 
+			g.id,
+			g.slug, 
 			g.name AS game_name,
 			g.cover_img,
 			g.game_url,

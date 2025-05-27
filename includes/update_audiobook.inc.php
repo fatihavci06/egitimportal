@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
 
 
-    $addAudioBook->updateAudioBookDb($oldAudioBook['id']);
+    $addAudioBook->updateAudioBookDb($oldAudioBook);
 
 
 

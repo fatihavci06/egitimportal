@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
 
 
-    $addAudioBook->updateGameDb($oldGame['id']);
+    $addAudioBook->updateGameDb($oldGame);
 
 
 
