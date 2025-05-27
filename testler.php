@@ -3,18 +3,14 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 4)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001 or $_SESSION['role'] == 10002)) {
     include_once "classes/dbh.classes.php";
-    include "classes/topics.classes.php";
-    include "classes/topics-view.classes.php";
-    $topics = new ShowTests();
+    include "classes/classes.classes.php";
+
     include_once "views/pages-head.php";
 ?>
-    <!--end::Head-->
-    <!--begin::Body-->
 
-    <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
-        <!--begin::Theme mode setup on page load-->
+    <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" class="app-default">
         <script>
             var defaultThemeMode = "light";
             var themeMode;
@@ -34,157 +30,464 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 document.documentElement.setAttribute("data-bs-theme", themeMode);
             }
         </script>
-        <!--end::Theme mode setup on page load-->
-        <!--begin::App-->
         <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
-            <!--begin::Page-->
             <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
-                <!--begin::Header-->
                 <?php include_once "views/header.php"; ?>
-                <!--end::Header-->
-                <!--begin::Wrapper-->
                 <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
-                    <!--begin::Sidebar-->
                     <?php include_once "views/sidebar.php"; ?>
-                    <!--end::Sidebar-->
-                    <!--begin::Main-->
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
-                        <!--begin::Content wrapper-->
                         <div class="d-flex flex-column flex-column-fluid">
-                            <!--begin::Toolbar-->
                             <?php include_once "views/toolbar.php"; ?>
-                            <!--end::Toolbar-->
-                            <!--begin::Content-->
                             <div id="kt_app_content" class="app-content flex-column-fluid">
-                                <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
-                                    <!--begin::Card-->
-                                    <div class="card">
-                                        <!--begin::Card header-->
-                                        <div class="card-header border-0 pt-6">
-                                            <!--begin::Card title-->
-                                            <div class="card-title">
-                                                <!--begin::Search-->
-                                                <div class="d-flex align-items-center position-relative my-1">
-                                                    <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5">
-                                                        <span class="path1"></span>
-                                                        <span class="path2"></span>
-                                                    </i>
-                                                    <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder="Konu Ara" />
-                                                </div>
-                                                <!--end::Search-->
-                                            </div>
-                                            <!--begin::Card title-->
-                                            <!--begin::Card toolbar-->
-                                            <div class="card-toolbar">
-                                                <!--begin::Toolbar-->
-                                                <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
-                                                    <!--begin::Add school-->
-                                                    <a href="test-ekle"><button type="button" class="btn btn-primary btn-sm">Test Ekle</button></a>
-                                                    <!--end::Add school-->
-                                                </div>
-                                                <!--end::Toolbar-->
-                                                <!--begin::Group actions-->
-                                                <div class="d-flex justify-content-end align-items-center d-none" data-kt-customer-table-toolbar="selected">
-                                                    <div class="fw-bold me-5">
-                                                        <span class="me-2" data-kt-customer-table-select="selected_count"></span>Seçildi
-                                                    </div>
-                                                    <button type="button" class="btn btn-danger btn-sm" data-kt-customer-table-select="delete_selected">Seçilenleri Pasif Yap</button>
-                                                </div>
-                                                <!--end::Group actions-->
-                                            </div>
-                                            <!--end::Card toolbar-->
+                                    <div class="row">
+
+                                        <div class="col-lg-4">
+                                            <label class=" fs-6 fw-semibold mb-2" for="title">Başlık</label>
+                                            <input type="text" class="form-control " placeholder="Test Başlığı" id="title">
                                         </div>
-                                        <!--end::Card header-->
-                                        <!--begin::Card body-->
-                                        <div class="card-body pt-0">
-                                            <!--begin::Table-->
-                                            <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_customers_table">
+
+                                        <div class="col-lg-4">
+                                            <label class="required fs-6 fw-semibold mb-2" for="class_id">Sınıf Seçimi </label>
+                                            <?php
+                                            $class = new Classes();
+                                            $classList = $class->getClassesList();
+                                            ?>
+                                            <select class="form-select" id="class_id" required aria-label="Default select example">
+                                                <option value="">Seçiniz</option>
+                                                <?php foreach ($classList as $c) { ?>
+                                                    <option value="<?= $c['id'] ?>"><?= $c['name'] ?></option>
+                                                <?php } ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-4 mt-3">
+                                            <label class="required fs-6 fw-semibold mb-2" for="lesson_id">Dersler</label>
+                                            <select class="form-select" id="lesson_id" required>
+                                                <option value="">Ders seçiniz</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+
+                                        <div class="col-lg-4 mt-4">
+                                            <label class="fs-6 fw-semibold mb-2" for="unit_id">Ünite Seçimi</label>
+                                            <select class="form-select" id="unit_id" required>
+                                                <option value="">Ünite seçiniz</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-4 mt-4">
+                                            <label class="fs-6 fw-semibold mb-2" for="topic_id">Konu Seçimi</label>
+                                            <select class="form-select" id="topic_id" required>
+                                                <option value="">Seçiniz</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-4 mt-4">
+                                            <label class="fs-6 fw-semibold mb-2" for="subtopic_id">Alt Konu Seçimi</label>
+                                            <select class="form-select" id="subtopic_id" required>
+                                                <option value="">Alt Konu seçiniz</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-5 mb-5">
+                                        <div class="col-lg-3">
+                                            <button type="button" id="filterButton" class="btn btn-success btn-sm w-100">Filtrele</button>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <button type="button" id="clearFiltersButton" class="btn btn-secondary btn-sm w-100">Temizle</button>
+                                        </div>
+                                    </div>
+                                    <div id="tests_container"></div>
+
+                                    <div class="card mt-5">
+                                        <div class="card-header border-0 pt-6">
+                                            <h3 class="card-title align-items-start flex-column">
+                                                <span class="card-label fw-bold fs-3 mb-1">Filtrelenmiş Test Sonuçları</span>
+                                            </h3>
+                                        </div>
+                                        <div class="card-body py-4">
+                                            <table class="table align-middle table-row-dashed fs-6 gy-5" id="tests_datatable">
                                                 <thead>
-                                                    <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                        <th class="w-10px pe-2">
-                                                            <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                                                <input class="form-check-input" type="checkbox" data-kt-check="true" data-kt-check-target="#kt_customers_table .form-check-input" value="1" />
-                                                            </div>
-                                                        </th>
-                                                        <th class="min-w-125px">Test Adı</th>
-                                                        <th class="min-w-125px">Konu</th>
-                                                        <th class="min-w-125px">Ünite</th>
-                                                        <th class="min-w-125px">Ders</th>
-                                                        <th class="min-w-125px">Sınıf</th>
-                                                        <th class="min-w-125px">Son Teslim Tarihi</th>
-                                                        <th class="text-end min-w-70px">İşlemler</th>
+                                                    <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+                                                        <th>ID</th>
+                                                        <th>Test Başlığı</th>
+
+                                                        <th>Oluşturulma Tarihi</th>
+                                                        <th>İşlemler</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody class="fw-semibold text-gray-600">
-                                                    <?php $topics->getTestList(); ?>
+                                                <tbody class="text-gray-600 fw-semibold">
                                                 </tbody>
                                             </table>
-                                            <!--end::Table-->
                                         </div>
-                                        <!--end::Card body-->
                                     </div>
-                                    <!--end::Card-->
-                                    <!--begin::Modals-->
-                                    <!--begin::Modal - Customers - Add-->
-                                    <?php // include_once "views/topics/add_topic.php" 
-                                    ?>
-                                    <!--end::Modal - Customers - Add-->
-                                    <!--end::Modals-->
+
+
                                 </div>
-                                <!--end::Content container-->
                             </div>
-                            <!--end::Content-->
                         </div>
-                        <!--end::Content wrapper-->
-                        <!--begin::Footer-->
-                        <?php include_once "views/footer.php"; ?>
-                        <!--end::Footer-->
                     </div>
-                    <!--end:::Main-->
-                    <!--begin::aside-->
-                    <?php include_once "views/aside.php"; ?>
-                    <!--end::aside-->
+                    <?php include_once "views/footer.php"; ?>
                 </div>
-                <!--end::Wrapper-->
+                <?php include_once "views/aside.php"; ?>
             </div>
-            <!--end::Page-->
         </div>
-        <!--end::App-->
-        <!--begin::Scrolltop-->
+        </div>
         <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
             <i class="ki-duotone ki-arrow-up">
                 <span class="path1"></span>
                 <span class="path2"></span>
             </i>
         </div>
-        <!--end::Scrolltop-->
-        <!--begin::Javascript-->
         <script>
             var hostUrl = "assets/";
         </script>
-        <!--begin::Global Javascript Bundle(mandatory for all pages)-->
         <script src="assets/plugins/global/plugins.bundle.js"></script>
         <script src="assets/js/scripts.bundle.js"></script>
-        <!--end::Global Javascript Bundle-->
-        <!--begin::Vendors Javascript(used for this page only)-->
         <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
-        <!--end::Vendors Javascript-->
-        <!--begin::Custom Javascript(used for this page only)-->
-        <script src="assets/js/custom/apps/showtests/list/export.js"></script>
-        <script src="assets/js/custom/apps/showtests/list/list.js"></script>
-        <script src="assets/js/custom/apps/showtests/add.js"></script>
-        <script src="assets/js/widgets.bundle.js"></script>
-        <script src="assets/js/custom/widgets.js"></script>
-        <script src="assets/js/custom/apps/chat/chat.js"></script>
-        <script src="assets/js/custom/utilities/modals/upgrade-plan.js"></script>
-        <script src="assets/js/custom/utilities/modals/create-account.js"></script>
-        <script src="assets/js/custom/utilities/modals/create-app.js"></script>
-        <script src="assets/js/custom/utilities/modals/users-search.js"></script>
-        <!--end::Custom Javascript-->
-        <!--end::Javascript-->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <script src="assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
+
+        <script>
+            $(document).ready(function() {
+
+                // DataTable'ı başlat
+                // Başlangıçta ajax yapılandırmasını kaldırdık, böylece tablo boş başlayacak.
+                var testsDataTable = $('#tests_datatable').DataTable({
+                    ajax: {
+                        url: 'includes/ajax.php?service=getFilteredTests',
+                        type: 'POST',
+                        data: function(d) {
+                            // 'd' objesi DataTables'ın varsayılan parametrelerini (arama, sayfalama, sıralama) içerir.
+                            // Biz buraya kendi filtre input'larımızdan gelen değerleri ekliyoruz.
+                            // Bu değerler, AJAX isteği ile backend'e POST olarak gönderilecektir.
+                            d.title = $('#title').val();
+                            d.class_id = $('#class_id').val();
+                            d.lesson_id = $('#lesson_id').val();
+                            d.unit_id = $('#unit_id').val();
+                            d.topic_id = $('#topic_id').val();
+                            d.subtopic_id = $('#subtopic_id').val();
+                            // DataTables'ın global arama kutusu değeri otomatik olarak 'd.search.value' olarak zaten gönderilir.
+                        },
+                        dataSrc: function(json) {
+                            // Backend'den gelen JSON yanıtını kontrol ediyoruz.
+                            // Eğer status 'success' ise, 'data' anahtarındaki diziyi DataTables'a gönderiyoruz.
+                            if (json.status === 'success') {
+                                return json.data;
+                            } else {
+                                // Hata durumunda konsola log düşüp boş bir dizi döndürüyoruz.
+                                console.error("Backend'den hata döndü:", json.message);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Hata!',
+                                    text: json.message || 'Veriler yüklenirken bir hata oluştu.',
+                                    confirmButtonText: 'Tamam'
+                                });
+                                return [];
+                            }
+                        }
+                    }, // Yükleme göstergesini etkinleştir
+                    // ajax yapılandırması burada yok, sadece filtreleme ile tetiklenecek.
+                    columns: [{
+                            data: 'id'
+                        },
+                        {
+                            data: 'test_title'
+                        },
+                        {
+                            data: 'created_at'
+                        },
+                        {
+                            data: null,
+                            orderable: false,
+                            searchable: false,
+                            render: function(data, type, row) {
+                                return `
+                        <button class="btn btn-sm btn-primary edit-test-btn" data-id="${row.id}" title="Testi Düzenle">
+                            <i class="fas fa-edit"></i> Düzenle
+                        </button>
+                        <button class="btn btn-sm btn-danger delete-test-btn" data-id="${row.id}" title="Testi Sil">
+                            <i class="fas fa-trash"></i> Sil
+                        </button>
+                    `;
+                            }
+                        }
+                    ],
+                    language: {
+                        url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
+                    }
+                    // ... (Diğer DataTables ayarları: dom, vb. eklenebilir) ...
+                });
+
+                // Filtreleme butonu tıklaması
+                $('#filterButton').on('click', function() {
+                    var classId = $('#class_id').val();
+                    var lessonId = $('#lesson_id').val();
+
+                    // Sınıf ve Ders seçimi zorunlu kontrolü
+                    if (!classId || classId === '') {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Uyarı',
+                            text: 'Lütfen bir sınıf seçiniz.',
+                            confirmButtonText: 'Tamam'
+                        });
+                        $('#class_id').addClass('is-invalid'); // Bootstrap ile görsel uyarı
+                        return; // Filtreleme işlemini durdur
+                    } else {
+                        $('#class_id').removeClass('is-invalid');
+                    }
+
+
+                    testsDataTable.ajax.reload(function(json) {
+                        // Bu callback fonksiyonu, AJAX isteği tamamlandığında ve DataTables verileri işlediğinde çalışır.
+                        // dataSrc zaten hata durumunu ele aldığı için burası opsiyoneldir.
+                        // console.log("DataTables yeniden yüklendi:", json);
+                    });
+                });
+
+                // Temizle butonu tıklaması
+                $('#clearFiltersButton').on('click', function() {
+                    // Filtreleme alanlarını temizle
+                    $('#title').val('');
+                    $('#class_id').val('').trigger('change'); // 'change' olayı ile diğer bağımlı selectbox'ları da temizle
+                    $('#lesson_id').val('');
+                    $('#unit_id').val('');
+                    $('#topic_id').val('');
+                    $('#subtopic_id').val('');
+                    testsDataTable.ajax.reload(null, false);
+                    // Temizlenmiş filtrelerle DataTable'ı yeniden yükle.
+                    // Bu, 'getFilteredTests' servisinize boş filtre değerleri gönderecektir.
+
+                });
+
+                // --- Ders, Ünite, Konu, Alt Konu Seçim Mantığı ---
+
+                // Sınıf seçimi değiştiğinde dersleri getir
+                $('#class_id').on('change', function() {
+                    var classId = $(this).val();
+                    fetchLessonsForClass(classId);
+                });
+
+                function fetchLessonsForClass(classId) {
+                    if (classId !== '') {
+                        $.ajax({
+                            url: 'includes/ajax.php?service=getLessonList',
+                            type: 'POST',
+                            data: {
+                                class_id: classId
+                            },
+                            dataType: 'json',
+                            success: function(response) {
+                                var $lessonSelect = $('#lesson_id');
+                                $('#option_count').val(response.data.optionCount); // Bu kısım ilgili inputunuz varsa
+                                $lessonSelect.empty();
+                                $lessonSelect.append('<option value="">Ders seçiniz</option>');
+                                $.each(response.data.lessons, function(index, lesson) {
+                                    $lessonSelect.append('<option value="' + lesson.id + '">' + lesson.name + '</option>');
+                                });
+                                // Diğer bağımlı selectbox'ları temizle
+                                $('#unit_id').html('<option value="">Ünite seçiniz</option>');
+                                $('#topic_id').html('<option value="">Seçiniz</option>');
+                                $('#subtopic_id').html('<option value="">Alt Konu seçiniz</option>');
+                            },
+                            error: function(xhr) {
+                                handleAjaxError(xhr);
+                            }
+                        });
+                    } else {
+                        // Sınıf seçimi boşsa tüm bağımlı selectbox'ları temizle
+                        $('#lesson_id').html('<option value="">Ders seçiniz</option>');
+                        $('#unit_id').html('<option value="">Ünite seçiniz</option>');
+                        $('#topic_id').html('<option value="">Seçiniz</option>');
+                        $('#subtopic_id').html('<option value="">Alt Konu seçiniz</option>');
+                    }
+                }
+
+                // Ders seçimi değiştiğinde üniteleri getir
+                $('#lesson_id').on('change', function() {
+                    var lessonId = $(this).val();
+                    var classId = $('#class_id').val(); // Sınıf ID'sini de gönderiyoruz
+                    var $unitSelect = $('#unit_id');
+                    $unitSelect.empty().append('<option value="">Ünite seçiniz</option>');
+                    $('#topic_id').html('<option value="">Seçiniz</option>');
+                    $('#subtopic_id').html('<option value="">Alt Konu seçiniz</option>');
+
+                    if (lessonId !== '') {
+                        $.ajax({
+                            url: 'includes/ajax.php?service=getUnitList',
+                            type: 'POST',
+                            dataType: 'json',
+                            data: {
+                                lesson_id: lessonId,
+                                class_id: classId
+                            },
+                            success: function(response) {
+                                if (response.status === 'success' && response.data.length > 0) {
+                                    $.each(response.data, function(index, unit) {
+                                        $unitSelect.append($('<option>', {
+                                            value: unit.id,
+                                            text: unit.name
+                                        }));
+                                    });
+                                } else {
+                                    $unitSelect.append('<option disabled>Ünite bulunamadı</option>');
+                                }
+                            },
+                            error: function(xhr) {
+                                handleAjaxError(xhr);
+                            }
+                        });
+                    }
+                });
+
+                // Ünite seçimi değiştiğinde konuları getir
+                $('#unit_id').on('change', function() {
+                    var classId = $('#class_id').val();
+                    var lessonId = $('#lesson_id').val();
+                    var unitId = $(this).val();
+                    var $topicSelect = $('#topic_id');
+
+                    $topicSelect.empty().append('<option value="">Seçiniz</option>');
+                    $('#subtopic_id').html('<option value="">Alt Konu seçiniz</option>');
+
+                    if (unitId !== '') {
+                        $.ajax({
+                            url: 'includes/ajax.php?service=getTopicList',
+                            type: 'POST',
+                            dataType: 'json',
+                            data: {
+                                class_id: classId,
+                                lesson_id: lessonId,
+                                unit_id: unitId
+                            },
+                            success: function(response) {
+                                if (response.status === 'success' && response.data.length > 0) {
+                                    $.each(response.data, function(index, topic) {
+                                        $topicSelect.append($('<option>', {
+                                            value: topic.id,
+                                            text: topic.name
+                                        }));
+                                    });
+                                } else {
+                                    $topicSelect.append('<option disabled>Konu bulunamadı</option>');
+                                }
+                            },
+                            error: function(xhr) {
+                                handleAjaxError(xhr);
+                            }
+                        });
+                    }
+                });
+
+                // Konu seçimi değiştiğinde alt konuları getir
+                $('#topic_id').on('change', function() {
+                    var classId = $('#class_id').val();
+                    var lessonId = $('#lesson_id').val();
+                    var unitId = $('#unit_id').val();
+                    var topicId = $(this).val();
+                    var $subtopicSelect = $('#subtopic_id');
+
+                    $subtopicSelect.empty().append('<option value="">Alt Konu seçiniz</option>');
+
+                    if (topicId !== '') {
+                        $.ajax({
+                            url: 'includes/ajax.php?service=getSubtopicList',
+                            type: 'POST',
+                            dataType: 'json',
+                            data: {
+                                class_id: classId,
+                                lesson_id: lessonId,
+                                unit_id: unitId,
+                                topic_id: topicId
+                            },
+                            success: function(response) {
+                                if (response.status === 'success' && response.data.length > 0) {
+                                    $.each(response.data, function(index, subtopic) {
+                                        $subtopicSelect.append($('<option>', {
+                                            value: subtopic.id,
+                                            text: subtopic.name
+                                        }));
+                                    });
+                                } else {
+                                    $subtopicSelect.append('<option disabled>Alt konu bulunamadı</option>');
+                                }
+                            },
+                            error: function(xhr) {
+                                handleAjaxError(xhr);
+                            }
+                        });
+                    }
+                });
+
+                // --- İşlemler Butonları İçin Fonksiyonlar ---
+
+                // Testi Düzenle butonu tıklama olayı
+                $('#tests_datatable tbody').on('click', '.edit-test-btn', function() {
+                    var testId = $(this).data('id');
+                    // Düzenleme sayfasına yönlendirme
+                    window.location.href = 'edit_test.php?id=' + testId; // edit_test.php sayfasını sizin oluşturmanız gerekecek
+                });
+
+                // Testi Sil butonu tıklama olayı
+                $('#tests_datatable tbody').on('click', '.delete-test-btn', function() {
+                    var testId = $(this).data('id');
+                    Swal.fire({
+                        title: 'Emin misiniz?',
+                        text: "Bu testi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Evet, Sil!',
+                        cancelButtonText: 'İptal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: 'includes/ajax.php?service=deleteTest', // Silme işlemini yapacak backend endpoint'iniz
+                                type: 'POST',
+                                data: {
+                                    id: testId
+                                },
+                                dataType: 'json',
+                                success: function(response) {
+                                    if (response.status === 'success') {
+                                        Swal.fire(
+                                            'Silindi!',
+                                            'Test başarıyla silindi.',
+                                            'success'
+                                        );
+                                        testsDataTable.ajax.reload(); // DataTable'ı yenile
+                                    } else {
+                                        Swal.fire(
+                                            'Hata!',
+                                            response.message || 'Test silinirken bir hata oluştu.',
+                                            'error'
+                                        );
+                                    }
+                                },
+                                error: function(xhr) {
+                                    Swal.fire(
+                                        'Hata!',
+                                        'Sunucu ile iletişimde bir sorun oluştu.',
+                                        'error'
+                                    );
+                                    handleAjaxError(xhr);
+                                }
+                            });
+                        }
+                    });
+                });
+
+                // AJAX hatalarını işlemek için genel bir fonksiyon (isteğe bağlı)
+                function handleAjaxError(xhr) {
+                    console.error("AJAX isteğinde hata:", xhr.status, xhr.statusText, xhr.responseText);
+                    // Kullanıcıya daha bilgilendirici bir hata mesajı gösterebilirsiniz.
+                }
+            });
+        </script>
     </body>
-    <!--end::Body-->
 
 </html>
 <?php } else {

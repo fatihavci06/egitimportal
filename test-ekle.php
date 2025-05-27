@@ -66,7 +66,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         </div>
                                         <div class="col-lg-4">
                                             <label class="required fs-6 fw-semibold mb-2" for="title">Başlık</label>
-                                            <input type="text" class="form-control " placeholder="Konu Başlığı" id="title">
+                                            <input type="text" class="form-control " placeholder="Test Başlığı" id="title">
                                         </div>
 
                                         <div class="col-lg-4">

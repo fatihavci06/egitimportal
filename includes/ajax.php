@@ -1263,6 +1263,18 @@ switch ($service) {
         $title = $_POST['title'] ?? null;
         $startDate = $_POST['start_date'] ?? null;
         $endDate = $_POST['end_date'] ?? null;
+        if (empty($classId)) {
+            throw new Exception('Sınıf zorunludur.');
+        }
+        if (empty($title)) {
+            throw new Exception('Başlık zorunludur.');
+        }
+        if (empty($startDate)) {
+            throw new Exception('Başlangıç tarihi zorunludur.');
+        }
+        if (empty($endDate)) {
+            throw new Exception('Bitiş tarihi zorunludur.');
+        }
         $pdo->beginTransaction();
         try {
             // Dosya işlemleri
@@ -1316,7 +1328,9 @@ switch ($service) {
             ]);
 
             $testId = $pdo->lastInsertId(); // tests_lnp kaydından sonra geldi
-
+            if (!isset($_POST['questions']) || !is_array($_POST['questions']) || empty($_POST['questions'])) {
+                throw new Exception('Sorular boş olamaz. Lütfen en az bir soru ekleyin.');
+            }
             foreach ($_POST['questions'] as $qIndex => $question) {
                 // Soru ekle
                 $stmt = $pdo->prepare("
@@ -1395,7 +1409,7 @@ switch ($service) {
                         ]);
 
                         $optionId = $pdo->lastInsertId();
-                      
+
 
                         // Eğer option dosyaları varsa (örneğin ses)
                         if (isset($_FILES['questions']['name'][$qIndex]['options'][$optionKey]['images']) && is_array($_FILES['questions']['name'][$qIndex]['options'][$optionKey]['images'])) {
@@ -1448,11 +1462,128 @@ switch ($service) {
             ]);
         }
         break;
+    case 'getFilteredTests':
+        $title = isset($_POST['title']) ? $_POST['title'] : '';
+        $classId = isset($_POST['class_id']) ? $_POST['class_id'] : '';
+        $lessonId = isset($_POST['lesson_id']) ? $_POST['lesson_id'] : '';
+        $unitId = isset($_POST['unit_id']) ? $_POST['unit_id'] : '';
+        $topicId = isset($_POST['topic_id']) ? $_POST['topic_id'] : '';
+        $subtopicId = isset($_POST['subtopic_id']) ? $_POST['subtopic_id'] : '';
+        try {
+
+            $sql = "SELECT t.id, t.test_title AS test_title, t.created_at,
+                       t.class_id, t.lesson_id,
+                       t.unit_id, t.topic_id, t.subtopic_id
+                FROM tests_lnp t
+                WHERE 1=1"; // Her zaman doğru olan bir koşul ile başla
+
+            $params = [];
+
+            // Filtreleme koşulları (AND ile birleşir)
+            if (!empty($title)) {
+                $sql .= " AND t.test_title LIKE ?";
+                $params[] = '%' . $title . '%';
+            }
+            if (!empty($classId)) {
+                // Eğer class_id bir ID ise bu şekilde filtrelemeye devam edin.
+                // Eğer class_name üzerinden filtreleme yapılıyorsa, o zaman t.class_name LIKE ? kullanmalısınız.
+                // Mevcut yapınızda ID ile filtreleme olduğu için class_id kullanmaya devam ediyorum.
+                $sql .= " AND t.class_id = ?";
+                $params[] = $classId;
+            }
+            if (!empty($lessonId)) {
+                $sql .= " AND t.lesson_id = ?";
+                $params[] = $lessonId;
+            }
+            if (!empty($unitId)) {
+                $sql .= " AND t.unit_id = ?";
+                $params[] = $unitId;
+            }
+            if (!empty($topicId)) {
+                $sql .= " AND t.topic_id = ?";
+                $params[] = $topicId;
+            }
+            if (!empty($subtopicId)) {
+                $sql .= " AND t.subtopic_id = ?";
+                $params[] = $subtopicId;
+            }
+
+            // Global arama (OR kullanarak tüm ilgili sütunlarda arama)
+            // Artık JOIN'lere gerek kalmadığı için doğrudan t.sutun_adi kullanıyoruz.
+            if (!empty($searchValue)) {
+                $sql .= " AND (t.title LIKE ? OR t.class_name LIKE ? OR t.lesson_name LIKE ? OR t.unit_name LIKE ? OR t.topic_name LIKE ? OR t.subtopic_name LIKE ?)";
+                $params[] = '%' . $searchValue . '%';
+                $params[] = '%' . $searchValue . '%';
+                $params[] = '%' . $searchValue . '%';
+                $params[] = '%' . $searchValue . '%';
+                $params[] = '%' . $searchValue . '%';
+                $params[] = '%' . $searchValue . '%';
+            }
+
+            $sql .= " ORDER BY t.created_at DESC";
+
+            $stmt = $pdo->prepare($sql);
+
+            if (!$stmt->execute($params)) {
+                $stmt = null;
+                error_log("Failed to fetch filtered tests (client-side): ");
+                return [];
+            }
+
+            $tests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt = null;
+
+
+
+
+            if ($tests) {
+                echo json_encode(['status' => 'success', 'data' => $tests]);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Test bulunamadı.']);
+            }
+        } catch (Exception $e) {
+            http_response_code(422); // Veya uygun bir HTTP kodu
+            echo json_encode([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+            exit();
+        }
+        break;
 
 
 
 
     // Diğer servisler buraya eklenebilir
+    case 'deleteTest':
+        $testId = $_POST['id'] ?? null;
+
+        if (!$testId || !is_numeric($testId)) {
+            echo json_encode(['status' => 'error', 'message' => 'Geçersiz test ID']);
+            exit;
+        }
+        $pdo->beginTransaction();
+        try {
+            // Testi sil
+            $stmt = $pdo->prepare("DELETE FROM tests_lnp WHERE id = :test_id");
+            $stmt->execute([':test_id' => $testId]);
+
+            if ($stmt->rowCount() > 0) {
+                echo json_encode(['status' => 'success', 'message' => 'Test başarıyla silindi.']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Test bulunamadı veya zaten silinmiş.']);
+            }
+            $pdo->commit();
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            http_response_code(422); // Veya uygun bir HTTP kodu
+            echo json_encode([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+            exit();
+        }
+        break;
     default:
         echo json_encode(['status' => 'error', 'message' => 'Geçersiz servis']);
         break;
