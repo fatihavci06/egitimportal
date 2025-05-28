@@ -43,7 +43,7 @@ if (!defined('GUARD')) {
         <!--end::Menu separator-->
         <!--begin::Menu item-->
         <div class="menu-item px-5">
-            <a href="account/overview.html" class="menu-link px-5">Profilim</a>
+            <a href="profilim" class="menu-link px-5">Profilim</a>
         </div>
         <!--end::Menu item-->
         <!--begin::Menu item-->
