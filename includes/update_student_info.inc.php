@@ -4,11 +4,10 @@ session_start();
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
     include_once "../classes/dbh.classes.php";
-    include_once "../classes/user.classes.php";
+    include_once "../classes/student.classes.php";
 
     $studentObj = new Student();
     $userInfo = $studentObj->getStudentById($_SESSION['id']);
-
     $phone = $_POST["phone"];
     $city = $_POST["city"];
     $district = $_POST["district"];
@@ -42,6 +41,8 @@ function updateStudent($userInfo, $phone, $city, $district, $address, $postcode,
     $postcodeChanged = ($postcode !== $userInfo['postcaode']);
     $photoUploaded = ($fileTmpName != NULL);
     $imgName = $userInfo['photo'];
+
+
 
     if (!$phoneChanged && !$cityChanged && !$districtChanged && !$addressChanged && !$photoUploaded && !$postcodeChanged) {
         echo json_encode(["status" => "success"]);
