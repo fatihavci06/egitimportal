@@ -4,7 +4,8 @@
 class Student extends Dbh
 {
 
-	public function getWaitingMoneyTransfers(){
+	public function getWaitingMoneyTransfers()
+	{
 		$stmt = $this->connect()->prepare('SELECT user_id FROM money_transfer_list_lnp WHERE status = ?');
 		if (!$stmt->execute(array("0"))) {
 			$stmt = null;
@@ -14,7 +15,7 @@ class Student extends Dbh
 		return $getData;
 		$stmt = null;
 	}
-	
+
 	protected function getWaitingMoneyStudent()
 	{
 
@@ -32,7 +33,8 @@ class Student extends Dbh
 		$stmt = null;
 	}
 
-	public function getMoneyTransferInfo($id){
+	public function getMoneyTransferInfo($id)
+	{
 		$stmt = $this->connect()->prepare('SELECT * FROM money_transfer_list_lnp WHERE id = ?');
 
 		if (!$stmt->execute(array($id))) {
@@ -164,10 +166,24 @@ class Student extends Dbh
 		return $studentId['id'];
 		$stmt = null;
 	}
+	public function getStudentById($id)
+	{
+		$stmt = $this->connect()->prepare('SELECT * FROM users_lnp WHERE id = ?');
 
-	public function getStudentPackages($id){
+		if (!$stmt->execute(array($id))) {
+			$stmt = null;
+			exit();
+		}
+
+		$studentInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+		return $studentInfo;
+		$stmt = null;
+	}
+
+	public function getStudentPackages($id)
+	{
 		$stmt = $this->connect()->prepare('SELECT * FROM package_payments_lnp WHERE user_id = ?');
-		
+
 		if (!$stmt->execute(array($id))) {
 			$stmt = null;
 			exit();
@@ -178,9 +194,10 @@ class Student extends Dbh
 		$stmt = null;
 	}
 
-	public function getStudentPackagesWithName($id){
+	public function getStudentPackagesWithName($id)
+	{
 		$stmt = $this->connect()->prepare('SELECT package_payments_lnp.*, packages_lnp.name AS packageName, users_lnp.subscribed_end, classes_lnp.name AS className FROM package_payments_lnp INNER JOIN packages_lnp ON package_payments_lnp.pack_id = packages_lnp.id INNER JOIN users_lnp ON package_payments_lnp.user_id = users_lnp.id INNER JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id WHERE package_payments_lnp.user_id = ?');
-		
+
 		if (!$stmt->execute(array($id))) {
 			$stmt = null;
 			exit();
@@ -191,9 +208,10 @@ class Student extends Dbh
 		$stmt = null;
 	}
 
-	public function getStudentAdditionalPackagesWithName($id){
+	public function getStudentAdditionalPackagesWithName($id)
+	{
 		$stmt = $this->connect()->prepare('SELECT additional_package_payments_lnp.*, packages_lnp.name AS packageName, users_lnp.subscribed_end FROM additional_package_payments_lnp INNER JOIN packages_lnp ON additional_package_payments_lnp.pack_id = packages_lnp.id INNER JOIN users_lnp ON additional_package_payments_lnp.user_id = users_lnp.id WHERE additional_package_payments_lnp.user_id = ?');
-		
+
 		if (!$stmt->execute(array($id))) {
 			$stmt = null;
 			exit();
@@ -204,7 +222,8 @@ class Student extends Dbh
 		$stmt = null;
 	}
 
-	public function getStudentLoginInfo($id){
+	public function getStudentLoginInfo($id)
+	{
 		$stmt = $this->connect()->prepare('SELECT * FROM logininfo_lnp  WHERE user_id = ? ORDER BY id DESC');
 
 		if (!$stmt->execute(array($id))) {
@@ -217,9 +236,10 @@ class Student extends Dbh
 		$stmt = null;
 	}
 
-	public function getStudentAdditionalPackages($id){
+	public function getStudentAdditionalPackages($id)
+	{
 		$stmt = $this->connect()->prepare('SELECT * FROM additional_package_payments_lnp WHERE user_id = ?');
-		
+
 		if (!$stmt->execute(array($id))) {
 			$stmt = null;
 			exit();
@@ -230,9 +250,10 @@ class Student extends Dbh
 		$stmt = null;
 	}
 
-	public function getStudentClass($id){
+	public function getStudentClass($id)
+	{
 		$stmt = $this->connect()->prepare('SELECT * FROM classes_lnp WHERE id = ?');
-		
+
 		if (!$stmt->execute(array($id))) {
 			$stmt = null;
 			exit();
