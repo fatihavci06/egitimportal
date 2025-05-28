@@ -1281,6 +1281,7 @@ switch ($service) {
             $filePath = null;
 
             if (isset($_FILES['cover_img']) && $_FILES['cover_img']['error'] === UPLOAD_ERR_OK) {
+                
                 $uploadDir = __DIR__ . '/../uploads/test/';
                 if (!is_dir($uploadDir)) {
                     mkdir($uploadDir, 0755, true);
@@ -1555,6 +1556,136 @@ switch ($service) {
 
 
     // Diğer servisler buraya eklenebilir
+    case 'getTestDetails':
+        $sql = "
+SELECT 
+    t.id AS test_id,
+    t.test_title,
+    t.school_id,
+    t.teacher_id,
+    t.cover_img,
+    t.class_id,
+    t.lesson_id,
+    t.unit_id,
+    t.topic_id,
+    t.subtopic_id,
+    t.start_date,
+    t.end_date,
+    t.created_at AS test_created_at,
+    t.updated_at AS test_updated_at,
+
+    tq.id AS question_id,
+    tq.question_text,
+    tq.correct_answer,
+    tq.created_at AS question_created_at,
+    tq.updated_at AS question_updated_at,
+
+    tqv.video_url,
+
+    tqf.file_path AS question_file_path,
+
+    tqo.id AS option_id,
+    tqo.option_key,
+    tqo.option_text,
+    tqo.created_at AS option_created_at,
+    tqo.updated_at AS option_updated_at,
+
+    tqof.file_path AS option_file_path
+
+FROM tests_lnp t
+LEFT JOIN test_questions_lnp tq ON tq.test_id = t.id
+LEFT JOIN test_question_videos_lnp tqv ON tqv.question_id = tq.id
+LEFT JOIN test_question_files_lnp tqf ON tqf.question_id = tq.id
+LEFT JOIN test_question_options_lnp tqo ON tqo.question_id = tq.id
+LEFT JOIN test_question_option_files_lnp tqof ON tqof.option_id = tqo.id
+WHERE t.id = :id";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['id' => $_POST['test_id'] ?? null]);
+        if ($stmt->rowCount() === 0) {
+            echo json_encode(['status' => 'error', 'message' => 'Test bulunamadı.']);
+            exit;
+        }
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $response = null;
+
+        foreach ($rows as $row) {
+            if (!$response) {
+                $response = [
+                    'id' => $row['test_id'],
+                    'test_title' => $row['test_title'],
+                    'school_id' => $row['school_id'],
+                    'teacher_id' => $row['teacher_id'],
+                    'cover_img' => $row['cover_img'],
+                    'class_id' => $row['class_id'],
+                    'lesson_id' => $row['lesson_id'],
+                    'unit_id' => $row['unit_id'],
+                    'topic_id' => $row['topic_id'],
+                    'subtopic_id' => $row['subtopic_id'],
+                    'start_date' => $row['start_date'],
+                    'end_date' => $row['end_date'],
+                    'created_at' => $row['test_created_at'],
+                    'updated_at' => $row['test_updated_at'],
+                    'questions' => [],
+                ];
+            }
+
+            $questionId = $row['question_id'];
+            $optionId = $row['option_id'];
+
+            if ($questionId && !isset($response['questions'][$questionId])) {
+                $response['questions'][$questionId] = [
+                    'id' => $questionId,
+                    'question_text' => $row['question_text'],
+                    'correct_answer' => $row['correct_answer'],
+                    'created_at' => $row['question_created_at'],
+                    'updated_at' => $row['question_updated_at'],
+                    'videos' => [],
+                    'files' => [],
+                    'options' => [],
+                ];
+            }
+
+            // Video ekle
+            if (!empty($row['video_url']) && !in_array($row['video_url'], $response['questions'][$questionId]['videos'])) {
+                $response['questions'][$questionId]['videos'][] = $row['video_url'];
+            }
+
+            // Soru dosyası ekle
+            if (!empty($row['question_file_path']) && !in_array($row['question_file_path'], $response['questions'][$questionId]['files'])) {
+                $response['questions'][$questionId]['files'][] = $row['question_file_path'];
+            }
+
+            // Seçenek ekle
+            if ($optionId && !isset($response['questions'][$questionId]['options'][$optionId])) {
+                $response['questions'][$questionId]['options'][$optionId] = [
+                    'id' => $optionId,
+                    'option_key' => $row['option_key'],
+                    'option_text' => $row['option_text'],
+                    'created_at' => $row['option_created_at'],
+                    'updated_at' => $row['option_updated_at'],
+                    'files' => [],
+                ];
+            }
+
+            // Seçenek dosyası ekle
+            if (!empty($row['option_file_path']) && !in_array($row['option_file_path'], $response['questions'][$questionId]['options'][$optionId]['files'])) {
+                $response['questions'][$questionId]['options'][$optionId]['files'][] = $row['option_file_path'];
+            }
+        }
+
+        // Final formatlama
+        if ($response) {
+            $response['questions'] = array_values(array_map(function ($question) {
+                $question['options'] = array_values($question['options']);
+                return $question;
+            }, $response['questions']));
+            echo json_encode(['status' => 'success', 'data' => $response]);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Ders bulunamadı.']);
+        }
+        break;
     case 'deleteTest':
         $testId = $_POST['id'] ?? null;
 
@@ -1584,6 +1715,265 @@ switch ($service) {
             exit();
         }
         break;
+    case 'testUpdate':
+
+
+        $testId = $_POST['test_id'] ?? null;
+        $classId = $_POST['class_id'] ?? null;
+        $lessonId = $_POST['lesson_id'] ?? null;
+        $unitId = $_POST['unit_id'] ?? null;
+        $topicId = $_POST['topic_id'] ?? null;
+        $subtopicId = $_POST['subtopic_id'] ?? null;
+        $title = $_POST['title'] ?? null;
+        $startDate = $_POST['start_date'] ?? null;
+        $endDate = $_POST['end_date'] ?? null;
+        $newQuestionsData = $_POST['questions'] ?? []; // Gelen yeni soru verileri
+
+        if (!$testId) {
+            // test_id yoksa hata döndür
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'message' => 'Test ID is required.']);
+            exit;
+        }
+
+        try {
+            $pdo->beginTransaction();
+
+            // 1. Mevcut Test Bilgilerini Güncelle (eğer test_id ile güncelleme yapılıyorsa)
+            // Eğer test her zaman yeni oluşturuluyorsa bu adım atlanabilir.
+            // Eğer test_id mevcut bir testi temsil ediyorsa, testin ana bilgilerini güncelleyelim.
+              if (isset($_FILES['cover_img']) && $_FILES['cover_img']['error'] === UPLOAD_ERR_OK) {
+                
+                $uploadDir = __DIR__ . '/../uploads/test/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0755, true);
+                }
+
+                $fileTmpPath = $_FILES['cover_img']['tmp_name'];
+                $fileName = basename($_FILES['cover_img']['name']);
+                $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+                $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'];
+                if (!in_array($extension, $allowedExtensions)) {
+                    throw new Exception('İzin verilmeyen dosya uzantısı.');
+                }
+
+                $newFileName = uniqid('test_', true) . '.' . $extension;
+                $destination = $uploadDir . $newFileName;
+
+                if (!move_uploaded_file($fileTmpPath, $destination)) {
+                    throw new Exception('Dosya yüklenemedi.');
+                }
+
+                $coverImage = 'uploads/test/' . $newFileName; // Veritabanı için yol
+            }
+
+            $stmt = $pdo->prepare("
+        UPDATE tests_lnp
+        SET cover_img=?,class_id = ?, lesson_id = ?, unit_id = ?, topic_id = ?, subtopic_id = ?, test_title = ?, start_date = ?, end_date = ?
+        WHERE id = ?
+    ");
+            $stmt->execute([
+                $coverImage??null,
+                $classId,
+                $lessonId,
+                $unitId,
+                $topicId,
+                $subtopicId,
+                $title,
+                $startDate,
+                $endDate,
+                $testId
+            ]);
+
+            // 2. Mevcut Soruları, Şıkları, Dosyaları ve Videoları Temizle
+            // Bu kısım sizin sağladığınız koda benzer, ancak tüm eski soruları silmek yerine,
+            // gelen payload'daki soru ID'leri ile karşılaştırma yaparak sadece eksik olanları silebiliriz.
+            // Ancak basitlik adına, genellikle testin tüm sorularını silip yeniden eklemek daha kolaydır
+            // Eğer düzenleme karmaşık değilse ve her zaman tüm sorular yeniden gönderiliyorsa.
+            // Varsayım: Payload'da gelen sorular testin mevcut sorularının TAMAMI yerine geçiyor.
+            // Bu durumda, mevcut test_id'ye ait tüm soruları sileceğiz.
+
+            // Önce test_id'ye bağlı tüm question_id'leri alalım
+            $stmt = $pdo->prepare("SELECT id FROM test_questions_lnp WHERE test_id = ?");
+            $stmt->execute([$testId]);
+            $existingQuestionIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+            if (!empty($existingQuestionIds)) {
+                $placeholders = implode(',', array_fill(0, count($existingQuestionIds), '?'));
+
+                // Sorulara ait dosyaları ve videoları sil (önce dosya yollarını alıp sunucudan sil)
+                $stmt = $pdo->prepare("SELECT file_path FROM test_question_files_lnp WHERE question_id IN ($placeholders)");
+                $stmt->execute($existingQuestionIds);
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    $filePathToDelete = __DIR__ . '/../' . $row['file_path']; // Kendi dosya yolunuzu güncelleyin
+                    if (file_exists($filePathToDelete)) {
+                        unlink($filePathToDelete);
+                    }
+                }
+                $stmt = $pdo->prepare("DELETE FROM test_question_files_lnp WHERE question_id IN ($placeholders)");
+                $stmt->execute($existingQuestionIds);
+
+                // Sorulara ait videoları sil
+                $stmt = $pdo->prepare("DELETE FROM test_question_videos_lnp WHERE question_id IN ($placeholders)");
+                $stmt->execute($existingQuestionIds);
+
+                // Sorulara ait şıkların ID'lerini al
+                $stmt = $pdo->prepare("SELECT id FROM test_question_options_lnp WHERE question_id IN ($placeholders)");
+                $stmt->execute($existingQuestionIds);
+                $optionsToDeleteFromQuestion = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+                if (!empty($optionsToDeleteFromQuestion)) {
+                    $optPlaceholders = implode(',', array_fill(0, count($optionsToDeleteFromQuestion), '?'));
+
+                    // Şıklara ait dosyaları sil (önce dosya yollarını alıp sunucudan sil)
+                    $stmt = $pdo->prepare("SELECT file_path FROM test_question_option_files_lnp WHERE option_id IN ($optPlaceholders)");
+                    $stmt->execute($optionsToDeleteFromQuestion);
+                    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                        $filePathToDelete = __DIR__ . '/../' . $row['file_path']; // Kendi dosya yolunuzu güncelleyin
+                        if (file_exists($filePathToDelete)) {
+                            unlink($filePathToDelete);
+                        }
+                    }
+                    $stmt = $pdo->prepare("DELETE FROM test_question_option_files_lnp WHERE option_id IN ($optPlaceholders)");
+                    $stmt->execute($optionsToDeleteFromQuestion);
+
+                    // Şıkları sil
+                    $stmt = $pdo->prepare("DELETE FROM test_question_options_lnp WHERE id IN ($optPlaceholders)");
+                    $stmt->execute($optionsToDeleteFromQuestion);
+                }
+
+                // Ana soruları sil
+                $stmt = $pdo->prepare("DELETE FROM test_questions_lnp WHERE id IN ($placeholders)");
+                $stmt->execute($existingQuestionIds);
+            }
+
+            // 3. Yeni Gelen Soruları, Şıkları, Dosyaları ve Videoları Kaydet
+            foreach ($newQuestionsData as $questionIndex => $questionData) {
+                $questionText = $questionData['text'] ?? '';
+                $correctAnswer = $questionData['correct_answer'] ?? null;
+                // Varsayılan bir tip atayabilirsiniz
+                // Diğer soru alanları (örneğin, question_order, difficulty vb.)
+
+                // Yeni soruyu ekle
+                $stmt = $pdo->prepare("
+            INSERT INTO test_questions_lnp (test_id, question_text, correct_answer)
+            VALUES (?, ?, ?)
+        ");
+                $stmt->execute([
+                    $testId,
+                    $questionText,
+                    $correctAnswer // Sırayı belirtmek için
+                ]);
+                $newQuestionId = $pdo->lastInsertId();
+
+                // Sorunun videolarını kaydet
+                if (!empty($questionData['videos'])) {
+                    foreach ($questionData['videos'] as $videoIndex => $videoPath) {
+                        // Burada video yükleme mantığı uygulanmalıdır.
+                        // Eğer video direk metin olarak geliyorsa (ki payload'da öyle görünüyor),
+                        // bu video yolunu direk kaydedebilirsiniz.
+                        // Eğer bu bir dosya yüklemesi ise, $_FILES'tan alıp sunucuya kaydetmelisiniz.
+                        $stmt = $pdo->prepare("
+                    INSERT INTO test_question_videos_lnp (question_id, video_url)
+                    VALUES (?, ?)
+                ");
+                        $stmt->execute([$newQuestionId, $videoPath]);
+                    }
+                }
+
+                // Sorunun dosyalarını kaydet (resimler vb. için)
+                // Eğer payload'da 'files' anahtarı ve dosya bilgileri varsa buraya ekleyin.
+                // Genellikle dosya yüklemeleri $_FILES ile ayrı ele alınır.
+
+                if (isset($_FILES['questions']['name'][$questionIndex]['images'])) {
+
+                    foreach ($_FILES['questions']['name'][$questionIndex]['images'] as $fileKey => $fileName) {
+
+                        $uploadDir = __DIR__ . '/../uploads/questions/';
+                        $newFilePath = $uploadDir . basename($fileName);
+                        if (move_uploaded_file($_FILES['questions']['tmp_name'][$questionIndex]['images'][$fileKey], $newFilePath)) {
+                            $stmt = $pdo->prepare("INSERT INTO test_question_files_lnp (question_id, file_path) VALUES (?, ?)");
+                            $stmt->execute([$newQuestionId, str_replace(__DIR__ . '/../', '', $newFilePath)]);
+                        }
+                    }
+                    if (isset($_POST['questions'][$questionIndex]['existing_images'])) {
+                        foreach ($_POST['questions'][$questionIndex]['existing_images'] as $existingImagePath) {
+                            $stmt = $pdo->prepare("INSERT INTO test_question_files_lnp (question_id, file_path) VALUES (?, ?)");
+                            $stmt->execute([
+                                $newQuestionId,
+                                $existingImagePath
+                            ]);
+                        }
+                    }
+                }
+
+
+
+                // Şıkları kaydet
+                if (!empty($questionData['options'])) {
+                    foreach ($questionData['options'] as $optionKey => $optionData) {
+                        $optionText = $optionData['text'] ?? '';
+                        // Diğer şık alanları (örneğin, is_correct)
+
+                        $stmt = $pdo->prepare("
+                    INSERT INTO test_question_options_lnp (question_id, option_key, option_text)
+                    VALUES (?, ?, ?)
+                ");
+                        $stmt->execute([$newQuestionId, $optionKey, $optionText]);
+                        $newOptionId = $pdo->lastInsertId();
+
+                        // Şık dosyalarını kaydet (resimler vb. için)
+                        // Benzer şekilde, eğer şıklara ait dosyalar varsa burada işleyin.
+
+                        if (!empty($_FILES['questions']['name'][$questionIndex]['options'][$optionKey]['images'])) {
+                            foreach ($_FILES['questions']['name'][$questionIndex]['options'][$optionKey]['images'] as $fileKey => $fileName) {
+
+                                $uploadDir = __DIR__ . '/../uploads/questions/';
+                                if (!is_dir($uploadDir)) {
+                                    mkdir($uploadDir, 0777, true);
+                                }
+
+                                $tmpFile = $_FILES['questions']['tmp_name'][$questionIndex]['options'][$optionKey]['images'][$fileKey];
+                                $newFilePath = $uploadDir . basename($fileName);
+
+                                if (is_uploaded_file($tmpFile) && move_uploaded_file($tmpFile, $newFilePath)) {
+                                    $stmt = $pdo->prepare("INSERT INTO test_question_option_files_lnp (option_id, file_path) VALUES (?, ?)");
+                                    $stmt->execute([
+                                        $newOptionId,
+                                        str_replace(__DIR__ . '/../', '', $newFilePath)
+                                    ]);
+                                }
+                            }
+                        }
+
+                        // VAR OLAN (existing_images) dosyaları doğrudan insert et (opsiyonel)
+                        if (isset($_POST['questions'][$questionIndex]['options'][$optionKey]['existing_images'])) {
+                            foreach ($_POST['questions'][$questionIndex]['options'][$optionKey]['existing_images'] as $existingImagePath) {
+                                $stmt = $pdo->prepare("INSERT INTO test_question_option_files_lnp (option_id, file_path) VALUES (?, ?)");
+                                $stmt->execute([
+                                    $newOptionId,
+                                    $existingImagePath
+                                ]);
+                            }
+                        }
+                    }
+                }
+            }
+
+            $pdo->commit();
+
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'success', 'message' => 'Test updated successfully.']);
+        } catch (\Exception $e) {
+            $pdo->rollBack();
+            header('Content-Type: application/json', true, 500);
+            echo json_encode(['status' => 'error', 'message' => 'An error occurred: ' . $e->getMessage()]);
+            // Hata detaylarını loglamak genellikle iyi bir uygulamadır.
+        }
+
+        break;
+
     default:
         echo json_encode(['status' => 'error', 'message' => 'Geçersiz servis']);
         break;

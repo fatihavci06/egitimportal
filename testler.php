@@ -213,10 +213,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     `;
                             }
                         }
-                    ],
-                    language: {
-                        url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
-                    }
+                    ]
                     // ... (Diğer DataTables ayarları: dom, vb. eklenebilir) ...
                 });
 
@@ -427,7 +424,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 $('#tests_datatable tbody').on('click', '.edit-test-btn', function() {
                     var testId = $(this).data('id');
                     // Düzenleme sayfasına yönlendirme
-                    window.location.href = 'edit_test.php?id=' + testId; // edit_test.php sayfasını sizin oluşturmanız gerekecek
+                    window.location.href = 'test-guncelle.php?id=' + testId; // edit_test.php sayfasını sizin oluşturmanız gerekecek
                 });
 
                 // Testi Sil butonu tıklama olayı

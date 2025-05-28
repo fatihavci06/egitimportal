@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="tr">
 <?php
+
 session_start();
 define('GUARD', true);
 if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 4)) {
@@ -8,6 +9,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     include "classes/classes.classes.php";
 
     include_once "views/pages-head.php";
+    $data = new Classes();
+
+    $data = $data->getTestById($_GET['id']);
+    $data = json_decode($data, true);
+
+
 ?>
     <!--end::Head-->
     <!--begin::Body-->
@@ -57,28 +64,32 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
-                                    <!--begin::Card-->
                                     <div class="row">
                                         <div class="col-lg-4">
                                             <label class="required fs-6 fw-semibold mb-2" for="cover_img">Görsel</label>
-                                            <input type="file" id="cover_img" class="form-control " id="cover_img" accept=".png, .jpg, .jpeg, .PNG, .JPG, .JPEG" />
-
+                                            <input type="file" id="cover_img" class="form-control" accept=".png, .jpg, .jpeg, .PNG, .JPG, .JPEG" />
+                                            <div id="current_cover_img_container" class="mt-2">
+                                            </div>
                                         </div>
                                         <div class="col-lg-4">
                                             <label class="required fs-6 fw-semibold mb-2" for="title">Başlık</label>
-                                            <input type="text" class="form-control " placeholder="Test Başlığı" id="title">
+                                            <input type="text" class="form-control" placeholder="Test Başlığı" id="title" value="<?= $data['test_title'] ?>">
                                         </div>
 
                                         <div class="col-lg-4">
-                                            <label class="required fs-6 fw-semibold mb-2" for="week">Sınıf Seçimi </label>
+                                            <label class="required fs-6 fw-semibold mb-2" for="class_id">Sınıf Seçimi</label>
                                             <?php
+                                            // Bu kısım, PHP ile mevcut sınıfları çekip selectbox'ı doldurmak için kullanılacaktır.
+                                            // Örneğin, bir Classes sınıfınız varsa ve getClassesList metodunuz varsa:
                                             $class = new Classes();
                                             $classList = $class->getClassesList();
                                             ?>
                                             <select class="form-select" id="class_id" required aria-label="Default select example">
                                                 <option value="">Seçiniz</option>
                                                 <?php foreach ($classList as $c) { ?>
-                                                    <option value="<?= $c['id'] ?>"><?= $c['name'] ?></option>
+                                                    <option value="<?= $c['id'] ?>" <?= ($data['class_id'] == $c['id']) ? 'selected' : '' ?>>
+                                                        <?= $c['name'] ?>
+                                                    </option>
                                                 <?php } ?>
                                             </select>
                                         </div>
@@ -112,7 +123,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         </div>
                                         <div class="col-lg-4">
                                             <label class="required fs-6 fw-semibold mb-2" for="start_date">Başlangıç Tarihi</label>
-
                                             <input type="datetime-local" class="form-control" id="start_date" name="start_date">
                                         </div>
                                         <div class="col-lg-4">
@@ -121,7 +131,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         </div>
 
                                         <input type="hidden" id="option_count" value="0">
-
+                                        <input type="hidden" id="test_id" value="">
                                     </div>
                                     <div class="row mt-5 mb-5">
                                         <div class="col-lg-4"></div>
@@ -133,10 +143,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         </div>
                                     </div>
                                     <div id="questions_container"></div>
-
-
-
-                                    <!--end::Card-->
                                 </div>
                                 <!--end::Content container-->
                             </div>
@@ -185,17 +191,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     </body>
     <!--end::Body-->
     <script>
-        let currentMaxQuestionIndex = 0;
+        let currentMaxQuestionIndex = 0; // Global olarak tanımlı, soru eklerken kullanılacak
 
-        function getOptionLabels(count) {
-            const labels = [];
-            for (let i = 0; i < count; i++) {
-                labels.push(String.fromCharCode(65 + i));
-            }
-            return labels;
-        }
-
-        function initTinyMCE(selector) {
+        // TinyMCE editörünü başlatma fonksiyonu
+        function initTinyMCE(selector, content = '') {
             if (tinymce.get(selector.replace('#', ''))) {
                 tinymce.get(selector.replace('#', '')).remove();
             }
@@ -205,17 +204,182 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 menubar: false,
                 plugins: 'link image media',
                 toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright | bullist numlist outdent indent | link image media',
+                setup: function(editor) {
+                    editor.on('init', function() {
+                        if (content) {
+                            editor.setContent(content);
+                        }
+                    });
+                }
             });
         }
 
-        function createVideoInput(index) {
+        // Seçenek etiketlerini (A, B, C...) oluşturan fonksiyon
+        function getOptionLabels(count) {
+            const labels = [];
+            for (let i = 0; i < count; i++) {
+                labels.push(String.fromCharCode(65 + i));
+            }
+            return labels;
+        }
+
+        // Video input alanı oluşturan fonksiyon
+        function createVideoInput(index, value = '') {
+          
             return `
     <div class="video-url-group mb-2 d-flex align-items-center gap-2">
-        <input type="url" name="questions[${index}][videos][]" class="form-control" placeholder="Video URL" />
+        <input type="url" name="questions[${index}][videos][]" class="form-control" placeholder="Video URL" value="${value}" />
         <button type="button" class="btn btn-danger btn-sm remove-video-btn">Kaldır</button>
     </div>`;
         }
 
+        // Resim input alanı oluşturan fonksiyon
+        function createImageInput(index, fileName = '', filePath = '') {
+              console.log(fileName);
+            let currentImageDisplay = '';
+            if (fileName && filePath) {
+                currentImageDisplay = `
+            <div class="current-image-display d-flex align-items-center gap-2 mt-1">
+                <a href="${filePath}" target="_blank">${fileName}</a>
+                <button type="button" class="btn btn-warning btn-sm remove-existing-image" data-file-path="${filePath}">Mevcut Görseli Kaldır</button>
+                <input type="hidden" name="questions[${index}][existing_images][]" value="${filePath}" />
+            </div>`;
+            }
+
+            return `
+    <div class="image-upload-group mb-2 d-flex align-items-center gap-2">
+        <input type="file" name="questions[${index}][images][]" accept="image/*" class="form-control" />
+        <button type="button" class="btn btn-danger btn-sm remove-image-btn">Kaldır</button>
+        ${currentImageDisplay}
+    </div>`;
+        }
+
+        // Seçenek resim input alanı oluşturan fonksiyon
+        function createOptionImageInput(questionIdx, optionLabel, fileName = '', filePath = '') {
+            let currentImageDisplay = '';
+            if (fileName && filePath) {
+                currentImageDisplay = `
+            <div class="current-option-image-display d-flex align-items-center gap-2 mt-1">
+                <a href="${filePath}" target="_blank">${fileName}</a>
+                <button type="button" class="btn btn-warning btn-sm remove-existing-option-image" data-file-path="${filePath}">Mevcut Görseli Kaldır</button>
+                <input type="hidden" name="questions[${questionIdx}][options][${optionLabel}][existing_images][]" value="${filePath}" />
+            </div>`;
+            }
+            return `
+        <div class="option-image-upload-group mb-2 d-flex align-items-center gap-2">
+            <input type="file" name="questions[${questionIdx}][options][${optionLabel}][images][]" accept="image/*" class="form-control" />
+            <button type="button" class="btn btn-danger btn-sm remove-option-image-btn">Kaldır</button>
+            ${currentImageDisplay}
+        </div>`;
+        }
+
+
+        // Seçenek inputlarını oluşturan fonksiyon
+       function createOptionInputs(index, optionCount, optionsData = []) {
+    let html = '';
+    let optionLabels = getOptionLabels(optionCount);
+
+    optionLabels.forEach(label => {
+        const optionItem = optionsData.find(opt => opt.option_key === label);
+        const optionText = optionItem ? optionItem.option_text : '';
+        const optionImages = optionItem && optionItem.files ? optionItem.files : [];
+
+        console.log(optionItem); // debug amaçlı
+        
+        let imagesHtml = '';
+        if (optionImages.length > 0) {
+            optionImages.forEach(img => {
+                const fileName = img.split('/').pop();
+                imagesHtml += createOptionImageInput(index, label, fileName, img);
+            });
+        } else {
+            imagesHtml += createOptionImageInput(index, label);
+        }
+
+        html += `<div class="option-block mb-3 border p-3 rounded">
+            <label>Seçenek ${label}</label>
+            <textarea name="questions[${index}][options][${label}][text]" id="option-tinymce-${index}-${label}" class="option-textarea form-control mb-2">${optionText}</textarea>
+            <div class="option-images-container">
+                <label>Seçeneğe Görsel Ekle</label>
+                <div class="option-image-inputs">
+                    ${imagesHtml}
+                </div>
+                <button type="button" class="btn btn-sm btn-secondary add-option-image-btn" data-index="${index}" data-label="${label}">+ Görsel Ekle</button>
+            </div>
+        </div>`;
+    });
+
+    return html;
+}
+
+
+        // Soru bloğu oluşturan fonksiyon
+        function createQuestionBlock(index, questionNumber, questionData = {}) {
+            const optionCount = parseInt($('#option_count').val()) || 3;
+            const optionInputsHTML = createOptionInputs(index, optionCount, questionData.options);
+            const optionLabels = getOptionLabels(optionCount);
+
+            let videosHtml = '';
+            if (questionData.videos && questionData.videos.length > 0) {
+                questionData.videos.forEach(video => {
+                    videosHtml += createVideoInput(index, video);
+                });
+            } else {
+                videosHtml += createVideoInput(index);
+            }
+
+            let imagesHtml = '';
+            if (questionData.files && questionData.files.length > 0) {
+                questionData.files.forEach(image => {
+                    const fileName = image.split('/').pop(); // Dosya adını al
+                    imagesHtml += createImageInput(index, fileName, image);
+                });
+            } else {
+                imagesHtml += createImageInput(index);
+            }
+
+            return `
+    <div class="question-block mb-4 card border-primary shadow-sm" data-question-index="${index}">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Soru ${questionNumber}</h5>
+            <button type="button" class="btn btn-danger btn-sm remove-question-btn">Kaldır</button>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label">Soru Metni</label>
+                <textarea name="questions[${index}][text]" id="question-tinymce-${index}" class="question-textarea form-control">${questionData.question_text || ''}</textarea>
+            </div>
+
+            <div class="videos-container mb-3 border p-2 rounded bg-light">
+                <label class="form-label">Video URL'leri</label>
+                ${videosHtml}
+                <button type="button" class="btn btn-sm btn-secondary add-video-btn" data-index="${index}">+ Video Ekle</button>
+            </div>
+
+            <div class="images-container mb-3 border p-2 rounded bg-light">
+                <label class="form-label">Görseller</label>
+                ${imagesHtml}
+                <button type="button" class="btn btn-sm btn-secondary add-image-btn" data-index="${index}">+ Görsel Ekle</button>
+            </div>
+
+            <div class="options-container border p-2 rounded bg-light">
+                <h6 class="border-bottom pb-2">Seçenekler</h6>
+                ${optionInputsHTML}
+            </div>
+            
+            <div class="mt-3">
+                <label class="form-label">Doğru Cevap Seçeneği <span class="text-danger">*</span></label>
+                <select name="questions[${index}][correct_answer]" class="form-select correct-answer-select" required>
+                    <option value="">Seçiniz</option>
+                    ${optionLabels.map(label => `<option value="${label}" ${questionData.correct_answer === label ? 'selected' : ''}>${label}</option>`).join('')}
+                </select>
+            </div>
+        </div>
+    </div>
+    `;
+        }
+
+        // Soru silindiğinde question-block'ları yeniden numaralandırma
         function renumberQuestionsOnDelete() {
             document.querySelectorAll('.question-block').forEach((block, idx) => {
                 const header = block.querySelector('.card-header h5');
@@ -223,8 +387,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     header.textContent = `Soru ${idx + 1}`;
                 }
 
-                block.dataset.questionIndex = idx;
+                block.dataset.questionIndex = idx; // Update the data-question-index
 
+                // Update all name attributes
                 $(block).find('[name^="questions["]').each(function() {
                     const currentName = $(this).attr('name');
                     const newName = currentName.replace(/questions\[\d+\]/, `questions[${idx}]`);
@@ -243,13 +408,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     if (newId) {
                         const oldId = $(this).attr('id');
                         if (oldId && tinymce.get(oldId)) {
-                            tinymce.get(oldId).remove();
+                            tinymce.get(oldId).remove(); // Remove old TinyMCE instance
                         }
-                        $(this).attr('id', newId);
-                        initTinyMCE(`#${newId}`);
+                        $(this).attr('id', newId); // Update ID
+                        initTinyMCE(`#${newId}`, tinymce.get(oldId) ? tinymce.get(oldId).getContent() : ''); // Re-initialize with old content
                     }
                 });
 
+                // Update data-index and name for buttons and selects
                 $(block).find('.add-option-image-btn').attr('data-index', idx);
                 $(block).find('.add-video-btn').attr('data-index', idx);
                 $(block).find('.add-image-btn').attr('data-index', idx);
@@ -257,106 +423,146 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
             });
         }
 
-        function createImageInput(index) {
-            return `
-    <div class="image-upload-group mb-2 d-flex align-items-center gap-2">
-        <input type="file" name="questions[${index}][images][]" accept="image/*" class="form-control" />
-        <button type="button" class="btn btn-danger btn-sm remove-image-btn">Kaldır</button>
-    </div>`;
-        }
-
-        function createOptionImageInput(questionIdx, optionLabel) {
-            return `
-        <div class="option-image-upload-group mb-2 d-flex align-items-center gap-2">
-            <input type="file" name="questions[${questionIdx}][options][${optionLabel}][images][]" accept="image/*" class="form-control" />
-            <button type="button" class="btn btn-danger btn-sm remove-option-image-btn">Kaldır</button>
-        </div>`;
-        }
-
-        function createOptionInputs(index, optionCount) {
-            let html = '';
-            let optionLabels = getOptionLabels(optionCount);
-
-            optionLabels.forEach(label => {
-                html += `<div class="option-block mb-3 border p-3 rounded">
-            <label>Seçenek ${label}</label>
-            <textarea name="questions[${index}][options][${label}][text]" id="option-tinymce-${index}-${label}" class="option-textarea form-control mb-2"></textarea>
-            <div class="option-images-container">
-                <label>Seçeneğe Görsel Ekle</label>
-                <div class="option-image-inputs">
-                    ${createOptionImageInput(index, label)} 
-                </div>
-                <button type="button" class="btn btn-sm btn-secondary add-option-image-btn" data-index="${index}" data-label="${label}">+ Görsel Ekle</button>
-            </div>
-        </div>`;
+        // Mevcut en yüksek soru indeksini güncelleyen fonksiyon
+        function updateMaxQuestionIndex() {
+            let maxIndex = -1;
+            document.querySelectorAll('.question-block').forEach(block => {
+                const index = parseInt(block.dataset.questionIndex);
+                if (!isNaN(index) && index > maxIndex) {
+                    maxIndex = index;
+                }
             });
-
-            return html;
+            currentMaxQuestionIndex = maxIndex;
         }
 
-        function createQuestionBlock(index, questionNumber) {
-            const optionCount = parseInt($('#option_count').val()) || 3;
-            const optionInputsHTML = createOptionInputs(index, optionCount);
-            const optionLabels = getOptionLabels(optionCount);
+        // AJAX Hata Yönetimi
+        function handleAjaxError(xhr) {
+            let errorMessage = 'Bilinmeyen bir hata oluştu.';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+            } else if (xhr.responseText) {
+                try {
+                    let json = JSON.parse(xhr.responseText);
+                    if (json.message) errorMessage = json.message;
+                } catch (e) {}
+            }
+            console.error("AJAX Hatası:", errorMessage);
+            Swal.fire({
+                icon: 'error',
+                title: 'Hata',
+                text: errorMessage
+            });
+        }
 
-            return `
-    <div class="question-block mb-4 card border-primary shadow-sm" data-question-index="${index}">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Soru ${questionNumber}</h5>
-            <button type="button" class="btn btn-danger btn-sm remove-question-btn">Kaldır</button>
-        </div>
-        <div class="card-body">
-            <div class="mb-3">
-                <label class="form-label">Soru Metni</label>
-                <textarea name="questions[${index}][text]" id="question-tinymce-${index}" class="question-textarea form-control"></textarea>
-            </div>
+        // Mevcut test verilerini yükleme fonksiyonu
+        function loadTestData(testId) {
+            $.ajax({
+                url: 'includes/ajax.php?service=getTestDetails', // Test detaylarını çekecek AJAX servisi
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    test_id: testId
+                },
+                success: function(response) {
+                    if (response.status === 'success' && response.data) {
+                        const testData = response.data;
 
-            <div class="videos-container mb-3 border p-2 rounded bg-light">
-                <label class="form-label">Video URL'leri</label>
-                ${createVideoInput(index)}
-                <button type="button" class="btn btn-sm btn-secondary add-video-btn" data-index="${index}">+ Video Ekle</button>
-            </div>
+                        // Genel test bilgilerini doldur
+                        $('#test_title').val(testData.title);
+                        $('#start_date').val(testData.start_date);
+                        $('#end_date').val(testData.end_date);
+                        $('#option_count').val(testData.option_count || 3); // Varsayılan olarak 3 seçenek
+                        $('#test_id').val(testData.id); // Test ID'sini gizli alana yaz
 
-            <div class="images-container mb-3 border p-2 rounded bg-light">
-                <label class="form-label">Görseller</label>
-                ${createImageInput(index)}
-                <button type="button" class="btn btn-sm btn-secondary add-image-btn" data-index="${index}">+ Görsel Ekle</button>
-            </div>
+                        // Mevcut kapak görselini göster
+                        if (testData.cover_img) {
+                            $('#current_cover_img_container').html(`
+                        <img src="${testData.cover_img}" alt="Mevcut Görsel" style="max-width: 150px; height: auto;">
+                        <button type="button" class="btn btn-warning btn-sm remove-existing-cover-img mt-1" data-file-path="${testData.cover_img}">Mevcut Görseli Kaldır</button>
+                        <input type="hidden" name="existing_cover_img" value="${testData.cover_img}" />
+                    `);
+                        }
 
-            <div class="options-container border p-2 rounded bg-light">
-                <h6 class="border-bottom pb-2">Seçenekler</h6>
-                ${optionInputsHTML}
-            </div>
-            
-            <div class="mt-3">
-                <label class="form-label">Doğru Cevap Seçeneği <span class="text-danger">*</span></label>
-                <select name="questions[${index}][correct_answer]" class="form-select correct-answer-select" required>
-                    <option value="">Seçiniz</option>
-                    ${optionLabels.map(label => `<option value="${label}">${label}</option>`).join('')}
-                </select>
-            </div>
-        </div>
-    </div>
-    `;
+                        // Sınıf seçimi ve bağlı ders/ünite/konu/alt konu seçimlerini doldur
+                        $('#class_id').val(testData.class_id).trigger('change');
+
+                        // Dersler yüklendikten sonra üniteleri, konuları ve alt konuları seç
+                        // Bu kısım AJAX çağrılarının tamamlanmasını beklemeli
+                        $(document).one('lessonsLoaded', function() {
+                            if (testData.lesson_id) {
+                                $('#lesson_id').val(testData.lesson_id).trigger('change');
+                            }
+                        });
+                        $(document).one('unitsLoaded', function() {
+                            if (testData.unit_id) {
+                                $('#unit_id').val(testData.unit_id).trigger('change');
+                            }
+                        });
+                        $(document).one('topicsLoaded', function() {
+                            if (testData.topic_id) {
+                                $('#topic_id').val(testData.topic_id).trigger('change');
+                            }
+                        });
+                        $(document).one('subtopicsLoaded', function() {
+                            if (testData.subtopic_id) {
+                                $('#subtopic_id').val(testData.subtopic_id); // Sonuncusu trigger'a gerek duymaz
+                            }
+                        });
+
+
+                        // Soruları doldur
+                        const questionsContainer = $('#questions_container');
+                        questionsContainer.empty(); // Mevcut soruları temizle
+                        currentMaxQuestionIndex = -1; // Soru indeksini sıfırla
+
+                        if (testData.questions && testData.questions.length > 0) {
+                            testData.questions.forEach((question, idx) => {
+                                const newQuestionHTML = createQuestionBlock(idx, idx + 1, question);
+                                questionsContainer.append(newQuestionHTML);
+
+                                // TinyMCE'yi başlat ve içeriği ayarla
+                                initTinyMCE(`#question-tinymce-${idx}`, question.text);
+                                if (question.options) {
+                                    question.options.forEach(option => { // Diziyi doğrudan döngüye alıyoruz
+                                        initTinyMCE(`#option-tinymce-${idx}-${option.option_key}`, option.option_text || '');
+                                    });
+                                }
+                                
+                                currentMaxQuestionIndex = idx; // En yüksek indeksi güncelle
+                            });
+                        }
+                        updateMaxQuestionIndex(); // Tüm sorular eklendikten sonra son güncellemeyi yap
+                    } else {
+                        Swal.fire('Hata', response.message || 'Test detayları yüklenemedi.', 'error');
+                    }
+                },
+                error: function(xhr) {
+                    handleAjaxError(xhr);
+                }
+            });
         }
 
         $(document).ready(function() {
-            updateMaxQuestionIndex();
-            document.querySelectorAll('.question-block').forEach((block, idx) => {
-                const header = block.querySelector('.card-header h5');
-                if (header) {
-                    header.textContent = `Soru ${idx + 1}`;
-                }
-                block.dataset.questionIndex = idx;
-            });
+            // Sayfa yüklendiğinde URL'den test ID'sini al (örneğin: edit.php?id=123)
+            const urlParams = new URLSearchParams(window.location.search);
+            const testId = urlParams.get('id');
 
+            if (testId) {
+                loadTestData(testId);
+            } else {
+                // Yeni bir test ekleniyorsa, varsayılan olarak bir soru ekle (isteğe bağlı)
+                // Ya da formu boş bırak ve "Soru ekle" düğmesine basılmasını bekle.
+                // updateMaxQuestionIndex(); // Boş sayfada indeks sıfırda kalır
+            }
+
+            // Event listener'lar (mevcut kodunuzdan kopyalananlar)
             $('#class_id').on('change', function() {
                 var classId = $(this).val();
 
                 if (document.querySelectorAll('.question-block').length > 0) {
                     Swal.fire({
                         title: 'Emin misiniz?',
-                        text: "Sınıf değişikliği tüm eklenen soruları silecektir!",
+                        text: "Sınıf değişikliği tüm eklenen soruları silecektir! (Mevcut testten yüklenenler dahil)",
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
@@ -366,8 +572,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         if (result.isConfirmed) {
                             clearAllQuestionsAndRelatedFields(classId);
                         } else {
-                            // Kullanıcı vazgeçerse, önceki sınıfı geri yükle
-                            // $('#class_id').val($('#class_id').data('previous-value') || ''); // Eğer tutuyorsanız
+                            // Kullanıcı vazgeçerse, değişiklik yapılmaz
+                            // Belki de önceki değeri geri yüklemek istersiniz.
+                            // Örneğin: $(this).val($(this).data('previousValue'));
                         }
                     });
                 } else {
@@ -384,19 +591,19 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     }
                 });
                 questionsContainer.innerHTML = '';
-                currentMaxQuestionIndex = 0;
+                currentMaxQuestionIndex = -1; // Soru indeksini sıfırla
 
-                // Bu alanları temizle, ama zorunlu olmadıkları için varsayılan "Seçiniz" seçeneğine geri getir
                 $('#lesson_id').html('<option value="">Ders seçiniz</option>');
                 $('#unit_id').html('<option value="">Ünite seçiniz</option>');
                 $('#topic_id').html('<option value="">Seçiniz</option>');
                 $('#subtopic_id').html('<option value="">Alt Konu seçiniz</option>');
-                $('#option_count').val('');
+                // Option count'u burada sıfırlamamak daha mantıklı olabilir, çünkü class_id'den gelecek.
+                // $('#option_count').val('');
 
                 fetchLessonsForClass(classId);
             }
 
-            function fetchLessonsForClass(classId) {
+            function fetchLessonsForClass(classId, selectedLessonId = null) {
                 if (classId !== '') {
                     $.ajax({
                         url: 'includes/ajax.php?service=getLessonList',
@@ -409,10 +616,15 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             var $lessonSelect = $('#lesson_id');
                             $('#option_count').val(response.data.optionCount);
                             $lessonSelect.empty();
-                            $lessonSelect.append('<option value="">Ders seçiniz</option>'); // Ders seçeneğini ekle
+                            $lessonSelect.append('<option value="">Ders seçiniz</option>');
                             $.each(response.data.lessons, function(index, lesson) {
-                                $lessonSelect.append('<option value="' + lesson.id + '">' + lesson.name + '</option>');
+                                $lessonSelect.append($('<option>', {
+                                    value: lesson.id,
+                                    text: lesson.name,
+                                    selected: (selectedLessonId && selectedLessonId == lesson.id) // Seçili dersi ayarla
+                                }));
                             });
+                            $(document).trigger('lessonsLoaded'); // Yeni event
                         },
                         error: function(xhr) {
                             handleAjaxError(xhr);
@@ -430,7 +642,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 var lessonId = $(this).val();
                 var classId = $('#class_id').val();
                 var $unitSelect = $('#unit_id');
-                $unitSelect.empty().append('<option value="">Ünite seçiniz</option>'); // Ünite seçeneğini ekle
+                $unitSelect.empty().append('<option value="">Ünite seçiniz</option>');
                 $('#topic_id').html('<option value="">Seçiniz</option>');
                 $('#subtopic_id').html('<option value="">Alt Konu seçiniz</option>');
 
@@ -454,6 +666,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             } else {
                                 $unitSelect.append('<option disabled>Ünite bulunamadı</option>');
                             }
+                            $(document).trigger('unitsLoaded'); // Yeni event
                         },
                         error: function(xhr) {
                             handleAjaxError(xhr);
@@ -468,9 +681,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 var unitId = $(this).val();
                 var $topicSelect = $('#topic_id');
 
-                $topicSelect.empty().append('<option value="">Seçiniz</option>'); // Konu seçeneğini ekle
+                $topicSelect.empty().append('<option value="">Seçiniz</option>');
                 $('#subtopic_id').html('<option value="">Alt Konu seçiniz</option>');
-
 
                 if (unitId !== '') {
                     $.ajax({
@@ -493,6 +705,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             } else {
                                 $topicSelect.append('<option disabled>Konu bulunamadı</option>');
                             }
+                            $(document).trigger('topicsLoaded'); // Yeni event
                         },
                         error: function(xhr) {
                             handleAjaxError(xhr);
@@ -508,7 +721,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 var topicId = $(this).val();
                 var $subtopicSelect = $('#subtopic_id');
 
-                $subtopicSelect.empty().append('<option value="">Alt Konu seçiniz</option>'); // Alt Konu seçeneğini ekle
+                $subtopicSelect.empty().append('<option value="">Alt Konu seçiniz</option>');
 
                 if (topicId !== '') {
                     $.ajax({
@@ -532,6 +745,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             } else {
                                 $subtopicSelect.append('<option disabled>Alt konu bulunamadı</option>');
                             }
+                            $(document).trigger('subtopicsLoaded'); // Yeni event
                         },
                         error: function(xhr) {
                             handleAjaxError(xhr);
@@ -540,41 +754,19 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 }
             });
 
-            function handleAjaxError(xhr) {
-                let errorMessage = 'Bilinmeyen bir hata oluştu.';
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    errorMessage = xhr.responseJSON.message;
-                } else if (xhr.responseText) {
-                    try {
-                        let json = JSON.parse(xhr.responseText);
-                        if (json.message) errorMessage = json.message;
-                    } catch (e) {}
-                }
-                console.error("AJAX Hatası:", errorMessage);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Hata',
-                    text: errorMessage
-                });
-            }
-
-            function updateMaxQuestionIndex() {
-                let maxIndex = -1;
-                document.querySelectorAll('.question-block').forEach(block => {
-                    const index = parseInt(block.dataset.questionIndex);
-                    if (!isNaN(index) && index > maxIndex) {
-                        maxIndex = index;
-                    }
-                });
-                currentMaxQuestionIndex = maxIndex;
-            }
-
-
+            // Form Gönderme
             document.getElementById('submitForm').addEventListener('click', function() {
                 const formData = new FormData();
 
+                const testId = document.getElementById('test_id').value;
+                if (!testId) {
+                    Swal.fire('Hata', 'Güncellenecek test ID bulunamadı.', 'error');
+                    return;
+                }
+                formData.append('test_id', testId);
+
+
                 const classId = document.getElementById('class_id').value;
-                // Ders, ünite, konu, alt konu artık zorunlu değil.
                 const lessonId = document.getElementById('lesson_id').value;
                 const unitId = document.getElementById('unit_id').value;
                 const topicId = document.getElementById('topic_id').value;
@@ -582,7 +774,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                 let formGeneralValid = true;
 
-                // Sadece class_id zorunlu kalmaya devam ediyor
                 if (classId === "") {
                     Swal.fire('Uyarı', 'Lütfen bir sınıf seçiniz.', 'warning');
                     formGeneralValid = false;
@@ -592,13 +783,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     formData.append('class_id', classId);
                 }
 
-                // Ders, ünite, konu ve alt konu zorunlu değilse bile form verisine eklemeye devam edelim
                 formData.append('lesson_id', lessonId);
                 formData.append('unit_id', unitId);
                 formData.append('topic_id', topicId);
                 formData.append('subtopic_id', subtopicId);
 
-                // Diğer zorunlu alanlar: başlık, başlangıç tarihi, bitiş tarihi
                 const title = document.getElementById('title').value;
                 const startDate = document.getElementById('start_date').value;
                 const endDate = document.getElementById('end_date').value;
@@ -634,13 +823,21 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 const coverImgInput = document.getElementById('cover_img');
                 if (coverImgInput && coverImgInput.files && coverImgInput.files[0]) {
                     formData.append('cover_img', coverImgInput.files[0]);
+                } else {
+                    // Eğer yeni bir resim yüklenmediyse, mevcut resmi koru (hidden input'tan al)
+                    const existingCoverImg = $('input[name="existing_cover_img"]').val();
+                    if (existingCoverImg) {
+                        formData.append('existing_cover_img', existingCoverImg);
+                    }
+                }
+                // Mevcut kapak görselini kaldırma butonu ile kaldırılırsa
+                if ($('.remove-existing-cover-img').data('removed')) {
+                    formData.append('remove_cover_img', 'true');
                 }
 
+
                 let questionsValid = true;
-
-                document.querySelectorAll('.question-block').forEach((questionBlock) => {
-                    const qIdx = parseInt(questionBlock.dataset.questionIndex);
-
+                document.querySelectorAll('.question-block').forEach((questionBlock, qIdx) => {
                     const questionTextarea = questionBlock.querySelector('.question-textarea');
                     if (questionTextarea && tinymce.get(questionTextarea.id)) {
                         formData.append(`questions[${qIdx}][text]`, tinymce.get(questionTextarea.id).getContent());
@@ -657,21 +854,31 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         }
                     }
 
+                    // Video URL'leri
                     questionBlock.querySelectorAll('.video-url-group input[type="url"]').forEach((input, vIdx) => {
                         if (input.value) {
                             formData.append(`questions[${qIdx}][videos][${vIdx}]`, input.value);
                         }
                     });
 
-                    questionBlock.querySelectorAll('.image-upload-group input[type="file"]').forEach((input, iIdx) => {
-                        if (input.files && input.files[0]) {
-                            formData.append(`questions[${qIdx}][images][${iIdx}]`, input.files[0]);
+                    // Resimler
+                    questionBlock.querySelectorAll('.image-upload-group').forEach((imgGroup, iIdx) => {
+                        const fileInput = imgGroup.querySelector('input[type="file"]');
+                        
+                        const existingInput = imgGroup.querySelector('input[name^="questions"][name*="existing_images"]');
+
+                        if (fileInput && fileInput.files && fileInput.files[0]) {
+                            formData.append(`questions[${qIdx}][images][${iIdx}]`, fileInput.files[0]);
+                        } else if (existingInput && existingInput.value) {
+                            formData.append(`questions[${qIdx}][existing_images][${iIdx}]`, existingInput.value);
                         }
                     });
 
+                    // Seçenekler ve Seçenek Resimleri
                     questionBlock.querySelectorAll('.option-block').forEach((optionBlock) => {
                         const optionTextarea = optionBlock.querySelector('.option-textarea');
                         const optionLabelMatch = optionTextarea.name.match(/\[options\]\[([A-Z])\]/);
+
                         if (optionLabelMatch && optionLabelMatch[1]) {
                             const optionLabel = optionLabelMatch[1];
 
@@ -679,9 +886,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 formData.append(`questions[${qIdx}][options][${optionLabel}][text]`, tinymce.get(optionTextarea.id).getContent());
                             }
 
-                            optionBlock.querySelectorAll('.option-image-upload-group input[type="file"]').forEach((input, optImgIdx) => {
-                                if (input.files && input.files[0]) {
-                                    formData.append(`questions[${qIdx}][options][${optionLabel}][images][${optImgIdx}]`, input.files[0]);
+                            optionBlock.querySelectorAll('.option-image-upload-group').forEach((optImgGroup, optImgIdx) => {
+                                const fileInput = optImgGroup.querySelector('input[type="file"]');
+                                const existingInput = optImgGroup.querySelector('input[name^="questions"][name*="existing_images"]');
+
+                                if (fileInput && fileInput.files && fileInput.files[0]) {
+                                    formData.append(`questions[${qIdx}][options][${optionLabel}][images][${optImgIdx}]`, fileInput.files[0]);
+                                } else if (existingInput && existingInput.value) {
+                                    formData.append(`questions[${qIdx}][options][${optionLabel}][existing_images][${optImgIdx}]`, existingInput.value);
                                 }
                             });
                         }
@@ -689,7 +901,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 });
 
                 if (!formGeneralValid) {
-                    // Genel form alanlarında hata varsa
                     return;
                 }
 
@@ -703,8 +914,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     return;
                 }
 
+                // Gönderim için AJAX isteği
                 $.ajax({
-                    url: 'includes/ajax.php?service=testAdd',
+                    url: 'includes/ajax.php?service=testUpdate', // Güncelleme için yeni bir servis noktası
                     type: 'POST',
                     dataType: 'json',
                     data: formData,
@@ -715,9 +927,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Başarılı',
-                                text: 'Form başarıyla gönderildi!',
+                                text: 'Test başarıyla güncellendi!',
                                 confirmButtonText: 'Tamam'
                             }).then(() => {
+                                // Yönlendirme veya sayfayı yenileme
                                 location.reload();
                             });
                         } else {
@@ -735,6 +948,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 });
             });
 
+            // Soru Ekleme
             document.getElementById('addQuestion').addEventListener('click', function() {
                 const classId = document.getElementById('class_id').value;
 
@@ -750,15 +964,15 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 }
                 $('#class_id').removeClass('is-invalid');
 
-                const newIndex = currentMaxQuestionIndex + 1;
-                const newQuestionNumber = document.querySelectorAll('.question-block').length + 1;
+                const newIndex = currentMaxQuestionIndex + 1; // Yeni soru için indeks
+                const newQuestionNumber = document.querySelectorAll('.question-block').length + 1; // Görüntülenen soru numarası
 
                 const newQuestionHTML = createQuestionBlock(newIndex, newQuestionNumber);
                 const questionsContainer = document.getElementById('questions_container');
 
-                questionsContainer.insertAdjacentHTML('afterbegin', newQuestionHTML);
+                questionsContainer.insertAdjacentHTML('afterbegin', newQuestionHTML); // En başa ekle
 
-                currentMaxQuestionIndex = newIndex;
+                currentMaxQuestionIndex = newIndex; // Max indeksi güncelle
 
                 const newlyAddedQuestionBlock = questionsContainer.firstElementChild;
                 const questionTextarea = newlyAddedQuestionBlock.querySelector('.question-textarea');
@@ -770,9 +984,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 });
             });
 
+            // Dinamik İçerik Olay Dinleyicileri (soru ekleme/silme, video/resim ekleme/silme)
             document.getElementById('questions_container').addEventListener('click', function(event) {
                 const target = event.target;
 
+                // Soru Kaldır
                 if (target.classList.contains('remove-question-btn')) {
                     const questionBlock = target.closest('.question-block');
                     if (questionBlock) {
@@ -783,35 +999,48 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             }
                         });
                         questionBlock.remove();
-                        renumberQuestionsOnDelete();
-                        updateMaxQuestionIndex();
+                        renumberQuestionsOnDelete(); // Numaraları yeniden düzenle
+                        updateMaxQuestionIndex(); // Max indeksi güncelle
                     }
                 }
-                if (target.classList.contains('add-video-btn')) {
+                // Video Ekle
+                else if (target.classList.contains('add-video-btn')) {
                     const questionBlock = target.closest('.question-block');
                     const idx = questionBlock.dataset.questionIndex;
                     const videoInputHTML = createVideoInput(idx);
                     target.insertAdjacentHTML('beforebegin', videoInputHTML);
                 }
-
-                if (target.classList.contains('remove-video-btn')) {
+                // Video Kaldır
+                else if (target.classList.contains('remove-video-btn')) {
                     const videoGroup = target.closest('.video-url-group');
                     if (videoGroup) videoGroup.remove();
                 }
-
-                if (target.classList.contains('add-image-btn')) {
+                // Resim Ekle
+                else if (target.classList.contains('add-image-btn')) {
                     const questionBlock = target.closest('.question-block');
                     const idx = questionBlock.dataset.questionIndex;
                     const imageInputHTML = createImageInput(idx);
                     target.insertAdjacentHTML('beforebegin', imageInputHTML);
                 }
-
-                if (target.classList.contains('remove-image-btn')) {
+                // Resim Kaldır
+                else if (target.classList.contains('remove-image-btn')) {
                     const imageGroup = target.closest('.image-upload-group');
                     if (imageGroup) imageGroup.remove();
                 }
-
-                if (target.classList.contains('add-option-image-btn')) {
+                // Mevcut Görseli Kaldır (Soru içi)
+                else if (target.classList.contains('remove-existing-image')) {
+                    const imageGroup = target.closest('.image-upload-group');
+                    if (imageGroup) {
+                        // Gizli input'u kaldırılacak olarak işaretle veya direkt kaldır
+                        // Örneğin, 'removed' sınıfı ekleyip sunucu tarafında kontrol edebilirsiniz.
+                        // Ya da hidden input'u silip, sadece yeni görsel yüklendiğinde ya da hiç görsel olmadığında işlem yapabilirsiniz.
+                        $(target).closest('.current-image-display').remove(); // Mevcut görseli gösteren div'i kaldır
+                        // Silme işlemini backend'e bildirmek için hidden input'un değerini null yapabilir veya farklı bir işaretçi kullanabilirsiniz.
+                        // Şu anda sadece DOM'dan kaldırıyoruz, backend'e bu görselin silindiğini bildirmek için FormData'ya özel bir alan eklemeniz gerekebilir.
+                    }
+                }
+                // Seçenek Resim Ekle
+                else if (target.classList.contains('add-option-image-btn')) {
                     const idx = target.getAttribute('data-index');
                     const label = target.getAttribute('data-label');
                     const optionImageInputsContainer = target.parentElement.querySelector('.option-image-inputs');
@@ -819,12 +1048,28 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         optionImageInputsContainer.insertAdjacentHTML('beforeend', createOptionImageInput(idx, label));
                     }
                 }
-
-                if (target.classList.contains('remove-option-image-btn')) {
+                // Seçenek Resim Kaldır
+                else if (target.classList.contains('remove-option-image-btn')) {
                     const optionImageGroup = target.closest('.option-image-upload-group');
                     if (optionImageGroup) optionImageGroup.remove();
                 }
+                // Mevcut Seçenek Görseli Kaldır
+                else if (target.classList.contains('remove-existing-option-image')) {
+                    const optionImageGroup = target.closest('.option-image-upload-group');
+                    if (optionImageGroup) {
+                        $(target).closest('.current-option-image-display').remove();
+                    }
+                }
             });
+
+            // Mevcut kapak görselini kaldırma butonu için event listener
+            $(document).on('click', '.remove-existing-cover-img', function() {
+                $(this).closest('#current_cover_img_container').empty();
+                // Bu görselin kaldırılacağını FormData'ya bildirmek için bir işaretçi ekleyebilirsiniz.
+                $(this).data('removed', true); // Custom data attribute for tracking removed images
+            });
+
+
         });
     </script>
 
