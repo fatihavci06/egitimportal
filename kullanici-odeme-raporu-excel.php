@@ -20,7 +20,7 @@ try {
     $startDate = $_POST['start_date'] . ' 00:00:00';
     $stopDate = $_POST['stop_date'] . ' 23:59:59';
 
-    $pdo = new Dbh;
+    $pdo = new Dbh();
     $sql = "SELECT 
         ROW_NUMBER() OVER (ORDER BY u.subscribed_end DESC) AS no,
         CONCAT(u.name, ' ', u.surname) AS ogrenci_adi_soyadi,

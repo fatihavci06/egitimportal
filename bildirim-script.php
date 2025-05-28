@@ -8,7 +8,7 @@ use PHPMailer\PHPMailer\Exception;
 
 require 'vendor/autoload.php';
 try {
-    $pdo = new Dbh;
+    $pdo = new Dbh();
 
     // Ayarları çek
     $sql = "SELECT * FROM settings_lnp";
