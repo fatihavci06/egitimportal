@@ -240,9 +240,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
             if (fileName && filePath) {
                 currentImageDisplay = `
             <div class="current-image-display d-flex align-items-center gap-2 mt-1">
-                <a href="${filePath}" target="_blank">${fileName}</a>
-                <button type="button" class="btn btn-warning btn-sm remove-existing-image" data-file-path="${filePath}">Mevcut Görseli Kaldır</button>
+                
+               
                 <input type="hidden" name="questions[${index}][existing_images][]" value="${filePath}" />
+                <a href="${filePath}" target="_blank">${fileName}</a>
             </div>`;
             }
 
@@ -261,7 +262,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 currentImageDisplay = `
             <div class="current-option-image-display d-flex align-items-center gap-2 mt-1">
                 <a href="${filePath}" target="_blank">${fileName}</a>
-                <button type="button" class="btn btn-warning btn-sm remove-existing-option-image" data-file-path="${filePath}">Mevcut Görseli Kaldır</button>
                 <input type="hidden" name="questions[${questionIdx}][options][${optionLabel}][existing_images][]" value="${filePath}" />
             </div>`;
             }
@@ -297,7 +297,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         }
 
         html += `<div class="option-block mb-3 border p-3 rounded">
-            <label>Seçenek ${label}</label>
+            <label class="mt-3 mb-3"  style="font-size:16px;"><b>Seçenek ${label}</b></label>
             <textarea name="questions[${index}][options][${label}][text]" id="option-tinymce-${index}-${label}" class="option-textarea form-control mb-2">${optionText}</textarea>
             <div class="option-images-container">
                 <label>Seçeneğe Görsel Ekle</label>
@@ -363,7 +363,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
             </div>
 
             <div class="options-container border p-2 rounded bg-light">
-                <h6 class="border-bottom pb-2">Seçenekler</h6>
+                <h3 class="border-bottom pb-2">Seçenekler</h3>
                 ${optionInputsHTML}
             </div>
             

@@ -1281,7 +1281,7 @@ switch ($service) {
             $filePath = null;
 
             if (isset($_FILES['cover_img']) && $_FILES['cover_img']['error'] === UPLOAD_ERR_OK) {
-                
+
                 $uploadDir = __DIR__ . '/../uploads/test/';
                 if (!is_dir($uploadDir)) {
                     mkdir($uploadDir, 0755, true);
@@ -1742,8 +1742,9 @@ WHERE t.id = :id";
             // 1. Mevcut Test Bilgilerini Güncelle (eğer test_id ile güncelleme yapılıyorsa)
             // Eğer test her zaman yeni oluşturuluyorsa bu adım atlanabilir.
             // Eğer test_id mevcut bir testi temsil ediyorsa, testin ana bilgilerini güncelleyelim.
-              if (isset($_FILES['cover_img']) && $_FILES['cover_img']['error'] === UPLOAD_ERR_OK) {
-                
+            $coverImage=null;
+            if (isset($_FILES['cover_img']) && $_FILES['cover_img']['error'] === UPLOAD_ERR_OK) {
+
                 $uploadDir = __DIR__ . '/../uploads/test/';
                 if (!is_dir($uploadDir)) {
                     mkdir($uploadDir, 0755, true);
@@ -1767,14 +1768,33 @@ WHERE t.id = :id";
 
                 $coverImage = 'uploads/test/' . $newFileName; // Veritabanı için yol
             }
+            if ($coverImage == null) {
+                $stmt = $pdo->prepare("
+                    UPDATE tests_lnp
+                    SET class_id = ?, lesson_id = ?, unit_id = ?, topic_id = ?, subtopic_id = ?, test_title = ?, start_date = ?, end_date = ?
+                    WHERE id = ?
+                ");
+                $stmt->execute([
+                    $classId,
+                    $lessonId,
+                    $unitId,
+                    $topicId,
+                    $subtopicId,
+                    $title,
+                    $startDate,
+                    $endDate,
+                    $testId
+                ]);
+            } else {
 
-            $stmt = $pdo->prepare("
-        UPDATE tests_lnp
-        SET cover_img=?,class_id = ?, lesson_id = ?, unit_id = ?, topic_id = ?, subtopic_id = ?, test_title = ?, start_date = ?, end_date = ?
-        WHERE id = ?
-    ");
-            $stmt->execute([
-                $coverImage??null,
+
+                $stmt = $pdo->prepare("
+                    UPDATE tests_lnp
+                    SET cover_img=?,class_id = ?, lesson_id = ?, unit_id = ?, topic_id = ?, subtopic_id = ?, test_title = ?, start_date = ?, end_date = ?
+                    WHERE id = ?
+                ");
+                 $stmt->execute([
+                $coverImage ,
                 $classId,
                 $lessonId,
                 $unitId,
@@ -1785,6 +1805,8 @@ WHERE t.id = :id";
                 $endDate,
                 $testId
             ]);
+
+            }
 
             // 2. Mevcut Soruları, Şıkları, Dosyaları ve Videoları Temizle
             // Bu kısım sizin sağladığınız koda benzer, ancak tüm eski soruları silmek yerine,
@@ -1805,12 +1827,7 @@ WHERE t.id = :id";
                 // Sorulara ait dosyaları ve videoları sil (önce dosya yollarını alıp sunucudan sil)
                 $stmt = $pdo->prepare("SELECT file_path FROM test_question_files_lnp WHERE question_id IN ($placeholders)");
                 $stmt->execute($existingQuestionIds);
-                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                    $filePathToDelete = __DIR__ . '/../' . $row['file_path']; // Kendi dosya yolunuzu güncelleyin
-                    if (file_exists($filePathToDelete)) {
-                        unlink($filePathToDelete);
-                    }
-                }
+
                 $stmt = $pdo->prepare("DELETE FROM test_question_files_lnp WHERE question_id IN ($placeholders)");
                 $stmt->execute($existingQuestionIds);
 
@@ -1829,12 +1846,7 @@ WHERE t.id = :id";
                     // Şıklara ait dosyaları sil (önce dosya yollarını alıp sunucudan sil)
                     $stmt = $pdo->prepare("SELECT file_path FROM test_question_option_files_lnp WHERE option_id IN ($optPlaceholders)");
                     $stmt->execute($optionsToDeleteFromQuestion);
-                    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                        $filePathToDelete = __DIR__ . '/../' . $row['file_path']; // Kendi dosya yolunuzu güncelleyin
-                        if (file_exists($filePathToDelete)) {
-                            unlink($filePathToDelete);
-                        }
-                    }
+
                     $stmt = $pdo->prepare("DELETE FROM test_question_option_files_lnp WHERE option_id IN ($optPlaceholders)");
                     $stmt->execute($optionsToDeleteFromQuestion);
 
@@ -1897,17 +1909,16 @@ WHERE t.id = :id";
                             $stmt->execute([$newQuestionId, str_replace(__DIR__ . '/../', '', $newFilePath)]);
                         }
                     }
-                    if (isset($_POST['questions'][$questionIndex]['existing_images'])) {
-                        foreach ($_POST['questions'][$questionIndex]['existing_images'] as $existingImagePath) {
-                            $stmt = $pdo->prepare("INSERT INTO test_question_files_lnp (question_id, file_path) VALUES (?, ?)");
-                            $stmt->execute([
-                                $newQuestionId,
-                                $existingImagePath
-                            ]);
-                        }
+                }
+                if (isset($_POST['questions'][$questionIndex]['existing_images'])) {
+                    foreach ($_POST['questions'][$questionIndex]['existing_images'] as $existingImagePath) {
+                        $stmt = $pdo->prepare("INSERT INTO test_question_files_lnp (question_id, file_path) VALUES (?, ?)");
+                        $stmt->execute([
+                            $newQuestionId,
+                            $existingImagePath
+                        ]);
                     }
                 }
-
 
 
                 // Şıkları kaydet
