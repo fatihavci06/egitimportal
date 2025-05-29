@@ -91,8 +91,40 @@ class ShowContents extends GetContent
 
         if ($contentInfo['text_content'] != NULL) {
             $content = $contentInfo['text_content'];
-        }
+        }else{
+            $contentFiles = $this->getContentFilesById($contentId['id']);
+            $wordwallFiles = $this->getContentWordwallsById($contentId['id']);
+            $videoFiles = $this->getContentVideosById($contentId['id']);
 
+            $content = '';
+
+            // Check if there are any files
+            if (count($contentFiles) > 0) {
+                $content = '';
+                foreach ($contentFiles as $file) {
+                    $content .= '<div class="mb-3"><h3>' . $file['description'] . '</h3></div>';
+                    $content .= '<div class="mb-3"><img src="' . $file['file_path'] . '""></div>';
+                }
+            } 
+
+            // Check if there are any wordwall files
+            if (count($wordwallFiles) > 0) {
+                foreach ($wordwallFiles as $wordwall) {
+                    $content .= '<div class="mb-3"><h3>' . $wordwall['wordwall_title'] . '</h3></div>';
+                    $content .= '<div class="mb-3"><iframe src="' . $wordwall['wordwall_url'] . '" width="100%" height="500px"></iframe></div>';
+                }
+            } 
+
+            // Check if there are any videos
+            if (count($videoFiles) > 0) {
+                foreach ($videoFiles as $video) {
+                    $videoUrl = $video['video_url'];
+                    $vimeoEmbedCode = $this->generateVimeoIframe($videoUrl);
+                    $content .= '<div class="mb-3">' . $vimeoEmbedCode . '</div>';
+                }
+            } 
+        }
+        
             $contentList = '
                     <!--begin::Card header-->
                         <div class="card-header border-0">
@@ -100,11 +132,14 @@ class ShowContents extends GetContent
                             <div class="card-title">
                                 <h2>' . $contentInfo['title'] . '</h2>
                             </div>
+                            <div class="card-title">
+                                <a href="icerik-ekle"><button type="button" class="btn btn-primary btn-sm">İçerik Güncelle</button></a>
+                            </div>
                             <!--end::Card title-->
                         </div>
                         <div class="card-header border-0">
                             <!--begin::Card title-->
-                            <div class="card-title">
+                            <div class="card-title" style="height: 20px !important">
                                 <p>' . $contentInfo['summary'] . '</p>
                             </div>
                             <!--end::Card title-->

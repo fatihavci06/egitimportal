@@ -124,7 +124,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 											<!--begin::Modal content-->
 											<div class="modal-content">
 												<!--begin::Form-->
-												<?php $subTopics->updateOneSubTopic($slug); ?>
+												<?php// $subTopics->updateOneSubTopic($slug); ?>
 												<!--end::Form-->
 											</div>
 										</div>

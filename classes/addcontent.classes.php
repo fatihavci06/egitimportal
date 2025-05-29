@@ -163,6 +163,89 @@ class GetContent extends Dbh
 		$stmt = null;
 	}
 
+	public function getContentFilesById($id)
+	{
+		$stmt = $this->connect()->prepare('SELECT * FROM school_content_files_lnp WHERE school_content_id = ?');
+
+		if (!$stmt->execute([$id])) {
+			$stmt = null;
+			exit();
+		}
+
+		$contentData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $contentData;
+
+		$stmt = null;
+
+	}
+
+	public function getContentWordwallsById($id)
+	{
+		$stmt = $this->connect()->prepare('SELECT * FROM school_content_wordwall_lnp WHERE school_content_id = ?');
+
+		if (!$stmt->execute([$id])) {
+			$stmt = null;
+			exit();
+		}
+
+		$contentData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $contentData;
+
+		$stmt = null;
+
+	}
+
+	public function getContentVideosById($id)
+	{
+		$stmt = $this->connect()->prepare('SELECT * FROM school_content_videos_url WHERE school_content_id = ?');
+
+		if (!$stmt->execute([$id])) {
+			$stmt = null;
+			exit();
+		}
+
+		$contentData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $contentData;
+
+		$stmt = null;
+
+	}
+
+	//Vimeo linkinden iframe kodu oluşturma fonksiyonu
+
+	public function generateVimeoIframe($vimeoUrl) {
+    // Vimeo linkinden video ID'sini ve varsa hash'i ayıklamak için bir düzenli ifade kullanalım.
+    // Bu ifade hem "https://vimeo.com/VIDEO_ID" hem de "https://vimeo.com/VIDEO_ID/HASH" formatlarını yakalar.
+    $pattern = '/vimeo\.com\/(\d+)(?:\/([a-zA-Z0-9]+))?/';
+    preg_match($pattern, $vimeoUrl, $matches);
+
+    if (isset($matches[1])) {
+        $videoId = $matches[1];
+        $hash = isset($matches[2]) ? $matches[2] : ''; // Hash varsa al, yoksa boş bırak
+
+        // Iframe için temel embed URL'si
+        $embedUrl = "https://player.vimeo.com/video/{$videoId}";
+
+        // Hash varsa URL'ye ekle
+        if (!empty($hash)) {
+            $embedUrl .= "?h={$hash}";
+        }
+
+        // Iframe HTML kodunu oluştur
+        $iframeCode = '<iframe src="' . htmlspecialchars($embedUrl) . '" width="100%" height="600" frameborder="0" allow="autoplay; fullscreen; picture-in-picture"></iframe>';
+		// 
+        // Opsiyonel: Videonun başlığını da ekleyebilirsiniz (aşağıdaki p etiketi gibi)
+        // $iframeCode .= '<p><a href="' . htmlspecialchars($vimeoUrl) . '">Vimeo\'da izle</a>.</p>';
+
+        return $iframeCode;
+    } else {
+        return "Geçersiz Vimeo linki.";
+    }
+}
+
 	public function getContentInfoByIds($topicId, $unitId, $lessonId, $classId)
 	{
 		$stmt = $this->connect()->prepare('SELECT * FROM school_content_lnp WHERE topic_id = ? AND unit_id = ? AND lesson_id = ? AND class_id = ? AND subtopic_id = ?');
