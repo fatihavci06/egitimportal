@@ -4,18 +4,22 @@
 session_start();
 define('GUARD', true);
 if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
-    include_once "classes/dbh.classes.php";
+	include_once "classes/dbh.classes.php";
 	include_once "classes/addcontent.classes.php";
 	include_once "classes/content-view.classes.php";
 	$contents = new ShowContents();
 	$slug = $_GET['q'];
 
 	include_once "views/pages-head.php";
-?>
+	?>
 	<!--end::Head-->
 	<!--begin::Body-->
 
-	<body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
+	<body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true"
+		data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true"
+		data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true"
+		data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true"
+		data-kt-app-aside-push-footer="true" class="app-default">
 		<!--begin::Theme mode setup on page load-->
 		<script>
 			var defaultThemeMode = "light";
@@ -56,7 +60,8 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 							<!--begin::Toolbar-->
 							<div id="kt_app_toolbar" class="app-toolbar pt-5">
 								<!--begin::Toolbar container-->
-								<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
+								<div id="kt_app_toolbar_container"
+									class="app-container container-fluid d-flex align-items-stretch">
 									<!--begin::Toolbar wrapper-->
 									<div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
 										<!--begin::Page title-->
@@ -81,7 +86,9 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 											</ul>
 											<!--end::Breadcrumb-->
 											<!--begin::Title-->
-											<h1 class="page-heading d-flex flex-column justify-content-center text-gray-900 fw-bolder fs-1 lh-0">İçerik Detay</h1>
+											<h1
+												class="page-heading d-flex flex-column justify-content-center text-gray-900 fw-bolder fs-1 lh-0">
+												İçerik Detay</h1>
 											<!--end::Title-->
 										</div>
 										<!--end::Page title-->
@@ -124,7 +131,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 											<!--begin::Modal content-->
 											<div class="modal-content">
 												<!--begin::Form-->
-												<?php// $subTopics->updateOneSubTopic($slug); ?>
+												<? php// $subTopics->updateOneSubTopic($slug); ?>
 												<!--end::Form-->
 											</div>
 										</div>
@@ -165,6 +172,9 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 		<script>
 			var hostUrl = "assets/";
 		</script>
+		<script src="https://player.vimeo.com/api/player.js"></script>
+		<script src="assets/js/custom/trackTimeOnVimeo.js"></script>
+
 		<!--begin::Global Javascript Bundle(mandatory for all pages)-->
 		<script src="assets/plugins/global/plugins.bundle.js"></script>
 		<script src="assets/js/scripts.bundle.js"></script>
@@ -173,13 +183,13 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 		<script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
 		<!--end::Vendors Javascript-->
 		<!--begin::Custom Javascript(used for this page only)-->
-		<script src="assets/js/custom/apps/sub-topic-details/view/add-payment.js"></script>
-		<script src="assets/js/custom/apps/sub-topic-details/view/adjust-balance.js"></script>
+		<!-- <script src="assets/js/custom/apps/sub-topic-details/view/add-payment.js"></script>
+		<script src="assets/js/custom/apps/sub-topic-details/view/adjust-balance.js"></script> -->
 		<!-- <script src="assets/js/custom/apps/sub-topic-details/view/invoices.js"></script> -->
 		<!-- <script src="assets/js/custom/apps/sub-topic-details/view/payment-method.js"></script> -->
 		<script src="assets/js/custom/apps/sub-topic-details/view/payment-table.js"></script>
 		<script src="assets/js/custom/apps/sub-topic-details/view/teachers-table.js"></script>
-		<script src="assets/js/custom/apps/sub-topic-details/guncelle.js"></script>
+		<!-- <script src="assets/js/custom/apps/sub-topic-details/guncelle.js"></script> -->
 		<!-- <script src="assets/js/custom/apps/sub-topic-details/view/statement.js"></script> -->
 		<!-- <script src="assets/js/custom/apps/customers/update.js"></script> -->
 		<script src="assets/js/widgets.bundle.js"></script>
@@ -193,12 +203,12 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 		<!--end::Custom Javascript-->
 		<!--end::Javascript-->
 		<script>
-			$(document).ready(function() {
+			$(document).ready(function () {
 				// DataTable'ı başlatın (eğer henüz başlatılmadıysa)
 				var table = $('#kt_table_customers_payment').DataTable();
 
 				// Arama input alanını seçin
-				$('[data-kt-table-customers-payment-filter="search"]').on('keyup', function() {
+				$('[data-kt-table-customers-payment-filter="search"]').on('keyup', function () {
 					// Input alanının değerini alın
 					var searchText = $(this).val();
 
@@ -207,12 +217,12 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 				});
 			});
 
-			$(document).ready(function() {
+			$(document).ready(function () {
 				// DataTable'ı başlatın (eğer henüz başlatılmadıysa)
 				var tableTeachers = $('#kt_table_teachers').DataTable();
 
 				// Arama input alanını seçin
-				$('[data-kt-table-teachers-filter="search"]').on('keyup', function() {
+				$('[data-kt-table-teachers-filter="search"]').on('keyup', function () {
 					// Input alanının değerini alın
 					var searchText2 = $(this).val();
 
@@ -224,7 +234,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 	</body>
 	<!--end::Body-->
 
-</html>
+	</html>
 <?php } else {
 	header("location: index");
 }

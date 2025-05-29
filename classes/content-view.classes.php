@@ -1,4 +1,8 @@
 <?php
+if (session_status() == PHP_SESSION_NONE) {
+    // Oturum henüz başlatılmamışsa başlat
+    session_start();
+}
 
 class ShowContents extends GetContent
 {
@@ -27,7 +31,7 @@ class ShowContents extends GetContent
                             <a href="./icerik-detay/' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
                         </td>
                         <td>
-                           '  .  $subTopicName . '
+                           ' . $subTopicName . '
                         </td>
                         <td>
                             ' . $value['topicName'] . '
@@ -83,15 +87,15 @@ class ShowContents extends GetContent
             return;
         }
 
-       /*  $topicList = '
-                <div class="mb-3">
-                    <h1 class="h3 d-inline align-middle">Böyle bir alt konu mevcut değil.</h1>
-                </div>
-        '; */
+        /*  $topicList = '
+                 <div class="mb-3">
+                     <h1 class="h3 d-inline align-middle">Böyle bir alt konu mevcut değil.</h1>
+                 </div>
+         '; */
 
         if ($contentInfo['text_content'] != NULL) {
             $content = $contentInfo['text_content'];
-        }else{
+        } else {
             $contentFiles = $this->getContentFilesById($contentId['id']);
             $wordwallFiles = $this->getContentWordwallsById($contentId['id']);
             $videoFiles = $this->getContentVideosById($contentId['id']);
@@ -105,7 +109,7 @@ class ShowContents extends GetContent
                     $content .= '<div class="mb-3"><h3>' . $file['description'] . '</h3></div>';
                     $content .= '<div class="mb-3"><img src="' . $file['file_path'] . '""></div>';
                 }
-            } 
+            }
 
             // Check if there are any wordwall files
             if (count($wordwallFiles) > 0) {
@@ -113,19 +117,23 @@ class ShowContents extends GetContent
                     $content .= '<div class="mb-3"><h3>' . $wordwall['wordwall_title'] . '</h3></div>';
                     $content .= '<div class="mb-3"><iframe src="' . $wordwall['wordwall_url'] . '" width="100%" height="500px"></iframe></div>';
                 }
-            } 
+            }
+            require_once 'video-tracker.classes.php';
 
+            $tracker = new VideoTracker();
             // Check if there are any videos
             if (count($videoFiles) > 0) {
                 foreach ($videoFiles as $video) {
                     $videoUrl = $video['video_url'];
-                    $vimeoEmbedCode = $this->generateVimeoIframe($videoUrl);
+                    $videoId = $video['id'];
+                    $video_timestamp = $tracker->getWatchProgress($_SESSION['id'], $videoId);
+                    $vimeoEmbedCode = $this->generateVimeoIframe($videoUrl, $videoId, $video_timestamp);
                     $content .= '<div class="mb-3">' . $vimeoEmbedCode . '</div>';
                 }
-            } 
+            }
         }
-        
-            $contentList = '
+
+        $contentList = '
                     <!--begin::Card header-->
                         <div class="card-header border-0">
                             <!--begin::Card title-->
@@ -148,111 +156,111 @@ class ShowContents extends GetContent
                         <!--begin::Card body-->
                         <div class="card-body pt-0 pb-5">
 
-                            '. $content . '
+                            ' . $content . '
 
                         </div>
                     <!--end::Card body-->
             ';
 
 
-           /*  $subTopicId = $value['id'];
+        /*  $subTopicId = $value['id'];
 
-            $getContents = new GetContent();
+         $getContents = new GetContent();
 
-            $content = $getContents->getContentInfoByIdsUnderSubTopic($subTopicId, $value['topic_id'], $value['unit_id'], $value['lesson_id'], $value['class_id']);
+         $content = $getContents->getContentInfoByIdsUnderSubTopic($subTopicId, $value['topic_id'], $value['unit_id'], $value['lesson_id'], $value['class_id']);
 
-            $statNumber = count($content);
+         $statNumber = count($content);
 
-            $statText = "İçerik";
+         $statText = "İçerik";
 
-            $subTopicList = '
-                <div class="flex-column flex-lg-row-auto w-100 w-xl-350px mb-10">
-                    <!--begin::Card-->
-                    <div class="card mb-5 mb-xl-8">
-                        <!--begin::Card body-->
-                        <div class="card-body pt-15">
-                            <!--begin::Summary-->
-                            <div class="d-flex flex-center flex-column mb-5">
-                                <!--begin::Avatar-->
-                                <div class="mb-7">
-                                    <img class="mw-100" src="assets/media/topics/' . $value['image'] . '" alt="image" />
-                                </div>
-                                <!--end::Avatar-->
-                                <!--begin::Name-->
-                                <p class="fs-3 text-gray-800  fw-bold mb-1">' . $value['name'] . '</p>
-                                <!--end::Name-->
-                                <!--begin::Position-->
-                                <div class="fs-5 fw-semibold text-muted mb-6">' . $value['topicName'] . '</div>
-                                <!--end::Position-->
-                                <!--begin::Position-->
-                                <div class="fs-5 fw-semibold text-muted mb-6">' . $value['unitName'] . '</div>
-                                <!--end::Position-->
-                                <!--begin::Position-->
-                                <div class="fs-5 fw-semibold text-muted mb-6">' . $value['lessonName'] . '</div>
-                                <!--end::Position-->
-                                <!--begin::Position-->
-                                <div class="fs-5 fw-semibold text-muted mb-6">' . $value['className'] . '</div>
-                                <!--end::Position-->
-                                <!--begin::Info-->
-                                <div class="d-flex flex-wrap flex-center">
-                                    <!--begin::Stats-->
-                                    <div class="border border-gray-300 border-dashed rounded py-3 px-3 mx-4 mb-3">
-                                        <div class="fs-4 fw-bold text-gray-700">
-                                            <span class="w-75px">' . $statNumber . '</span>
-                                            <i class="fa-solid fa-book-open fs-3 text-success"></i>
-                                        </div>
-                                        <div class="fw-semibold text-muted">' . $statText . '</div>
-                                    </div>
-                                    <!--end::Stats-->
-                                </div>
-                                <!--end::Info-->
-                            </div>
-                            <!--end::Summary-->
-                            <!--begin::Details toggle-->
-                            <div class="d-flex flex-stack fs-4 py-3">
-                                <div class="fw-bold rotate collapsible" data-bs-toggle="collapse" href="#kt_customer_view_details" role="button" aria-expanded="false" aria-controls="kt_customer_view_details">Detaylar
-                                    <span class="ms-2 rotate-180">
-                                        <i class="ki-duotone ki-down fs-3"></i>
-                                    </span>
-                                </div>
-                                <span data-bs-toggle="tooltip" data-bs-trigger="hover" title="Konu bilgilerini düzenle">
-                                    <a href="#" class="btn btn-sm btn-light-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_update_customer">Düzenle</a>
-                                </span>
-                            </div>
-                            <!--end::Details toggle-->
-                            <div class="separator separator-dashed my-3"></div>
-                            <!--begin::Details content-->
-                            <div id="kt_customer_view_details" class="collapse show">
-                                <div class="py-5 fs-6">
-                                    <!--begin::Badge-->
-                                    <!--<div class="badge badge-light-info d-inline">Premium user</div>-->
-                                    <!--end::Badge-->
-                                    <!--begin::Details item-->
-                                    <div class="fw-bold mt-5">Kısa Açıklama</div>
-                                    <div class="text-gray-600">' . $value['short_desc'] . '</div>
-                                    <!--end::Details item-->
-                                    <!--begin::Details item-->
-                                    <div class="fw-bold mt-5">Konu Başlama Tarihi</div>
-                                    <div class="text-gray-600">' . $dateFormat->changeDate($value['start_date']) . '</div>
-                                    <!--end::Details item-->
-                                    <!--begin::Details item-->
-                                    <div class="fw-bold mt-5">Konu Bitiş Tarihi</div>
-                                    <div class="text-gray-600">' . $dateFormat->changeDate($value['end_date']) . '</div>
-                                    <!--end::Details item-->
-                                    <!--begin::Details item-->
-                                    <div class="fw-bold mt-5">Konu Sırası</div>
-                                    <div class="text-gray-600">' . $value['order_no'] . '</div>
-                                    <!--end::Details item-->
-                                </div>
-                            </div>
-                            <!--end::Details content-->
-                        </div>
-                        <!--end::Card body-->
-                    </div>
-                    <!--end::Card-->
-                </div>
-                '; */
-        
+         $subTopicList = '
+             <div class="flex-column flex-lg-row-auto w-100 w-xl-350px mb-10">
+                 <!--begin::Card-->
+                 <div class="card mb-5 mb-xl-8">
+                     <!--begin::Card body-->
+                     <div class="card-body pt-15">
+                         <!--begin::Summary-->
+                         <div class="d-flex flex-center flex-column mb-5">
+                             <!--begin::Avatar-->
+                             <div class="mb-7">
+                                 <img class="mw-100" src="assets/media/topics/' . $value['image'] . '" alt="image" />
+                             </div>
+                             <!--end::Avatar-->
+                             <!--begin::Name-->
+                             <p class="fs-3 text-gray-800  fw-bold mb-1">' . $value['name'] . '</p>
+                             <!--end::Name-->
+                             <!--begin::Position-->
+                             <div class="fs-5 fw-semibold text-muted mb-6">' . $value['topicName'] . '</div>
+                             <!--end::Position-->
+                             <!--begin::Position-->
+                             <div class="fs-5 fw-semibold text-muted mb-6">' . $value['unitName'] . '</div>
+                             <!--end::Position-->
+                             <!--begin::Position-->
+                             <div class="fs-5 fw-semibold text-muted mb-6">' . $value['lessonName'] . '</div>
+                             <!--end::Position-->
+                             <!--begin::Position-->
+                             <div class="fs-5 fw-semibold text-muted mb-6">' . $value['className'] . '</div>
+                             <!--end::Position-->
+                             <!--begin::Info-->
+                             <div class="d-flex flex-wrap flex-center">
+                                 <!--begin::Stats-->
+                                 <div class="border border-gray-300 border-dashed rounded py-3 px-3 mx-4 mb-3">
+                                     <div class="fs-4 fw-bold text-gray-700">
+                                         <span class="w-75px">' . $statNumber . '</span>
+                                         <i class="fa-solid fa-book-open fs-3 text-success"></i>
+                                     </div>
+                                     <div class="fw-semibold text-muted">' . $statText . '</div>
+                                 </div>
+                                 <!--end::Stats-->
+                             </div>
+                             <!--end::Info-->
+                         </div>
+                         <!--end::Summary-->
+                         <!--begin::Details toggle-->
+                         <div class="d-flex flex-stack fs-4 py-3">
+                             <div class="fw-bold rotate collapsible" data-bs-toggle="collapse" href="#kt_customer_view_details" role="button" aria-expanded="false" aria-controls="kt_customer_view_details">Detaylar
+                                 <span class="ms-2 rotate-180">
+                                     <i class="ki-duotone ki-down fs-3"></i>
+                                 </span>
+                             </div>
+                             <span data-bs-toggle="tooltip" data-bs-trigger="hover" title="Konu bilgilerini düzenle">
+                                 <a href="#" class="btn btn-sm btn-light-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_update_customer">Düzenle</a>
+                             </span>
+                         </div>
+                         <!--end::Details toggle-->
+                         <div class="separator separator-dashed my-3"></div>
+                         <!--begin::Details content-->
+                         <div id="kt_customer_view_details" class="collapse show">
+                             <div class="py-5 fs-6">
+                                 <!--begin::Badge-->
+                                 <!--<div class="badge badge-light-info d-inline">Premium user</div>-->
+                                 <!--end::Badge-->
+                                 <!--begin::Details item-->
+                                 <div class="fw-bold mt-5">Kısa Açıklama</div>
+                                 <div class="text-gray-600">' . $value['short_desc'] . '</div>
+                                 <!--end::Details item-->
+                                 <!--begin::Details item-->
+                                 <div class="fw-bold mt-5">Konu Başlama Tarihi</div>
+                                 <div class="text-gray-600">' . $dateFormat->changeDate($value['start_date']) . '</div>
+                                 <!--end::Details item-->
+                                 <!--begin::Details item-->
+                                 <div class="fw-bold mt-5">Konu Bitiş Tarihi</div>
+                                 <div class="text-gray-600">' . $dateFormat->changeDate($value['end_date']) . '</div>
+                                 <!--end::Details item-->
+                                 <!--begin::Details item-->
+                                 <div class="fw-bold mt-5">Konu Sırası</div>
+                                 <div class="text-gray-600">' . $value['order_no'] . '</div>
+                                 <!--end::Details item-->
+                             </div>
+                         </div>
+                         <!--end::Details content-->
+                     </div>
+                     <!--end::Card body-->
+                 </div>
+                 <!--end::Card-->
+             </div>
+             '; */
+
         echo $contentList;
     }
 
