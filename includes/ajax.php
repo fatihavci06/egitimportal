@@ -1253,6 +1253,7 @@ switch ($service) {
             exit();
         }
         break;
+
     case 'testAdd':
         $classId = $_POST['class_id'] ?? null;
         $lessonId = $_POST['lesson_id'] ?? null;
@@ -1263,6 +1264,7 @@ switch ($service) {
         $title = $_POST['title'] ?? null;
         $startDate = $_POST['start_date'] ?? null;
         $endDate = $_POST['end_date'] ?? null;
+
         if (empty($classId)) {
             throw new Exception('Sınıf zorunludur.');
         }
@@ -1275,13 +1277,90 @@ switch ($service) {
         if (empty($endDate)) {
             throw new Exception('Bitiş tarihi zorunludur.');
         }
+
         $pdo->beginTransaction();
         try {
-            // Dosya işlemleri
+            // --- GENEL DOSYA VALİDASYONLARI (En Başta) ---
+            $maxTotalFileSize = 2 * 1024 * 1024; // 3 MB
+            $allowedImageExtensions = ['jpg', 'jpeg', 'png'];
+            $totalUploadedSize = 0;
+
+            // Geçici olarak yüklenen tüm dosyaları kontrol et
+            $allFiles = [];
+
+            // cover_img kontrolü
+            if (isset($_FILES['cover_img']) && $_FILES['cover_img']['error'] !== UPLOAD_ERR_NO_FILE) {
+                $allFiles[] = $_FILES['cover_img'];
+            }
+
+            // Soru görselleri kontrolü
+            if (isset($_FILES['questions']['name'])) {
+                foreach ($_FILES['questions']['name'] as $qIndex => $qData) {
+                    if (isset($qData['images']) && is_array($qData['images'])) {
+                        foreach ($qData['images'] as $i => $imgName) {
+                            if ($_FILES['questions']['error'][$qIndex]['images'][$i] !== UPLOAD_ERR_NO_FILE) {
+                                $allFiles[] = [
+                                    'name' => $imgName,
+                                    'type' => $_FILES['questions']['type'][$qIndex]['images'][$i],
+                                    'tmp_name' => $_FILES['questions']['tmp_name'][$qIndex]['images'][$i],
+                                    'error' => $_FILES['questions']['error'][$qIndex]['images'][$i],
+                                    'size' => $_FILES['questions']['size'][$qIndex]['images'][$i],
+                                ];
+                            }
+                        }
+                    }
+
+                    // Seçenek görselleri kontrolü
+                    if (isset($qData['options'])) {
+                        foreach ($qData['options'] as $optionKey => $optionData) {
+                            if (isset($optionData['images']) && is_array($optionData['images'])) {
+                                foreach ($optionData['images'] as $imgIndex => $optImgName) {
+                                    if ($_FILES['questions']['error'][$qIndex]['options'][$optionKey]['images'][$imgIndex] !== UPLOAD_ERR_NO_FILE) {
+                                        $allFiles[] = [
+                                            'name' => $optImgName,
+                                            'type' => $_FILES['questions']['type'][$qIndex]['options'][$optionKey]['images'][$imgIndex],
+                                            'tmp_name' => $_FILES['questions']['tmp_name'][$qIndex]['options'][$optionKey]['images'][$imgIndex],
+                                            'error' => $_FILES['questions']['error'][$qIndex]['options'][$optionKey]['images'][$imgIndex],
+                                            'size' => $_FILES['questions']['size'][$qIndex]['options'][$optionKey]['images'][$imgIndex],
+                                        ];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Tüm dosyaların genel boyut ve tür validasyonu
+            foreach ($allFiles as $file) {
+                if ($file['error'] !== UPLOAD_ERR_OK) {
+                    // UPLOAD_ERR_INI_SIZE veya UPLOAD_ERR_FORM_SIZE hatası zaten php.ini veya form limiti aşıldığını gösterir
+                    if ($file['error'] === UPLOAD_ERR_INI_SIZE || $file['error'] === UPLOAD_ERR_FORM_SIZE) {
+                        throw new Exception('Yüklenen dosyalardan biri PHP limitlerini aşıyor veya çok büyük.');
+                    }
+                    // Diğer yükleme hataları
+                    throw new Exception('Dosya yükleme hatası oluştu: Kod ' . $file['error']);
+                }
+
+                $totalUploadedSize += $file['size'];
+                $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+                // Sadece resim uzantılarını kontrol et (jpg, jpeg, png)
+                if (!in_array($fileExtension, $allowedImageExtensions)) {
+                    throw new Exception("Desteklenmeyen dosya türü: {$file['name']}. Sadece JPG, JPEG ve PNG resimler yüklenebilir.");
+                }
+            }
+
+            // Toplam dosya boyutu kontrolü
+            if ($totalUploadedSize > $maxTotalFileSize) {
+                throw new Exception('Yüklenen tüm dosyaların toplam boyutu ' . ($maxTotalFileSize / (1024 * 1024)) . ' MB limitini aşıyor.');
+            }
+            // --- GENEL DOSYA VALİDASYONLARI SONU ---
+
+
+            // Dosya işlemleri (cover_img)
             $filePath = null;
-
             if (isset($_FILES['cover_img']) && $_FILES['cover_img']['error'] === UPLOAD_ERR_OK) {
-
                 $uploadDir = __DIR__ . '/../uploads/test/';
                 if (!is_dir($uploadDir)) {
                     mkdir($uploadDir, 0755, true);
@@ -1291,24 +1370,19 @@ switch ($service) {
                 $fileName = basename($_FILES['cover_img']['name']);
                 $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
-                $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'];
-                if (!in_array($extension, $allowedExtensions)) {
-                    throw new Exception('İzin verilmeyen dosya uzantısı.');
-                }
+                // Not: Uzantı kontrolü yukarıdaki genel validasyonda yapıldı.
+                // Burada ek bir kontrol gereksiz ama tutmak isterseniz ekleyebilirsiniz.
 
                 $newFileName = uniqid('test_', true) . '.' . $extension;
                 $destination = $uploadDir . $newFileName;
 
                 if (!move_uploaded_file($fileTmpPath, $destination)) {
-                    throw new Exception('Dosya yüklenemedi.');
+                    throw new Exception('Kapak resmi yüklenemedi.');
                 }
-
-                $filePath = 'uploads/test/' . $newFileName; // Veritabanı için yol
+                $filePath = 'uploads/test/' . $newFileName;
             }
 
             // Veritabanı bağlantısı
-
-
             $stmt = $pdo->prepare("
             INSERT INTO tests_lnp 
             (class_id, lesson_id, unit_id, topic_id, subtopic_id, test_title, start_date, end_date, cover_img)
@@ -1317,27 +1391,29 @@ switch ($service) {
         ");
 
             $stmt->execute([
-                ':class_id'    => $classId,
-                ':lesson_id'   => $lessonId,
-                ':unit_id'     => $unitId,
-                ':topic_id'    => $topicId,
-                ':subtopic_id' => $subtopicId,
-                ':title'       => $title,
-                ':start_date'  => $startDate,
-                ':end_date'    => $endDate,
-                ':file_path'   => $filePath
+                ':class_id'     => $classId,
+                ':lesson_id'    => $lessonId,
+                ':unit_id'      => $unitId,
+                ':topic_id'     => $topicId,
+                ':subtopic_id'  => $subtopicId,
+                ':title'        => $title,
+                ':start_date'   => $startDate,
+                ':end_date'     => $endDate,
+                ':file_path'    => $filePath
             ]);
 
-            $testId = $pdo->lastInsertId(); // tests_lnp kaydından sonra geldi
+            $testId = $pdo->lastInsertId();
+
             if (!isset($_POST['questions']) || !is_array($_POST['questions']) || empty($_POST['questions'])) {
                 throw new Exception('Sorular boş olamaz. Lütfen en az bir soru ekleyin.');
             }
+
             foreach ($_POST['questions'] as $qIndex => $question) {
                 // Soru ekle
                 $stmt = $pdo->prepare("
-            INSERT INTO test_questions_lnp (test_id, question_text, correct_answer)
-            VALUES (:test_id, :question_text, :correct_answer)
-        ");
+                INSERT INTO test_questions_lnp (test_id, question_text, correct_answer)
+                VALUES (:test_id, :question_text, :correct_answer)
+            ");
                 $stmt->execute([
                     ':test_id' => $testId,
                     ':question_text' => $question['text'],
@@ -1349,10 +1425,9 @@ switch ($service) {
                 // Videolar
                 if (!empty($question['videos'])) {
                     $videoStmt = $pdo->prepare("
-                INSERT INTO test_question_videos_lnp (question_id, video_url)
-                VALUES (:question_id, :video_url)
-            ");
-
+                    INSERT INTO test_question_videos_lnp (question_id, video_url)
+                    VALUES (:question_id, :video_url)
+                ");
                     foreach ($question['videos'] as $video) {
                         $videoStmt->execute([
                             ':question_id' => $questionId,
@@ -1361,37 +1436,42 @@ switch ($service) {
                     }
                 }
 
-                // Görseller (gelen files)
-                if (isset($_FILES['questions']['name'][$qIndex]['images'])) {
-                    $images = $_FILES['questions']['name'][$qIndex]['images'];
+                // Görseller (soruya ait görseller)
+                if (isset($_FILES['questions']['name'][$qIndex]['images']) && is_array($_FILES['questions']['name'][$qIndex]['images'])) {
                     $tmpNames = $_FILES['questions']['tmp_name'][$qIndex]['images'];
                     $errors = $_FILES['questions']['error'][$qIndex]['images'];
+                    $sizes = $_FILES['questions']['size'][$qIndex]['images']; // Boyutları da alalım
 
                     $uploadDir = __DIR__ . '/../uploads/questions/';
                     if (!is_dir($uploadDir)) {
                         mkdir($uploadDir, 0755, true);
                     }
 
-                    foreach ($images as $i => $imgName) {
+                    foreach ($_FILES['questions']['name'][$qIndex]['images'] as $i => $imgName) {
+                        // Genel validasyon yapıldığı için burada sadece UPLOAD_ERR_OK kontrolü yeterli.
+                        // Boyut ve uzantı zaten kontrol edildi.
                         if ($errors[$i] === UPLOAD_ERR_OK) {
                             $extension = strtolower(pathinfo($imgName, PATHINFO_EXTENSION));
                             $newFileName = uniqid('img_', true) . '.' . $extension;
                             $destination = $uploadDir . $newFileName;
 
                             if (!move_uploaded_file($tmpNames[$i], $destination)) {
-                                throw new Exception('Soru görseli yüklenemedi.');
+                                throw new Exception('Soru görseli yüklenemedi: ' . $imgName);
                             }
 
                             $imagePath = 'uploads/questions/' . $newFileName;
 
                             $stmt = $pdo->prepare("
-                        INSERT INTO test_question_files_lnp (question_id, file_path)
-                        VALUES (:question_id, :file_path)
-                    ");
+                            INSERT INTO test_question_files_lnp (question_id, file_path)
+                            VALUES (:question_id, :file_path)
+                        ");
                             $stmt->execute([
                                 ':question_id' => $questionId,
                                 ':file_path' => $imagePath
                             ]);
+                        } else if ($errors[$i] !== UPLOAD_ERR_NO_FILE) {
+                            // Eğer bir hata varsa (ki genel validasyonda yakalanmış olmalı)
+                            throw new Exception('Soru görseli yükleme hatası: ' . $imgName . ' (Kod: ' . $errors[$i] . ')');
                         }
                     }
                 }
@@ -1400,9 +1480,9 @@ switch ($service) {
                 if (isset($question['options']) && is_array($question['options'])) {
                     foreach ($question['options'] as $optionKey => $option) {
                         $stmt = $pdo->prepare("
-                    INSERT INTO test_question_options_lnp (question_id, option_key, option_text)
-                    VALUES (:question_id, :option_key, :option_text)
-                ");
+                        INSERT INTO test_question_options_lnp (question_id, option_key, option_text)
+                        VALUES (:question_id, :option_key, :option_text)
+                    ");
                         $stmt->execute([
                             ':question_id' => $questionId,
                             ':option_key' => $optionKey,
@@ -1411,37 +1491,42 @@ switch ($service) {
 
                         $optionId = $pdo->lastInsertId();
 
-
-                        // Eğer option dosyaları varsa (örneğin ses)
+                        // Seçenek görselleri
                         if (isset($_FILES['questions']['name'][$qIndex]['options'][$optionKey]['images']) && is_array($_FILES['questions']['name'][$qIndex]['options'][$optionKey]['images'])) {
-                            // Her bir görsel dosyasını döngüye al
+                            $optTmpNames = $_FILES['questions']['tmp_name'][$qIndex]['options'][$optionKey]['images'];
+                            $optErrors = $_FILES['questions']['error'][$qIndex]['options'][$optionKey]['images'];
+                            $optSizes = $_FILES['questions']['size'][$qIndex]['options'][$optionKey]['images']; // Boyutları da alalım
+
+                            // $uploadDir zaten yukarıda tanımlanmış olabilir ama emin olmak için tekrar tanımlayalım
+                            // veya scope'a dikkat edelim. Soru görselleriyle aynı dizine yüklenecekse burası uygun.
+                            $uploadDir = __DIR__ . '/../uploads/questions/';
+                            if (!is_dir($uploadDir)) {
+                                mkdir($uploadDir, 0755, true);
+                            }
+
                             foreach ($_FILES['questions']['name'][$qIndex]['options'][$optionKey]['images'] as $imgIndex => $fileName) {
-                                $optTmpName = $_FILES['questions']['tmp_name'][$qIndex]['options'][$optionKey]['images'][$imgIndex];
-                                $optError = $_FILES['questions']['error'][$qIndex]['options'][$optionKey]['images'][$imgIndex];
-
-                                if ($optError === UPLOAD_ERR_OK) {
-                                    $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION)); // $fileName kullanıldı
+                                // Genel validasyon yapıldığı için burada sadece UPLOAD_ERR_OK kontrolü yeterli.
+                                // Boyut ve uzantı zaten kontrol edildi.
+                                if ($optErrors[$imgIndex] === UPLOAD_ERR_OK) {
+                                    $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
                                     $newFileName = uniqid('optfile_', true) . '.' . $extension;
-                                    $destination = $uploadDir . $newFileName; // $uploadDir tanımlı olmalı
+                                    $destination = $uploadDir . $newFileName;
 
-                                    if (!move_uploaded_file($optTmpName, $destination)) {
-                                        // Hata yönetimi: Dosya taşınamadıysa
-                                        throw new Exception('Seçenek dosyası yüklenemedi: ' . $fileName);
+                                    if (!move_uploaded_file($optTmpNames[$imgIndex], $destination)) {
+                                        throw new Exception('Seçenek görseli yüklenemedi: ' . $fileName);
                                     }
 
-                                    // Veritabanına kaydetme (option_id'nin geçerli olduğundan emin olun)
-                                    // $optionId'nin bu döngüden önce ilgili seçeneğe ait olarak alındığı varsayılır.
                                     $stmt = $pdo->prepare("
-                        INSERT INTO test_question_option_files_lnp (option_id, file_path)
-                        VALUES (:option_id, :file_path)
-                    ");
+                                    INSERT INTO test_question_option_files_lnp (option_id, file_path)
+                                    VALUES (:option_id, :file_path)
+                                ");
                                     $stmt->execute([
-                                        ':option_id' => $optionId, // Bu değişkenin scope'unu ve doğruluğunu kontrol edin
+                                        ':option_id' => $optionId,
                                         ':file_path' => 'uploads/questions/' . $newFileName
                                     ]);
-                                } else if ($optError !== UPLOAD_ERR_NO_FILE) {
-                                    // Yükleme sırasında oluşan diğer hatalar (örn: boyut, tip vb.)
-                                    throw new Exception('Seçenek dosyası yükleme hatası: Kod ' . $optError);
+                                } else if ($optErrors[$imgIndex] !== UPLOAD_ERR_NO_FILE) {
+                                    // Eğer bir hata varsa (ki genel validasyonda yakalanmış olmalı)
+                                    throw new Exception('Seçenek görseli yükleme hatası: ' . $fileName . ' (Kod: ' . $optErrors[$imgIndex] . ')');
                                 }
                             }
                         }
@@ -1463,6 +1548,7 @@ switch ($service) {
             ]);
         }
         break;
+
     case 'getFilteredTests':
         $title = isset($_POST['title']) ? $_POST['title'] : '';
         $classId = isset($_POST['class_id']) ? $_POST['class_id'] : '';
@@ -1573,7 +1659,7 @@ SELECT
     t.end_date,
     t.created_at AS test_created_at,
     t.updated_at AS test_updated_at,
-
+    tcc.option_count AS option_count,
     tq.id AS question_id,
     tq.question_text,
     tq.correct_answer,
@@ -1598,6 +1684,7 @@ LEFT JOIN test_question_videos_lnp tqv ON tqv.question_id = tq.id
 LEFT JOIN test_question_files_lnp tqf ON tqf.question_id = tq.id
 LEFT JOIN test_question_options_lnp tqo ON tqo.question_id = tq.id
 LEFT JOIN test_question_option_files_lnp tqof ON tqof.option_id = tqo.id
+LEFT JOIN test_class_option_count tcc ON tcc.class_id = t.class_id
 WHERE t.id = :id";
 
         $stmt = $pdo->prepare($sql);
@@ -1624,6 +1711,7 @@ WHERE t.id = :id";
                     'topic_id' => $row['topic_id'],
                     'subtopic_id' => $row['subtopic_id'],
                     'start_date' => $row['start_date'],
+                    'option_count' => $row['option_count'] ?? 3, // Varsayılan olarak 3 seçenek
                     'end_date' => $row['end_date'],
                     'created_at' => $row['test_created_at'],
                     'updated_at' => $row['test_updated_at'],
@@ -1736,44 +1824,61 @@ WHERE t.id = :id";
             exit;
         }
 
+        // Ortak dosya kontrol fonksiyonu tanımla
+        function validateAndUploadFile($fileInfo, $uploadDir, $maxFileSize = 3145728, $allowedExtensions = ['jpg', 'jpeg', 'png'])
+        {
+            if ($fileInfo['error'] !== UPLOAD_ERR_OK) {
+                throw new Exception('Dosya yükleme hatası: ' . $fileInfo['error']);
+            }
+
+            $fileSize = $fileInfo['size'];
+            $fileName = basename($fileInfo['name']);
+            $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+            $fileTmpPath = $fileInfo['tmp_name'];
+
+            // Boyut kontrolü
+            if ($fileSize > $maxFileSize) {
+                throw new Exception('Dosya boyutu ' . ($maxFileSize / 1024 / 1024) . 'MB\'ı geçemez.');
+            }
+
+            // Uzantı kontrolü
+            if (!in_array($extension, $allowedExtensions)) {
+                throw new Exception('İzin verilmeyen dosya uzantısı. Sadece JPG, JPEG, PNG kabul edilir.');
+            }
+
+            // Klasör kontrolü ve oluşturma
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+
+            $newFileName = uniqid('', true) . '.' . $extension; // Daha güvenli bir uniqid kullanımı
+            $destination = $uploadDir . $newFileName;
+
+            if (!move_uploaded_file($fileTmpPath, $destination)) {
+                throw new Exception('Dosya sunucuya taşınamadı.');
+            }
+
+            return str_replace(__DIR__ . '/../', '', $destination); // Veritabanı için göreceli yol
+        }
+
+
         try {
             $pdo->beginTransaction();
 
-            // 1. Mevcut Test Bilgilerini Güncelle (eğer test_id ile güncelleme yapılıyorsa)
-            // Eğer test her zaman yeni oluşturuluyorsa bu adım atlanabilir.
-            // Eğer test_id mevcut bir testi temsil ediyorsa, testin ana bilgilerini güncelleyelim.
-            $coverImage=null;
+            $coverImage = null;
             if (isset($_FILES['cover_img']) && $_FILES['cover_img']['error'] === UPLOAD_ERR_OK) {
-
                 $uploadDir = __DIR__ . '/../uploads/test/';
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0755, true);
-                }
-
-                $fileTmpPath = $_FILES['cover_img']['tmp_name'];
-                $fileName = basename($_FILES['cover_img']['name']);
-                $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-
-                $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'];
-                if (!in_array($extension, $allowedExtensions)) {
-                    throw new Exception('İzin verilmeyen dosya uzantısı.');
-                }
-
-                $newFileName = uniqid('test_', true) . '.' . $extension;
-                $destination = $uploadDir . $newFileName;
-
-                if (!move_uploaded_file($fileTmpPath, $destination)) {
-                    throw new Exception('Dosya yüklenemedi.');
-                }
-
-                $coverImage = 'uploads/test/' . $newFileName; // Veritabanı için yol
+                // cover_img için ayrı bir kural belirlemedik, genel fonksiyonu kullanıyoruz.
+                // İstersen burada farklı boyut ve uzantı kısıtlamaları tanımlayabilirsin.
+                $coverImage = validateAndUploadFile($_FILES['cover_img'], $uploadDir);
             }
+
             if ($coverImage == null) {
                 $stmt = $pdo->prepare("
-                    UPDATE tests_lnp
-                    SET class_id = ?, lesson_id = ?, unit_id = ?, topic_id = ?, subtopic_id = ?, test_title = ?, start_date = ?, end_date = ?
-                    WHERE id = ?
-                ");
+                UPDATE tests_lnp
+                SET class_id = ?, lesson_id = ?, unit_id = ?, topic_id = ?, subtopic_id = ?, test_title = ?, start_date = ?, end_date = ?
+                WHERE id = ?
+            ");
                 $stmt->execute([
                     $classId,
                     $lessonId,
@@ -1786,37 +1891,26 @@ WHERE t.id = :id";
                     $testId
                 ]);
             } else {
-
-
                 $stmt = $pdo->prepare("
-                    UPDATE tests_lnp
-                    SET cover_img=?,class_id = ?, lesson_id = ?, unit_id = ?, topic_id = ?, subtopic_id = ?, test_title = ?, start_date = ?, end_date = ?
-                    WHERE id = ?
-                ");
-                 $stmt->execute([
-                $coverImage ,
-                $classId,
-                $lessonId,
-                $unitId,
-                $topicId,
-                $subtopicId,
-                $title,
-                $startDate,
-                $endDate,
-                $testId
-            ]);
-
+                UPDATE tests_lnp
+                SET cover_img=?,class_id = ?, lesson_id = ?, unit_id = ?, topic_id = ?, subtopic_id = ?, test_title = ?, start_date = ?, end_date = ?
+                WHERE id = ?
+            ");
+                $stmt->execute([
+                    $coverImage,
+                    $classId,
+                    $lessonId,
+                    $unitId,
+                    $topicId,
+                    $subtopicId,
+                    $title,
+                    $startDate,
+                    $endDate,
+                    $testId
+                ]);
             }
 
             // 2. Mevcut Soruları, Şıkları, Dosyaları ve Videoları Temizle
-            // Bu kısım sizin sağladığınız koda benzer, ancak tüm eski soruları silmek yerine,
-            // gelen payload'daki soru ID'leri ile karşılaştırma yaparak sadece eksik olanları silebiliriz.
-            // Ancak basitlik adına, genellikle testin tüm sorularını silip yeniden eklemek daha kolaydır
-            // Eğer düzenleme karmaşık değilse ve her zaman tüm sorular yeniden gönderiliyorsa.
-            // Varsayım: Payload'da gelen sorular testin mevcut sorularının TAMAMI yerine geçiyor.
-            // Bu durumda, mevcut test_id'ye ait tüm soruları sileceğiz.
-
-            // Önce test_id'ye bağlı tüm question_id'leri alalım
             $stmt = $pdo->prepare("SELECT id FROM test_questions_lnp WHERE test_id = ?");
             $stmt->execute([$testId]);
             $existingQuestionIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
@@ -1825,9 +1919,12 @@ WHERE t.id = :id";
                 $placeholders = implode(',', array_fill(0, count($existingQuestionIds), '?'));
 
                 // Sorulara ait dosyaları ve videoları sil (önce dosya yollarını alıp sunucudan sil)
+                // NOT: Sunucudaki fiziksel dosyaları silmek için bu yolları kullanmalısın.
+                // Örnek: unlink(__DIR__ . '/../' . $filePath);
                 $stmt = $pdo->prepare("SELECT file_path FROM test_question_files_lnp WHERE question_id IN ($placeholders)");
                 $stmt->execute($existingQuestionIds);
-
+                $filesToDelete = $stmt->fetchAll(PDO::FETCH_COLUMN);
+               
                 $stmt = $pdo->prepare("DELETE FROM test_question_files_lnp WHERE question_id IN ($placeholders)");
                 $stmt->execute($existingQuestionIds);
 
@@ -1846,7 +1943,8 @@ WHERE t.id = :id";
                     // Şıklara ait dosyaları sil (önce dosya yollarını alıp sunucudan sil)
                     $stmt = $pdo->prepare("SELECT file_path FROM test_question_option_files_lnp WHERE option_id IN ($optPlaceholders)");
                     $stmt->execute($optionsToDeleteFromQuestion);
-
+                    $optionFilesToDelete = $stmt->fetchAll(PDO::FETCH_COLUMN);
+                    
                     $stmt = $pdo->prepare("DELETE FROM test_question_option_files_lnp WHERE option_id IN ($optPlaceholders)");
                     $stmt->execute($optionsToDeleteFromQuestion);
 
@@ -1864,50 +1962,48 @@ WHERE t.id = :id";
             foreach ($newQuestionsData as $questionIndex => $questionData) {
                 $questionText = $questionData['text'] ?? '';
                 $correctAnswer = $questionData['correct_answer'] ?? null;
-                // Varsayılan bir tip atayabilirsiniz
-                // Diğer soru alanları (örneğin, question_order, difficulty vb.)
 
                 // Yeni soruyu ekle
                 $stmt = $pdo->prepare("
-            INSERT INTO test_questions_lnp (test_id, question_text, correct_answer)
-            VALUES (?, ?, ?)
-        ");
+                INSERT INTO test_questions_lnp (test_id, question_text, correct_answer)
+                VALUES (?, ?, ?)
+            ");
                 $stmt->execute([
                     $testId,
                     $questionText,
-                    $correctAnswer // Sırayı belirtmek için
+                    $correctAnswer
                 ]);
                 $newQuestionId = $pdo->lastInsertId();
 
                 // Sorunun videolarını kaydet
                 if (!empty($questionData['videos'])) {
                     foreach ($questionData['videos'] as $videoIndex => $videoPath) {
-                        // Burada video yükleme mantığı uygulanmalıdır.
-                        // Eğer video direk metin olarak geliyorsa (ki payload'da öyle görünüyor),
-                        // bu video yolunu direk kaydedebilirsiniz.
-                        // Eğer bu bir dosya yüklemesi ise, $_FILES'tan alıp sunucuya kaydetmelisiniz.
                         $stmt = $pdo->prepare("
-                    INSERT INTO test_question_videos_lnp (question_id, video_url)
-                    VALUES (?, ?)
-                ");
+                        INSERT INTO test_question_videos_lnp (question_id, video_url)
+                        VALUES (?, ?)
+                    ");
                         $stmt->execute([$newQuestionId, $videoPath]);
                     }
                 }
 
                 // Sorunun dosyalarını kaydet (resimler vb. için)
-                // Eğer payload'da 'files' anahtarı ve dosya bilgileri varsa buraya ekleyin.
-                // Genellikle dosya yüklemeleri $_FILES ile ayrı ele alınır.
-
+                // Bu kısım, $_FILES süper globalinden gelen çok boyutlu dizinin yapısına göre ayarlanmalı.
+                // Dosya yükleme yapısında bir değişiklik varsa (örneğin 'questions[index][images][fileKey]'),
+                // bu kısım da o yapıya göre güncellenmelidir.
                 if (isset($_FILES['questions']['name'][$questionIndex]['images'])) {
-
                     foreach ($_FILES['questions']['name'][$questionIndex]['images'] as $fileKey => $fileName) {
-
+                        $fileInfo = [
+                            'name' => $_FILES['questions']['name'][$questionIndex]['images'][$fileKey],
+                            'type' => $_FILES['questions']['type'][$questionIndex]['images'][$fileKey],
+                            'tmp_name' => $_FILES['questions']['tmp_name'][$questionIndex]['images'][$fileKey],
+                            'error' => $_FILES['questions']['error'][$questionIndex]['images'][$fileKey],
+                            'size' => $_FILES['questions']['size'][$questionIndex]['images'][$fileKey],
+                        ];
                         $uploadDir = __DIR__ . '/../uploads/questions/';
-                        $newFilePath = $uploadDir . basename($fileName);
-                        if (move_uploaded_file($_FILES['questions']['tmp_name'][$questionIndex]['images'][$fileKey], $newFilePath)) {
-                            $stmt = $pdo->prepare("INSERT INTO test_question_files_lnp (question_id, file_path) VALUES (?, ?)");
-                            $stmt->execute([$newQuestionId, str_replace(__DIR__ . '/../', '', $newFilePath)]);
-                        }
+                        $relativePath = validateAndUploadFile($fileInfo, $uploadDir);
+
+                        $stmt = $pdo->prepare("INSERT INTO test_question_files_lnp (question_id, file_path) VALUES (?, ?)");
+                        $stmt->execute([$newQuestionId, $relativePath]);
                     }
                 }
                 if (isset($_POST['questions'][$questionIndex]['existing_images'])) {
@@ -1925,36 +2021,32 @@ WHERE t.id = :id";
                 if (!empty($questionData['options'])) {
                     foreach ($questionData['options'] as $optionKey => $optionData) {
                         $optionText = $optionData['text'] ?? '';
-                        // Diğer şık alanları (örneğin, is_correct)
 
                         $stmt = $pdo->prepare("
-                    INSERT INTO test_question_options_lnp (question_id, option_key, option_text)
-                    VALUES (?, ?, ?)
-                ");
+                        INSERT INTO test_question_options_lnp (question_id, option_key, option_text)
+                        VALUES (?, ?, ?)
+                    ");
                         $stmt->execute([$newQuestionId, $optionKey, $optionText]);
                         $newOptionId = $pdo->lastInsertId();
 
                         // Şık dosyalarını kaydet (resimler vb. için)
-                        // Benzer şekilde, eğer şıklara ait dosyalar varsa burada işleyin.
-
                         if (!empty($_FILES['questions']['name'][$questionIndex]['options'][$optionKey]['images'])) {
                             foreach ($_FILES['questions']['name'][$questionIndex]['options'][$optionKey]['images'] as $fileKey => $fileName) {
+                                $fileInfo = [
+                                    'name' => $_FILES['questions']['name'][$questionIndex]['options'][$optionKey]['images'][$fileKey],
+                                    'type' => $_FILES['questions']['type'][$questionIndex]['options'][$optionKey]['images'][$fileKey],
+                                    'tmp_name' => $_FILES['questions']['tmp_name'][$questionIndex]['options'][$optionKey]['images'][$fileKey],
+                                    'error' => $_FILES['questions']['error'][$questionIndex]['options'][$optionKey]['images'][$fileKey],
+                                    'size' => $_FILES['questions']['size'][$questionIndex]['options'][$optionKey]['images'][$fileKey],
+                                ];
+                                $uploadDir = __DIR__ . '/../uploads/questions/'; // Şık görselleri için de aynı klasörü kullanabiliriz
+                                $relativePath = validateAndUploadFile($fileInfo, $uploadDir);
 
-                                $uploadDir = __DIR__ . '/../uploads/questions/';
-                                if (!is_dir($uploadDir)) {
-                                    mkdir($uploadDir, 0777, true);
-                                }
-
-                                $tmpFile = $_FILES['questions']['tmp_name'][$questionIndex]['options'][$optionKey]['images'][$fileKey];
-                                $newFilePath = $uploadDir . basename($fileName);
-
-                                if (is_uploaded_file($tmpFile) && move_uploaded_file($tmpFile, $newFilePath)) {
-                                    $stmt = $pdo->prepare("INSERT INTO test_question_option_files_lnp (option_id, file_path) VALUES (?, ?)");
-                                    $stmt->execute([
-                                        $newOptionId,
-                                        str_replace(__DIR__ . '/../', '', $newFilePath)
-                                    ]);
-                                }
+                                $stmt = $pdo->prepare("INSERT INTO test_question_option_files_lnp (option_id, file_path) VALUES (?, ?)");
+                                $stmt->execute([
+                                    $newOptionId,
+                                    $relativePath
+                                ]);
                             }
                         }
 
@@ -1975,14 +2067,237 @@ WHERE t.id = :id";
             $pdo->commit();
 
             header('Content-Type: application/json');
-            echo json_encode(['status' => 'success', 'message' => 'Test updated successfully.']);
+            echo json_encode(['status' => 'success', 'message' => 'Test başarıyla güncellendi.']);
         } catch (\Exception $e) {
             $pdo->rollBack();
             header('Content-Type: application/json', true, 500);
-            echo json_encode(['status' => 'error', 'message' => 'An error occurred: ' . $e->getMessage()]);
+            echo json_encode(['status' => 'error', 'message' => 'Bir hata oluştu: ' . $e->getMessage()]);
             // Hata detaylarını loglamak genellikle iyi bir uygulamadır.
+            // error_log('Test güncelleme hatası: ' . $e->getMessage() . ' Satır: ' . $e->getLine() . ' Dosya: ' . $e->getFile());
         }
 
+        break;
+    case 'getTestByStudent':
+        $role = $_SESSION['role'];
+
+        $testId = $_GET['test_id'] ?? null;
+
+        if ($role == 1 || $role == 3 || $role == 4) {
+
+            $sql = "
+                SELECT 
+                    t.id AS test_id,
+                    t.test_title,
+                    t.school_id,
+                    t.teacher_id,
+                    t.cover_img,
+                    t.class_id,
+                    t.lesson_id,
+                    t.unit_id,
+                    t.topic_id,
+                    t.subtopic_id,
+                    t.start_date,
+                    t.end_date,
+                    t.created_at AS test_created_at,
+                    t.updated_at AS test_updated_at,
+
+                    tq.id AS question_id,
+                    tq.question_text,
+                    tq.created_at AS question_created_at,
+                    tq.updated_at AS question_updated_at,
+
+                    tqv.video_url,
+
+                    tqf.file_path AS question_file_path,
+
+                    tqo.id AS option_id,
+                    tqo.option_key,
+                    tqo.option_text,
+                    tqo.created_at AS option_created_at,
+                    tqo.updated_at AS option_updated_at,
+
+                    tqof.file_path AS option_file_path
+
+                FROM tests_lnp t
+                LEFT JOIN test_questions_lnp tq ON tq.test_id = t.id
+                LEFT JOIN test_question_videos_lnp tqv ON tqv.question_id = tq.id
+                LEFT JOIN test_question_files_lnp tqf ON tqf.question_id = tq.id
+                LEFT JOIN test_question_options_lnp tqo ON tqo.question_id = tq.id
+                LEFT JOIN test_question_option_files_lnp tqof ON tqof.option_id = tqo.id
+                WHERE t.id = :id";
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(['id' => $testId ?? null]);
+            if ($stmt->rowCount() === 0) {
+                echo json_encode(['status' => 'error', 'message' => 'Test bulunamadı.']);
+                exit;
+            }
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $response = null;
+
+            foreach ($rows as $row) {
+                if (!$response) {
+                    $response = [
+                        'id' => $row['test_id'],
+                        'test_title' => $row['test_title'],
+                        'school_id' => $row['school_id'],
+                        'teacher_id' => $row['teacher_id'],
+                        'cover_img' => $row['cover_img'],
+                        'class_id' => $row['class_id'],
+                        'lesson_id' => $row['lesson_id'],
+                        'unit_id' => $row['unit_id'],
+                        'topic_id' => $row['topic_id'],
+                        'subtopic_id' => $row['subtopic_id'],
+                        'start_date' => $row['start_date'],
+                        'end_date' => $row['end_date'],
+                        'created_at' => $row['test_created_at'],
+                        'updated_at' => $row['test_updated_at'],
+                        'questions' => [],
+                    ];
+                }
+
+                $questionId = $row['question_id'];
+                $optionId = $row['option_id'];
+
+                if ($questionId && !isset($response['questions'][$questionId])) {
+                    $response['questions'][$questionId] = [
+                        'id' => $questionId,
+                        // HTML etiketlerini kaldırıyoruz
+                        'question_text' => $row['question_text'],
+                        'created_at' => $row['question_created_at'],
+                        'updated_at' => $row['question_updated_at'],
+                        'videos' => [],
+                        'files' => [],
+                        'options' => [],
+                    ];
+                }
+
+                // Video ekle
+                if (!empty($row['video_url']) && !in_array($row['video_url'], $response['questions'][$questionId]['videos'])) {
+                    $response['questions'][$questionId]['videos'][] = $row['video_url'];
+                }
+
+                // Soru dosyası ekle
+                if (!empty($row['question_file_path']) && !in_array($row['question_file_path'], $response['questions'][$questionId]['files'])) {
+                    $response['questions'][$questionId]['files'][] = $row['question_file_path'];
+                }
+
+                // Seçenek ekle
+                if ($optionId && !isset($response['questions'][$questionId]['options'][$optionId])) {
+                    $response['questions'][$questionId]['options'][$optionId] = [
+                        'id' => $optionId,
+                        'option_key' => $row['option_key'],
+                        // HTML etiketlerini kaldırıyoruz
+                        'option_text' => $row['option_text'],
+                        'created_at' => $row['option_created_at'],
+                        'updated_at' => $row['option_updated_at'],
+                        'files' => [],
+                    ];
+                }
+
+                // Seçenek dosyası ekle
+                if (!empty($row['option_file_path']) && !in_array($row['option_file_path'], $response['questions'][$questionId]['options'][$optionId]['files'])) {
+                    $response['questions'][$questionId]['options'][$optionId]['files'][] = $row['option_file_path'];
+                }
+            }
+
+            // Final formatlama
+            if ($response) {
+
+                $response['questions'] = array_values(array_map(function ($question) {
+
+                    $question['options'] = array_values($question['options']);
+                    return $question;
+                }, $response['questions']));
+                echo json_encode(['status' => 'success', 'data' => $response]);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Ders bulunamadı.']);
+            }
+        } else {
+            // Öğretmen veya yönetici için tüm sınıflar
+
+        }
+        break;
+    case 'submitTestAnswers':
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        $testId = $data['test_id'];
+        $userAnswers = $data['user_answers'];
+        $userId = $_SESSION['id'] ?? null;
+
+        try {
+            $pdo->beginTransaction();
+
+            // Cevapları kaydet
+            $stmt = $pdo->prepare("INSERT INTO test_user_answers_lnp (user_id, test_id, question_id, selected_option_key) VALUES (:user_id, :test_id, :question_id, :selected_option_key)");
+
+            foreach ($userAnswers as $answer) {
+                $stmt->execute([
+                    ':user_id' => $_SESSION['id'],
+                    ':test_id' => $testId,
+                    ':question_id' => $answer['question_id'],
+                    ':selected_option_key' => $answer['selected_option_key']
+                ]);
+            }
+
+            // Skor hesaplama
+            $correct = 0;
+            $total = count($userAnswers);
+
+            $scoreStmt = $pdo->prepare("SELECT correct_answer FROM test_questions_lnp WHERE id = :question_id");
+
+            foreach ($userAnswers as $answer) {
+                $scoreStmt->execute([':question_id' => $answer['question_id']]);
+                $correctAnswer = $scoreStmt->fetchColumn();
+
+                if ($correctAnswer !== null && $answer['selected_option_key'] !== null && $answer['selected_option_key'] == $correctAnswer) {
+                    $correct++;
+                }
+            }
+            $testInfoStmt = $pdo->prepare("SELECT class_id, lesson_id, unit_id, topic_id, subtopic_id FROM tests_lnp WHERE id = :test_id");
+            $testInfoStmt->execute([':test_id' => $testId]);
+            $testInfo = $testInfoStmt->fetch(PDO::FETCH_ASSOC);
+
+            // user_grades tablosunda varsa önce sil
+            $deleteStmt = $pdo->prepare("DELETE FROM user_grades_lnp WHERE test_id = :test_id AND user_id = :user_id");
+            $deleteStmt->execute([
+                ':test_id' => $testId,
+                ':user_id' => $userId
+            ]);
+            $percentageScore = $total > 0 ? round(($correct / $total) * 100, 2) : 0;
+
+            // Yeni kaydı user_grades tablosuna ekle
+            $insertGradeStmt = $pdo->prepare("INSERT INTO user_grades_lnp (user_id, test_id, class_id, lesson_id, unit_id, topic_id, subtopic_id, score) VALUES (:user_id, :test_id, :class_id, :lesson_id, :unit_id, :topic_id, :subtopic_id, :score)");
+            $insertGradeStmt->execute([
+                ':user_id' => $userId,
+                ':test_id' => $testId,
+                ':class_id' => $testInfo['class_id'],
+                ':lesson_id' => $testInfo['lesson_id'],
+                ':unit_id' => $testInfo['unit_id'],
+                ':topic_id' => $testInfo['topic_id'],
+                ':subtopic_id' => $testInfo['subtopic_id'],
+                ':score' => $percentageScore
+            ]);
+
+
+            $pdo->commit();
+
+
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Cevaplar başarıyla kaydedildi ve değerlendirildi.',
+                'score' => $percentageScore, // 100 üzerinden
+                'correct_count' => $correct,
+                'total_questions' => $total
+            ]);
+        } catch (PDOException $e) {
+            $pdo->rollBack();
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Veritabanı hatası: ' . $e->getMessage()
+            ]);
+        }
         break;
 
     default:

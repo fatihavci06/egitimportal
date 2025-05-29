@@ -2,7 +2,178 @@
 
 class Classes extends Dbh
 {
+	public function getTestDetail($testId, $classId = 0)
+	{
+		$role = $_SESSION['role'];
+		if ($role == 1 || $role == 3 || $role == 4) {
 
+            $sql = "
+                SELECT 
+                    t.id AS test_id,
+                    t.test_title,
+                    t.school_id,
+                    t.teacher_id,
+                    t.cover_img,
+                    t.class_id,
+                    t.lesson_id,
+                    t.unit_id,
+                    t.topic_id,
+                    t.subtopic_id,
+                    t.start_date,
+                    t.end_date,
+                    t.created_at AS test_created_at,
+                    t.updated_at AS test_updated_at,
+
+                    tq.id AS question_id,
+                    tq.question_text,
+                    tq.correct_answer,
+                    tq.created_at AS question_created_at,
+                    tq.updated_at AS question_updated_at,
+
+                    tqv.video_url,
+
+                    tqf.file_path AS question_file_path,
+
+                    tqo.id AS option_id,
+                    tqo.option_key,
+                    tqo.option_text,
+                    tqo.created_at AS option_created_at,
+                    tqo.updated_at AS option_updated_at,
+
+                    tqof.file_path AS option_file_path
+
+                FROM tests_lnp t
+                LEFT JOIN test_questions_lnp tq ON tq.test_id = t.id
+                LEFT JOIN test_question_videos_lnp tqv ON tqv.question_id = tq.id
+                LEFT JOIN test_question_files_lnp tqf ON tqf.question_id = tq.id
+                LEFT JOIN test_question_options_lnp tqo ON tqo.question_id = tq.id
+                LEFT JOIN test_question_option_files_lnp tqof ON tqof.option_id = tqo.id
+                WHERE t.id = :id";
+
+            $stmt = $this->connect()->prepare($sql);
+            $stmt->execute(['id' => $testId ?? null]);
+            if ($stmt->rowCount() === 0) {
+                echo json_encode(['status' => 'error', 'message' => 'Test bulunamadı.']);
+                exit;
+            }
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $response = null;
+
+            foreach ($rows as $row) {
+                if (!$response) {
+                    $response = [
+                        'id' => $row['test_id'],
+                        'test_title' => $row['test_title'],
+                        'school_id' => $row['school_id'],
+                        'teacher_id' => $row['teacher_id'],
+                        'cover_img' => $row['cover_img'],
+                        'class_id' => $row['class_id'],
+                        'lesson_id' => $row['lesson_id'],
+                        'unit_id' => $row['unit_id'],
+                        'topic_id' => $row['topic_id'],
+                        'subtopic_id' => $row['subtopic_id'],
+                        'start_date' => $row['start_date'],
+                        'end_date' => $row['end_date'],
+                        'created_at' => $row['test_created_at'],
+                        'updated_at' => $row['test_updated_at'],
+                        'questions' => [],
+                    ];
+                }
+
+                $questionId = $row['question_id'];
+                $optionId = $row['option_id'];
+
+                if ($questionId && !isset($response['questions'][$questionId])) {
+                    $response['questions'][$questionId] = [
+                        'id' => $questionId,
+                        // HTML etiketlerini kaldırıyoruz
+                        'question_text' => strip_tags($row['question_text']), 
+                        'correct_answer' => $row['correct_answer'],
+                        'created_at' => $row['question_created_at'],
+                        'updated_at' => $row['question_updated_at'],
+                        'videos' => [],
+                        'files' => [],
+                        'options' => [],
+                    ];
+                }
+
+                // Video ekle
+                if (!empty($row['video_url']) && !in_array($row['video_url'], $response['questions'][$questionId]['videos'])) {
+                    $response['questions'][$questionId]['videos'][] = $row['video_url'];
+                }
+
+                // Soru dosyası ekle
+                if (!empty($row['question_file_path']) && !in_array($row['question_file_path'], $response['questions'][$questionId]['files'])) {
+                    $response['questions'][$questionId]['files'][] = $row['question_file_path'];
+                }
+
+                // Seçenek ekle
+                if ($optionId && !isset($response['questions'][$questionId]['options'][$optionId])) {
+                    $response['questions'][$questionId]['options'][$optionId] = [
+                        'id' => $optionId,
+                        'option_key' => $row['option_key'],
+                        // HTML etiketlerini kaldırıyoruz
+                        'option_text' => strip_tags($row['option_text']), 
+                        'created_at' => $row['option_created_at'],
+                        'updated_at' => $row['option_updated_at'],
+                        'files' => [],
+                    ];
+                }
+
+                // Seçenek dosyası ekle
+                if (!empty($row['option_file_path']) && !in_array($row['option_file_path'], $response['questions'][$questionId]['options'][$optionId]['files'])) {
+                    $response['questions'][$questionId]['options'][$optionId]['files'][] = $row['option_file_path'];
+                }
+            }
+
+            // Final formatlama
+            if ($response) {
+					
+                $response['questions'] = array_values(array_map(function ($question) {
+				
+                    $question['options'] = array_values($question['options']);
+                    return $question;
+                }, $response['questions']));
+                echo json_encode(['status' => 'success', 'data' => $response]);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Ders bulunamadı.']);
+            }
+        } else {
+			// Öğretmen veya yönetici için tüm sınıflar
+			
+		}
+
+		$classData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
+	public function getTestListByStudent($classId = 0)
+	{
+		$role = $_SESSION['role'];
+		if ($role == 1 or $role == 3 or $role == 4) {
+
+			// Öğretmen veya yönetici için tüm sınıflar
+			$stmt = $this->connect()->prepare('SELECT id,test_title,end_date FROM tests_lnp ORDER BY id DESC');
+			if (!$stmt->execute()) {
+				$stmt = null;
+				exit();
+			}
+		} else {
+			// Öğrenci için sadece kendi sınıfına ait testler
+			$stmt = $this->connect()->prepare('SELECT id,test_title,end_date FROM tests_lnp WHERE class_id = ? ORDER BY id DESC');
+			if (!$stmt->execute(['class_id' => $classId])) {
+				$stmt = null;
+				exit();
+			}
+		}
+
+
+
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
 	public function getClassesList()
 	{
 
