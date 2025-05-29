@@ -183,6 +183,45 @@ class ShowGame extends Games
         }
     }
 
+    public function getHeaderImageInGameStu()
+    {
+
+        $link = "$_SERVER[REQUEST_URI]";
+
+        $active_slug = htmlspecialchars(basename($link, ".php"));
+
+        $unitInfo = $this->getOneGame($active_slug);
+
+        /* $unitInfo = $this->getGamesListForHead(); */
+
+            $lessonList = '
+                    <div class="position-relative mb-17">
+                        <!--begin::Overlay-->
+                        <div class="overlay overlay-show">
+                            <!--begin::Image-->
+                            <div class="bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-250px" style="background-image:url(\'assets/media/games/' . $unitInfo['cover_img'] .  '\')"></div>
+                            <!--end::Image-->
+                            <!--begin::layer-->
+                            <div class="overlay-layer rounded bg-black" style="opacity: 0.4"></div>
+                            <!--end::layer-->
+                        </div>
+                        <!--end::Overlay-->
+                        <!--begin::Heading-->
+                        <div class="position-absolute text-white mb-8 ms-10 bottom-0">
+                            <!--begin::Title-->
+                            <h3 class="text-white fs-2qx fw-bold mb-3 m"></h3>
+                            <!--end::Title-->
+                            <!--begin::Text-->
+                            <!--<div class="fs-5 fw-semibold">You sit down. You stare at your screen. The cursor blinks.</div>-->
+                            <!--end::Text-->
+                        </div>
+                        <!--end::Heading-->
+                    </div>
+                ';
+            echo $lessonList;
+        
+    }
+
     public function getSidebarTopicsStu()
     {
         $link = "$_SERVER[REQUEST_URI]";

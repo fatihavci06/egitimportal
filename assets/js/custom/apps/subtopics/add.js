@@ -10,7 +10,7 @@ var KTModalCustomersAdd = function () {
 	var handleForm = function () {
 		// Init form validation rules. For more info check the FormValidation plugin's official documentation:https://formvalidation.io/
 		validator = FormValidation.formValidation(
-			
+
 			form,
 			{
 				fields: {
@@ -79,40 +79,40 @@ var KTModalCustomersAdd = function () {
 		$(form.querySelector('[name="classes"]')).on('change', function () {
 			// Revalidate the field when an option is chosen
 			validator.revalidateField('classes');
-			
-			var classChoose = $("#classes").val();
-			
 
-			  // AJAX isteği gönder
-			  $.ajax({
+			var classChoose = $("#classes").val();
+
+			// AJAX isteği gönder
+			$.ajax({
 				allowClear: true,
 				type: "POST",
 				url: "includes/select_for_lesson.inc.php",
-				data: { class: classChoose
-				 },
+				data: {
+					class: classChoose
+				},
 				dataType: "json",
-				success: function(data) {
-				  // İkinci Select2'nin içeriğini güncelle
+				success: function (data) {
+					// İkinci Select2'nin içeriğini güncelle
 
-				  if (data.length > 0) {
-					$('#lessons').select2('destroy');
-					$('#lessons').html('<option value="">Ders Yok</option>');
-					$('#lessons').select2({ data: data });
-					$('#units').select2('destroy');
-					$('#units').html('<option value="">Ünite Yok</option>');
-					$('#topics').select2('destroy');
-					$('#topics').html('<option value="">Konu Yok</option>');
-				  } else {
-					$('#classes').select2('destroy');
-					$('#lessons').select2('destroy');
-					$('#lessons').html('<option value="">Ders Yok</option>');
-					$('#units').select2('destroy');
-					$('#units').html('<option value="">Ünite Yok</option>');
-					$('#topics').select2('destroy');
-					$('#topics').html('<option value="">Konu Yok</option>');
-				  }
+					if (data.length > 0) {
+						$('#lessons').select2('destroy');
+						$('#lessons').html('<option value="">Ders Yok</option>');
+						$('#lessons').select2({ data: data });
+						$('#units').select2('destroy');
+						$('#units').html('<option value="">Ünite Yok</option>');
+						$('#topics').select2('destroy');
+						$('#topics').html('<option value="">Konu Yok</option>');
+					} else {
+						$('#classes').select2('destroy');
+						$('#lessons').select2('destroy');
+						$('#lessons').html('<option value="">Ders Yok</option>');
+						$('#units').select2('destroy');
+						$('#units').html('<option value="">Ünite Yok</option>');
+						$('#topics').select2('destroy');
+						$('#topics').html('<option value="">Konu Yok</option>');
+					}
 
-				},error: function(xhr, status, error, response) {
+				}, error: function (xhr, status, error, response) {
 					Swal.fire({
 						text: error.responseText + ' ' + xhr.responseText,
 						icon: "error",
@@ -131,43 +131,55 @@ var KTModalCustomersAdd = function () {
 					//alert(status + "0");
 
 				}
-			  });
+			});
 		});
-		
+
 
 		// Revalidate country field. For more info, plase visit the official plugin site: https://select2.org/
 		$(form.querySelector('[name="lessons"]')).on('change', function () {
 			// Revalidate the field when an option is chosen
 			validator.revalidateField('classes');
 			validator.revalidateField('lessons');
-			
+
 			var classChoose = $("#classes").val();
 
 			var lessonsChoose = $("#lessons").val();
-			
 
-			  // AJAX isteği gönder
-			  $.ajax({
+
+			// AJAX isteği gönder
+			$.ajax({
 				allowClear: true,
 				type: "POST",
 				url: "includes/select_for_unit.inc.php",
-				data: { class: classChoose,
-						lesson: lessonsChoose
-				 },
+				data: {
+					class: classChoose,
+					lesson: lessonsChoose
+				},
 				dataType: "json",
-				success: function(data) {
-				  // İkinci Select2'nin içeriğini güncelle
+				success: function (data) {
+					// İkinci Select2'nin içeriğini güncelle
 
-				  if (data.length > 0) {
-					$('#units').select2({ data: data });
-				  } else {
-					$('#units').select2('destroy');
-					$('#units').html('<option value="">Ünite Yok</option>');
-					$('#topics').select2('destroy');
-					$('#topics').html('<option value="">Konu Yok</option>');
-				  }
+					if (data.length > 0) {
+						if ($('#units').data('select2')) { // Select2'nin başlatılıp başlatılmadığını kontrol edin
+							$('#units').select2('destroy');
+						}
+						$('#units').html('<option value="">Ünite Seçiniz...</option>'); // Varsayılan yer tutucuya sıfırla
+						$('#units').select2({ data: data });
+						$('#topics').select2('destroy');
+						$('#topics').html('<option value="">Konu Yok</option>');
+						$('#sub_topics').select2('destroy');
+						$('#sub_topics').html('<option value="">Alt Konu Yok</option>');
+					} else {
+						$('#lessons').select2('destroy');
+						$('#units').select2('destroy');
+						$('#units').html('<option value="">Ünite Yok</option>');
+						$('#topics').select2('destroy');
+						$('#topics').html('<option value="">Konu Yok</option>');
+						$('#sub_topics').select2('destroy');
+						$('#sub_topics').html('<option value="">Alt Konu Yok</option>');
+					}
 
-				},error: function(xhr, status, error, response) {
+				}, error: function (xhr, status, error, response) {
 					Swal.fire({
 						text: error,
 						icon: "error",
@@ -186,7 +198,7 @@ var KTModalCustomersAdd = function () {
 					//alert(status + "0");
 
 				}
-			  });
+			});
 		});
 
 
@@ -195,35 +207,36 @@ var KTModalCustomersAdd = function () {
 			// Revalidate the field when an option is chosen
 			validator.revalidateField('classes');
 			validator.revalidateField('lessons');
-			
+
 			var classChoose = $("#classes").val();
 
 			var lessonsChoose = $("#lessons").val();
 
 			var unitsChoose = $("#units").val();
-			
 
-			  // AJAX isteği gönder
-			  $.ajax({
+
+			// AJAX isteği gönder
+			$.ajax({
 				allowClear: true,
 				type: "POST",
 				url: "includes/select_for_topic.inc.php",
-				data: { class: classChoose,
-						lesson: lessonsChoose,
-						unit: unitsChoose
-				 },
+				data: {
+					class: classChoose,
+					lesson: lessonsChoose,
+					unit: unitsChoose
+				},
 				dataType: "json",
-				success: function(data) {
-				  // İkinci Select2'nin içeriğini güncelle
+				success: function (data) {
+					// İkinci Select2'nin içeriğini güncelle
 
-				  if (data.length > 0) {
-					$('#topics').select2({ data: data });
-				  } else {
-					$('#topics').select2('destroy');
-					$('#topics').html('<option value="">Konu Yok</option>');
-				  }
+					if (data.length > 0) {
+						$('#topics').select2({ data: data });
+					} else {
+						$('#topics').select2('destroy');
+						$('#topics').html('<option value="">Konu Yok</option>');
+					}
 
-				},error: function(xhr, status, error, response) {
+				}, error: function (xhr, status, error, response) {
 					Swal.fire({
 						text: error,
 						icon: "error",
@@ -242,7 +255,7 @@ var KTModalCustomersAdd = function () {
 					//alert(status + "0");
 
 				}
-			  });
+			});
 		});
 
 		// Action buttons
@@ -266,10 +279,6 @@ var KTModalCustomersAdd = function () {
 							const form = document.getElementById('kt_modal_add_customer_form');
 
 							var formData = new FormData(form);
-
-							const icerik = tinymce.get('content').getContent();
-
-							formData.append('icerik', icerik);
 
 							/*var name = $("#name").val();
 							var classes = $("#classes").val();
@@ -330,7 +339,7 @@ var KTModalCustomersAdd = function () {
 										});
 									}
 								},
-								error: function(xhr, status, error, response) {
+								error: function (xhr, status, error, response) {
 									Swal.fire({
 										text: "Bir sorun oldu!"/* + xhr.responseText*/,
 										icon: "error",
@@ -372,7 +381,7 @@ var KTModalCustomersAdd = function () {
 		// Public functions
 		init: function () {
 			// Elements
-			modal = new bootstrap.Modal(document.querySelector('#kt_modal_add_customer'));
+			//modal = new bootstrap.Modal(document.querySelector('#kt_modal_add_customer'));
 
 			form = document.querySelector('#kt_modal_add_customer_form');
 			submitButton = form.querySelector('#kt_modal_add_customer_submit');

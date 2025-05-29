@@ -142,6 +142,40 @@ $chooseLesson = new ShowLesson();
         </div>
         <!--end::Input group-->
 
+        <!--begin::Input group-->
+        <div class="fv-row mb-7">
+            <!--begin::Label-->
+            <label class="required fs-6 fw-semibold mb-2">Konu Başlangıç Tarihi</label>
+            <!--end::Label-->
+            <!--begin::Input-->
+            <input type="date" class="form-control form-control-solid fw-bold pe-5" placeholder="Konu Başlangıç Tarihi Seçin" name="start_date" id="start_date">
+            <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="fv-row mb-7">
+            <!--begin::Label-->
+            <label class="required fs-6 fw-semibold mb-2">Konu Bitiş Tarihi</label>
+            <!--end::Label-->
+            <!--begin::Input-->
+            <input type="date" class="form-control form-control-solid fw-bold pe-5" placeholder="Konu Bitiş Tarihi Seçin" name="end_date" id="end_date">
+            <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+
+        <!--begin::Input group-->
+        <div class="fv-row mb-7">
+            <!--begin::Label-->
+            <label class="required fs-6 fw-semibold mb-2">Konu Sırası</label>
+            <!--end::Label-->
+            <!--begin::Input-->
+            <input type="number" class="form-control form-control-solid fw-bold pe-5" placeholder="Konu Sırası Girin" name="order" id="order">
+            <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
         <!--end::Modal body-->
         <!--begin::Modal footer-->
         <div class="modal-footer flex-center">

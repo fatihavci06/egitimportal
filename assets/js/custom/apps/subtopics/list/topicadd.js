@@ -1,4 +1,4 @@
-const form = document.getElementById('chooseOne');
+/* const form = document.getElementById('chooseOne');
 const divler = document.querySelectorAll('.none-div');
 
 form.addEventListener('change', (event) => {
@@ -13,7 +13,7 @@ form.addEventListener('change', (event) => {
   if (secilenDiv) {
     secilenDiv.style.display = 'block';
   }
-});
+}); */
 
 var options = {
     selector: "#content", 

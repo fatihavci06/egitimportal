@@ -70,7 +70,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <span class="path1"></span>
                                                         <span class="path2"></span>
                                                     </i>
-                                                    <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder="Konu Ara" />
+                                                    <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder="Alt Konu Ara" />
                                                 </div>
                                                 <!--end::Search-->
                                             </div>
@@ -112,11 +112,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <th class="min-w-125px">Ünite</th>
                                                         <th class="min-w-125px">Ders</th>
                                                         <th class="min-w-125px">Sınıf</th>
+                                                        <th class="min-w-125px">Başlama Tarihi</th>
+                                                        <th class="min-w-125px">Bitiş Tarihi</th>
+                                                        <th class="min-w-125px">Sıra</th>
                                                         <th class="text-end min-w-70px">İşlemler</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="fw-semibold text-gray-600">
-                                                    <?php $topics->getTopicList(); ?>
+                                                    <?php $topics->getSubTopicList(); ?>
                                                 </tbody>
                                             </table>
                                             <!--end::Table-->

@@ -35,6 +35,27 @@ var KTModalCustomersAdd = function () {
 							}
 						}
 					},
+					'start_date': {
+						validators: {
+							notEmpty: {
+								message: 'Konu Başlangıç Tarihi zorunlu'
+							}
+						}
+					},
+					'end_date': {
+						validators: {
+							notEmpty: {
+								message: 'Konu Bitiş Tarihi zorunlu'
+							}
+						}
+					},
+					'order': {
+						validators: {
+							notEmpty: {
+								message: 'Konu Sırası zorunlu'
+							}
+						}
+					},
 					/*'content': {
 						validators: {
 							notEmpty: {
@@ -155,6 +176,10 @@ var KTModalCustomersAdd = function () {
 				  // İkinci Select2'nin içeriğini güncelle
 
 				  if (data.length > 0) {
+					if ($('#units').data('select2')) { // Select2'nin başlatılıp başlatılmadığını kontrol edin
+							$('#units').select2('destroy');
+					}
+					$('#units').html('<option value="">Ünite Seçiniz...</option>'); // Varsayılan yer tutucuya sıfırla
 					$('#units').select2({ data: data });
 				  } else {
 					$('#units').select2('destroy');

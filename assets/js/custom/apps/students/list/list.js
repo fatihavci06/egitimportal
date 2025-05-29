@@ -6,7 +6,7 @@ var KTCustomersList = function () {
     var datatable;
 
     var submitButton;
-    var filterMonth;
+    var filterStatus;
     var filterClass;
     var filterSchool;
     var table
@@ -60,7 +60,7 @@ var KTCustomersList = function () {
     // Filter Datatable
     var handleFilterDatatable = () => {
         // Select filter options
-        filterMonth = $('[data-kt-customer-table-filter="status"]');
+        filterStatus = $('[data-kt-customer-table-filter="status"]');
         filterSchool = $('[data-kt-customer-table-filter="school"]');
         filterClass = document.querySelectorAll('[data-kt-customer-table-filter="student_class"] [name="student_class"]');
         const filterButton = document.querySelector('[data-kt-customer-table-filter="filter"]');
@@ -68,7 +68,7 @@ var KTCustomersList = function () {
         // Filter datatable on submit
         filterButton.addEventListener('click', function () {
             // Get filter values
-            const monthValue = filterMonth.val();
+            const statusValue = filterStatus.val();
             const schoolValue = filterSchool.val();
             let paymentValue = '';
 
@@ -86,7 +86,7 @@ var KTCustomersList = function () {
 
             // Build filter string from filter options
 
-            const filterString = schoolValue + ' ' + monthValue + ' ' + paymentValue;
+            const filterString = schoolValue + ' ' + statusValue + ' ' + paymentValue;
 
             /* const filterString = paymentValue; */
 
@@ -237,7 +237,7 @@ var KTCustomersList = function () {
         // Reset datatable
         resetButton.addEventListener('click', function () {
             // Reset month
-            filterMonth.val(null).trigger('change');
+            filterStatus.val(null).trigger('change');
 
             // Reset payment type
             filterClass[0].checked = true;

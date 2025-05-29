@@ -183,6 +183,47 @@ class ShowAudioBook extends AudioBooks
         }
     }
 
+    public function getHeaderImageInAudioBookStu()
+    {
+        
+        $link = "$_SERVER[REQUEST_URI]";
+
+        $active_slug = htmlspecialchars(basename($link, ".php"));
+
+        $audioBookInfo = $this->getOneAudioBook($active_slug);
+
+        /* $audioBookInfo = $this->getAudioBooksList(); */
+
+        
+
+            $audioBookList = '
+                    <div class="position-relative mb-17">
+                        <!--begin::Overlay-->
+                        <div class="overlay overlay-show">
+                            <!--begin::Image-->
+                            <div class="bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-250px" style="background-image:url(\'assets/media/sesli-kitap/' . $audioBookInfo['cover_img'] . '\')"></div>
+                            <!--end::Image-->
+                            <!--begin::layer-->
+                            <div class="overlay-layer rounded bg-black" style="opacity: 0.4"></div>
+                            <!--end::layer-->
+                        </div>
+                        <!--end::Overlay-->
+                        <!--begin::Heading-->
+                        <div class="position-absolute text-white mb-8 ms-10 bottom-0">
+                            <!--begin::Title-->
+                            <h3 class="text-white fs-2qx fw-bold mb-3 m"></h3>
+                            <!--end::Title-->
+                            <!--begin::Text-->
+                            <!--<div class="fs-5 fw-semibold">You sit down. You stare at your screen. The cursor blinks.</div>-->
+                            <!--end::Text-->
+                        </div>
+                        <!--end::Heading-->
+                    </div>
+                ';
+            echo $audioBookList;
+        
+    }
+
     public function getSidebarTopicsStu()
     {
         $link = "$_SERVER[REQUEST_URI]";
@@ -396,7 +437,7 @@ class ShowAudioBook extends AudioBooks
 
         $audioBookInfo = $this->getOneAudioBook($active_slug);
 
-        foreach ($audioBookInfo as $key => $value) {
+        /* foreach ($audioBookInfo as $key => $value) { */
 
             //$youtubeID = $this->getYouTubeVideoId($value['video_url']);
 
@@ -404,15 +445,15 @@ class ShowAudioBook extends AudioBooks
                     <!--begin::Description-->
                     <div class="m-0">
                         <!--begin::Title-->
-                        <h4 class="fs-1 text-gray-800 w-bolder mb-6">Oyun İçeriği</h4>
+                        <h4 class="fs-1 text-gray-800 w-bolder mb-6">Sesli Kitap İçeriği</h4>
                         <!--end::Title-->
                         <!--begin::Text-->
-                        <p class="fw-semibold fs-4 text-gray-600 mb-2">' . $value['game_url'] . '</p>
+                        <p class="fw-semibold fs-4 text-gray-600 mb-2">' . $audioBookInfo['book_url'] . '</p>
                         <!--end::Text-->
                     </div>
                 ';
             echo $audioBookList;
-        }
+        /* } */
     }
 
     // Get AudioBooks For Topic List

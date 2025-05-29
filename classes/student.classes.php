@@ -121,9 +121,9 @@ class Student extends Dbh
 	{
 
 		if ($_SESSION['role'] == 1) {
-			$stmt = $this->connect()->prepare('SELECT users_lnp.*, classes_lnp.name AS className, classes_lnp.slug AS classSlug, users_lnp.active AS userActive, schools_lnp.name AS schoolName FROM users_lnp INNER JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id INNER JOIN schools_lnp ON users_lnp.school_id = schools_lnp.id WHERE (users_lnp.active = ? OR users_lnp.active = ?) AND users_lnp.role = ?');
+			$stmt = $this->connect()->prepare('SELECT users_lnp.*, classes_lnp.name AS className, classes_lnp.slug AS classSlug, users_lnp.active AS userActive, schools_lnp.name AS schoolName FROM users_lnp INNER JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id INNER JOIN schools_lnp ON users_lnp.school_id = schools_lnp.id WHERE (users_lnp.active = ? OR users_lnp.active = ?) AND (users_lnp.role = ? OR users_lnp.role = ?)');
 
-			if (!$stmt->execute(array("1", "0", "2"))) {
+			if (!$stmt->execute(array("1", "0", "2", "10002"))) {
 				$stmt = null;
 				exit();
 			}

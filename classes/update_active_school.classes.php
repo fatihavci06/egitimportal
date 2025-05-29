@@ -5,7 +5,7 @@ session_start();
 class UpdateActiveSchool extends Dbh
 {
 
-	protected function setSchoolActive($email)
+	protected function setSchoolPassive($email)
 	{
 
 		$pdo = $this->connect();
@@ -70,5 +70,19 @@ class UpdateActiveSchool extends Dbh
 		}
 		echo json_encode(["status" => "success", "message" => "Başarılı"]);
 		$stmt = null; */
+	}
+
+	protected function setSchoolActive($email){
+
+		$stmt = $this->connect()->prepare('UPDATE schools_lnp SET active=? WHERE email=?');
+
+		if (!$stmt->execute([1, $email])) {
+			$stmt = null;
+			header("location: ../admin.php?error=stmtfailed");
+			exit();
+		}
+		echo json_encode(["status" => "success", "message" => "Başarılı"]);
+		$stmt = null;
+
 	}
 }

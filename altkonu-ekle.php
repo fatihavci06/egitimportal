@@ -105,8 +105,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/js/custom/apps/subtopics/list/export.js"></script>
         <script src="assets/js/custom/apps/subtopics/list/list.js"></script>
         <script src="assets/js/custom/apps/subtopics/list/topicadd.js"></script>
-        <script src="assets/js/custom/apps/subtopics/add.js"></script>
-        <script src="assets/js/custom/apps/subtopics/create.js"></script>
+        <script src="assets/js/custom/apps/subtopics/add.js"></script><!-- 
+        <script src="assets/js/custom/apps/subtopics/create.js"></script> -->
         <script src="assets/js/widgets.bundle.js"></script>
         <script src="assets/js/custom/widgets.js"></script>
         <script src="assets/js/custom/apps/chat/chat.js"></script>

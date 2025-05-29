@@ -263,7 +263,7 @@ $menu1 = new ShowMenu();
                 $menu1->showMenuSchoolAdminList();
             }
             elseif ($_SESSION['role'] == 4){
-                $menu1->showMenuSchoolTeacherList();
+                $menu1->showMenuSuperAdminList();
             }
             elseif ($_SESSION['role'] == 10001){
                
