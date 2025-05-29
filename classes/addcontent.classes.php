@@ -114,6 +114,55 @@ class AddContent extends Dbh
 class GetContent extends Dbh
 {
 
+	public function getAllContents(){
+		$stmt = $this->connect()->prepare('SELECT school_content_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName, subtopics_lnp.name AS subTopicName FROM school_content_lnp LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id ORDER BY school_content_lnp.id DESC');
+
+		if (!$stmt->execute()) {
+			$stmt = null;
+			exit();
+		}
+
+		$contentData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $contentData;
+
+		$stmt = null;
+	}
+
+	// Content ID'sini slug'dan alıp çek
+
+	public function getContentIdBySlug($slug){
+		$stmt = $this->connect()->prepare('SELECT id FROM school_content_lnp WHERE school_content_lnp.slug = ?');
+
+		if (!$stmt->execute([$slug])) {
+			$stmt = null;
+			exit();
+		}
+
+		$contentData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return $contentData;
+
+		$stmt = null;
+	}
+
+	// Content ID'sine göre tüm içerikleri getirir
+
+	public function getAllContentDetailsById($id){
+		$stmt = $this->connect()->prepare('SELECT school_content_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName, subtopics_lnp.name AS subTopicName FROM school_content_lnp LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id WHERE school_content_lnp.id = ?');
+
+		if (!$stmt->execute([$id])) {
+			$stmt = null;
+			exit();
+		}
+
+		$contentData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return $contentData;
+
+		$stmt = null;
+	}
+
 	public function getContentInfoByIds($topicId, $unitId, $lessonId, $classId)
 	{
 		$stmt = $this->connect()->prepare('SELECT * FROM school_content_lnp WHERE topic_id = ? AND unit_id = ? AND lesson_id = ? AND class_id = ? AND subtopic_id = ?');

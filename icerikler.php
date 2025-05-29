@@ -5,9 +5,9 @@ session_start();
 define('GUARD', true);
 if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 4)) {
     include_once "classes/dbh.classes.php";
-    include "classes/topics.classes.php";
-    include "classes/topics-view.classes.php";
-    $topics = new ShowSubTopic();
+    include "classes/addcontent.classes.php";
+    include "classes/content-view.classes.php";
+    $contents = new ShowContents();
     include_once "views/pages-head.php";
 ?>
     <!--end::Head-->
@@ -70,7 +70,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <span class="path1"></span>
                                                         <span class="path2"></span>
                                                     </i>
-                                                    <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder="Alt Konu Ara" />
+                                                    <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder="İçerik Ara" />
                                                 </div>
                                                 <!--end::Search-->
                                             </div>
@@ -80,7 +80,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <!--begin::Toolbar-->
                                                 <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
                                                     <!--begin::Add school-->
-                                                    <a href="altkonu-ekle"><button type="button" class="btn btn-primary btn-sm">Alt Konu Ekle</button></a>
+                                                    <a href="icerik-ekle"><button type="button" class="btn btn-primary btn-sm">İçerik Ekle</button></a>
                                                     <!--end::Add school-->
                                                 </div>
                                                 <!--end::Toolbar-->
@@ -107,19 +107,17 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                 <input class="form-check-input" type="checkbox" data-kt-check="true" data-kt-check-target="#kt_customers_table .form-check-input" value="1" />
                                                             </div>
                                                         </th>
+                                                        <th class="min-w-125px">İçerik</th>
                                                         <th class="min-w-125px">Alt Konu</th>
                                                         <th class="min-w-125px">Konu</th>
                                                         <th class="min-w-125px">Ünite</th>
                                                         <th class="min-w-125px">Ders</th>
                                                         <th class="min-w-125px">Sınıf</th>
-                                                        <th class="min-w-125px">Başlama Tarihi</th>
-                                                        <th class="min-w-125px">Bitiş Tarihi</th>
-                                                        <th class="min-w-125px">Sıra</th>
                                                         <th class="text-end min-w-70px">İşlemler</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="fw-semibold text-gray-600">
-                                                    <?php $topics->getSubTopicList(); ?>
+                                                    <?php $contents->getContentsList(); ?>
                                                 </tbody>
                                             </table>
                                             <!--end::Table-->
@@ -173,9 +171,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
         <!--end::Vendors Javascript-->
         <!--begin::Custom Javascript(used for this page only)-->
-        <script src="assets/js/custom/apps/subtopics/list/export.js"></script>
-        <script src="assets/js/custom/apps/subtopics/list/list.js"></script>
-        <script src="assets/js/custom/apps/subtopics/add.js"></script>
+        <script src="assets/js/custom/apps/contents/list/export.js"></script>
+        <script src="assets/js/custom/apps/contents/list/list.js"></script>
+        <script src="assets/js/custom/apps/contents/add.js"></script>
         <script src="assets/js/widgets.bundle.js"></script>
         <script src="assets/js/custom/widgets.js"></script>
         <script src="assets/js/custom/apps/chat/chat.js"></script>
