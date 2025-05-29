@@ -21,7 +21,7 @@ class School extends Dbh {
 
 	protected function getSchoolsListPassiveInclude(){
 
-		$stmt = $this->connect()->prepare('SELECT id, name, slug, created_at, email, telephone, city FROM schools_lnp ORDER BY id ASC');
+		$stmt = $this->connect()->prepare('SELECT id, name, slug, created_at, email, telephone, city, active FROM schools_lnp ORDER BY id ASC, active DESC');
 
 		if(!$stmt->execute(array())){
 			$stmt = null;

@@ -5,12 +5,208 @@ include_once "dateformat.classes.php";
 class ShowTopic extends Topics
 {
 
+    // Update Topic
+
+    public function updateOneTopic($slug)
+    {
+
+        $chooseClass = new ShowClass();
+        $chooseLesson = new ShowLesson();
+        $topicInfo = $this->getOneTopicDetailsAdmin($slug);
+
+        $classList = $chooseClass->getClassSelectList();
+
+        foreach ($topicInfo as $value) {
+
+            if ($value['image'] == NULL) {
+                $image = 'assets/media/topics/blank-image.svg';
+            } else {
+                $image = 'assets/media/topics/' . $value['image'];
+            }
+
+            $order_no = $value['order_no'] ?? '';
+
+            $startDate = htmlspecialchars($value['start_date'] ?? '');
+            $endDate = htmlspecialchars($value['end_date'] ?? '');
+
+            $lessonList = '
+                <form class="form" action="#" id="kt_modal_add_customer_form" data-kt-redirect="konular">
+                    <!--begin::Modal header-->
+                    <div class="modal-header" id="kt_modal_add_customer_header">
+                        <!--begin::Modal title-->
+                        <h2 class="fw-bold">Konu Güncelle</h2>
+                        <!--end::Modal title-->
+                        <!--begin::Close-->
+                        <div id="kt_modal_add_customer_close" class="btn btn-icon btn-sm btn-active-icon-primary">
+                            <i class="ki-duotone ki-cross fs-1">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                        </div>
+                        <!--end::Close-->
+                    </div>
+                    <!--end::Modal header-->
+                    <!--begin::Modal body-->
+                    <div class="modal-body py-10 px-lg-17">
+                        <!--begin::Scroll-->
+                        <div class="scroll-y me-n7 pe-7" id="kt_modal_add_customer_scroll" data-kt-scroll="true"
+                            data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto"
+                            data-kt-scroll-dependencies="#kt_modal_add_customer_header"
+                            data-kt-scroll-wrappers="#kt_modal_add_customer_scroll" data-kt-scroll-offset="300px">
+                            <!--begin::Input group-->
+                            <div class="mb-7">
+                                <!--begin::Label-->
+                                <label class="fs-6 fw-semibold mb-3">
+                                    <span>Görsel</span>
+                                    <span class="ms-1" data-bs-toggle="tooltip" title="İzin verilen dosya türleri: png, jpg, jpeg.">
+                                        <i class="ki-duotone ki-information fs-7">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                            <span class="path3"></span>
+                                        </i>
+                                    </span>
+                                </label>
+                                <!--end::Label-->
+                                <!--begin::Image input wrapper-->
+                                <div class="mt-1">
+                                    <!--begin::Image placeholder-->
+                                    <style>
+                                        .image-input-placeholder {
+                                            background-image: url("assets/media/svg/files/blank-image.svg");
+                                        }
+
+                                        [data-bs-theme="dark"] .image-input-placeholder {
+                                            background-image: url("assets/media/svg/files/blank-image-dark.svg");
+                                        }
+                                    </style>
+                                    <!--end::Image placeholder-->
+                                    <!--begin::Image input-->
+                                    <div class="image-input image-input-outline image-input-placeholder image-input-empty image-input-empty"
+                                        data-kt-image-input="true">
+                                        <!--begin::Preview existing avatar-->
+                                        <div class="image-input-wrapper w-100px h-100px" style="background-image: url(\'' . $image . '\')"></div>
+                                        <!--end::Preview existing avatar-->
+                                        <!--begin::Edit-->
+                                        <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                            data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Görsel Ekle">
+                                            <i class="ki-duotone ki-pencil fs-7">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                            <!--begin::Inputs-->
+                                            <input type="file" name="photo" id="photo" accept=".png, .jpg, .jpeg, .PNG, .JPG, .JPEG" />
+                                            <input type="hidden" name="avatar_remove" />
+                                            <!--end::Inputs-->
+                                        </label>
+                                        <!--end::Edit-->
+                                        <!--begin::Cancel-->
+                                        <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                            data-kt-image-input-action="cancel" data-bs-toggle="tooltip" title="Fotoğrafı İptal Et">
+                                            <i class="ki-duotone ki-cross fs-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                        </span>
+                                        <!--end::Cancel-->
+                                        <!--begin::Remove-->
+                                        <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                            data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove avatar">
+                                            <i class="ki-duotone ki-cross fs-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                        </span>
+                                        <!--end::Remove-->
+                                    </div>
+                                    <!--end::Image input-->
+                                </div>
+                                <!--end::Image input wrapper-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="required fs-6 fw-semibold mb-2">Konu</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input type="text" id="name" class="form-control form-control-solid" value="' . $value['name'] . '"
+                                    name="name" />
+                                <input type="hidden" id="slug" name="slug" value="' . $slug . '">
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="required fs-6 fw-semibold mb-2">Kısa Açıklama</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input type="text" id="short_desc" class="form-control form-control-solid"
+                                    value="' . $value['short_desc'] . '" name="short_desc" />
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="required fs-6 fw-semibold mb-2">Konu Başlangıç Tarihi</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                    <input type="date" class="form-control form-control-solid fw-bold pe-5" value="' . $startDate . '" placeholder="Konu Başlangıç Tarihi Seçin" name="start_date" id="start_date">
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="required fs-6 fw-semibold mb-2">Konu Bitiş Tarihi</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                    <input type="date" class="form-control form-control-solid fw-bold pe-5" value="' . $endDate . '" placeholder="Konu Bitiş Tarihi Seçin" name="end_date" id="end_date">
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="required fs-6 fw-semibold mb-2">Konu Sırası</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                    <input type="number" class="form-control form-control-solid fw-bold pe-5" value=' . $order_no . ' placeholder="Konu Sırası Girin" name="order" id="order">
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--end::Scroll-->
+                        </div>
+                        <!--end::Modal body-->
+                        <!--begin::Modal footer-->
+                        <div class="modal-footer flex-center">
+                            <!--begin::Button-->
+                            <button type="reset" id="kt_modal_add_customer_cancel" class="btn btn-light btn-sm me-3">İptal</button>
+                            <!--end::Button-->
+                            <!--begin::Button-->
+                            <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary btn-sm">
+                                <span class="indicator-label">Gönder</span>
+                                <span class="indicator-progress">Lütfen Bekleyin...
+                                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                            </button>
+                            <!--end::Button-->
+                        </div>
+                        <!--end::Modal footer-->
+                </form>
+                ';
+        }
+        echo $lessonList;
+    }
+
     // Get Topic List
 
     public function getTopicList()
     {
 
         $topicInfo = $this->getTopicsList();
+
+        $dateFormat = new DateFormat();
 
         foreach ($topicInfo as $key => $value) {
 
@@ -22,7 +218,7 @@ class ShowTopic extends Topics
                             </div>
                         </td>
                         <td>
-                            <a href="#" class="text-gray-800 text-hover-primary mb-1">' . $value['topicName'] . '</a>
+                            <a href="./konu-detay/' . $value['topicSlug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['topicName'] . '</a>
                         </td>
                         <td>
                             ' . $value['unitName'] . '
@@ -33,6 +229,15 @@ class ShowTopic extends Topics
                         <td>
                             ' . $value['className'] . '
                         </td>
+                        <td>
+                            ' . $dateFormat->changeDate($value['topicStartDate']) . '
+                        </td>
+                        <td>
+                            ' . $dateFormat->changeDate($value['topicEndDate']) . '
+                        </td>
+                        <td>
+                            ' . $value['topicOrder'] . '
+                        </td>
                         <td class="text-end">
                             <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
@@ -42,7 +247,7 @@ class ShowTopic extends Topics
                                 data-kt-menu="true">
                                 <!--begin::Menu item-->
                                 <div class="menu-item px-3">
-                                    <a href="./okul-detay/' . $value['topicSlug'] . '" class="menu-link px-3">Görüntüle</a>
+                                    <a href="./konu-detay/' . $value['topicSlug'] . '" class="menu-link px-3">Görüntüle</a>
                                 </div>
                                 <!--end::Menu item-->
                                 <!--begin::Menu item-->
@@ -301,22 +506,86 @@ class ShowTopic extends Topics
         echo $lessonList;
     }
 
+    // Get Tab Titles For Topic Details Page
+
+    public function getTabTitles($slug){
+        $topicInfo = $this->getOneTopicDetailsAdmin($slug);
+        foreach ($topicInfo as $value) {
+
+            $topicId = $value['id'];
+
+            $subtopics = new SubTopics();
+
+            $getContents = new GetContent();
+
+            $subtopic = $subtopics->getSubTopicInfoByIds($topicId, $value['unit_id'], $value['lesson_id'], $value['class_id']);
+
+            $content = $getContents->getContentInfoByIds($topicId, $value['unit_id'], $value['lesson_id'], $value['class_id']);
+
+            $topicNumber = count($subtopic);
+
+            if ($topicNumber != 0) {
+                $tabText = "Alt Konu";
+            }
+
+            $contentNumber = count($content);
+
+            if ($contentNumber != 0) {
+                $tabText = "İçerik";
+            }
+        }
+
+        return $tabText;
+    }
 
     // Show Topic
 
     public function showOneTopic($slug)
     {
 
-        $topicInfo = $this->getOneTopic($slug, $_SESSION['class_id']);
+        /* $topicInfo = $this->getOneTopic($slug, $_SESSION['class_id']); */
 
+        $dateFormat = new DateFormat();
 
-        $topicList = '
+        $topicInfo = $this->getOneTopicDetailsAdmin($slug);
+
+        if (count($topicInfo) == 0) {
+            $topicList = header("Location: http://localhost/lineup_campus/404.php"); // 404 sayfasına yönlendir
+            echo $topicList;
+            return;
+        }
+
+        /* $topicList = '
                 <div class="mb-3">
-                    <h1 class="h3 d-inline align-middle">Böyle bir okul mevcut değil.</h1>
+                    <h1 class="h3 d-inline align-middle">Böyle bir konu mevcut değil.</h1>
                 </div>
-        ';
+        '; */
 
         foreach ($topicInfo as $value) {
+
+            $topicId = $value['id'];
+
+            $subtopics = new SubTopics();
+
+            $getContents = new GetContent();
+
+            $subtopic = $subtopics->getSubTopicInfoByIds($topicId, $value['unit_id'], $value['lesson_id'], $value['class_id']);
+
+            $content = $getContents->getContentInfoByIds($topicId, $value['unit_id'], $value['lesson_id'], $value['class_id']);
+
+            $topicNumber = count($subtopic);
+
+            if ($topicNumber != 0) {
+                $statNumber = $topicNumber; // Son eleman hariç say
+                $statText = "Alt Konu";
+            }
+
+            $contentNumber = count($content);
+
+            if ($contentNumber != 0) {
+                $statNumber = $contentNumber; // Son eleman hariç say
+                $statText = "İçerik";
+            }
 
             $topicList = '
                 <div class="flex-column flex-lg-row-auto w-100 w-xl-350px mb-10">
@@ -327,52 +596,31 @@ class ShowTopic extends Topics
                             <!--begin::Summary-->
                             <div class="d-flex flex-center flex-column mb-5">
                                 <!--begin::Avatar-->
-                                <!--<div class="symbol symbol-100px symbol-circle mb-7">
-                                    <img src="assets/media/avatars/300-1.jpg" alt="image" />
-                                </div>-->
+                                <div class="mb-7">
+                                    <img class="mw-100" src="assets/media/topics/' . $value['image'] . '" alt="image" />
+                                </div>
                                 <!--end::Avatar-->
                                 <!--begin::Name-->
-                                <a href="#" class="fs-3 text-gray-800 text-hover-primary fw-bold mb-1">' . $value['name'] . '</a>
+                                <p class="fs-3 text-gray-800 fw-bold mb-1">' . $value['name'] . '</p>
                                 <!--end::Name-->
                                 <!--begin::Position-->
-                                <div class="fs-5 fw-semibold text-muted mb-6">' . $value['city'] . '</div>
+                                <div class="fs-5 fw-semibold text-muted mb-6">' . $value['unitName'] . '</div>
+                                <!--end::Position-->
+                                <!--begin::Position-->
+                                <div class="fs-5 fw-semibold text-muted mb-6">' . $value['lessonName'] . '</div>
+                                <!--end::Position-->
+                                <!--begin::Position-->
+                                <div class="fs-5 fw-semibold text-muted mb-6">' . $value['className'] . '</div>
                                 <!--end::Position-->
                                 <!--begin::Info-->
                                 <div class="d-flex flex-wrap flex-center">
                                     <!--begin::Stats-->
-                                    <div class="border border-gray-300 border-dashed rounded py-3 px-3 mb-3">
-                                        <div class="fs-4 fw-bold text-gray-700">
-                                            <span class="w-75px">6,900</span>
-                                            <i class="ki-duotone ki-arrow-up fs-3 text-success">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                        </div>
-                                        <div class="fw-semibold text-muted">Earnings</div>
-                                    </div>
-                                    <!--end::Stats-->
-                                    <!--begin::Stats-->
                                     <div class="border border-gray-300 border-dashed rounded py-3 px-3 mx-4 mb-3">
                                         <div class="fs-4 fw-bold text-gray-700">
-                                            <span class="w-50px">130</span>
-                                            <i class="ki-duotone ki-arrow-down fs-3 text-danger">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
+                                            <span class="w-75px">' . $statNumber . '</span>
+                                            <i class="fa-solid fa-book-open fs-3 text-success"></i>
                                         </div>
-                                        <div class="fw-semibold text-muted">Tasks</div>
-                                    </div>
-                                    <!--end::Stats-->
-                                    <!--begin::Stats-->
-                                    <div class="border border-gray-300 border-dashed rounded py-3 px-3 mb-3">
-                                        <div class="fs-4 fw-bold text-gray-700">
-                                            <span class="w-50px">500</span>
-                                            <i class="ki-duotone ki-arrow-up fs-3 text-success">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                        </div>
-                                        <div class="fw-semibold text-muted">Hours</div>
+                                        <div class="fw-semibold text-muted">' . $statText . '</div>
                                     </div>
                                     <!--end::Stats-->
                                 </div>
@@ -386,7 +634,7 @@ class ShowTopic extends Topics
                                         <i class="ki-duotone ki-down fs-3"></i>
                                     </span>
                                 </div>
-                                <span data-bs-toggle="tooltip" data-bs-trigger="hover" title="Okul bilgilerini düzenle">
+                                <span data-bs-toggle="tooltip" data-bs-trigger="hover" title="Konu bilgilerini düzenle">
                                     <a href="#" class="btn btn-sm btn-light-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_update_customer">Düzenle</a>
                                 </span>
                             </div>
@@ -399,20 +647,20 @@ class ShowTopic extends Topics
                                     <!--<div class="badge badge-light-info d-inline">Premium user</div>-->
                                     <!--end::Badge-->
                                     <!--begin::Details item-->
-                                    <div class="fw-bold mt-5">E-posta Adresi</div>
-                                    <div class="text-gray-600">
-                                        <a href="mailto: ' . $value['email'] . '" class="text-gray-600 text-hover-primary">' . $value['email'] . '</a>
-                                    </div>
+                                    <div class="fw-bold mt-5">Kısa Açıklama</div>
+                                    <div class="text-gray-600">' . $value['short_desc'] . '</div>
                                     <!--end::Details item-->
                                     <!--begin::Details item-->
-                                    <div class="fw-bold mt-5">Okul Adresi</div>
-                                    <div class="text-gray-600">' . $value['address'] . ' ' . $value['district'] . ' ' . $value['postcode'] . ' ' . $value['city'] . '</div>
+                                    <div class="fw-bold mt-5">Konu Başlama Tarihi</div>
+                                    <div class="text-gray-600">' . $dateFormat->changeDate($value['start_date']) . '</div>
                                     <!--end::Details item-->
                                     <!--begin::Details item-->
-                                    <div class="fw-bold mt-5">Telefon Numarası</div>
-                                    <div class="text-gray-600">
-                                        <a href="tel: ' . $value['telephone'] . '" class="text-gray-600 text-hover-primary">' . $value['telephone'] . '</a>
-                                    </div>
+                                    <div class="fw-bold mt-5">Konu Bitiş Tarihi</div>
+                                    <div class="text-gray-600">' . $dateFormat->changeDate($value['end_date']) . '</div>
+                                    <!--end::Details item-->
+                                    <!--begin::Details item-->
+                                    <div class="fw-bold mt-5">Konu Sırası</div>
+                                    <div class="text-gray-600">' . $value['order_no'] . '</div>
                                     <!--end::Details item-->
                                 </div>
                             </div>
@@ -421,127 +669,13 @@ class ShowTopic extends Topics
                         <!--end::Card body-->
                     </div>
                     <!--end::Card-->
-                    <!--begin::Connected Accounts-->
-                    <div class="card mb-5 mb-xl-8">
-                        <!--begin::Card header-->
-                        <div class="card-header border-0">
-                            <div class="card-title">
-                                <h3 class="fw-bold m-0">Connected Accounts</h3>
-                            </div>
-                        </div>
-                        <!--end::Card header-->
-                        <!--begin::Card body-->
-                        <div class="card-body pt-2">
-                            <!--begin::Notice-->
-                            <div class="notice d-flex bg-light-primary rounded border-primary border border-dashed mb-9 p-6">
-                                <!--begin::Icon-->
-                                <i class="ki-duotone ki-design-1 fs-2tx text-primary me-4"></i>
-                                <!--end::Icon-->
-                                <!--begin::Wrapper-->
-                                <div class="d-flex flex-stack flex-grow-1">
-                                    <!--begin::Content-->
-                                    <div class="fw-semibold">
-                                        <div class="fs-6 text-gray-700">By connecting an account, you hereby agree to our
-                                            <a href="#" class="me-1">privacy policy</a>and
-                                            <a href="#">terms of use</a>.
-                                        </div>
-                                    </div>
-                                    <!--end::Content-->
-                                </div>
-                                <!--end::Wrapper-->
-                            </div>
-                            <!--end::Notice-->
-                            <!--begin::Items-->
-                            <div class="py-2">
-                                <!--begin::Item-->
-                                <div class="d-flex flex-stack">
-                                    <div class="d-flex">
-                                        <img src="assets/media/svg/brand-logos/google-icon.svg" class="w-30px me-6" alt="" />
-                                        <div class="d-flex flex-column">
-                                            <a href="#" class="fs-5 text-gray-900 text-hover-primary fw-bold">Google</a>
-                                            <div class="fs-6 fw-semibold text-muted">Plan properly your workflow</div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-end">
-                                        <!--begin::Switch-->
-                                        <label class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
-                                            <!--begin::Input-->
-                                            <input class="form-check-input" name="google" type="checkbox" value="1" id="kt_modal_connected_accounts_google" checked="checked" />
-                                            <!--end::Input-->
-                                            <!--begin::Label-->
-                                            <span class="form-check-label fw-semibold text-muted" for="kt_modal_connected_accounts_google"></span>
-                                            <!--end::Label-->
-                                        </label>
-                                        <!--end::Switch-->
-                                    </div>
-                                </div>
-                                <!--end::Item-->
-                                <div class="separator separator-dashed my-5"></div>
-                                <!--begin::Item-->
-                                <div class="d-flex flex-stack">
-                                    <div class="d-flex">
-                                        <img src="assets/media/svg/brand-logos/github.svg" class="w-30px me-6" alt="" />
-                                        <div class="d-flex flex-column">
-                                            <a href="#" class="fs-5 text-gray-900 text-hover-primary fw-bold">Github</a>
-                                            <div class="fs-6 fw-semibold text-muted">Keep eye on on your Repositories</div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-end">
-                                        <!--begin::Switch-->
-                                        <label class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
-                                            <!--begin::Input-->
-                                            <input class="form-check-input" name="github" type="checkbox" value="1" id="kt_modal_connected_accounts_github" checked="checked" />
-                                            <!--end::Input-->
-                                            <!--begin::Label-->
-                                            <span class="form-check-label fw-semibold text-muted" for="kt_modal_connected_accounts_github"></span>
-                                            <!--end::Label-->
-                                        </label>
-                                        <!--end::Switch-->
-                                    </div>
-                                </div>
-                                <!--end::Item-->
-                                <div class="separator separator-dashed my-5"></div>
-                                <!--begin::Item-->
-                                <div class="d-flex flex-stack">
-                                    <div class="d-flex">
-                                        <img src="assets/media/svg/brand-logos/slack-icon.svg" class="w-30px me-6" alt="" />
-                                        <div class="d-flex flex-column">
-                                            <a href="#" class="fs-5 text-gray-900 text-hover-primary fw-bold">Slack</a>
-                                            <div class="fs-6 fw-semibold text-muted">Integrate Projects Discussions</div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-end">
-                                        <!--begin::Switch-->
-                                        <label class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
-                                            <!--begin::Input-->
-                                            <input class="form-check-input" name="slack" type="checkbox" value="1" id="kt_modal_connected_accounts_slack" />
-                                            <!--end::Input-->
-                                            <!--begin::Label-->
-                                            <span class="form-check-label fw-semibold text-muted" for="kt_modal_connected_accounts_slack"></span>
-                                            <!--end::Label-->
-                                        </label>
-                                        <!--end::Switch-->
-                                    </div>
-                                </div>
-                                <!--end::Item-->
-                            </div>
-                            <!--end::Items-->
-                        </div>
-                        <!--end::Card body-->
-                        <!--begin::Card footer-->
-                        <div class="card-footer border-0 d-flex justify-content-center pt-0">
-                            <button class="btn btn-sm btn-light-primary">Save Changes</button>
-                        </div>
-                        <!--end::Card footer-->
-                    </div>
-                    <!--end::Connected Accounts-->
                 </div>
                 ';
         }
         echo $topicList;
     }
 
-    // Update Topic
+  /*   // Update Topic
 
     public function updateOneTopic($slug)
     {
@@ -769,7 +903,7 @@ class ShowTopic extends Topics
                 ';
         }
         echo $topicList;
-    }
+    } */
 
     // List of Topic
 
@@ -857,14 +991,16 @@ class ShowSubTopic extends SubTopics
 
     // Get Topic List
 
-    public function getTopicList()
+    public function getSubTopicList()
     {
 
-        $topicInfo = $this->getTopicsList();
+        $subTopicInfo = $this->getSubTopicsList();
 
-        foreach ($topicInfo as $key => $value) {
+        $dateFormat = new DateFormat();
 
-            $topicList = '
+        foreach ($subTopicInfo as $key => $value) {
+
+            $subTopicList = '
                     <tr>
                         <td>
                             <div class="form-check form-check-sm form-check-custom form-check-solid">
@@ -872,7 +1008,7 @@ class ShowSubTopic extends SubTopics
                             </div>
                         </td>
                         <td>
-                            <a href="#" class="text-gray-800 text-hover-primary mb-1">' . $value['subTopicName'] . '</a>
+                            <a href="./alt-konu-detay/' . $value['subTopicSlug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['subTopicName'] . '</a>
                         </td>
                         <td>
                             ' . $value['topicName'] . '
@@ -886,6 +1022,15 @@ class ShowSubTopic extends SubTopics
                         <td>
                             ' . $value['className'] . '
                         </td>
+                        <td>
+                            ' . $dateFormat->changeDate($value['subTopicStartDate']) . '
+                        </td>
+                        <td>
+                            ' . $dateFormat->changeDate($value['subTopicEndDate']) . '
+                        </td>
+                        <td>
+                            ' . $value['subTopicOrder'] . '
+                        </td>
                         <td class="text-end">
                             <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
@@ -895,7 +1040,7 @@ class ShowSubTopic extends SubTopics
                                 data-kt-menu="true">
                                 <!--begin::Menu item-->
                                 <div class="menu-item px-3">
-                                    <a href="./okul-detay/' . $value['subTopicSlug'] . '" class="menu-link px-3">Görüntüle</a>
+                                    <a href="./alt-konu-detay/' . $value['subTopicSlug'] . '" class="menu-link px-3">Görüntüle</a>
                                 </div>
                                 <!--end::Menu item-->
                                 <!--begin::Menu item-->
@@ -908,7 +1053,7 @@ class ShowSubTopic extends SubTopics
                         </td>
                     </tr>
                 ';
-            echo $topicList;
+            echo $subTopicList;
         }
     }
 
@@ -1257,21 +1402,38 @@ class ShowSubTopic extends SubTopics
 
     // Show Topic
 
-    public function showOneTopic($slug)
+    public function showOneSubTopic($slug)
     {
 
-        $topicInfo = $this->getOneTopic($slug);
+        $subTopicInfo = $this->getOneSubTopicDetailsAdmin($slug);
+        
+        $dateFormat = new DateFormat();
 
+        if (count($subTopicInfo) == 0) {
+            $subTopicList = header("Location: http://localhost/lineup_campus/404.php"); // 404 sayfasına yönlendir
+            echo $subTopicList;
+            return;
+        }
 
-        $topicList = '
+       /*  $topicList = '
                 <div class="mb-3">
-                    <h1 class="h3 d-inline align-middle">Böyle bir okul mevcut değil.</h1>
+                    <h1 class="h3 d-inline align-middle">Böyle bir alt konu mevcut değil.</h1>
                 </div>
-        ';
+        '; */
 
-        foreach ($topicInfo as $value) {
+        foreach ($subTopicInfo as $value) {
 
-            $topicList = '
+            $subTopicId = $value['id'];
+
+            $getContents = new GetContent();
+
+            $content = $getContents->getContentInfoByIdsUnderSubTopic($subTopicId, $value['topic_id'], $value['unit_id'], $value['lesson_id'], $value['class_id']);
+
+            $statNumber = count($content);
+
+            $statText = "İçerik";
+
+            $subTopicList = '
                 <div class="flex-column flex-lg-row-auto w-100 w-xl-350px mb-10">
                     <!--begin::Card-->
                     <div class="card mb-5 mb-xl-8">
@@ -1280,52 +1442,34 @@ class ShowSubTopic extends SubTopics
                             <!--begin::Summary-->
                             <div class="d-flex flex-center flex-column mb-5">
                                 <!--begin::Avatar-->
-                                <!--<div class="symbol symbol-100px symbol-circle mb-7">
-                                    <img src="assets/media/avatars/300-1.jpg" alt="image" />
-                                </div>-->
+                                <div class="mb-7">
+                                    <img class="mw-100" src="assets/media/topics/' . $value['image'] . '" alt="image" />
+                                </div>
                                 <!--end::Avatar-->
                                 <!--begin::Name-->
-                                <a href="#" class="fs-3 text-gray-800 text-hover-primary fw-bold mb-1">' . $value['name'] . '</a>
+                                <p class="fs-3 text-gray-800  fw-bold mb-1">' . $value['name'] . '</p>
                                 <!--end::Name-->
                                 <!--begin::Position-->
-                                <div class="fs-5 fw-semibold text-muted mb-6">' . $value['city'] . '</div>
+                                <div class="fs-5 fw-semibold text-muted mb-6">' . $value['topicName'] . '</div>
+                                <!--end::Position-->
+                                <!--begin::Position-->
+                                <div class="fs-5 fw-semibold text-muted mb-6">' . $value['unitName'] . '</div>
+                                <!--end::Position-->
+                                <!--begin::Position-->
+                                <div class="fs-5 fw-semibold text-muted mb-6">' . $value['lessonName'] . '</div>
+                                <!--end::Position-->
+                                <!--begin::Position-->
+                                <div class="fs-5 fw-semibold text-muted mb-6">' . $value['className'] . '</div>
                                 <!--end::Position-->
                                 <!--begin::Info-->
                                 <div class="d-flex flex-wrap flex-center">
                                     <!--begin::Stats-->
-                                    <div class="border border-gray-300 border-dashed rounded py-3 px-3 mb-3">
-                                        <div class="fs-4 fw-bold text-gray-700">
-                                            <span class="w-75px">6,900</span>
-                                            <i class="ki-duotone ki-arrow-up fs-3 text-success">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                        </div>
-                                        <div class="fw-semibold text-muted">Earnings</div>
-                                    </div>
-                                    <!--end::Stats-->
-                                    <!--begin::Stats-->
                                     <div class="border border-gray-300 border-dashed rounded py-3 px-3 mx-4 mb-3">
                                         <div class="fs-4 fw-bold text-gray-700">
-                                            <span class="w-50px">130</span>
-                                            <i class="ki-duotone ki-arrow-down fs-3 text-danger">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
+                                            <span class="w-75px">' . $statNumber . '</span>
+                                            <i class="fa-solid fa-book-open fs-3 text-success"></i>
                                         </div>
-                                        <div class="fw-semibold text-muted">Tasks</div>
-                                    </div>
-                                    <!--end::Stats-->
-                                    <!--begin::Stats-->
-                                    <div class="border border-gray-300 border-dashed rounded py-3 px-3 mb-3">
-                                        <div class="fs-4 fw-bold text-gray-700">
-                                            <span class="w-50px">500</span>
-                                            <i class="ki-duotone ki-arrow-up fs-3 text-success">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                        </div>
-                                        <div class="fw-semibold text-muted">Hours</div>
+                                        <div class="fw-semibold text-muted">' . $statText . '</div>
                                     </div>
                                     <!--end::Stats-->
                                 </div>
@@ -1339,7 +1483,7 @@ class ShowSubTopic extends SubTopics
                                         <i class="ki-duotone ki-down fs-3"></i>
                                     </span>
                                 </div>
-                                <span data-bs-toggle="tooltip" data-bs-trigger="hover" title="Okul bilgilerini düzenle">
+                                <span data-bs-toggle="tooltip" data-bs-trigger="hover" title="Konu bilgilerini düzenle">
                                     <a href="#" class="btn btn-sm btn-light-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_update_customer">Düzenle</a>
                                 </span>
                             </div>
@@ -1352,20 +1496,20 @@ class ShowSubTopic extends SubTopics
                                     <!--<div class="badge badge-light-info d-inline">Premium user</div>-->
                                     <!--end::Badge-->
                                     <!--begin::Details item-->
-                                    <div class="fw-bold mt-5">E-posta Adresi</div>
-                                    <div class="text-gray-600">
-                                        <a href="mailto: ' . $value['email'] . '" class="text-gray-600 text-hover-primary">' . $value['email'] . '</a>
-                                    </div>
+                                    <div class="fw-bold mt-5">Kısa Açıklama</div>
+                                    <div class="text-gray-600">' . $value['short_desc'] . '</div>
                                     <!--end::Details item-->
                                     <!--begin::Details item-->
-                                    <div class="fw-bold mt-5">Okul Adresi</div>
-                                    <div class="text-gray-600">' . $value['address'] . ' ' . $value['district'] . ' ' . $value['postcode'] . ' ' . $value['city'] . '</div>
+                                    <div class="fw-bold mt-5">Konu Başlama Tarihi</div>
+                                    <div class="text-gray-600">' . $dateFormat->changeDate($value['start_date']) . '</div>
                                     <!--end::Details item-->
                                     <!--begin::Details item-->
-                                    <div class="fw-bold mt-5">Telefon Numarası</div>
-                                    <div class="text-gray-600">
-                                        <a href="tel: ' . $value['telephone'] . '" class="text-gray-600 text-hover-primary">' . $value['telephone'] . '</a>
-                                    </div>
+                                    <div class="fw-bold mt-5">Konu Bitiş Tarihi</div>
+                                    <div class="text-gray-600">' . $dateFormat->changeDate($value['end_date']) . '</div>
+                                    <!--end::Details item-->
+                                    <!--begin::Details item-->
+                                    <div class="fw-bold mt-5">Konu Sırası</div>
+                                    <div class="text-gray-600">' . $value['order_no'] . '</div>
                                     <!--end::Details item-->
                                 </div>
                             </div>
@@ -1374,141 +1518,38 @@ class ShowSubTopic extends SubTopics
                         <!--end::Card body-->
                     </div>
                     <!--end::Card-->
-                    <!--begin::Connected Accounts-->
-                    <div class="card mb-5 mb-xl-8">
-                        <!--begin::Card header-->
-                        <div class="card-header border-0">
-                            <div class="card-title">
-                                <h3 class="fw-bold m-0">Connected Accounts</h3>
-                            </div>
-                        </div>
-                        <!--end::Card header-->
-                        <!--begin::Card body-->
-                        <div class="card-body pt-2">
-                            <!--begin::Notice-->
-                            <div class="notice d-flex bg-light-primary rounded border-primary border border-dashed mb-9 p-6">
-                                <!--begin::Icon-->
-                                <i class="ki-duotone ki-design-1 fs-2tx text-primary me-4"></i>
-                                <!--end::Icon-->
-                                <!--begin::Wrapper-->
-                                <div class="d-flex flex-stack flex-grow-1">
-                                    <!--begin::Content-->
-                                    <div class="fw-semibold">
-                                        <div class="fs-6 text-gray-700">By connecting an account, you hereby agree to our
-                                            <a href="#" class="me-1">privacy policy</a>and
-                                            <a href="#">terms of use</a>.
-                                        </div>
-                                    </div>
-                                    <!--end::Content-->
-                                </div>
-                                <!--end::Wrapper-->
-                            </div>
-                            <!--end::Notice-->
-                            <!--begin::Items-->
-                            <div class="py-2">
-                                <!--begin::Item-->
-                                <div class="d-flex flex-stack">
-                                    <div class="d-flex">
-                                        <img src="assets/media/svg/brand-logos/google-icon.svg" class="w-30px me-6" alt="" />
-                                        <div class="d-flex flex-column">
-                                            <a href="#" class="fs-5 text-gray-900 text-hover-primary fw-bold">Google</a>
-                                            <div class="fs-6 fw-semibold text-muted">Plan properly your workflow</div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-end">
-                                        <!--begin::Switch-->
-                                        <label class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
-                                            <!--begin::Input-->
-                                            <input class="form-check-input" name="google" type="checkbox" value="1" id="kt_modal_connected_accounts_google" checked="checked" />
-                                            <!--end::Input-->
-                                            <!--begin::Label-->
-                                            <span class="form-check-label fw-semibold text-muted" for="kt_modal_connected_accounts_google"></span>
-                                            <!--end::Label-->
-                                        </label>
-                                        <!--end::Switch-->
-                                    </div>
-                                </div>
-                                <!--end::Item-->
-                                <div class="separator separator-dashed my-5"></div>
-                                <!--begin::Item-->
-                                <div class="d-flex flex-stack">
-                                    <div class="d-flex">
-                                        <img src="assets/media/svg/brand-logos/github.svg" class="w-30px me-6" alt="" />
-                                        <div class="d-flex flex-column">
-                                            <a href="#" class="fs-5 text-gray-900 text-hover-primary fw-bold">Github</a>
-                                            <div class="fs-6 fw-semibold text-muted">Keep eye on on your Repositories</div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-end">
-                                        <!--begin::Switch-->
-                                        <label class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
-                                            <!--begin::Input-->
-                                            <input class="form-check-input" name="github" type="checkbox" value="1" id="kt_modal_connected_accounts_github" checked="checked" />
-                                            <!--end::Input-->
-                                            <!--begin::Label-->
-                                            <span class="form-check-label fw-semibold text-muted" for="kt_modal_connected_accounts_github"></span>
-                                            <!--end::Label-->
-                                        </label>
-                                        <!--end::Switch-->
-                                    </div>
-                                </div>
-                                <!--end::Item-->
-                                <div class="separator separator-dashed my-5"></div>
-                                <!--begin::Item-->
-                                <div class="d-flex flex-stack">
-                                    <div class="d-flex">
-                                        <img src="assets/media/svg/brand-logos/slack-icon.svg" class="w-30px me-6" alt="" />
-                                        <div class="d-flex flex-column">
-                                            <a href="#" class="fs-5 text-gray-900 text-hover-primary fw-bold">Slack</a>
-                                            <div class="fs-6 fw-semibold text-muted">Integrate Projects Discussions</div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-end">
-                                        <!--begin::Switch-->
-                                        <label class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
-                                            <!--begin::Input-->
-                                            <input class="form-check-input" name="slack" type="checkbox" value="1" id="kt_modal_connected_accounts_slack" />
-                                            <!--end::Input-->
-                                            <!--begin::Label-->
-                                            <span class="form-check-label fw-semibold text-muted" for="kt_modal_connected_accounts_slack"></span>
-                                            <!--end::Label-->
-                                        </label>
-                                        <!--end::Switch-->
-                                    </div>
-                                </div>
-                                <!--end::Item-->
-                            </div>
-                            <!--end::Items-->
-                        </div>
-                        <!--end::Card body-->
-                        <!--begin::Card footer-->
-                        <div class="card-footer border-0 d-flex justify-content-center pt-0">
-                            <button class="btn btn-sm btn-light-primary">Save Changes</button>
-                        </div>
-                        <!--end::Card footer-->
-                    </div>
-                    <!--end::Connected Accounts-->
                 </div>
                 ';
         }
-        echo $topicList;
+        echo $subTopicList;
     }
 
-    // Update Topic
+    // Update SubTopic
 
-    public function updateOneTopic($slug)
+    public function updateOneSubTopic($slug)
     {
 
-        $topicInfo = $this->getOneTopic($slug);
+        $subTopicInfo = $this->getOneSubTopicDetailsAdmin($slug);
 
-        foreach ($topicInfo as $value) {
+        foreach ($subTopicInfo as $value) {
 
-            $topicList = '
-                <form class="form" action="#" id="kt_modal_update_customer_form" data-kt-redirect="okullar">
+            if ($value['image'] == NULL) {
+                $image = 'assets/media/topics/blank-image.svg';
+            } else {
+                $image = 'assets/media/topics/' . $value['image'];
+            }
+
+            $order_no = $value['order_no'] ?? '';
+
+            $startDate = htmlspecialchars($value['start_date'] ?? '');
+            $endDate = htmlspecialchars($value['end_date'] ?? '');
+
+            $subTopicList = '
+                <form class="form" action="#" id="kt_modal_update_customer_form" data-kt-redirect="alt-konular">
                     <!--begin::Modal header-->
                     <div class="modal-header" id="kt_modal_update_customer_header">
                         <!--begin::Modal title-->
-                        <h2 class="fw-bold">Okul Güncelle</h2>
+                        <h2 class="fw-bold">Alt Konu Güncelle</h2>
                         <!--end::Modal title-->
                         <!--begin::Close-->
                         <div id="kt_modal_update_customer_close" class="btn btn-icon btn-sm btn-active-icon-primary">
@@ -1523,205 +1564,154 @@ class ShowSubTopic extends SubTopics
                     <!--begin::Modal body-->
                     <div class="modal-body py-10 px-lg-17">
                         <!--begin::Scroll-->
-                        <div class="d-flex flex-column scroll-y me-n7 pe-7" id="kt_modal_update_customer_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_update_customer_header" data-kt-scroll-wrappers="#kt_modal_update_customer_scroll" data-kt-scroll-offset="300px">
-                            <!--begin::User toggle-->
-                            <div class="fw-bold fs-3 rotate collapsible mb-7" data-bs-toggle="collapse" href="#kt_modal_update_customer_user_info" role="button" aria-expanded="false" aria-controls="kt_modal_update_customer_user_info">Okul Bilgileri
-                                <span class="ms-2 rotate-180">
-                                    <i class="ki-duotone ki-down fs-3"></i>
-                                </span>
+                        <div class="scroll-y me-n7 pe-7" id="kt_modal_add_customer_scroll" data-kt-scroll="true"
+                            data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto"
+                            data-kt-scroll-dependencies="#kt_modal_add_customer_header"
+                            data-kt-scroll-wrappers="#kt_modal_add_customer_scroll" data-kt-scroll-offset="300px">
+                            <!--begin::Input group-->
+                            <div class="mb-7">
+                                <!--begin::Label-->
+                                <label class="fs-6 fw-semibold mb-3">
+                                    <span>Görsel</span>
+                                    <span class="ms-1" data-bs-toggle="tooltip" title="İzin verilen dosya türleri: png, jpg, jpeg.">
+                                        <i class="ki-duotone ki-information fs-7">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                            <span class="path3"></span>
+                                        </i>
+                                    </span>
+                                </label>
+                                <!--end::Label-->
+                                <!--begin::Image input wrapper-->
+                                <div class="mt-1">
+                                    <!--begin::Image placeholder-->
+                                    <style>
+                                        .image-input-placeholder {
+                                            background-image: url("assets/media/svg/files/blank-image.svg");
+                                        }
+
+                                        [data-bs-theme="dark"] .image-input-placeholder {
+                                            background-image: url("assets/media/svg/files/blank-image-dark.svg");
+                                        }
+                                    </style>
+                                    <!--end::Image placeholder-->
+                                    <!--begin::Image input-->
+                                    <div class="image-input image-input-outline image-input-placeholder image-input-empty image-input-empty"
+                                        data-kt-image-input="true">
+                                        <!--begin::Preview existing avatar-->
+                                        <div class="image-input-wrapper w-100px h-100px" style="background-image: url(\'' . $image . '\')"></div>
+                                        <!--end::Preview existing avatar-->
+                                        <!--begin::Edit-->
+                                        <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                            data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Görsel Ekle">
+                                            <i class="ki-duotone ki-pencil fs-7">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                            <!--begin::Inputs-->
+                                            <input type="file" name="photo" id="photo" accept=".png, .jpg, .jpeg, .PNG, .JPG, .JPEG" />
+                                            <input type="hidden" name="avatar_remove" />
+                                            <!--end::Inputs-->
+                                        </label>
+                                        <!--end::Edit-->
+                                        <!--begin::Cancel-->
+                                        <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                            data-kt-image-input-action="cancel" data-bs-toggle="tooltip" title="Fotoğrafı İptal Et">
+                                            <i class="ki-duotone ki-cross fs-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                        </span>
+                                        <!--end::Cancel-->
+                                        <!--begin::Remove-->
+                                        <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                            data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove avatar">
+                                            <i class="ki-duotone ki-cross fs-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                        </span>
+                                        <!--end::Remove-->
+                                    </div>
+                                    <!--end::Image input-->
+                                </div>
+                                <!--end::Image input wrapper-->
                             </div>
-                            <!--end::User toggle-->
-                            <!--begin::User form-->
-                            <div id="kt_modal_update_customer_user_info" class="collapse show">
+                            <!--end::Input group-->
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
-                                <label class="required fs-6 fw-semibold mb-2">Okul Adı</label>
+                                <label class="required fs-6 fw-semibold mb-2">Alt Konu</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <input type="text" id="name" class="form-control form-control-solid" value="' . $value['name'] . '" name="name" />
-                                    <input type="hidden" name="old_slug" id="old_slug" value="' . $value['slug'] . '" />
+                                <input type="text" id="name" class="form-control form-control-solid" value="' . $value['name'] . '"
+                                    name="name" />
+                                <input type="hidden" id="slug" name="slug" value="' . $slug . '">
                                 <!--end::Input-->
                             </div>
-
                             <!--end::Input group-->
-                            <div id="kt_modal_add_customer_billing_info" class="collapse show">
-                                <!--begin::Input group-->
-                                <div class="d-flex flex-column mb-7 fv-row">
-                                    <!--begin::Label-->
-                                    <label class="required fs-6 fw-semibold mb-2">Adres</label>
-                                    <!--end::Label-->
-                                    <!--begin::Input-->
-                                    <input class="form-control form-control-solid" name="address" id="address" value="' . $value['address'] . '" />
-                                    <!--end::Input-->
-                                </div>
-                                <!--begin::Input group-->
-                                <div class="row g-9 mb-7">
-                                    <!--begin::Col-->
-                                    <div class="col-md-6 fv-row">
-                                        <!--begin::Label-->
-                                        <label class="required fs-6 fw-semibold mb-2">İlçe</label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <input class="form-control form-control-solid" name="district" id="district" value="' . $value['district'] . '" />
-                                        <!--end::Input-->
-                                    </div>
-                                    <!--end::Col-->
-                                    <!--begin::Col-->
-                                    <div class="col-md-6 fv-row">
-                                        <!--begin::Label-->
-                                        <label class="fs-6 fw-semibold mb-2">Posta Kodu</label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <input class="form-control form-control-solid" name="postcode" id="postcode" value="' . $value['postcode'] . '" />
-                                        <!--end::Input-->
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <!--end::Input group-->
-                                <!--begin::Input group-->
-                                <div class="d-flex flex-column mb-7 fv-row">
-                                    <!--begin::Label-->
-                                    <label class="fs-6 fw-semibold mb-2">
-                                        <span class="required">Şehir</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Input-->
-                                    <select id="city" name="city" aria-label="Sehir Seçiniz" data-control="select2" data-dropdown-parent="#kt_modal_update_customer"
-                                        class="form-select form-select-solid fw-bold">
-                                        <option value="' . $value['city'] . '">' . $value['city'] . '</option>
-                                        <option value="Adana">Adana</option>
-                                        <option value="Adıyaman">Adıyaman</option>
-                                        <option value="Afyonkarahisar">Afyonkarahisar</option>
-                                        <option value="Ağrı">Ağrı</option>
-                                        <option value="Amasya">Amasya</option>
-                                        <option value="Ankara">Ankara</option>
-                                        <option value="Antalya">Antalya</option>
-                                        <option value="Artvin">Artvin</option>
-                                        <option value="Aydın">Aydın</option>
-                                        <option value="Balıkesir">Balıkesir</option>
-                                        <option value="Bilecik">Bilecik</option>
-                                        <option value="Bingöl">Bingöl</option>
-                                        <option value="Bitlis">Bitlis</option>
-                                        <option value="Bolu">Bolu</option>
-                                        <option value="Burdur">Burdur</option>
-                                        <option value="Bursa">Bursa</option>
-                                        <option value="Çanakkale">Çanakkale</option>
-                                        <option value="Çankırı">Çankırı</option>
-                                        <option value="Çorum">Çorum</option>
-                                        <option value="Denizli">Denizli</option>
-                                        <option value="Diyarbakır">Diyarbakır</option>
-                                        <option value="Edirne">Edirne</option>
-                                        <option value="Elazığ">Elazığ</option>
-                                        <option value="Erzincan">Erzincan</option>
-                                        <option value="Erzurum">Erzurum</option>
-                                        <option value="Eskişehir">Eskişehir</option>
-                                        <option value="Gaziantep">Gaziantep</option>
-                                        <option value="Giresun">Giresun</option>
-                                        <option value="Gümüşhane">Gümüşhane</option>
-                                        <option value="Hakkâri">Hakkâri</option>
-                                        <option value="Hatay">Hatay</option>
-                                        <option value="Isparta">Isparta</option>
-                                        <option value="Mersin">Mersin</option>
-                                        <option value="İstanbul">İstanbul</option>
-                                        <option value="İzmir">İzmir</option>
-                                        <option value="Kars">Kars</option>
-                                        <option value="Kastamonu">Kastamonu</option>
-                                        <option value="Kayseri">Kayseri</option>
-                                        <option value="Kırklareli">Kırklareli</option>
-                                        <option value="Kırşehir">Kırşehir</option>
-                                        <option value="Kocaeli">Kocaeli</option>
-                                        <option value="Konya">Konya</option>
-                                        <option value="Kütahya">Kütahya</option>
-                                        <option value="Malatya">Malatya</option>
-                                        <option value="Manisa">Manisa</option>
-                                        <option value="Kahramanmaraş">Kahramanmaraş</option>
-                                        <option value="Mardin">Mardin</option>
-                                        <option value="Muğla">Muğla</option>
-                                        <option value="Muş">Muş</option>
-                                        <option value="Nevşehir">Nevşehir</option>
-                                        <option value="Niğde">Niğde</option>
-                                        <option value="Ordu">Ordu</option>
-                                        <option value="Rize">Rize</option>
-                                        <option value="Sakarya">Sakarya</option>
-                                        <option value="Samsun">Samsun</option>
-                                        <option value="Siirt">Siirt</option>
-                                        <option value="Sinop">Sinop</option>
-                                        <option value="Sivas">Sivas</option>
-                                        <option value="Tekirdağ">Tekirdağ</option>
-                                        <option value="Tokat">Tokat</option>
-                                        <option value="Trabzon">Trabzon</option>
-                                        <option value="Tunceli">Tunceli</option>
-                                        <option value="Şanlıurfa">Şanlıurfa</option>
-                                        <option value="Uşak">Uşak</option>
-                                        <option value="Van">Van</option>
-                                        <option value="Yozgat">Yozgat</option>
-                                        <option value="Zonguldak">Zonguldak</option>
-                                        <option value="Aksaray">Aksaray</option>
-                                        <option value="Bayburt">Bayburt</option>
-                                        <option value="Karaman">Karaman</option>
-                                        <option value="Kırıkkale">Kırıkkale</option>
-                                        <option value="Batman">Batman</option>
-                                        <option value="Şırnak">Şırnak</option>
-                                        <option value="Bartın">Bartın</option>
-                                        <option value="Ardahan">Ardahan</option>
-                                        <option value="Iğdır">Iğdır</option>
-                                        <option value="Yalova">Yalova</option>
-                                        <option value="Karabük">Karabük</option>
-                                        <option value="Kilis">Kilis</option>
-                                        <option value="Osmaniye">Osmaniye</option>
-                                        <option value="Düzce">Düzce</option>
-                                    </select>
-                                    <!--end::Input-->
-                                </div>
-                                <!--end::Input group-->
-                                <!--begin::Input group-->
-                                <div class="fv-row mb-7">
-                                    <!--begin::Label-->
-                                    <label class="fs-6 fw-semibold mb-2">
-                                        <span class="required">E-posta Adresi</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <!--begin::Input-->
-                                    <input type="email" class="form-control form-control-solid" name="email" id="email" value="' . $value['email'] . '" />
-                                    <input type="hidden" name="email_old" id="email_old" value="' . $value['email'] . '" />
-                                    <!--end::Input-->
-                                </div>
-                                <!--end::Input group-->
-                                <!--begin::Input group-->
-                                <div class="fv-row mb-7">
-                                    <!--begin::Label-->
-                                    <label class="required fs-6 fw-semibold mb-2">Telefon Numarası</label>
-                                    <!--end::Label-->
-                                    <!--begin::Input-->
-                                    <input type="number" class="form-control form-control-solid" value="' . $value['telephone'] . '" id="telephone" name="telephone" />
-                                    <!--end::Input-->
-                                </div>
-                                <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="required fs-6 fw-semibold mb-2">Kısa Açıklama</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input type="text" id="short_desc" class="form-control form-control-solid"
+                                    value="' . $value['short_desc'] . '" name="short_desc" />
+                                <!--end::Input-->
                             </div>
-                            <!--end::User form-->
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="required fs-6 fw-semibold mb-2">Konu Başlangıç Tarihi</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                    <input type="date" class="form-control form-control-solid fw-bold pe-5" value="' . $startDate . '" placeholder="Alt Konu Başlangıç Tarihi Seçin" name="start_date" id="start_date">
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="required fs-6 fw-semibold mb-2">Konu Bitiş Tarihi</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                    <input type="date" class="form-control form-control-solid fw-bold pe-5" value="' . $endDate . '" placeholder="Alt Konu Bitiş Tarihi Seçin" name="end_date" id="end_date">
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="required fs-6 fw-semibold mb-2">Konu Sırası</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                    <input type="number" class="form-control form-control-solid fw-bold pe-5" value=' . $order_no . ' placeholder="Konu Sırası Girin" name="order" id="order">
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--end::Scroll-->
                         </div>
-                        <!--end::Scroll-->
-                    </div>
-                    <!--end::Modal body-->
-                    <!--begin::Modal footer-->
-                    <div class="modal-footer flex-center">
-                        <!--begin::Button-->
-                        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light btn-sm me-3">İptal</button>
-                        <!--end::Button-->
-                        <!--begin::Button-->
-                        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary btn-sm">
-                            <span class="indicator-label">Gönder</span>
-                            <span class="indicator-progress">Lütfen bekleyin...
-                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                        </button>
-                        <!--end::Button-->
-                    </div>
-                    <!--end::Modal footer-->
+                        <!--end::Modal body-->
+                        <!--begin::Modal footer-->
+                        <div class="modal-footer flex-center">
+                            <!--begin::Button-->
+                            <button type="reset" id="kt_modal_add_customer_cancel" class="btn btn-light btn-sm me-3">İptal</button>
+                            <!--end::Button-->
+                            <!--begin::Button-->
+                            <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary btn-sm">
+                                <span class="indicator-label">Gönder</span>
+                                <span class="indicator-progress">Lütfen Bekleyin...
+                                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                            </button>
+                            <!--end::Button-->
+                        </div>
+                        <!--end::Modal footer-->
                 </form>
                 ';
         }
-        echo $topicList;
+        echo $subTopicList;
     }
 
     // List of Topic
@@ -1821,6 +1811,148 @@ class ShowSubTopic extends SubTopics
                                         <!--begin::Menu item-->
                                         <div class="menu-item px-3">
                                             <a href="./alt-konu-detay/' . $value['slug'] . '" class="menu-link px-3">Görüntüle</a>
+                                        </div>
+                                        <!--end::Menu item-->
+                                        <!--begin::Menu item-->
+                                        <div class="menu-item px-3">
+                                            <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
+                                        </div>
+                                        <!--end::Menu item-->
+                                    </div>
+                                    <!--end::Menu-->
+                                </td>
+                            </tr>';
+            echo $topicData;
+        }
+    }
+    
+
+    // Get Sub Topics For Topic Details Page
+
+    public function showSubTopicsListForTopicDetail($slug){
+
+        $unitInfo = new Topics();
+
+        $unitInfo = $unitInfo->getOneTopicDetailsAdmin($slug);
+
+        $unitId = $unitInfo[0]['id'];
+
+        $topicInfo = $this->getSubTopicsByTopicIdWithDetails($unitId);
+
+        foreach ($topicInfo as $key => $value) {
+            $topicData = '<tr>
+                                <td>
+                                    <a href="./alt-konu-detay/' . $value['slug'] . '" class="text-gray-600 text-hover-primary mb-1"> ' . $value['name'] .  '</a>
+                                </td>
+                                <td>
+                                    ' . $value['lessonName'] . '</a>
+                                </td>
+                                <td>' . $value['className'] . '</td>
+                                <td>' . $value['topicName'] . '</td>
+                                <td class="pe-0 text-end">
+                                    <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
+                                        data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
+                                        <i class="ki-duotone ki-down fs-5 ms-1"></i></a>
+                                    <!--begin::Menu-->
+                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
+                                        data-kt-menu="true">
+                                        <!--begin::Menu item-->
+                                        <div class="menu-item px-3">
+                                            <a href="./alt-konu-detay/' . $value['slug'] . '" class="menu-link px-3">Görüntüle</a>
+                                        </div>
+                                        <!--end::Menu item-->
+                                        <!--begin::Menu item-->
+                                        <div class="menu-item px-3">
+                                            <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
+                                        </div>
+                                        <!--end::Menu item-->
+                                    </div>
+                                    <!--end::Menu-->
+                                </td>
+                            </tr>';
+            echo $topicData;
+        }
+    }
+
+    // Get Contents For Topic Details Page
+
+    public function showContentsListForTopicDetail($slug){
+
+        $unitInfo = new Topics();
+
+        $unitInfo = $unitInfo->getOneTopicDetailsAdmin($slug);
+
+        $unitId = $unitInfo[0]['id'];
+
+        $topicInfo = $this->getContentsByTopicIdWithDetails($unitId);
+
+        foreach ($topicInfo as $key => $value) {
+            $topicData = '<tr>
+                                <td>
+                                    <a href="./icerik-detay/' . $value['slug'] . '" class="text-gray-600 text-hover-primary mb-1"> ' . $value['title'] .  '</a>
+                                </td>
+                                <td>
+                                    ' . $value['lessonName'] . '</a>
+                                </td>
+                                <td>' . $value['className'] . '</td>
+                                <td>' . $value['topicName'] . '</td>
+                                <td class="pe-0 text-end">
+                                    <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
+                                        data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
+                                        <i class="ki-duotone ki-down fs-5 ms-1"></i></a>
+                                    <!--begin::Menu-->
+                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
+                                        data-kt-menu="true">
+                                        <!--begin::Menu item-->
+                                        <div class="menu-item px-3">
+                                            <a href="./icerik-detay/' . $value['slug'] . '" class="menu-link px-3">Görüntüle</a>
+                                        </div>
+                                        <!--end::Menu item-->
+                                        <!--begin::Menu item-->
+                                        <div class="menu-item px-3">
+                                            <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
+                                        </div>
+                                        <!--end::Menu item-->
+                                    </div>
+                                    <!--end::Menu-->
+                                </td>
+                            </tr>';
+            echo $topicData;
+        }
+    }
+
+    // Get Contents For Sub Topic Details Page
+
+    public function showContentsListForSubTopicDetail($slug){
+
+        $unitInfo = new SubTopics();
+
+        $unitInfo = $unitInfo->getOneSubTopicDetailsAdmin($slug);
+
+        $unitId = $unitInfo[0]['id'];
+
+        $topicInfo = $this->getContentsByContentIdWithDetails($unitId);
+
+        foreach ($topicInfo as $key => $value) {
+            $topicData = '<tr>
+                                <td>
+                                    <a href="./icerik-detay/' . $value['slug'] . '" class="text-gray-600 text-hover-primary mb-1"> ' . $value['title'] .  '</a>
+                                </td>
+                                <td>
+                                    ' . $value['lessonName'] . '</a>
+                                </td>
+                                <td>' . $value['className'] . '</td>
+                                <td>' . $value['topicName'] . '</td>
+                                <td class="pe-0 text-end">
+                                    <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
+                                        data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
+                                        <i class="ki-duotone ki-down fs-5 ms-1"></i></a>
+                                    <!--begin::Menu-->
+                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
+                                        data-kt-menu="true">
+                                        <!--begin::Menu item-->
+                                        <div class="menu-item px-3">
+                                            <a href="./icerik-detay/' . $value['slug'] . '" class="menu-link px-3">Görüntüle</a>
                                         </div>
                                         <!--end::Menu item-->
                                         <!--begin::Menu item-->

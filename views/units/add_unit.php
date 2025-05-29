@@ -12,7 +12,7 @@ include_once "classes/lessons-view.classes.php";
 $chooseClass = new ShowClass();
 $chooseLesson = new ShowLesson();
 
-?>	
+?>
 <div class="modal fade" id="kt_modal_add_customer" tabindex="-1" aria-hidden="true">
     <!--begin::Modal dialog-->
     <div class="modal-dialog modal-dialog-centered mw-650px">
@@ -148,11 +148,46 @@ $chooseLesson = new ShowLesson();
                             <!--end::Label-->
                             <!--begin::Input-->
                             <select id="lessons" name="lessons" aria-label="Ders Seçiniz" data-control="select2" data-placeholder="Ders Seçiniz..." class="form-select form-select-solid fw-bold">
-                                
+
                             </select>
                             <!--end::Input-->
                         </div>
                         <!--end::Input group-->
+
+                        <!--begin::Input group-->
+                        <div class="fv-row mb-7">
+                            <!--begin::Label-->
+                            <label class="required fs-6 fw-semibold mb-2">Ünite Başlangıç Tarihi</label>
+                            <!--end::Label-->
+                            <!--begin::Input-->
+                            <input type="date" class="form-control form-control-solid fw-bold pe-5" placeholder="Ünite Başlangıç Tarihi Seçin" name="unit_start_date" id="unit_start_date">
+                            <!--end::Input-->
+                        </div>
+                        <!--end::Input group-->
+
+                        <!--begin::Input group-->
+                        <div class="fv-row mb-7">
+                            <!--begin::Label-->
+                            <label class="required fs-6 fw-semibold mb-2">Ünite Bitiş Tarihi</label>
+                            <!--end::Label-->
+                            <!--begin::Input-->
+                            <input type="date" class="form-control form-control-solid fw-bold pe-5" placeholder="Ünite Bitiş Tarihi Seçin" name="unit_end_date" id="unit_end_date">
+                            <!--end::Input-->
+                        </div>
+                        <!--end::Input group-->
+
+
+                        <!--begin::Input group-->
+                        <div class="fv-row mb-7">
+                            <!--begin::Label-->
+                            <label class="required fs-6 fw-semibold mb-2">Ünite Sırası</label>
+                            <!--end::Label-->
+                            <!--begin::Input-->
+                            <input type="number" class="form-control form-control-solid fw-bold pe-5" placeholder="Ünite Sırası Girin" name="unit_order" id="unit_order">
+                            <!--end::Input-->
+                        </div>
+                        <!--end::Input group-->
+
                         <!--end::Scroll-->
                     </div>
                     <!--end::Modal body-->

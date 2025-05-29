@@ -44,6 +44,27 @@ var KTModalCustomersAdd = function () {
 							}
 						}
 					},
+					'unit_start_date': {
+						validators: {
+							notEmpty: {
+								message: 'Ünite Başlangıç Tarihi zorunlu'
+							}
+						}
+					},
+					'unit_end_date': {
+						validators: {
+							notEmpty: {
+								message: 'Ünite Bitiş Tarihi zorunlu'
+							}
+						}
+					},
+					'unit_order': {
+						validators: {
+							notEmpty: {
+								message: 'Ünite Sırası zorunlu'
+							}
+						}
+					},
 				},
 				plugins: {
 					trigger: new FormValidation.plugins.Trigger(),

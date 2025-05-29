@@ -110,6 +110,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                                                         <th class="min-w-125px">Ünite</th>
                                                         <th class="min-w-125px">Ders</th>
                                                         <th class="min-w-125px">Sınıf</th>
+                                                        <th class="min-w-125px">Ünite Başlama Tarihi</th>
+                                                        <th class="min-w-125px">Ünite Bitiş Tarihi</th>
+                                                        <th class="min-w-125px">Sıra</th>
                                                         <th class="text-end min-w-70px">İşlemler</th>
                                                     </tr>
                                                 </thead>

@@ -65,7 +65,7 @@ ini_set('display_errors', '1');
 										<!--begin::Body-->
 										<div class="card-body p-lg-17">
 											<!--begin::Hero-->
-												<?php $games->getHeaderImageStu(); ?>
+												<?php $games->getHeaderImageInAudioBookStu(); ?>
 											<!--end::-->
 											<!--begin::Layout-->
 											<div class="d-flex flex-column flex-lg-row mb-17">
@@ -135,5 +135,5 @@ ini_set('display_errors', '1');
 
 </html>
 <?php }else{
-    header("location: index");
+    header("location: ../index");
 }

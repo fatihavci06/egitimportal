@@ -4,8 +4,8 @@
 var KTCustomersList = function () {
     // Define shared variables
     var datatable;
-    /* var filterMonth;
-     var filterPayment;*/
+    var filterStatus;
+    /*  var filterPayment;*/
     var table
 
     // Private functions
@@ -25,7 +25,7 @@ var KTCustomersList = function () {
             'order': [],
             'columnDefs': [
                 { orderable: false, targets: 0 }, // Disable ordering on column 0 (checkbox)
-                { orderable: false, targets: 6 }, // Disable ordering on column 6 (actions)
+                { orderable: false, targets: 7 }, // Disable ordering on column 7 (actions)
             ]
         });
 
@@ -47,37 +47,23 @@ var KTCustomersList = function () {
     }
 
     // Filter Datatable
-    /* var handleFilterDatatable = () => {
+    var handleFilterDatatable = () => {
          // Select filter options
-         filterMonth = $('[data-kt-customer-table-filter="month"]');
-         filterPayment = document.querySelectorAll('[data-kt-customer-table-filter="payment_type"] [name="payment_type"]');
+         filterStatus = $('[data-kt-customer-table-filter="status"]');
          const filterButton = document.querySelector('[data-kt-customer-table-filter="filter"]');
  
          // Filter datatable on submit
          filterButton.addEventListener('click', function () {
              // Get filter values
-             const monthValue = filterMonth.val();
-             let paymentValue = '';
- 
-             // Get payment value
-             filterPayment.forEach(r => {
-                 if (r.checked) {
-                     paymentValue = r.value;
-                 }
- 
-                 // Reset payment value if "All" is selected
-                 if (paymentValue === 'all') {
-                     paymentValue = '';
-                 }
-             });
+             const statusValue = filterStatus.val();
  
              // Build filter string from filter options
-             const filterString = monthValue + ' ' + paymentValue;
+             const filterString = statusValue;
  
              // Filter datatable --- official docs reference: https://datatables.net/reference/api/search()
              datatable.search(filterString).draw();
          });
-     }*/
+     }
 
     // Delete customer
     var handleDeleteRows = () => {
@@ -96,13 +82,23 @@ var KTCustomersList = function () {
                 const customerName = parent.querySelectorAll('td')[1].innerText;
                 const schoolEmail = parent.querySelectorAll('td')[3].innerText;
 
+                var activeStatus = parent.querySelectorAll('td')[6].innerText;
+
+                if (activeStatus === "Aktif") {
+                    var activeStatus = "pasif";
+                    var statusVal = 0;
+                } else {
+                    var activeStatus = "aktif";
+                    var statusVal = 1;
+                }
+
                 // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
                 Swal.fire({
-                    text: customerName + " isimli okulu pasif yapmak istediğinizden emin misiniz?",
+                    text: customerName + " isimli okulu " + activeStatus + " yapmak istediğinizden emin misiniz?",
                     icon: "warning",
                     showCancelButton: true,
                     buttonsStyling: false,
-                    confirmButtonText: "Evet, pasif yap!",
+                    confirmButtonText: "Evet, " + activeStatus + " yap!",
                     cancelButtonText: "Hayır, iptal et",
                     customClass: {
                         confirmButton: "btn fw-bold btn-danger",
@@ -115,14 +111,15 @@ var KTCustomersList = function () {
                             type: "POST",
                             url: "includes/update_active_school.inc.php",
                             data: {
-                                email: schoolEmail
+                                email: schoolEmail,
+                                statusVal: statusVal,
                             },
                             dataType: "json",
                             success: function (response) {
                                 if (response.status === "success") {
 
                                     Swal.fire({
-                                        text: customerName + " adlı okul pasif hale gelmiştir!.",
+                                        text: customerName + " adlı okul " + activeStatus + " hale gelmiştir!.",
                                         icon: "success",
                                         buttonsStyling: false,
                                         confirmButtonText: "Tamam, anladım!",
@@ -132,7 +129,8 @@ var KTCustomersList = function () {
                                     }).then(function (result) {
                                         if (result.isConfirmed) {
                                             // Remove current row
-                                            datatable.row($(parent)).remove().draw();
+                                            //datatable.row($(parent)).remove().draw();
+                                            location.reload();
                                         }
                                     });
                                 } else {
@@ -202,22 +200,19 @@ var KTCustomersList = function () {
     }
 
     // Reset Filter
-    /*var handleResetForm = () => {
+    var handleResetForm = () => {
         // Select reset button
         const resetButton = document.querySelector('[data-kt-customer-table-filter="reset"]');
 
         // Reset datatable
         resetButton.addEventListener('click', function () {
             // Reset month
-            filterMonth.val(null).trigger('change');
-
-            // Reset payment type
-            filterPayment[0].checked = true;
+            filterStatus.val(null).trigger('change');
 
             // Reset datatable --- official docs reference: https://datatables.net/reference/api/search()
             datatable.search('').draw();
         });
-    }*/
+    }
 
     // Init toggle toolbar
     var initToggleToolbar = () => {
@@ -334,9 +329,9 @@ var KTCustomersList = function () {
             initCustomerList();
             initToggleToolbar();
             handleSearchDatatable();
-            /*handleFilterDatatable();*/
+            handleFilterDatatable();
             handleDeleteRows();
-            /*handleResetForm();*/
+            handleResetForm();
         }
     }
 }();

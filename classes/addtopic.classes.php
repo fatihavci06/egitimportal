@@ -5,11 +5,44 @@ session_start();
 class AddTopic extends Dbh
 {
 
-	protected function setTopic($imgName, $slug, $name, $classes, $lessons, $units, $short_desc)
+	protected function setTopic($imgName, $slug, $name, $classes, $lessons, $units, $short_desc, $start_date, $end_date, $order)
 	{
-		$stmt = $this->connect()->prepare('INSERT INTO topics_lnp SET slug = ?, name = ?, class_id = ?, lesson_id = ?, unit_id = ?, short_desc=?, image=?');
+		$stmt = $this->connect()->prepare('INSERT INTO topics_lnp SET slug = ?, name = ?, class_id = ?, lesson_id = ?, unit_id = ?, short_desc=?, image=?, start_date=?, end_date=?, order_no=?');
 
-		if (!$stmt->execute([$slug, $name, $classes, $lessons, $units, $short_desc, $imgName])) {
+		if (!$stmt->execute([$slug, $name, $classes, $lessons, $units, $short_desc, $imgName, $start_date, $end_date, $order])) {
+			$stmt = null;
+			//header("location: ../admin.php?error=stmtfailed");
+			exit();
+		}
+		echo json_encode(["status" => "success", "message" => $name]);
+		$stmt = null;
+	}
+
+
+	public function checkSlug($slug)
+	{
+		$stmt = $this->connect()->prepare('SELECT slug FROM topics_lnp WHERE slug LIKE ? OR slug = ? ORDER BY slug ASC');
+
+		if (!$stmt->execute([$slug . '-%', $slug])) {
+			$stmt = null;
+			header("location: ../admin.php?error=stmtfailed");
+			exit();
+		}
+		$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$stmt = null;
+
+		return $result;
+	}
+}
+
+class UpdateTopic extends Dbh
+{
+
+	protected function updateTopic($imgName, $slug, $name, $short_desc, $start_date, $end_date, $order, $id)
+	{
+		$stmt = $this->connect()->prepare('UPDATE topics_lnp SET slug = ?, name = ?, short_desc=?, image=?, start_date=?, end_date=?, order_no=? WHERE id = ?');
+
+		if (!$stmt->execute([$slug, $name, $short_desc, $imgName, $start_date, $end_date, $order, $id])) {
 			$stmt = null;
 			//header("location: ../admin.php?error=stmtfailed");
 			exit();
@@ -38,22 +71,21 @@ class AddTopic extends Dbh
 class AddSubTopic extends Dbh
 {
 
-	protected function setSubTopic($imgName, $slug, $name, $classes, $lessons, $units, $topics, $short_desc, $content, $video_url, $test, $question)
+	protected function setSubTopic($imgName, $slug, $name, $classes, $lessons, $units, $topics, $short_desc, $start_date, $end_date, $order)
 	{
-		$stmt = $this->connect()->prepare('INSERT INTO subtopics_lnp SET slug = ?, name = ?, class_id = ?, lesson_id = ?, unit_id = ?, topic_id = ?, content=?, short_desc=?, video_url=?, image=?, is_test=?, is_question=?');
+		$stmt = $this->connect()->prepare('INSERT INTO subtopics_lnp SET slug = ?, name = ?, class_id = ?, lesson_id = ?, unit_id = ?, topic_id = ?, short_desc=?, image=?, start_date=?, end_date=?, order_no=?');
 
-		if (!$stmt->execute([$slug, $name, $classes, $lessons, $units, $topics, $content, $short_desc, $video_url, $imgName, $test, $question])) {
+		if (!$stmt->execute([$slug, $name, $classes, $lessons, $units, $topics, $short_desc,  $imgName, $start_date, $end_date, $order])) {
 			$stmt = null;
 			//header("location: ../admin.php?error=stmtfailed");
 			exit();
 		}
-		if ($test == 0 and $question == 0) {
-			echo json_encode(["status" => "success", "message" => $name]);
-		}
+		
+		echo json_encode(["status" => "success", "message" => $name]);
 		$stmt = null;
 	}
 
-	protected function setTest($testSorular, $joint_answers, $testcevap, $slug, $name, $last_day)
+/* 	protected function setTest($testSorular, $joint_answers, $testcevap, $slug, $name, $last_day)
 	{
 		$stmtId = $this->connect()->prepare('SELECT id FROM subtopics_lnp ORDER BY id DESC');
 		$stmtId->execute();
@@ -87,7 +119,42 @@ class AddSubTopic extends Dbh
 		}
 		echo json_encode(["status" => "success", "message" => $name]);
 		$stmt = null;
+	} */
+
+	public function checkSlug($slug)
+	{
+		$stmt = $this->connect()->prepare('SELECT slug FROM subtopics_lnp WHERE slug LIKE ? OR slug = ? ORDER BY slug ASC');
+
+		if (!$stmt->execute([$slug . '-%', $slug])) {
+			$stmt = null;
+			header("location: ../admin.php?error=stmtfailed");
+			exit();
+		}
+		$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$stmt = null;
+
+		return $result;
 	}
+}
+
+
+
+class UpdateSubTopic extends Dbh
+{
+
+	protected function updateSubTopic($imgName, $slug, $name, $short_desc, $start_date, $end_date, $order, $id)
+	{
+		$stmt = $this->connect()->prepare('UPDATE subtopics_lnp SET slug = ?, name = ?, short_desc=?, image=?, start_date=?, end_date=?, order_no=? WHERE id = ?');
+
+		if (!$stmt->execute([$slug, $name, $short_desc, $imgName, $start_date, $end_date, $order, $id])) {
+			$stmt = null;
+			//header("location: ../admin.php?error=stmtfailed");
+			exit();
+		}
+		echo json_encode(["status" => "success", "message" => $name]);
+		$stmt = null;
+	}
+
 
 	public function checkSlug($slug)
 	{

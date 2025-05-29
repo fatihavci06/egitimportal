@@ -12,8 +12,11 @@ class AddTopicContr extends AddTopic
 	private $lessons;
 	private $short_desc;
 	private $units;
+	private $start_date;
+	private $end_date;
+	private $order;
 
-	public function __construct($photoSize, $photoName, $fileTmpName, $name, $classes, $lessons, $units, $short_desc)
+	public function __construct($photoSize, $photoName, $fileTmpName, $name, $classes, $lessons, $units, $short_desc, $start_date, $end_date, $order)
 	{
 		$this->photoSize = $photoSize;
 		$this->photoName = $photoName;
@@ -23,6 +26,9 @@ class AddTopicContr extends AddTopic
 		$this->lessons = $lessons;
 		$this->units = $units;
 		$this->short_desc = $short_desc;
+		$this->start_date = $start_date;
+		$this->end_date = $end_date;
+		$this->order = $order;
 	}
 
 	public function addTopicDb()
@@ -56,7 +62,79 @@ class AddTopicContr extends AddTopic
 			$imgName = 'konuDefault.jpg';
 		}
 
-		$this->setTopic($imgName, $slug, $this->name, $this->classes, $this->lessons, $this->units, $this->short_desc);
+		$this->setTopic($imgName, $slug, $this->name, $this->classes, $this->lessons, $this->units, $this->short_desc, $this->start_date, $this->end_date, $this->order);
+	}
+}
+
+class UpdateTopicContr extends UpdateTopic
+{
+
+	private $photoSize;
+	private $photoName;
+	private $fileTmpName;
+	private $name;
+	private $short_desc;
+	private $start_date;
+	private $end_date;
+	private $order;
+	private $slug;
+
+	public function __construct($photoSize, $photoName, $fileTmpName, $name, $short_desc, $start_date, $end_date, $order, $slug)
+	{
+		$this->photoSize = $photoSize;
+		$this->photoName = $photoName;
+		$this->fileTmpName = $fileTmpName;
+		$this->name = $name;
+		$this->short_desc = $short_desc;
+		$this->start_date = $start_date;
+		$this->end_date = $end_date;
+		$this->order = $order;
+		$this->slug = $slug;
+	}
+
+	public function updateTopicDb()
+	{
+
+		$topics = new Topics();
+		$topicInfo = $topics->getOneTopicDetailsAdmin($this->slug);
+
+		if ($this->name != $topicInfo[0]['name']) {
+			$slugName = new Slug($this->name);
+			$slug = $slugName->slugify($this->name);
+
+			$slugRes = $this->checkSlug($slug);
+
+			if (count($slugRes) > 0) {
+				$ech = end($slugRes);
+
+				$output = substr($ech['slug'], -1, strrpos($ech['slug'], '-'));
+
+				if (!is_numeric($output)) {
+					$output = 1;
+				} else {
+					$output = $output + 1;
+				}
+
+				$slug = $slug . "-" . $output;
+			} else {
+				$slug = $slug;
+			}
+		} else {
+			$slug = $topicInfo[0]['slug'];
+		}
+
+
+		if ($this->fileTmpName != NULL) {
+			$imageSent = new ImageUpload();
+			$img = $imageSent->topicImage($this->photoName, $this->photoSize, $this->fileTmpName, $slug);
+			$imgName = $img['image'];
+		} else {
+			$imgName = $topicInfo[0]['image'];
+		}
+
+		$topic_id = $topicInfo[0]['id'];
+
+		$this->updateTopic($imgName, $slug, $this->name, $this->short_desc, $this->start_date, $this->end_date, $this->order, $topic_id);
 	}
 }
 
@@ -70,28 +148,13 @@ class AddSubTopicContr extends AddSubTopic
 	private $classes;
 	private $lessons;
 	private $short_desc;
-	private $content;
-	private $video_url;
 	private $units;
 	private $topics;
-	private $chooseType;
-	private $cozumlusoru;
-	private $cozumlu_cevap_a;
-	private $cozumlu_cevap_b;
-	private $cozumlu_cevap_c;
-	private $cozumlu_cevap_d;
-	private $cozumlu_testcevap;
-	private $solution;
-	private $testsoru;
-	private $cevap_a;
-	private $cevap_b;
-	private $cevap_c;
-	private $cevap_d;
-	private $testcevap;
-	private $test;
-	private $question;
+	private $start_date;
+	private $end_date;
+	private $order;
 
-	public function __construct($photoSize, $photoName, $fileTmpName, $name, $classes, $lessons, $units, $topics, $short_desc, $content, $video_url, $chooseType, $cozumlusoru, $cozumlu_cevap_a, $cozumlu_cevap_b, $cozumlu_cevap_c, $cozumlu_cevap_d, $cozumlu_testcevap, $solution, $testsoru, $cevap_a, $cevap_b, $cevap_c, $cevap_d, $testcevap, $test, $question)
+	public function __construct($photoSize, $photoName, $fileTmpName, $name, $classes, $lessons, $units, $topics, $short_desc, $start_date, $end_date, $order)
 	{
 		$this->photoSize = $photoSize;
 		$this->photoName = $photoName;
@@ -102,24 +165,9 @@ class AddSubTopicContr extends AddSubTopic
 		$this->units = $units;
 		$this->topics = $topics;
 		$this->short_desc = $short_desc;
-		$this->content = $content;
-		$this->video_url = $video_url;
-		$this->chooseType = $chooseType;
-		$this->cozumlusoru = $cozumlusoru;
-		$this->cozumlu_cevap_a = $cozumlu_cevap_a;
-		$this->cozumlu_cevap_b = $cozumlu_cevap_b;
-		$this->cozumlu_cevap_c = $cozumlu_cevap_c;
-		$this->cozumlu_cevap_d = $cozumlu_cevap_d;
-		$this->cozumlu_testcevap = $cozumlu_testcevap;
-		$this->solution = $solution;
-		$this->testsoru = $testsoru;
-		$this->cevap_a = $cevap_a;
-		$this->cevap_b = $cevap_b;
-		$this->cevap_c = $cevap_c;
-		$this->cevap_d = $cevap_d;
-		$this->testcevap = $testcevap;
-		$this->test = $test;
-		$this->question = $question;
+		$this->start_date = $start_date;
+		$this->end_date = $end_date;
+		$this->order = $order;
 	}
 
 	public function addSubTopicDb()
@@ -153,43 +201,82 @@ class AddSubTopicContr extends AddSubTopic
 			$imgName = 'konuDefault.jpg';
 		}
 
-		$this->setSubTopic($imgName, $slug, $this->name, $this->classes, $this->lessons, $this->units, $this->topics, $this->short_desc, $this->content, $this->video_url, $this->test, $this->question);
+		$this->setSubTopic($imgName, $slug, $this->name, $this->classes, $this->lessons, $this->units, $this->topics, $this->short_desc, $this->start_date, $this->end_date, $this->order);
+	}
+}
+class UpdateSubTopicContr extends UpdateSubTopic
+{
 
-		if ($this->chooseType == "test") {
-			$testSorular = implode(":/;", $this->testsoru);
+	private $photoSize;
+	private $photoName;
+	private $fileTmpName;
+	private $name;
+	private $short_desc;
+	private $start_date;
+	private $end_date;
+	private $order;
+	private $slug;
 
-			$joint_answers = array_map(function ($a, $b, $c, $d) {
-				return "$a*-*$b*-*$c*-*$d";
-			}, $this->cevap_a, $this->cevap_b, $this->cevap_c, $this->cevap_d);
+	public function __construct($photoSize, $photoName, $fileTmpName, $name, $short_desc, $start_date, $end_date, $order, $slug)
+	{
+		$this->photoSize = $photoSize;
+		$this->photoName = $photoName;
+		$this->fileTmpName = $fileTmpName;
+		$this->name = $name;
+		$this->short_desc = $short_desc;
+		$this->start_date = $start_date;
+		$this->end_date = $end_date;
+		$this->order = $order;
+		$this->slug = $slug;
+	}
 
-			$joint_answers = implode(":/;", $joint_answers);
+	public function updateSubTopicDb()
+	{
 
-			$testcevap = implode(":/;", $this->testcevap);
+		$subTopics = new SubTopics();
+		$subTopicInfo = $subTopics->getOneSubTopicDetailsAdmin($this->slug);
 
-			$last_day = "";
+		if ($this->name != $subTopicInfo[0]['name']) {
 
-			$this->setTest($testSorular, $joint_answers, $testcevap, $slug, $this->name, $last_day);
+			$slugName = new Slug($this->name);
+			$slug = $slugName->slugify($this->name);
+
+			$slugRes = $this->checkSlug($slug);
+
+			if (count($slugRes) > 0) {
+				$ech = end($slugRes);
+
+				$output = substr($ech['slug'], -1, strrpos($ech['slug'], '-'));
+
+				if (!is_numeric($output)) {
+					$output = 1;
+				} else {
+					$output = $output + 1;
+				}
+
+				$slug = $slug . "-" . $output;
+			} else {
+				$slug = $slug;
+			}
+		} else {
+			$slug = $subTopicInfo[0]['slug'];
 		}
 
-		if ($this->chooseType == "question") {
-			$cozumlusoru = implode(":/;", $this->cozumlusoru);
-
-			$joint_answers = array_map(function ($a, $b, $c, $d) {
-				return "$a*-*$b*-*$c*-*$d";
-			}, $this->cozumlu_cevap_a, $this->cozumlu_cevap_b, $this->cozumlu_cevap_c, $this->cozumlu_cevap_d);
-
-			$joint_answers = implode(":/;", $joint_answers);
-
-			$cozumlu_testcevap = implode(":/;", $this->cozumlu_testcevap);
-
-			$solution = implode(":/;", $this->solution);
-
-			$this->setS_questions($cozumlusoru, $joint_answers, $cozumlu_testcevap, $solution, $slug, $this->name);
+		if ($this->fileTmpName != NULL) {
+			$imageSent = new ImageUpload();
+			$img = $imageSent->topicImage($this->photoName, $this->photoSize, $this->fileTmpName, $slug);
+			$imgName = $img['image'];
+		} else {
+			$imgName = $subTopicInfo[0]['image'];
 		}
+
+		$subTopic_id = $subTopicInfo[0]['id'];
+
+		$this->updateSubTopic($imgName, $slug, $this->name, $this->short_desc, $this->start_date, $this->end_date, $this->order, $subTopic_id);
 	}
 }
 
-class AddTestContr extends AddSubTopic
+/* class AddTestContr extends AddSubTopic
 {
 
 	private $photoSize;
@@ -286,3 +373,4 @@ class AddTestContr extends AddSubTopic
 		$this->setTest($testSorular, $joint_answers, $testcevap, $slug, $this->name, $dbDate);
 	}
 }
+ */

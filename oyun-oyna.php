@@ -63,7 +63,7 @@
 										<!--begin::Body-->
 										<div class="card-body p-lg-17">
 											<!--begin::Hero-->
-												<?php $games->getHeaderImageStu(); ?>
+												<?php $games->getHeaderImageInGameStu(); ?>
 											<!--end::-->
 											<!--begin::Layout-->
 											<div class="d-flex flex-column flex-lg-row mb-17">
@@ -133,5 +133,5 @@
 
 </html>
 <?php }else{
-    header("location: index");
+    header("location: ../index");
 }

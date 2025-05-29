@@ -24,11 +24,21 @@ class ShowSchool extends School
     public function getSchoolList()
     {
 
-        $schoolInfo = $this->getSchoolsList();
+        $schoolInfo = $this->getSchoolsListPassiveInclude();
 
         $dateFormat = new DateFormat();
 
         foreach ($schoolInfo as $key => $value) {
+
+            if ($value['active'] == 1) {
+                $aktifArama = 'data-filter="Active"';
+                $aktifYazi = '<span class="badge badge-light-success">Aktif</span>';
+            } else {
+                $aktifArama = 'data-filter="Passive"';
+                $aktifYazi = '<span class="badge badge-light-danger">Pasif</span>';
+            }
+
+            $alter_button = $value['active'] ? "Pasif Yap" : "Aktif Yap";
 
             if ($value['id'] == 1) {
                 $passive = '';
@@ -36,7 +46,7 @@ class ShowSchool extends School
                 $passive = '
                                 <!--begin::Menu item-->
                                 <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
+                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">' . $alter_button  . '</a>
                                 </div>
                                 <!--end::Menu item-->
                                 ';
@@ -62,6 +72,9 @@ class ShowSchool extends School
                             <a href="tel:' . $value['telephone'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['telephone'] . '</a>
                         </td>
                         <td>' . $dateFormat->changeDate($value['created_at']) . '</td>
+                        <td ' . $aktifArama . ' class="text-center">
+                            ' . $aktifYazi . '
+                        </td>
                         <td class="text-end">
                             <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler

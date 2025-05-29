@@ -30,17 +30,24 @@ var KTModalCustomersAdd = function () {
 							}
 						}
 					},
-					'lessons': {
+					'unit_start_date': {
 						validators: {
 							notEmpty: {
-								message: 'Ders Seçimi zorunlu'
+								message: 'Ünite Başlangıç Tarihi zorunlu'
 							}
 						}
 					},
-					'short_desc': {
+					'unit_end_date': {
 						validators: {
 							notEmpty: {
-								message: 'Kısa Açıklama zorunlu'
+								message: 'Ünite Bitiş Tarihi zorunlu'
+							}
+						}
+					},
+					'unit_order': {
+						validators: {
+							notEmpty: {
+								message: 'Ünite Sırası zorunlu'
 							}
 						}
 					},
@@ -140,7 +147,7 @@ var KTModalCustomersAdd = function () {
 
 							$.ajax({
 								type: "POST",
-								url: "includes/addunit.inc.php",
+								url: "includes/addunit.inc.php?action=update",
 								data: formData,
 								contentType: false,
 								processData: false,
@@ -154,7 +161,7 @@ var KTModalCustomersAdd = function () {
 									if (response.status === "success") {
 
 										Swal.fire({
-											text: response.message + " adlı ünite eklenmiştir!",
+											text: response.message + " adlı ünite güncellenmiştir!",
 											icon: "success",
 											buttonsStyling: false,
 											confirmButtonText: "Tamam, anladım!",

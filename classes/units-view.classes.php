@@ -31,6 +31,15 @@ class ShowUnit extends Units
                         <td>
                             ' . $value['className'] . '
                         </td>
+                        <td>
+                            ' . $dateFormat->changeDate($value['unitStartDate']) . '
+                        </td>
+                        <td>
+                            ' . $dateFormat->changeDate($value['unitEndDate']) . '
+                        </td>
+                        <td>
+                            ' . $value['unitOrder'] . '
+                        </td>
                         <td class="text-end">
                             <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
@@ -305,6 +314,8 @@ class ShowUnit extends Units
             $topics = new Topics();
             $subtopics = new SubTopics();
 
+            $dateFormat = new DateFormat();
+
             $getTopics = $topics->getTopicsByUnitId($unitId);
 
             $getSubTopics = $subtopics->getSubTopicsByUnitId($unitId);
@@ -321,12 +332,12 @@ class ShowUnit extends Units
                             <!--begin::Summary-->
                             <div class="d-flex flex-center flex-column mb-5">
                                 <!--begin::Avatar-->
-                                <!--<div class="symbol symbol-100px symbol-circle mb-7">
-                                    <img src="assets/media/avatars/300-1.jpg" alt="image" />
-                                </div>-->
+                                <div class="mb-7">
+                                    <img class="mw-100" src="assets/media/units/' . $value['photo'] . '" alt="image" />
+                                </div>
                                 <!--end::Avatar-->
                                 <!--begin::Name-->
-                                <a href="#" class="fs-3 text-gray-800 text-hover-primary fw-bold mb-1">' . $value['name'] . '</a>
+                                <p class="fs-3 text-gray-800 fw-bold mb-1">' . $value['name'] . '</p>
                                 <!--end::Name-->
                                 <!--begin::Position-->
                                 <div class="fs-5 fw-semibold text-muted mb-6">' . $value['lessonName'] . '</div>
@@ -358,11 +369,44 @@ class ShowUnit extends Units
                                 <!--end::Info-->
                             </div>
                             <!--end::Summary-->
-                            <div class="d-flex justify-content-center flex-stack fs-4 py-3">
+                            <!--begin::Details toggle-->
+                            <div class="d-flex flex-stack fs-4 py-3">
+                                <div class="fw-bold rotate collapsible" data-bs-toggle="collapse" href="#kt_customer_view_details" role="button" aria-expanded="false" aria-controls="kt_customer_view_details">Detaylar
+                                    <span class="ms-2 rotate-180">
+                                        <i class="ki-duotone ki-down fs-3"></i>
+                                    </span>
+                                </div>
                                 <span data-bs-toggle="tooltip" data-bs-trigger="hover" title="Ünite bilgilerini düzenle">
                                     <a href="#" class="btn btn-sm btn-light-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_update_customer">Düzenle</a>
                                 </span>
                             </div>
+                            <!--end::Details toggle-->
+                            <div class="separator separator-dashed my-3"></div>
+                            <!--begin::Details content-->
+                            <div id="kt_customer_view_details" class="collapse show">
+                                <div class="py-5 fs-6">
+                                    <!--begin::Badge-->
+                                    <!--<div class="badge badge-light-info d-inline">Premium user</div>-->
+                                    <!--end::Badge-->
+                                    <!--begin::Details item-->
+                                    <div class="fw-bold mt-5">Kısa Açıklama</div>
+                                    <div class="text-gray-600">' . $value['short_desc'] . '</div>
+                                    <!--end::Details item-->
+                                    <!--begin::Details item-->
+                                    <div class="fw-bold mt-5">Ünite Başlama Tarihi</div>
+                                    <div class="text-gray-600">' . $dateFormat->changeDate($value['start_date']) . '</div>
+                                    <!--end::Details item-->
+                                    <!--begin::Details item-->
+                                    <div class="fw-bold mt-5">Ünite Bitiş Tarihi</div>
+                                    <div class="text-gray-600">' . $dateFormat->changeDate($value['end_date']) . '</div>
+                                    <!--end::Details item-->
+                                    <!--begin::Details item-->
+                                    <div class="fw-bold mt-5">Ünite Sırası</div>
+                                    <div class="text-gray-600">' . $value['order_no'] . '</div>
+                                    <!--end::Details item-->
+                                </div>
+                            </div>
+                            <!--end::Details content-->
                         </div>
                         <!--end::Card body-->
                     </div>
@@ -391,6 +435,11 @@ class ShowUnit extends Units
             } else {
                 $image = 'assets/media/units/' . $value['photo'];
             }
+
+            $order_no = $value['order_no'] ?? '';
+
+            $startDate = htmlspecialchars($value['start_date'] ?? '');
+            $endDate = htmlspecialchars($value['end_date'] ?? '');
 
             $lessonList = '
                 <form class="form" action="#" id="kt_modal_add_customer_form" data-kt-redirect="uniteler">
@@ -494,6 +543,7 @@ class ShowUnit extends Units
                                 <!--begin::Input-->
                                 <input type="text" id="name" class="form-control form-control-solid" value="' . $value['name'] . '"
                                     name="name" />
+                                <input type="hidden" id="unit_slug" name="unit_slug" value="' . $slug . '">
                                 <!--end::Input-->
                             </div>
                             <!--end::Input group-->
@@ -511,28 +561,30 @@ class ShowUnit extends Units
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
-                                <label class="required fs-6 fw-semibold mb-2">Sınıf</label>
+                                <label class="required fs-6 fw-semibold mb-2">Ünite Başlangıç Tarihi</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <select id="classes" name="classes" aria-label="Sınıf Seçiniz" data-control="select2"
-                                    data-placeholder="Sınıf Seçiniz..." class="form-select form-select-solid fw-bold">
-                                    <option value="' . $value['class_id'] . '">' . $value['className'] . '</option>
-                                    ' . $chooseClass->getClassSelectList() . '
-                                </select>
+                                    <input type="date" class="form-control form-control-solid fw-bold pe-5" value="' . $startDate . '" placeholder="Ünite Başlangıç Tarihi Seçin" name="unit_start_date" id="unit_start_date">
                                 <!--end::Input-->
                             </div>
                             <!--end::Input group-->
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
-                                <label class="required fs-6 fw-semibold mb-2">Ders</label>
+                                <label class="required fs-6 fw-semibold mb-2">Ünite Bitiş Tarihi</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <select id="lessons" name="lessons" aria-label="Ders Seçiniz" data-control="select2"
-                                    data-placeholder="Ders Seçiniz..." class="form-select form-select-solid fw-bold">
-                                    <option value="' . $value['lessonId'] . '">' . $value['lessonName'] . '</option>
-
-                                </select>
+                                    <input type="date" class="form-control form-control-solid fw-bold pe-5" value="' . $endDate . '" placeholder="Ünite Bitiş Tarihi Seçin" name="unit_end_date" id="unit_end_date">
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="required fs-6 fw-semibold mb-2">Ünite Sırası</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                    <input type="number" class="form-control form-control-solid fw-bold pe-5" value=' . $order_no . ' placeholder="Ünite Sırası Girin" name="unit_order" id="unit_order">
                                 <!--end::Input-->
                             </div>
                             <!--end::Input group-->
