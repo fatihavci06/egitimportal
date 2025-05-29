@@ -33,13 +33,13 @@ class Mailer
         $this->mail->Host = 'mail.lineupcampus.com';               // SMTP server
         $this->mail->SMTPAuth = true;                             // Enable SMTP authentication
         $this->mail->Username = 'eposta@lineupcampus.com';         // SMTP username
-        $this->mail->Password   = 'Y6RrEZgH4mwfb!x3';                 // SMTP password
+        $this->mail->Password = 'Y6RrEZgH4mwfb!x3';                 // SMTP password
         $this->mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;   // Enable TLS encryption
         $this->mail->Port = 587;                              // TCP port to connect to
         $this->mail->SMTPOptions = [
             'ssl' => [
-                'verify_peer'       => false,
-                'verify_peer_name'  => false,
+                'verify_peer' => false,
+                'verify_peer_name' => false,
                 'allow_self_signed' => true,
             ],
         ];
@@ -435,7 +435,7 @@ class Mailer
 
         return $this->send($coordinator_mail, $subject, $htmlBody, true);
     }
-    
+
     /**
      * Send a Login Information email to Parent From Add Student Page
      * 
@@ -485,6 +485,103 @@ class Mailer
 
         return $this->send($kullanici_mail, $subject, $htmlBody, true);
     }
+
+
+    /**
+     * Send a password reset email
+     * 
+     * @param string $to Recipient email
+     * @param string $username Username
+     * @param string $verificationCode Password reset link
+     * @return bool True if email was sent successfully, false otherwise
+     */
+    public function sendVerificationCodeForNewEmail($to, $username, $verificationCode)
+    {
+        $subject = "E-Posta Değiştirme Talebi";
+
+        $htmlBody = "
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset='UTF-8'>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+        <title>E-Posta Değiştirme Talebi</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .header {
+                text-align: center;
+                padding: 20px 0;
+                background-color: #f8f9fa;
+                border-bottom: 1px solid #e9ecef;
+            }
+            .content {
+                padding: 20px;
+                background-color: #fff;
+            }
+            .verification-code {
+                font-size: 24px;
+                font-weight: bold;
+                text-align: center;
+                margin: 20px 0;
+                padding: 15px;
+                background-color: #f8f9fa;
+                border-radius: 5px;
+                letter-spacing: 2px;
+            }
+            .footer {
+                margin-top: 20px;
+                padding: 20px;
+                text-align: center;
+                font-size: 12px;
+                color: #6c757d;
+                background-color: #f8f9fa;
+            }
+            .button {
+                display: inline-block;
+                padding: 10px 20px;
+                background-color: #007bff;
+                color: #fff !important;
+                text-decoration: none;
+                border-radius: 5px;
+                margin: 15px 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div class='header'>
+            <h2>E-Posta Adresinizi Değiştiriyorsunuz</h2>
+        </div>
+        
+        <div class='content'>
+            <p>Merhaba $username,</p>
+            
+            <p>E-posta adresinizi değiştirmek için aşağıdaki doğrulama kodunu kullanabilirsiniz:</p>
+            
+            <div class='verification-code'>$verificationCode</div>
+            
+            <p>Bu kod 30 dakika boyunca geçerlidir. Eğer bu talebi siz yapmadıysanız, lütfen bu e-postayı dikkate almayın.</p>
+            
+            <p>Teşekkür ederiz,</p>
+            <p>Lineup Campus Ekibi</p>
+        </div>
+        
+        <div class='footer'>
+            <p>© " . date('Y') . " Tüm hakları saklıdır.</p>
+        </div>
+    </body>
+    </html>
+    ";
+
+        return $this->send($to, $subject, $htmlBody, true);
+    }
+
 
     /**
      * Set custom SMTP configuration

@@ -98,6 +98,8 @@ class Login extends Dbh
 
 		// print($this->attempt_time);
 		// die();
+	
+		
 
 		$stmt = $this->connect()->prepare('SELECT password FROM users_lnp WHERE email = ? OR username = ?');
 
