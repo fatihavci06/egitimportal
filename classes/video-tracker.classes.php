@@ -15,14 +15,30 @@ class VideoTracker
         try {
             $stmt = $this->db->prepare("
             INSERT INTO video_timestamp_lnp (user_id, video_id, timestamp_in_seconds) 
-                VALUES (?, ?, ?)
+            VALUES (?, ?, ?)
             ON DUPLICATE KEY UPDATE 
                 timestamp_in_seconds = VALUES(timestamp_in_seconds),
+                max_timestamp = GREATEST(max_timestamp, VALUES(timestamp_in_seconds)),
                 event_time = CURRENT_TIMESTAMP;
             ");
 
             $stmt->execute([$userId, $videoId, $timestampSeconds]);
 
+            return $this->db->lastInsertId();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+    public function saveDuration($video_id, $duration)
+    {
+        try {
+            $stmt = $this->db->prepare("
+            INSERT INTO video_durations (video_id, duration) 
+            VALUES (?, ?)
+            ON DUPLICATE KEY UPDATE 
+                duration = VALUES(duration);
+            ");
+            $stmt->execute([$video_id, $duration]);
             return $this->db->lastInsertId();
         } catch (PDOException $e) {
             return false;

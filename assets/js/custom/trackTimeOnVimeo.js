@@ -86,11 +86,13 @@ function monitorVimeoPlayer() {
                 try {
                     const currentTime = await player.getCurrentTime();
                     const timestamp = Math.floor(currentTime);
-
+                    const videoLength = await player.getDuration();
+                    const duration = Math.floor(videoLength);
 
                     const data = JSON.stringify({
                         video_id: videoId,
-                        timestamp: timestamp
+                        timestamp: timestamp,
+                        duration: duration
                     });
 
                     navigator.sendBeacon('includes/track-timestamp-video.inc.php', data);
