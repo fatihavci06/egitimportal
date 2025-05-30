@@ -6,6 +6,10 @@ if (!defined('GUARD')) {
 include_once "classes/dbh.classes.php";
 include_once "classes/classes.classes.php";
 include_once "classes/classes-view.classes.php";
+include_once "classes/getsupportsubject.classes.php";
+
+$subjectInstance = new getSupportSubject();
+$subjects = $subjectInstance->getSubject();
 
 $chooseClass = new ShowClass();
 
@@ -87,9 +91,9 @@ $chooseClass = new ShowClass();
             <!--begin::Input-->
             <select id="subject" name="subject" aria-label="Konu Seçiniz" data-control="select2" data-placeholder="Konu Seçiniz..." class="form-select form-select-solid fw-bold">
                 <option value="">Konu Seçin</option>
-                <option value="1">Şikayet</option>
-                <option value="2">Öneri</option>
-                <option value="3">Soru</option>
+                <?php foreach ($subjects as $subject): ?>
+                    <option value="<?= $subject['id'] ?>"><?= $subject['name'] ?></option>
+                <?php endforeach; ?>
             </select>
             <!--end::Input-->
         </div>
