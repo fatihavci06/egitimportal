@@ -301,4 +301,80 @@ class ShowTechnicalServiceSupport extends TechnicalServiceSupport
 
         echo $details . $form . $supportList;
     }
+
+    public function getTechnicalServiceSupportSolvedList($userId)
+    {
+
+        $supportInfo = $this->getTechnicalServiceSupportSolved($userId);
+
+        $dateFormat = new DateFormat();
+
+        foreach ($supportInfo as $key => $value) {
+
+            $supportList = '
+                    <tr>
+                        <td>
+                            <a href="destek-talebi?id=' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
+                        </td>
+                        <td>
+                            ' .  $value['subjectName'] . '
+                        </td>
+                        <td>
+                            ' . $value['userName'] . ' ' . $value['userSurname'] . '
+                        </td>
+                        <td>' . $dateFormat->changeDateHour($value['created_at']) . '</td>
+                        <td class="text-end">
+                            <a href="destek-talebi?id=' . $value['slug'] . '" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
+                                data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Oku
+                                <i class="ki-duotone ki-arrow-right fs-5 ms-1">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                </i>
+                            </a>
+                            </div>
+                            <!--end::Menu-->
+                        </td>
+                    </tr>
+                ';
+            echo $supportList;
+        }
+    }
+
+    public function getTechnicalServiceSupportSolvedAdminList()
+    {
+
+        $supportInfo = $this->getTechnicalServiceSupportSolvedAdmin();
+
+        $dateFormat = new DateFormat();
+
+        foreach ($supportInfo as $key => $value) {
+
+            $supportList = '
+                    <tr>
+                        <td>
+                            <a href="destek-talebi?id=' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
+                        </td>
+                        <td>
+                            ' . $value['subjectName'] . '
+                        </td>
+                        <td>
+                            ' . $value['userName'] . ' ' . $value['userSurname'] . '
+                        </td>
+                        <td>' . $dateFormat->changeDateHour($value['created_at']) . '</td>
+                        <td class="text-end">
+                            <a href="destek-talebi?id=' . $value['slug'] . '" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
+                                data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Oku
+                                <i class="ki-duotone ki-arrow-right fs-5 ms-1">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                </i>
+                            </a>
+                            </div>
+                            <!--end::Menu-->
+                        </td>
+                    </tr>
+                ';
+            echo $supportList;
+        }
+    }
 }

@@ -226,4 +226,87 @@ class TechnicalServiceSupport extends Dbh
 
         return $result;
     }
+
+    public function getTechnicalServiceSupportSolved($userID)
+    {
+        //$stmt = $this->connect()->prepare('SELECT support_center_lnp.id, support_center_lnp.slug, support_center_lnp.subject, support_center_lnp.title, support_center_lnp.comment, support_center_lnp.image, support_center_lnp.writer, MAX(support_center_lnp.created_at) AS created_at, users_lnp.name AS userName, users_lnp.surname AS userSurname FROM support_center_lnp INNER JOIN users_lnp ON support_center_lnp.writer = users_lnp.id WHERE support_center_lnp.openedBy = ? GROUP BY support_center_lnp.slug ORDER BY support_center_lnp.created_at DESC');
+
+        $stmt = $this->connect()->prepare('SELECT
+		    dt.slug, 
+		    dt.subject, 
+		    dt.title, 
+		    dt.comment, 
+		    dt.image,
+		    dt.writer, 
+		    dt.openedBy, 
+		    dt.completed, 
+		    dt.created_at AS created_at, 
+		    dt.updated_at AS updated_at,
+			u.name AS userName,
+			u.surname AS userSurname,
+			scs.name AS subjectName,
+			scs.id AS subjectId
+			FROM
+			support_center_lnp dt
+			INNER JOIN
+			(SELECT slug, MAX(created_at) AS son_olusturma FROM support_center_lnp GROUP BY slug) AS son_talepler
+			ON dt.slug = son_talepler.slug AND dt.created_at = son_talepler.son_olusturma
+			INNER JOIN users_lnp u ON dt.writer = u.id 
+			INNER JOIN support_center_subjects_lnp scs ON scs.id = dt.subject
+			INNER JOIN support_center_subjects_lnp scs ON scs.id = dt.subject
+            INNER JOIN supportassignto_lnp st ON st.support_id = dt.id 
+            WHERE dt.completed = :completed AND assignTo = :assign_to');
+
+        if (!$stmt->execute([':assign_to' => $userID, ':completed' => 1])) {
+            $stmt = null;
+            //header("location: ../admin.php?error=stmtfailed");
+            exit();
+        }
+
+        $supportData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $supportData;
+
+        $stmt = null;
+    }
+
+    public function getTechnicalServiceSupportSolvedAdmin()
+    {
+        //$stmt = $this->connect()->prepare('SELECT support_center_lnp.id, support_center_lnp.slug, support_center_lnp.subject, support_center_lnp.title, support_center_lnp.comment, support_center_lnp.image, support_center_lnp.writer, MAX(support_center_lnp.created_at) AS created_at, users_lnp.name AS userName, users_lnp.surname AS userSurname FROM support_center_lnp INNER JOIN users_lnp ON support_center_lnp.writer = users_lnp.id WHERE support_center_lnp.openedBy = ? GROUP BY support_center_lnp.slug ORDER BY support_center_lnp.created_at DESC');
+
+        $stmt = $this->connect()->prepare('SELECT
+			dt.slug, 
+		    dt.subject, 
+		    dt.title, 
+		    dt.comment, 
+		    dt.image,
+		    dt.writer, 
+		    dt.openedBy, 
+		    dt.completed, 
+		    dt.created_at AS created_at, 
+		    dt.updated_at AS updated_at,
+			u.name AS userName,
+			u.surname AS userSurname,
+			scs.name AS subjectName,
+			scs.id AS subjectId
+			FROM support_center_lnp dt
+			INNER JOIN
+			(SELECT slug, MAX(created_at) AS son_olusturma FROM support_center_lnp GROUP BY slug) AS son_talepler
+			ON dt.slug = son_talepler.slug AND dt.created_at = son_talepler.son_olusturma
+			INNER JOIN users_lnp u ON dt.writer = u.id 
+			INNER JOIN support_center_subjects_lnp scs ON scs.id = dt.subject
+            WHERE dt.completed = :completed');
+
+        if (!$stmt->execute([':completed' => 1])) {
+            $stmt = null;
+            //header("location: ../admin.php?error=stmtfailed");
+            exit();
+        }
+
+        $supportData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $supportData;
+
+        $stmt = null;
+    }
 }

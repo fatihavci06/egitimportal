@@ -164,7 +164,7 @@ class Support extends Dbh
 			u.name AS userName,
 			u.surname AS userSurname,
 			scs.name AS subjectName,
-			scs.id AS subjectId,
+			scs.id AS subjectId
 			FROM
 			support_center_lnp dt
 			INNER JOIN
@@ -207,16 +207,13 @@ class Support extends Dbh
 			u.name AS userName,
 			u.surname AS userSurname,
 			scs.name AS subjectName,
-			scs.id AS subjectId,
-			FROM
-			support_center_lnp dt
+			scs.id AS subjectId
+			FROM support_center_lnp dt
 			INNER JOIN
 			(SELECT slug, MAX(created_at) AS son_olusturma FROM support_center_lnp GROUP BY slug) AS son_talepler
 			ON dt.slug = son_talepler.slug AND dt.created_at = son_talepler.son_olusturma
-			INNER JOIN
-			users_lnp u ON dt.writer = u.id 
-			INNER JOIN
-			support_center_subjects_lnp scs ON scs.id = dt.subject
+			INNER JOIN users_lnp u ON dt.writer = u.id 
+			INNER JOIN support_center_subjects_lnp scs ON scs.id = dt.subject
 			WHERE dt.completed =?');
 
 		if (!$stmt->execute([1])) {
