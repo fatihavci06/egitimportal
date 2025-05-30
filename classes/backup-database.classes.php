@@ -33,7 +33,6 @@ class BackupDatabase extends Dbh
 
     protected function backupDatabase()
     {
-        
         $tables = [];
         $sql = '';
         $db = $this->connect();
@@ -60,9 +59,10 @@ class BackupDatabase extends Dbh
 
             $sql .= "\n";
         }
+        
 
         header('Content-Type: application/sql');
-        header('Content-Disposition: attachment; filename="backup.sql"');
+        header('Content-Disposition: attachment; filename="backup_"'.date('Y-m-d').'".sql"');
         echo $sql;
         exit;
 
