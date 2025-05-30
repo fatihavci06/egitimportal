@@ -40,10 +40,35 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
                     <?php include_once "views/sidebar.php"; ?>
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
-                        <div class="d-flex flex-column flex-column-fluid">
+                        <div class="d-flex flex-column flex-column-fluid" <?php if (isset($_SESSION['role']) && $_SESSION['role'] != 1) echo 'style="margin-top: 150px;"'; ?>>
                             <?php include_once "views/toolbar.php"; ?>
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <div id="kt_app_content_container" class="app-container container-fluid">
+                                    <div class="card">
+                                    <!--begin::Card header-->
+                                    <div class="card-header border-0 pt-6">
+                                        <!--begin::Card title-->
+                                        <div class="card-title">
+                                        </div>
+                                        <!--begin::Card title-->
+                                        <!--begin::Card toolbar-->
+                                        <div class="card-toolbar">
+                                            <!--begin::Toolbar-->
+                                            <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
+                                                <!--begin::Add school-->
+                                               
+                                                <!--end::Add school-->
+                                            </div>
+                                            <!--end::Toolbar-->
+                                            <!--begin::Group actions-->
+                                            
+                                            <!--end::Group actions-->
+                                        </div>
+                                        <!--end::Card toolbar-->
+                                    </div>
+                                    <!--end::Card header-->
+                                    <!--begin::Card body-->
+                                    <div class="card-body pt-0">
                                     <table id="example" class="table align-middle table-row-dashed fs-6 gy-5">
                                         <thead>
                                             <tr>
@@ -61,6 +86,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <td><?= htmlspecialchars($row['end_date']) ?></td>
                                                     <td>
                                                         <?php if (isset($row['fail_count']) && $row['fail_count'] >= 3): ?>
+                                                            
                                                             <span class="badge badge-danger">Sonuç: <?= htmlspecialchars($row['score']) ?> Puan</span>
                                                         <?php elseif (isset($row['score']) && $row['score'] >= 80): ?>
                                                             <span class="badge badge-success">Sonuç: <?= htmlspecialchars($row['score']) ?> Puan</span>
@@ -72,6 +98,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             <?php endforeach; ?>
                                         </tbody>
                                     </table>
+                                    </div>
 
 
                                 </div>

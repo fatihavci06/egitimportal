@@ -74,6 +74,7 @@ try {
 
     if ($service === 'update' && $id) {
 
+       
         // Güncelleme işlemi
         $sql = "UPDATE main_school_content_lnp SET
 			roles = :roles,
@@ -105,7 +106,19 @@ try {
             ':id' => $id
         ]);
 
+        if (!empty($image_urls)) {
 
+
+
+
+            foreach ($image_urls as $index => $url) {
+                $stmtFile = $pdo->prepare("INSERT INTO main_school_primary_images (main_id, file_path) VALUES (:main_id, :file_path )");
+                $stmtFile->execute([
+                    ':main_id' => $id,
+                    ':file_path' => $url
+                ]);
+            }
+        }
 
         if (!empty($file_urls)) {
             // Eski dosyaları sil

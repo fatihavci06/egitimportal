@@ -518,12 +518,18 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     formData.append('secim', selectedType);
                     formData.append('video_url', $('#video_url').val());
                     const files = $('#file_path')[0].files;
+
                     $("textarea[name='descriptions[]']").each(function() {
                         formData.append('descriptions[]', $(this).val());
                     }); // .get() ile jQuery nesnesinden normal diziye çevir
 
 
+                    const images = $('#images')[0].files;
 
+                    // Dosyaları tek tek formData'ya ekle
+                    for (let i = 0; i < images.length; i++) {
+                        formData.append('images[]', images[i]);
+                    }
                     for (let i = 0; i < files.length; i++) {
                         formData.append('file_path[]', files[i]);
                     }

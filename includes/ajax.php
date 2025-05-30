@@ -2368,13 +2368,14 @@ WHERE t.id = :id";
         }
         break;
     case 'getTestResults':
+    try {
         $where = [];
         $params = [];
 
-       if (!empty($_POST['name'])) {
-    $where[] = "CONCAT(u.name, ' ', u.surname) LIKE :search_name";
-    $params[':search_name'] = '%' . $_POST['name'] . '%';
-}
+        if (!empty($_POST['name'])) {
+            $where[] = "CONCAT(u.name, ' ', u.surname) LIKE :search_name";
+            $params[':search_name'] = '%' . $_POST['name'] . '%';
+        }
 
         if (!empty($_POST['class_id'])) {
             $where[] = 'ug.class_id = :class_id';
@@ -2402,14 +2403,14 @@ WHERE t.id = :id";
         }
 
         $sql = "SELECT 
-            ug.test_id AS test_id,t.test_title AS test_title,
+            ug.test_id AS test_id,
+            t.test_title AS test_title,
             CONCAT(u.name, ' ', u.surname) AS name,
             ug.score,
             DATE_FORMAT(ug.created_at, '%d-%m-%Y %H:%i:%s') AS created_at
         FROM user_grades_lnp ug
         INNER JOIN users_lnp u ON u.id = ug.user_id
-        INNER JOIN tests_lnp t ON t.id = ug.test_id
-        ";
+        INNER JOIN tests_lnp t ON t.id = ug.test_id";
 
         if (count($where) > 0) {
             $sql .= ' WHERE ' . implode(' AND ', $where);
@@ -2420,7 +2421,14 @@ WHERE t.id = :id";
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         echo json_encode(['status' => 'success', 'data' => $results]);
-        break;
+    } catch (Exception $e) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Bir hata oluştu: ' . $e->getMessage()
+        ]);
+    }
+    break;
+
 
     default:
         echo json_encode(['status' => 'error', 'message' => 'Geçersiz servis']);
