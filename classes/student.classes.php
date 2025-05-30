@@ -19,7 +19,7 @@ class Student extends Dbh
 	protected function getWaitingMoneyStudent()
 	{
 
-		$stmt = $this->connect()->prepare('SELECT money_transfer_list_lnp.id, money_transfer_list_lnp.pack_id, money_transfer_list_lnp.user_id, money_transfer_list_lnp.amount, users_lnp.name, users_lnp.surname, users_lnp.identity_id, users_lnp.photo FROM money_transfer_list_lnp INNER JOIN users_lnp ON money_transfer_list_lnp.user_id = users_lnp.id WHERE money_transfer_list_lnp.status = ?');
+		$stmt = $this->connect()->prepare('SELECT money_transfer_list_lnp.id, money_transfer_list_lnp.pack_id, money_transfer_list_lnp.user_id, money_transfer_list_lnp.amount, users_lnp.name, users_lnp.surname, users_lnp.identity_id, users_lnp.photo, users_lnp.email, users_lnp.telephone FROM money_transfer_list_lnp INNER JOIN users_lnp ON money_transfer_list_lnp.user_id = users_lnp.id WHERE money_transfer_list_lnp.status = ?');
 
 		if (!$stmt->execute(array(0))) {
 			$stmt = null;
@@ -87,6 +87,23 @@ class Student extends Dbh
 	{
 
 		$stmt = $this->connect()->prepare('SELECT * FROM classes_lnp ORDER BY orderBy ASC');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $getData;
+
+		$stmt = null;
+	}
+
+	protected function getAllLessons()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM lessons_lnp ORDER BY name ASC');
 
 		if (!$stmt->execute(array())) {
 			$stmt = null;

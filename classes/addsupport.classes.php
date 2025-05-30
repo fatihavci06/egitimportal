@@ -2,7 +2,7 @@
 
 class AddSupport extends Dbh
 {
-
+	
 	protected function setSupport($imgName, $slug, $subject, $title, $comment, $userID)
 	{
 		$stmt = $this->connect()->prepare('INSERT INTO support_center_lnp SET slug = ?, subject = ?, title = ?, comment = ?, image = ?, writer = ?, openedBy = ?');
@@ -91,7 +91,7 @@ class Support extends Dbh
 		$stmt = null;
 	}
 
-	
+
 	public function getSupportAdmin()
 	{
 		//$stmt = $this->connect()->prepare('SELECT support_center_lnp.id, support_center_lnp.slug, support_center_lnp.subject, support_center_lnp.title, support_center_lnp.comment, support_center_lnp.image, support_center_lnp.writer, MAX(support_center_lnp.created_at) AS created_at, users_lnp.name AS userName, users_lnp.surname AS userSurname FROM support_center_lnp INNER JOIN users_lnp ON support_center_lnp.writer = users_lnp.id WHERE support_center_lnp.openedBy = ? GROUP BY support_center_lnp.slug ORDER BY support_center_lnp.created_at DESC');

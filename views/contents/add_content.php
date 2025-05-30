@@ -196,7 +196,7 @@ $chooseClass = new ShowClass();
             <!-- File upload input -->
             <div id="fileInput" class="mb-4" style="display:none;">
                 <label for="file_path">Dosya Yükle:</label>
-                <input type="file" class="form-control" name="file_path[]" id="files" multiple accept=".xls,.xlsx,.doc,.docx,.ppt,.pptx,.png,.jpeg,.jpg,.svg">
+                <input type="file" class="form-control" name="file_path[]" id="files" multiple accept=".xls,.xlsx,.doc,.docx,.ppt,.pptx,.png,.jpeg,.jpg,.svg,.pdf">
                 <div id="fileDescriptions"></div>
             </div>
             <!-- Video URL input -->

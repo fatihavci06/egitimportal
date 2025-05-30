@@ -97,9 +97,10 @@ define('GUARD', true);
                                         <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_customers_table">
                                             <thead>
                                                 <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                    <th class="min-w-125px">Fotoğraf</th>
                                                     <th class="min-w-125px">Öğrenci Adı</th>
                                                     <th class="min-w-125px">Veli Adı</th>
+                                                    <th class="min-w-125px">Telefon</th>
+                                                    <th class="min-w-125px">E-posta</th>
                                                     <th class="min-w-125px">T.C. Kimlik Numarası</th>
                                                     <th class="min-w-125px">Paketi</th>
                                                     <th class="min-w-125px">Yatırılması Gereken Tutar</th>

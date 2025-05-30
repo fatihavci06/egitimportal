@@ -541,6 +541,57 @@ class SubTopics extends Dbh
 		$stmt = null;
 	}
 
+	public function getTopicIdBySlug($slug)
+	{
+
+		$stmt = $this->connect()->prepare('SELECT id FROM topics_lnp WHERE slug = ?');
+
+		if (!$stmt->execute(array($slug))) {
+			$stmt = null;
+			exit();
+		}
+
+		$topicData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return $topicData;
+
+		$stmt = null;
+	}
+
+	public function getSubTopicIdBySlug($slug)
+	{
+
+		$stmt = $this->connect()->prepare('SELECT id FROM subtopics_lnp WHERE slug = ?');
+
+		if (!$stmt->execute(array($slug))) {
+			$stmt = null;
+			exit();
+		}
+
+		$topicData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return $topicData;
+
+		$stmt = null;
+	}
+
+	public function controlIsThereSubTopic($id, $classId)
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM subtopics_lnp WHERE topic_id = ? AND class_id = ?');
+
+		if (!$stmt->execute(array($id, $classId))) {
+			$stmt = null;
+			exit();
+		}
+
+		$topicData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $topicData;
+
+		$stmt = null;
+	}
+
 
 	public function showSubTopicsStudent($slug)
 	{
@@ -687,6 +738,40 @@ class SubTopics extends Dbh
 		return $testData;
 
 		$stmt = null;
+	}
+
+	
+
+	public function getSameSubTopics($active_slug)
+	{
+
+		$stmt = $this->connect()->prepare('SELECT class_id, lesson_id, unit_id, topic_id FROM subtopics_lnp WHERE slug = ?');
+
+		if (!$stmt->execute(array($active_slug))) {
+			$stmt = null;
+			exit();
+		}
+
+		$topicData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		$class_id = $topicData['class_id'];
+		$lesson_id = $topicData['lesson_id'];
+		$unit_id = $topicData['unit_id'];
+		$topic_id = $topicData['topic_id'];
+
+		$stmt2 = $this->connect()->prepare('SELECT subtopics_lnp.id AS topicID, subtopics_lnp.name AS topicName, subtopics_lnp.slug AS topicSlug, classes_lnp.name AS className, lessons_lnp.name AS lessonName FROM subtopics_lnp INNER JOIN classes_lnp ON subtopics_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON subtopics_lnp.lesson_id = lessons_lnp.id INNER JOIN units_lnp ON subtopics_lnp.unit_id = units_lnp.id WHERE subtopics_lnp.class_id = ? AND subtopics_lnp.lesson_id = ? AND subtopics_lnp.unit_id = ? AND subtopics_lnp.topic_id = ? AND subtopics_lnp.slug != ?');
+
+		if (!$stmt2->execute(array($class_id, $lesson_id, $unit_id, $topic_id, $active_slug))) {
+			$stmt2 = null;
+			exit();
+		}
+
+		$topicData2 = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+
+		return $topicData2;
+
+		$stmt = null;
+		$stmt2 = null;
 	}
 }
 

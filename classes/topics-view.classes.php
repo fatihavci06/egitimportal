@@ -508,7 +508,8 @@ class ShowTopic extends Topics
 
     // Get Tab Titles For Topic Details Page
 
-    public function getTabTitles($slug){
+    public function getTabTitles($slug)
+    {
         $topicInfo = $this->getOneTopicDetailsAdmin($slug);
         foreach ($topicInfo as $value) {
 
@@ -675,7 +676,7 @@ class ShowTopic extends Topics
         echo $topicList;
     }
 
-  /*   // Update Topic
+    /*   // Update Topic
 
     public function updateOneTopic($slug)
     {
@@ -940,7 +941,8 @@ class ShowTopic extends Topics
 
     // Get Topics For Unit Detail
 
-    public function showTopicsListForUnitDetail($slug){
+    public function showTopicsListForUnitDetail($slug)
+    {
 
         $unitInfo = new Units();
 
@@ -983,7 +985,6 @@ class ShowTopic extends Topics
             echo $topicData;
         }
     }
-
 }
 
 class ShowSubTopic extends SubTopics
@@ -1067,11 +1068,17 @@ class ShowSubTopic extends SubTopics
 
         $active_slug = htmlspecialchars(basename($link, ".php"));
 
-        $unitInfo = $this->showSubTopicsStudent($active_slug);
+        $topicInfo = $this->getTopicIdBySlug($active_slug);
+        $topicId = $topicInfo['id'];
 
-        if ($unitInfo == NULL) {
+        $controlSubTopic = $this->controlIsThereSubTopic($topicId, $_SESSION['class_id']);
 
-            $testList = '
+        if (!empty($controlSubTopic)) {
+            $unitInfo = $this->showSubTopicsStudent($active_slug);
+
+            if ($unitInfo == NULL) {
+
+                $testList = '
                         <!--begin::Col-->
                             <div class="col-md-12 d-flex flex-center">
                                 <i class="fa-regular fa-face-frown-open text-danger fs-4x"></i>
@@ -1084,28 +1091,28 @@ class ShowSubTopic extends SubTopics
 
                         <!--end::Col-->
                         ';
-            echo $testList;
-        } else {
+                echo $testList;
+            } else {
 
-            foreach ($unitInfo as $key => $value) {
-                $testText = "";
-                $unclickable = "";
-                if ($value['is_test'] == 1) {
-                    $testSolved = $this->isSolvedUser($value['topicID'], $_SESSION['id']);
-                    if (!empty($testSolved)) {
-                        $testText = '<span class="fw-semibold fs-5 text-success mb-5">Bu testi ' . $dateFormat->changeDate($testSolved['created_at']) . ' tarihinde çözdünüz!</span>';
-                        $unclickable = "pe-none";
+                foreach ($unitInfo as $key => $value) {
+                    $testText = "";
+                    $unclickable = "";
+                    if ($value['is_test'] == 1) {
+                        $testSolved = $this->isSolvedUser($value['topicID'], $_SESSION['id']);
+                        if (!empty($testSolved)) {
+                            $testText = '<span class="fw-semibold fs-5 text-success mb-5">Bu testi ' . $dateFormat->changeDate($testSolved['created_at']) . ' tarihinde çözdünüz!</span>';
+                            $unclickable = "pe-none";
+                        }
                     }
-                }
-                if ($value['is_question'] == 1) {
-                    $testSolved = $this->isSolvedQuestionUser($value['topicID'], $_SESSION['id']);
-                    if (!empty($testSolved)) {
-                        $testText = '<span class="fw-semibold fs-5 text-success mb-5">Bu testi ' . $dateFormat->changeDate($testSolved['created_at']) . ' tarihinde çözdünüz!</span>';
-                        $unclickable = "pe-none";
+                    if ($value['is_question'] == 1) {
+                        $testSolved = $this->isSolvedQuestionUser($value['topicID'], $_SESSION['id']);
+                        if (!empty($testSolved)) {
+                            $testText = '<span class="fw-semibold fs-5 text-success mb-5">Bu testi ' . $dateFormat->changeDate($testSolved['created_at']) . ' tarihinde çözdünüz!</span>';
+                            $unclickable = "pe-none";
+                        }
                     }
-                }
 
-                $testList = '
+                    $testList = '
                             <!--begin::Col-->
                             <div class="col-md-6 col-lg-6 col-xl-6">
                                 <!--begin::Publications post-->
@@ -1137,8 +1144,78 @@ class ShowSubTopic extends SubTopics
                             </div>
                             <!--end::Col-->
                     ';
-                echo $testList;
+                    echo $testList;
+                }
             }
+        } else {
+            $contents = new GetContent();
+
+            $link = "$_SERVER[REQUEST_URI]";
+
+            $active_slug = htmlspecialchars(basename($link, ".php"));
+
+            $topic = new SubTopics();
+
+            $topicInfo = $topic->getTopicIdBySlug($active_slug);
+            $topicId = $topicInfo['id'];
+
+            $contentInfo = $contents->getContentInfoByIdUnderTopic($topicId);
+
+            if ($contentInfo == NULL) {
+
+            $contentList = '
+                        <!--begin::Col-->
+                            <div class="col-md-12 d-flex flex-center">
+                                <i class="fa-regular fa-face-frown-open text-danger fs-4x"></i>
+                                
+                            </div>
+
+                            <div class="text-center mt-2">
+                                <h4 class="fs-2hx text-gray-900 mb-5">İçerik Mevcut Değil!</h4>
+                            </div>
+
+                        <!--end::Col-->
+                        ';
+            echo $contentList;
+        } else {
+
+            foreach ($contentInfo as $key => $value) {
+
+                $contentList = '
+                            <!--begin::Col-->
+                            <div class="col-md-6 col-lg-6 col-xl-6">
+                                <!--begin::Publications post-->
+                                <div class="card-xl-stretch me-md-6">
+                                    <!--begin::Overlay-->
+                                    <a class="d-block overlay mb-4" href="icerik/' . $value['slug'] . '">
+                                        <!--begin::Image-->
+                                        <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-175px" style="background-image:url(\'uploads/contents/' . $value['cover_img'] . '\')"></div>
+                                        <!--end::Image-->
+                                        <!--begin::Action-->
+                                        <div class="overlay-layer bg-dark card-rounded bg-opacity-25">
+                                            <i class="ki-duotone ki-eye fs-2x text-white"></i>
+                                        </div>
+                                        <!--end::Action-->
+                                    </a>
+                                    <!--end::Overlay-->
+                                    <!--begin::Body-->
+                                    <div class="m-0">
+                                        <!--begin::Title-->
+                                        <a href="icerik/' . $value['slug'] . '" class="fs-4 text-gray-900 fw-bold text-hover-primary text-gray-900 lh-base">' . $value['title'] . '</a>
+                                        <!--end::Title-->
+                                        <!--begin::Text-->
+                                        <div class="fw-semibold fs-5 text-gray-600 text-gray-900 mt-3 mb-5">' . $value['summary'] . '</div>
+                                        <!--end::Text-->
+                                    </div>
+                                    <!--end::Body-->
+                                </div>
+                                <!--end::Publications post-->
+                            </div>
+                            <!--end::Col-->
+                    ';
+                echo $contentList;
+            }
+        }
         }
     }
 
@@ -1400,13 +1477,61 @@ class ShowSubTopic extends SubTopics
         }
     }
 
+
+    // Get SubTopics Sidebar For Students
+
+    public function getSidebarSubTopicsStu()
+    {
+        $link = "$_SERVER[REQUEST_URI]";
+
+        $active_slug = htmlspecialchars(basename($link, ".php"));
+
+        $unitInfo = $this->getSameSubTopics($active_slug);
+
+        $lessonList = '<div class="card-body">
+                        <!--begin::Top-->
+                        <div class="mb-7">
+                            <!--begin::Title-->
+                            <h2 class="fs-1 text-gray-800 w-bolder mb-6">Diğer Alt Konular</h2>
+                            <!--end::Title-->
+                        </div>
+                        <!--end::Top-->
+                        <!--begin::Item-->';
+
+        foreach ($unitInfo as $key => $value) {
+
+            $lessonList .= '
+                            <!--begin::Section-->
+                            <div class="my-2">
+                                <!--begin::Row-->
+                                <div class="d-flex align-items-center mb-3">
+                                    <!--begin::Bullet-->
+                                    <span class="bullet me-3"></span>
+                                    <!--end::Bullet-->
+                                    <!--begin::Label-->
+                                    <div class="text-gray-600 fw-semibold fs-6"><a href="konu/' . $value['topicSlug'] . '">' . $value['topicName'] . '</a></div>
+                                    <!--end::Label-->
+                                </div>
+                            <!--end::Row-->
+                        </div>
+                        <!--end::Section-->
+                ';
+        }
+
+        $lessonList .= '
+                    <!--end::Item-->
+                </div>
+            ';
+        echo $lessonList;
+    }
+
     // Show Topic
 
     public function showOneSubTopic($slug)
     {
 
         $subTopicInfo = $this->getOneSubTopicDetailsAdmin($slug);
-        
+
         $dateFormat = new DateFormat();
 
         if (count($subTopicInfo) == 0) {
@@ -1415,7 +1540,7 @@ class ShowSubTopic extends SubTopics
             return;
         }
 
-       /*  $topicList = '
+        /*  $topicList = '
                 <div class="mb-3">
                     <h1 class="h3 d-inline align-middle">Böyle bir alt konu mevcut değil.</h1>
                 </div>
@@ -1778,11 +1903,12 @@ class ShowSubTopic extends SubTopics
 
         echo json_encode($subtopics);
     }
-    
+
 
     // Get Sub Topics For Unit Detail
 
-    public function showSubTopicsListForUnitDetail($slug){
+    public function showSubTopicsListForUnitDetail($slug)
+    {
 
         $unitInfo = new Units();
 
@@ -1825,11 +1951,12 @@ class ShowSubTopic extends SubTopics
             echo $topicData;
         }
     }
-    
+
 
     // Get Sub Topics For Topic Details Page
 
-    public function showSubTopicsListForTopicDetail($slug){
+    public function showSubTopicsListForTopicDetail($slug)
+    {
 
         $unitInfo = new Topics();
 
@@ -1876,7 +2003,8 @@ class ShowSubTopic extends SubTopics
 
     // Get Contents For Topic Details Page
 
-    public function showContentsListForTopicDetail($slug){
+    public function showContentsListForTopicDetail($slug)
+    {
 
         $unitInfo = new Topics();
 
@@ -1923,7 +2051,8 @@ class ShowSubTopic extends SubTopics
 
     // Get Contents For Sub Topic Details Page
 
-    public function showContentsListForSubTopicDetail($slug){
+    public function showContentsListForSubTopicDetail($slug)
+    {
 
         $unitInfo = new SubTopics();
 
@@ -3943,7 +4072,6 @@ class ShowOneTest extends Tests
                 ';
             echo $testList;
         }
-
     }
 
     public function showTestDetailForOne($slug, $studentid)
@@ -4087,6 +4215,5 @@ class ShowOneTest extends Tests
                 ';
             echo $testList;
         }
-
     }
 }

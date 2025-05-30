@@ -5,7 +5,9 @@ header('Content-Type: application/json');
 
 session_start();
 
-if ($_SERVER['REQUEST_METHOD'] == "POST" AND !isset($_GET["from"])) {
+$service = $_GET['from'] ?? 'create';
+
+if ($_SERVER['REQUEST_METHOD'] == "POST" AND $service === "create") {
 
 	// Grabbing the data
 	$class = $_POST["secim"];
@@ -26,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" AND !isset($_GET["from"])) {
 }
 
 
-if ($_SERVER['REQUEST_METHOD'] == "POST" AND $_GET["from"] == "addstudent") {
+if ($_SERVER['REQUEST_METHOD'] == "POST" AND $service === "addstudent") {
 
 	// Grabbing the data
 	$class = $_POST["secim"];

@@ -28,6 +28,39 @@ class ShowStudent extends Student
         echo $classList;
     }
 
+    // Get Class Dropdown List For Search
+
+    public function getClassDropdownList()
+    {
+
+        $schoolInfo = $this->getAllClasses();
+
+        $classList = '';
+
+        foreach ($schoolInfo as $key => $value) {
+
+            $classList .= '<option value="' . $value['slug'] . '">' . $value['name'] . '</option>';
+        }
+        echo $classList;
+    }
+
+    // Get Lesson List For Search
+
+    public function getLessonList()
+    {
+
+        $schoolInfo = $this->getAllLessons();
+
+        $lessonList = '';
+
+        foreach ($schoolInfo as $key => $value) {
+
+            $lessonList .= '<option value="' . $value['name'] . '">' . $value['name'] . '</option>';
+            
+        }
+        echo $lessonList;
+    }
+
     // Get Student List
 
     public function getStudentList()
@@ -133,13 +166,16 @@ class ShowStudent extends Student
             $studentList = '
                     <tr>
                         <td>
-                            <div class="cursor-pointer symbol symbol-90px symbol-lg-90px"><img src="assets/media/profile/' . $value['photo'] . '"></div>
-                        </td>
-                        <td>
                             ' . $value['name'] . ' ' . $value['surname']  . '
                         </td>
                         <td>
                             ' . $parentName . '
+                        </td>
+                        <td>
+                            <a class="text-gray-800 text-hover-primary mb-1" href="tel:' . $value['telephone'] . '">' . $value['telephone'] . '</a>
+                        </td>
+                        <td>
+                            <a class="text-gray-800 text-hover-primary mb-1" href="mailto:' . $value['email'] . '">' . $value['email'] . '</a>
                         </td>
                         <td>
                             ' . $value['identity_id'] . '
@@ -147,7 +183,7 @@ class ShowStudent extends Student
                         <td>
                             ' . $packName . '
                         </td>
-                        <td>' . $value['amount'] . ' ₺</td>
+                        <td class="text-center">' . $value['amount'] . ' ₺</td>
                         <td>
                             ' . $className . '
                         </td>

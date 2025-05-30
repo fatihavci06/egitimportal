@@ -53,6 +53,7 @@ class AddSupportContr extends AddSupport
 			$imgName = NULL;
 		}
 
+
 		$this->setSupport($imgName, $slug, $this->subject, $this->title, $this->comment, $_SESSION['id']);
 	}
 }

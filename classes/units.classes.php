@@ -7,7 +7,7 @@ class Units extends Dbh
 	{
 
 		if ($_SESSION['role'] == 1) {
-			$stmt = $this->connect()->prepare('SELECT units_lnp.id AS unitID, units_lnp.name AS unitName, units_lnp.slug AS unitSlug, units_lnp.start_date AS unitStartDate, units_lnp.end_date AS unitEndDate, units_lnp.order_no AS unitOrder, classes_lnp.name AS className, lessons_lnp.name AS lessonName FROM units_lnp INNER JOIN classes_lnp ON units_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON units_lnp.lesson_id = lessons_lnp.id');
+			$stmt = $this->connect()->prepare('SELECT units_lnp.id AS unitID, units_lnp.name AS unitName, units_lnp.slug AS unitSlug, units_lnp.start_date AS unitStartDate, units_lnp.end_date AS unitEndDate, units_lnp.order_no AS unitOrder, units_lnp.active AS unitActive, classes_lnp.name AS className, classes_lnp.slug AS classSlug, lessons_lnp.name AS lessonName FROM units_lnp INNER JOIN classes_lnp ON units_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON units_lnp.lesson_id = lessons_lnp.id');
 
 			if (!$stmt->execute(array())) {
 				$stmt = null;
