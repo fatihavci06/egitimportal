@@ -15,21 +15,13 @@ class ShowTechnicalServiceSupport extends TechnicalServiceSupport
 
         foreach ($supportInfo as $key => $value) {
 
-            if ($value['subject'] == 1) {
-                $subject = "Şikayet";
-            } elseif ($value['subject'] == 2) {
-                $subject = "Öneri";
-            } elseif ($value['subject'] == 3) {
-                $subject = "Soru";
-            }
-
             $supportList = '
                     <tr>
                         <td>
                             <a href="teknik-servis-destek-talebi?id=' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
                         </td>
                         <td>
-                            ' . $subject . '
+                            ' .  $value['subjectName'] . '
                         </td>
                         <td>
                             ' . $value['userName'] . ' ' . $value['userSurname'] . '
@@ -61,21 +53,13 @@ class ShowTechnicalServiceSupport extends TechnicalServiceSupport
 
         foreach ($supportInfo as $key => $value) {
 
-            if ($value['subject'] == 1) {
-                $subject = "Şikayet";
-            } elseif ($value['subject'] == 2) {
-                $subject = "Öneri";
-            } elseif ($value['subject'] == 3) {
-                $subject = "Soru";
-            }
-
             $supportList = '
                     <tr>
                         <td>
                             <a href="teknik-servis-destek-talebi?id=' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
                         </td>
                         <td>
-                            ' . $subject . '
+                            ' . $value['subjectName'] . '
                         </td>
                         <td>
                             ' . $value['userName'] . ' ' . $value['userSurname'] . '
@@ -114,14 +98,6 @@ class ShowTechnicalServiceSupport extends TechnicalServiceSupport
 
         foreach ($supportInfo as $key => $value) {
 
-            if ($value['subject'] == 1) {
-                $subject = "Şikayet";
-            } elseif ($value['subject'] == 2) {
-                $subject = "Öneri";
-            } elseif ($value['subject'] == 3) {
-                $subject = "Soru";
-            }
-
             if ($i == 0) {
 
                 if ($value['completed'] == 0) {
@@ -156,7 +132,7 @@ class ShowTechnicalServiceSupport extends TechnicalServiceSupport
 
                 $details = '<div class="mt-7 mb-10">
                         <b>Başlık: </b>' . $value['title'] . ' <br>
-                        <b>Konu: </b>' . $subject . ' <br>
+                        <b>Konu: </b>' . $value['subjectName'] . ' <br>
                         <b>Yazan: </b>' . $value['userName'] . ' ' . $value['userSurname'] . ' <br>
                         ' . $solved . '
                     </div>';
@@ -229,13 +205,6 @@ class ShowTechnicalServiceSupport extends TechnicalServiceSupport
 
         foreach ($supportInfo as $key => $value) {
 
-            if ($value['subject'] == 1) {
-                $subject = "Şikayet";
-            } elseif ($value['subject'] == 2) {
-                $subject = "Öneri";
-            } elseif ($value['subject'] == 3) {
-                $subject = "Soru";
-            }
 
             if ($i == 0) {
 
@@ -277,7 +246,7 @@ class ShowTechnicalServiceSupport extends TechnicalServiceSupport
 
                 $details = '<div class="mt-7 mb-10">
                         <b>Başlık: </b>' . $value['title'] . ' <br>
-                        <b>Konu: </b>' . $subject . ' <br>
+                        <b>Konu: </b>' . $value['subjectName'] . ' <br>
                         <b>Yazan: </b>' . $value['userName'] . ' ' . $value['userSurname'] . ' <br>
                         ' . $solved . '
                     </div>';
