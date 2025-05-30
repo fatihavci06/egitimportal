@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="tr">
 <?php
@@ -43,12 +44,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                     <div class="row">
 
                                         <div class="col-lg-4">
-                                            <label class=" fs-6 fw-semibold mb-2" for="title">Başlık</label>
-                                            <input type="text" class="form-control " placeholder="Test Başlığı" id="title">
+                                            <label class=" fs-6 fw-semibold mb-2" for="name">Öğrenci İsmi</label>
+                                            <input type="text" class="form-control " placeholder="Öğrenci İsmi" id="name">
                                         </div>
 
                                         <div class="col-lg-4">
-                                            <label class="required fs-6 fw-semibold mb-2" for="class_id">Sınıf Seçimi </label>
+                                            <label class=" fs-6 fw-semibold mb-2" for="class_id">Sınıf Seçimi </label>
                                             <?php
                                             $class = new Classes();
                                             $classList = $class->getClassesList();
@@ -61,7 +62,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </select>
                                         </div>
                                         <div class="col-lg-4 mt-3">
-                                            <label class="required fs-6 fw-semibold mb-2" for="lesson_id">Dersler</label>
+                                            <label class=" fs-6 fw-semibold mb-2" for="lesson_id">Dersler</label>
                                             <select class="form-select" id="lesson_id" required>
                                                 <option value="">Ders seçiniz</option>
                                             </select>
@@ -110,10 +111,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <thead>
                                                     <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
                                                         <th>ID</th>
-                                                        <th>Test Başlığı</th>
-
-                                                        <th>Oluşturulma Tarihi</th>
-                                                        <th>İşlemler</th>
+                                                        <th>Öğrenci </th>
+                                                        <th>Test</th>
+                                                        <th>Sınav Sonuç Tarihi</th>
+                                                        <th>Sonuç</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="text-gray-600 fw-semibold">
@@ -156,13 +157,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 // Başlangıçta ajax yapılandırmasını kaldırdık, böylece tablo boş başlayacak.
                 var testsDataTable = $('#tests_datatable').DataTable({
                     ajax: {
-                        url: 'includes/ajax.php?service=getFilteredTests',
+                        url: 'includes/ajax.php?service=getTestResults',
                         type: 'POST',
                         data: function(d) {
                             // 'd' objesi DataTables'ın varsayılan parametrelerini (arama, sayfalama, sıralama) içerir.
                             // Biz buraya kendi filtre input'larımızdan gelen değerleri ekliyoruz.
                             // Bu değerler, AJAX isteği ile backend'e POST olarak gönderilecektir.
-                            d.title = $('#title').val();
+                            d.name = $('#name').val();
                             d.class_id = $('#class_id').val();
                             d.lesson_id = $('#lesson_id').val();
                             d.unit_id = $('#unit_id').val();
@@ -186,56 +187,50 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 });
                                 return [];
                             }
-                    }
+                        }
                     }, // Yükleme göstergesini etkinleştir
                     order: [[0, 'desc']],
                     // ajax yapılandırması burada yok, sadece filtreleme ile tetiklenecek.
-                    columns: [{
-                            data: 'id'
+                    columns: [
+                        {
+                            data: 'test_id',
+                        },
+                        {
+                            data: 'name'
                         },
                         {
                             data: 'test_title'
                         },
                         {
-                            data: 'created_at'
+                            data: 'created_at',
                         },
                         {
-                            data: null,
-                            orderable: false,
-                            searchable: false,
+                            data: 'score',
                             render: function(data, type, row) {
-                                return `
-                        <button class="btn btn-sm btn-primary edit-test-btn" data-id="${row.id}" title="Testi Düzenle">
-                            <i class="fas fa-edit"></i> Düzenle
-                        </button>
-                        <button class="btn btn-sm btn-danger delete-test-btn" data-id="${row.id}" title="Testi Sil">
-                            <i class="fas fa-trash"></i> Sil
-                        </button>
-                    `;
+                                // 'data' değeri, score sütunundaki mevcut değeri temsil eder.
+                                var score = parseInt(data); // Skoru sayıya çevir
+                                var badgeClass = '';
+                                if (score > 80) {
+                                    badgeClass = 'badge-light-success'; // Yeşil renk için sınıf
+                                } else {
+                                    badgeClass = 'badge-light-danger'; // Kırmızı renk için sınıf
+                                }
+                                // Score değerini büyük bir span içinde, badge sınıfı ile birlikte döndür
+                                return '<span class="badge ' + badgeClass + ' fs-5">' + score + '</span>';
                             }
-                        }
+                        },
+                        
                     ]
                     // ... (Diğer DataTables ayarları: dom, vb. eklenebilir) ...
                 });
 
                 // Filtreleme butonu tıklaması
                 $('#filterButton').on('click', function() {
+                    
                     var classId = $('#class_id').val();
                     var lessonId = $('#lesson_id').val();
 
-                    // Sınıf ve Ders seçimi zorunlu kontrolü
-                    if (!classId || classId === '') {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Uyarı',
-                            text: 'Lütfen bir sınıf seçiniz.',
-                            confirmButtonText: 'Tamam'
-                        });
-                        $('#class_id').addClass('is-invalid'); // Bootstrap ile görsel uyarı
-                        return; // Filtreleme işlemini durdur
-                    } else {
-                        $('#class_id').removeClass('is-invalid');
-                    }
+                    
 
 
                     testsDataTable.ajax.reload(function(json) {
@@ -248,7 +243,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 // Temizle butonu tıklaması
                 $('#clearFiltersButton').on('click', function() {
                     // Filtreleme alanlarını temizle
-                    $('#title').val('');
+                    $('#name').val('');
                     $('#class_id').val('').trigger('change'); // 'change' olayı ile diğer bağımlı selectbox'ları da temizle
                     $('#lesson_id').val('');
                     $('#unit_id').val('');

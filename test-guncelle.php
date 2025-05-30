@@ -114,6 +114,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </select>
                                         </div>
                                     </div>
+
                                     <div class="row mt-3">
                                         <div class="col-lg-4">
                                             <label class="fs-6 fw-semibold mb-2" for="subtopic_id">Alt Konu Seçimi</label>
@@ -133,6 +134,16 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         <input type="hidden" id="option_count" value="0">
                                         <input type="hidden" id="test_id" value="">
                                     </div>
+                                    <div class="row mt-5 ">
+                                        <div class="col-lg-4">
+                                            <label class="fs-6 fw-semibold mb-2" for="option_count">Status</label>
+                                            <select class="form-select" id="status">
+                                                <option value="1" selected>Aktif</option>
+                                                <option value="0">Pasif</option>
+                                            </select>
+                                        </div>
+
+                                    </div>
                                     <div class="row mt-5 mb-5">
                                         <div class="col-lg-4"></div>
                                         <div class="col-lg-3">
@@ -142,6 +153,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             <button type="button" id="submitForm" class="btn btn-success btn-sm w-100">Kaydet</button>
                                         </div>
                                     </div>
+
                                     <div id="questions_container"></div>
                                 </div>
                                 <!--end::Content container-->
@@ -225,7 +237,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
         // Video input alanı oluşturan fonksiyon
         function createVideoInput(index, value = '') {
-          
+
             return `
     <div class="video-url-group mb-2 d-flex align-items-center gap-2">
         <input type="url" name="questions[${index}][videos][]" class="form-control" placeholder="Video URL" value="${value}" />
@@ -235,7 +247,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
         // Resim input alanı oluşturan fonksiyon
         function createImageInput(index, fileName = '', filePath = '') {
-              console.log(fileName);
+            console.log(fileName);
             let currentImageDisplay = '';
             if (fileName && filePath) {
                 currentImageDisplay = `
@@ -275,28 +287,28 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 
         // Seçenek inputlarını oluşturan fonksiyon
-       function createOptionInputs(index, optionCount, optionsData = []) {
-    let html = '';
-    let optionLabels = getOptionLabels(optionCount);
+        function createOptionInputs(index, optionCount, optionsData = []) {
+            let html = '';
+            let optionLabels = getOptionLabels(optionCount);
 
-    optionLabels.forEach(label => {
-        const optionItem = optionsData.find(opt => opt.option_key === label);
-        const optionText = optionItem ? optionItem.option_text : '';
-        const optionImages = optionItem && optionItem.files ? optionItem.files : [];
+            optionLabels.forEach(label => {
+                const optionItem = optionsData.find(opt => opt.option_key === label);
+                const optionText = optionItem ? optionItem.option_text : '';
+                const optionImages = optionItem && optionItem.files ? optionItem.files : [];
 
-        console.log(optionItem); // debug amaçlı
-        
-        let imagesHtml = '';
-        if (optionImages.length > 0) {
-            optionImages.forEach(img => {
-                const fileName = img.split('/').pop();
-                imagesHtml += createOptionImageInput(index, label, fileName, img);
-            });
-        } else {
-            imagesHtml += createOptionImageInput(index, label);
-        }
+                console.log(optionItem); // debug amaçlı
 
-        html += `<div class="option-block mb-3 border p-3 rounded">
+                let imagesHtml = '';
+                if (optionImages.length > 0) {
+                    optionImages.forEach(img => {
+                        const fileName = img.split('/').pop();
+                        imagesHtml += createOptionImageInput(index, label, fileName, img);
+                    });
+                } else {
+                    imagesHtml += createOptionImageInput(index, label);
+                }
+
+                html += `<div class="option-block mb-3 border p-3 rounded">
             <label class="mt-3 mb-3"  style="font-size:16px;"><b>Seçenek ${label}</b></label>
             <textarea name="questions[${index}][options][${label}][text]" id="option-tinymce-${index}-${label}" class="option-textarea form-control mb-2">${optionText}</textarea>
             <div class="option-images-container">
@@ -307,10 +319,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 <button type="button" class="btn btn-sm btn-secondary add-option-image-btn" data-index="${index}" data-label="${label}">+ Görsel Ekle</button>
             </div>
         </div>`;
-    });
+            });
 
-    return html;
-}
+            return html;
+        }
 
 
         // Soru bloğu oluşturan fonksiyon
@@ -471,6 +483,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         $('#test_title').val(testData.title);
                         $('#start_date').val(testData.start_date);
                         $('#end_date').val(testData.end_date);
+                        $('#status').val(testData.status);
                         $('#option_count').val(testData.option_count || 3); // Varsayılan olarak 3 seçenek
                         $('#test_id').val(testData.id); // Test ID'sini gizli alana yaz
 
@@ -527,7 +540,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         initTinyMCE(`#option-tinymce-${idx}-${option.option_key}`, option.option_text || '');
                                     });
                                 }
-                                
+
                                 currentMaxQuestionIndex = idx; // En yüksek indeksi güncelle
                             });
                         }
@@ -765,7 +778,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 }
                 formData.append('test_id', testId);
 
-
+                const status = document.getElementById('status').value;
                 const classId = document.getElementById('class_id').value;
                 const lessonId = document.getElementById('lesson_id').value;
                 const unitId = document.getElementById('unit_id').value;
@@ -782,7 +795,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     $('#class_id').removeClass('is-invalid');
                     formData.append('class_id', classId);
                 }
-
+                formData.append('status', status);
                 formData.append('lesson_id', lessonId);
                 formData.append('unit_id', unitId);
                 formData.append('topic_id', topicId);
@@ -864,7 +877,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     // Resimler
                     questionBlock.querySelectorAll('.image-upload-group').forEach((imgGroup, iIdx) => {
                         const fileInput = imgGroup.querySelector('input[type="file"]');
-                        
+
                         const existingInput = imgGroup.querySelector('input[name^="questions"][name*="existing_images"]');
 
                         if (fileInput && fileInput.files && fileInput.files[0]) {

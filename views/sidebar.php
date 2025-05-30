@@ -190,7 +190,7 @@ $menu1 = new ShowMenu();
                                     <!--begin:Menu item-->
                                     <div class="menu-item">
                                         <!--begin:Menu link-->
-                                        <a class="menu-link" href="testler-ogrenci">
+                                        <a class="menu-link" href="ogrenci-testler">
                                             <span class="menu-bullet">
                                                 <span class="bullet bullet-dot"></span>
                                             </span>

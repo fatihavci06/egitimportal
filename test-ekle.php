@@ -123,6 +123,16 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         <input type="hidden" id="option_count" value="0">
 
                                     </div>
+                                    <div class="row mt-5 ">
+                                        <div class="col-lg-4">
+                                            <label class="fs-6 fw-semibold mb-2" for="option_count">Durum</label>
+                                            <select class="form-select" id="status">
+                                                <option value="1" selected >Aktif</option>
+                                                <option value="0" >Pasif</option>
+                                            </select>
+                                        </div>
+                                        
+                                    </div>
                                     <div class="row mt-5 mb-5">
                                         <div class="col-lg-4"></div>
                                         <div class="col-lg-3">
@@ -602,7 +612,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 const title = document.getElementById('title').value;
                 const startDate = document.getElementById('start_date').value;
                 const endDate = document.getElementById('end_date').value;
-
+                const status = document.getElementById('status').value;
+                 formData.append('status', status);
                 if (title === "") {
                     Swal.fire('Uyarı', 'Lütfen test başlığını giriniz.', 'warning');
                     formGeneralValid = false;

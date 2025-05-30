@@ -3,7 +3,7 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001 or $_SESSION['role'] == 10002)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 2 or $_SESSION['role'] == 4)) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
 
@@ -34,7 +34,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 document.documentElement.setAttribute("data-bs-theme", themeMode);
             }
         </script>
-        <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
+        <div class="d-flex flex-column flex-root app-root" id="kt_app_root" style="margin-top:-135px;">
             <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
                 <?php include_once "views/header.php"; ?>
                 <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
@@ -60,7 +60,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <td><?= htmlspecialchars($row['test_title']) ?></td>
                                                     <td><?= htmlspecialchars($row['end_date']) ?></td>
                                                     <td>
-                                                        <button class="btn btn-primary start-exam-btn btn-sm" data-id="<?= $row['id'] ?>">Sınava Gir</button>
+                                                        <?php if (isset($row['fail_count']) && $row['fail_count'] >= 3): ?>
+                                                            <span class="badge badge-danger">Sonuç: <?= htmlspecialchars($row['score']) ?> Puan</span>
+                                                        <?php elseif (isset($row['score']) && $row['score'] >= 80): ?>
+                                                            <span class="badge badge-success">Sonuç: <?= htmlspecialchars($row['score']) ?> Puan</span>
+                                                        <?php else: ?>
+                                                            <button class="btn btn-primary start-exam-btn btn-sm" data-id="<?= $row['id'] ?>">Sınava Gir</button>
+                                                        <?php endif; ?>
                                                     </td>
                                                 </tr>
                                             <?php endforeach; ?>
@@ -115,9 +121,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         if (result.isConfirmed) {
                             // Burada yönlendirme veya işlem yapılabilir
                             console.log('Sınav başlatılıyor. ID:', examId);
-
-                            // Örnek: sınav başlatma sayfasına yönlendirme
-                            window.location.href = 'ogrenci-test-coz.php?id=' + examId;
+                            window.open('ogrenci-test-coz.php?id=' + examId, '_blank');
                         }
                     });
                 });

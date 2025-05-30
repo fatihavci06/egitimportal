@@ -23,7 +23,7 @@
     .video-responsive {
         position: relative;
         width: 100%;
-        padding-bottom: 75%;
+        padding-bottom: 45%;
         height: 0;
         margin: 0 auto;
         overflow: hidden;
@@ -36,8 +36,8 @@
         position: absolute;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
+        width: 800px;;
+        height: 400px;
     }
 
     /* Image container for question files */
@@ -50,8 +50,8 @@
     }
 
     .question-image-container img {
-        max-width: 600px; /* Burayı büyüttük */
-        max-height: 600px; /* Burayı büyüttük */
+        max-width: 700px; /* Burayı büyüttük */
+        max-height: 100%; /* Burayı büyüttük */
         object-fit: contain;
         border-radius: 0.5rem;
         box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -69,7 +69,7 @@
     }
 
     .option-image-container img {
-        max-width: 700px; /* Burayı büyüttük */
+        max-width: 800px; /* Burayı büyüttük */
         max-height: 700px; /* Burayı büyüttük */
         object-fit: contain;
         border-radius: 0.25rem;
@@ -80,7 +80,7 @@
 </head>
 
 <body class="flex items-center justify-center min-h-screen p-4">
-    <div id="kt_app_content_container" class="w-full max-w-4xl">
+    <div id="kt_app_content_container" class="w-full max-w-6xl">
         <div id="test-app" class="test-container bg-white shadow-xl rounded-xl p-6 md:p-8 border border-gray-200">
             <h2 id="test-title" class="text-3xl font-extrabold mb-6 text-gray-900 text-center"></h2>
 

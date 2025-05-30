@@ -1260,6 +1260,7 @@ switch ($service) {
         $unitId = $_POST['unit_id'] ?? null;
         $topicId = $_POST['topic_id'] ?? null;
         $subtopicId = $_POST['subtopic_id'] ?? null;
+        $status = $_POST['status'] ?? null;
 
         $title = $_POST['title'] ?? null;
         $startDate = $_POST['start_date'] ?? null;
@@ -1385,12 +1386,13 @@ switch ($service) {
             // Veritabanı bağlantısı
             $stmt = $pdo->prepare("
             INSERT INTO tests_lnp 
-            (class_id, lesson_id, unit_id, topic_id, subtopic_id, test_title, start_date, end_date, cover_img)
+            (status,class_id, lesson_id, unit_id, topic_id, subtopic_id, test_title, start_date, end_date, cover_img)
             VALUES
-            (:class_id, :lesson_id, :unit_id, :topic_id, :subtopic_id, :title, :start_date, :end_date, :file_path)
+            (:status,:class_id, :lesson_id, :unit_id, :topic_id, :subtopic_id, :title, :start_date, :end_date, :file_path)
         ");
 
             $stmt->execute([
+                ':status'       => $status,
                 ':class_id'     => $classId,
                 ':lesson_id'    => $lessonId,
                 ':unit_id'      => $unitId,
@@ -1646,6 +1648,7 @@ switch ($service) {
         $sql = "
 SELECT 
     t.id AS test_id,
+    t.status as status,
     t.test_title,
     t.school_id,
     t.teacher_id,
@@ -1701,6 +1704,7 @@ WHERE t.id = :id";
             if (!$response) {
                 $response = [
                     'id' => $row['test_id'],
+                    'status' => $row['status'],
                     'test_title' => $row['test_title'],
                     'school_id' => $row['school_id'],
                     'teacher_id' => $row['teacher_id'],
@@ -1815,6 +1819,7 @@ WHERE t.id = :id";
         $title = $_POST['title'] ?? null;
         $startDate = $_POST['start_date'] ?? null;
         $endDate = $_POST['end_date'] ?? null;
+        $status = $_POST['status'] ?? null;
         $newQuestionsData = $_POST['questions'] ?? []; // Gelen yeni soru verileri
 
         if (!$testId) {
@@ -1876,10 +1881,11 @@ WHERE t.id = :id";
             if ($coverImage == null) {
                 $stmt = $pdo->prepare("
                 UPDATE tests_lnp
-                SET class_id = ?, lesson_id = ?, unit_id = ?, topic_id = ?, subtopic_id = ?, test_title = ?, start_date = ?, end_date = ?
+                SET status=?,class_id = ?, lesson_id = ?, unit_id = ?, topic_id = ?, subtopic_id = ?, test_title = ?, start_date = ?, end_date = ?
                 WHERE id = ?
             ");
                 $stmt->execute([
+                    $status,
                     $classId,
                     $lessonId,
                     $unitId,
@@ -1924,7 +1930,7 @@ WHERE t.id = :id";
                 $stmt = $pdo->prepare("SELECT file_path FROM test_question_files_lnp WHERE question_id IN ($placeholders)");
                 $stmt->execute($existingQuestionIds);
                 $filesToDelete = $stmt->fetchAll(PDO::FETCH_COLUMN);
-               
+
                 $stmt = $pdo->prepare("DELETE FROM test_question_files_lnp WHERE question_id IN ($placeholders)");
                 $stmt->execute($existingQuestionIds);
 
@@ -1944,7 +1950,7 @@ WHERE t.id = :id";
                     $stmt = $pdo->prepare("SELECT file_path FROM test_question_option_files_lnp WHERE option_id IN ($optPlaceholders)");
                     $stmt->execute($optionsToDeleteFromQuestion);
                     $optionFilesToDelete = $stmt->fetchAll(PDO::FETCH_COLUMN);
-                    
+
                     $stmt = $pdo->prepare("DELETE FROM test_question_option_files_lnp WHERE option_id IN ($optPlaceholders)");
                     $stmt->execute($optionsToDeleteFromQuestion);
 
@@ -2081,57 +2087,84 @@ WHERE t.id = :id";
         $role = $_SESSION['role'];
 
         $testId = $_GET['test_id'] ?? null;
+        $userId = $_SESSION['id'] ?? null;
+        if ($role == 2) {
 
-        if ($role == 1 || $role == 3 || $role == 4) {
-
-            $sql = "
-                SELECT 
-                    t.id AS test_id,
-                    t.test_title,
-                    t.school_id,
-                    t.teacher_id,
-                    t.cover_img,
-                    t.class_id,
-                    t.lesson_id,
-                    t.unit_id,
-                    t.topic_id,
-                    t.subtopic_id,
-                    t.start_date,
-                    t.end_date,
-                    t.created_at AS test_created_at,
-                    t.updated_at AS test_updated_at,
-
-                    tq.id AS question_id,
-                    tq.question_text,
-                    tq.created_at AS question_created_at,
-                    tq.updated_at AS question_updated_at,
-
-                    tqv.video_url,
-
-                    tqf.file_path AS question_file_path,
-
-                    tqo.id AS option_id,
-                    tqo.option_key,
-                    tqo.option_text,
-                    tqo.created_at AS option_created_at,
-                    tqo.updated_at AS option_updated_at,
-
-                    tqof.file_path AS option_file_path
-
-                FROM tests_lnp t
-                LEFT JOIN test_questions_lnp tq ON tq.test_id = t.id
-                LEFT JOIN test_question_videos_lnp tqv ON tqv.question_id = tq.id
-                LEFT JOIN test_question_files_lnp tqf ON tqf.question_id = tq.id
-                LEFT JOIN test_question_options_lnp tqo ON tqo.question_id = tq.id
-                LEFT JOIN test_question_option_files_lnp tqof ON tqof.option_id = tqo.id
-                WHERE t.id = :id";
-
+            $sql = "select * from user_grades_lnp where user_id = :user_id and test_id = :test_id and score<80";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute(['id' => $testId ?? null]);
+            $stmt->execute(['user_id' => $userId, 'test_id' => $testId]);
+            $grade = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($stmt->rowCount() === 0) {
                 echo json_encode(['status' => 'error', 'message' => 'Test bulunamadı.']);
                 exit;
             }
+            if (isset($grade['fail_count']) && $grade['fail_count'] >= 3) {
+                echo json_encode(['status' => 'error', 'message' => 'Bu teste 3 kez başarısız oldunuz, tekrar giremezsiniz.']);
+                exit;
+            }
+        }
+        if ($role == 1 || $role == 2 || $role == 4) {
+
+            $sql = "
+    SELECT 
+        t.id AS test_id,
+        t.test_title,
+        t.school_id,
+        t.teacher_id,
+        t.cover_img,
+        t.class_id,
+        t.lesson_id,
+        t.unit_id,
+        t.topic_id,
+        t.subtopic_id,
+        t.start_date,
+        t.end_date,
+        t.created_at AS test_created_at,
+        t.updated_at AS test_updated_at,
+
+        tq.id AS question_id,
+        tq.question_text,
+        tq.created_at AS question_created_at,
+        tq.updated_at AS question_updated_at,
+
+        tqv.video_url,
+
+        tqf.file_path AS question_file_path,
+
+        tqo.id AS option_id,
+        tqo.option_key,
+        tqo.option_text,
+        tqo.created_at AS option_created_at,
+        tqo.updated_at AS option_updated_at,
+
+        tqof.file_path AS option_file_path
+
+    FROM tests_lnp t
+    LEFT JOIN test_questions_lnp tq ON tq.test_id = t.id
+    LEFT JOIN test_question_videos_lnp tqv ON tqv.question_id = tq.id
+    LEFT JOIN test_question_files_lnp tqf ON tqf.question_id = tq.id
+    LEFT JOIN test_question_options_lnp tqo ON tqo.question_id = tq.id
+    LEFT JOIN test_question_option_files_lnp tqof ON tqof.option_id = tqo.id
+    WHERE t.id = :id";
+
+            // Eğer rol 1 veya 4 değilse, class_id filtresi ekle
+            $params = ['id' => $testId ?? null];
+
+            if (!in_array($_SESSION['role'] ?? null, [1, 4])) {
+                $sql .= " AND t.class_id = :class_id";
+                $params['class_id'] = $_SESSION['class_id'] ?? null;
+                $sql .= " AND status = :status"; // Sadece aktif testleri getir
+                $params['status'] = 1;
+            }
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
+
+            if ($stmt->rowCount() === 0) {
+                echo json_encode(['status' => 'error', 'message' => 'Test bulunamadı.']);
+                exit;
+            }
+
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             $response = null;
@@ -2260,25 +2293,60 @@ WHERE t.id = :id";
             $testInfo = $testInfoStmt->fetch(PDO::FETCH_ASSOC);
 
             // user_grades tablosunda varsa önce sil
-            $deleteStmt = $pdo->prepare("DELETE FROM user_grades_lnp WHERE test_id = :test_id AND user_id = :user_id");
-            $deleteStmt->execute([
+            $percentageScore = $total > 0 ? round(($correct / $total) * 100, 2) : 0;
+
+            // Var mı kontrol et
+            $checkStmt = $pdo->prepare("SELECT * FROM user_grades_lnp WHERE test_id = :test_id AND user_id = :user_id");
+            $checkStmt->execute([
                 ':test_id' => $testId,
                 ':user_id' => $userId
             ]);
-            $percentageScore = $total > 0 ? round(($correct / $total) * 100, 2) : 0;
+            $existingGrade = $checkStmt->fetch(PDO::FETCH_ASSOC);
 
-            // Yeni kaydı user_grades tablosuna ekle
-            $insertGradeStmt = $pdo->prepare("INSERT INTO user_grades_lnp (user_id, test_id, class_id, lesson_id, unit_id, topic_id, subtopic_id, score) VALUES (:user_id, :test_id, :class_id, :lesson_id, :unit_id, :topic_id, :subtopic_id, :score)");
-            $insertGradeStmt->execute([
-                ':user_id' => $userId,
-                ':test_id' => $testId,
-                ':class_id' => $testInfo['class_id'],
-                ':lesson_id' => $testInfo['lesson_id'],
-                ':unit_id' => $testInfo['unit_id'],
-                ':topic_id' => $testInfo['topic_id'],
-                ':subtopic_id' => $testInfo['subtopic_id'],
-                ':score' => $percentageScore
-            ]);
+            if ($existingGrade) {
+                // Zaten varsa güncelle
+                if ($percentageScore < 80) {
+                    // Başarısızsa fail_count kolonu 1 artır
+                    $updateStmt = $pdo->prepare("
+            UPDATE user_grades_lnp 
+            SET score = :score, fail_count = IFNULL(fail_count, 0) + 1 
+            WHERE test_id = :test_id AND user_id = :user_id
+        ");
+                } else {
+                    // Başarılıysa sadece score güncelle
+                    $updateStmt = $pdo->prepare("
+            UPDATE user_grades_lnp 
+            SET score = :score 
+            WHERE test_id = :test_id AND user_id = :user_id
+        ");
+                }
+
+                $updateStmt->execute([
+                    ':score' => $percentageScore,
+                    ':test_id' => $testId,
+                    ':user_id' => $userId
+                ]);
+            } else {
+                // Yoksa yeni kayıt ekle
+                $insertGradeStmt = $pdo->prepare("
+        INSERT INTO user_grades_lnp 
+        (user_id, test_id, class_id, lesson_id, unit_id, topic_id, subtopic_id, score, fail_count) 
+        VALUES 
+        (:user_id, :test_id, :class_id, :lesson_id, :unit_id, :topic_id, :subtopic_id, :score, :fail_count)
+    ");
+
+                $insertGradeStmt->execute([
+                    ':user_id' => $userId,
+                    ':test_id' => $testId,
+                    ':class_id' => $testInfo['class_id'],
+                    ':lesson_id' => $testInfo['lesson_id'],
+                    ':unit_id' => $testInfo['unit_id'],
+                    ':topic_id' => $testInfo['topic_id'],
+                    ':subtopic_id' => $testInfo['subtopic_id'],
+                    ':score' => $percentageScore,
+                    ':fail_count' => $percentageScore < 80 ? 1 : 0
+                ]);
+            }
 
 
             $pdo->commit();
@@ -2298,6 +2366,60 @@ WHERE t.id = :id";
                 'message' => 'Veritabanı hatası: ' . $e->getMessage()
             ]);
         }
+        break;
+    case 'getTestResults':
+        $where = [];
+        $params = [];
+
+       if (!empty($_POST['name'])) {
+    $where[] = "CONCAT(u.name, ' ', u.surname) LIKE :search_name";
+    $params[':search_name'] = '%' . $_POST['name'] . '%';
+}
+
+        if (!empty($_POST['class_id'])) {
+            $where[] = 'ug.class_id = :class_id';
+            $params[':class_id'] = $_POST['class_id'];
+        }
+
+        if (!empty($_POST['lesson_id'])) {
+            $where[] = 'ug.lesson_id = :lesson_id';
+            $params[':lesson_id'] = $_POST['lesson_id'];
+        }
+
+        if (!empty($_POST['unit_id'])) {
+            $where[] = 'ug.unit_id = :unit_id';
+            $params[':unit_id'] = $_POST['unit_id'];
+        }
+
+        if (!empty($_POST['topic_id'])) {
+            $where[] = 'ug.topic_id = :topic_id';
+            $params[':topic_id'] = $_POST['topic_id'];
+        }
+
+        if (!empty($_POST['subtopic_id'])) {
+            $where[] = 'ug.subtopic_id = :subtopic_id';
+            $params[':subtopic_id'] = $_POST['subtopic_id'];
+        }
+
+        $sql = "SELECT 
+            ug.test_id AS test_id,t.test_title AS test_title,
+            CONCAT(u.name, ' ', u.surname) AS name,
+            ug.score,
+            DATE_FORMAT(ug.created_at, '%d-%m-%Y %H:%i:%s') AS created_at
+        FROM user_grades_lnp ug
+        INNER JOIN users_lnp u ON u.id = ug.user_id
+        INNER JOIN tests_lnp t ON t.id = ug.test_id
+        ";
+
+        if (count($where) > 0) {
+            $sql .= ' WHERE ' . implode(' AND ', $where);
+        }
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode(['status' => 'success', 'data' => $results]);
         break;
 
     default:
