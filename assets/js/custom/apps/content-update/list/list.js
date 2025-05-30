@@ -4,9 +4,8 @@
 var KTCustomersList = function () {
     // Define shared variables
     var datatable;
-    var filterStatus;
-    var filterLesson;
-    var filterStudentClass;
+    /* var filterMonth;
+     var filterPayment;*/
     var table
 
     // Private functions
@@ -14,23 +13,19 @@ var KTCustomersList = function () {
         // Set date data order
         const tableRows = table.querySelectorAll('tbody tr');
 
-        /* tableRows.forEach(row => {
-             const dateRow = row.querySelectorAll('td');
-             const realDate = moment(dateRow[2].innerHTML, "DD MMM YYYY, LT").format(); // select date from 3rd column in table
-             dateRow[2].setAttribute('data-order', realDate);
-         });*/
+        tableRows.forEach(row => {
+            const dateRow = row.querySelectorAll('td');
+            const realDate = moment(dateRow[2].innerHTML, "DD MMM YYYY, LT").format(); // select date from 3rd column in table
+            dateRow[5].setAttribute('data-order', realDate);
+        });
 
         // Init datatable --- more info on datatables: https://datatables.net/manual/
         datatable = $(table).DataTable({
             "info": false,
-            'order': [
-                [3, 'asc'],
-                [2, 'asc'],
-                [1, 'asc']
-            ],
+            'order': [],
             'columnDefs': [
                 { orderable: false, targets: 0 }, // Disable ordering on column 0 (checkbox)
-                { orderable: false, targets: 7 }, // Disable ordering on column 6 (actions)
+                { orderable: false, targets: 6 }, // Disable ordering on column 6 (actions)
             ]
         });
 
@@ -52,42 +47,39 @@ var KTCustomersList = function () {
     }
 
     // Filter Datatable
-    var handleFilterDatatable = () => {
-        // Select filter options
-        filterStatus = $('[data-kt-customer-table-filter="status"]');
-        filterLesson = $('[data-kt-customer-table-filter="lesson"]');
-        filterStudentClass = $('[data-kt-customer-table-filter="student_class"]');
-        const filterButton = document.querySelector('[data-kt-customer-table-filter="filter"]');
-
-        // Filter datatable on submit
-        filterButton.addEventListener('click', function () {
-            // Get filter values
-            const statusValue = filterStatus.val();
-            const lessonValue = filterLesson.val();
-            const classValue = filterStudentClass.val();
-            /* let paymentValue = '';
+    /* var handleFilterDatatable = () => {
+         // Select filter options
+         filterMonth = $('[data-kt-customer-table-filter="month"]');
+         filterPayment = document.querySelectorAll('[data-kt-customer-table-filter="payment_type"] [name="payment_type"]');
+         const filterButton = document.querySelector('[data-kt-customer-table-filter="filter"]');
  
-            // Get payment value
-            filterPayment.forEach(r => {
-                if (r.checked) {
-                    paymentValue = r.value;
-                }
+         // Filter datatable on submit
+         filterButton.addEventListener('click', function () {
+             // Get filter values
+             const monthValue = filterMonth.val();
+             let paymentValue = '';
  
-                // Reset payment value if "All" is selected
-                if (paymentValue === 'all') {
-                    paymentValue = '';
-                }
-            });*/
+             // Get payment value
+             filterPayment.forEach(r => {
+                 if (r.checked) {
+                     paymentValue = r.value;
+                 }
+ 
+                 // Reset payment value if "All" is selected
+                 if (paymentValue === 'all') {
+                     paymentValue = '';
+                 }
+             });
+ 
+             // Build filter string from filter options
+             const filterString = monthValue + ' ' + paymentValue;
+ 
+             // Filter datatable --- official docs reference: https://datatables.net/reference/api/search()
+             datatable.search(filterString).draw();
+         });
+     }*/
 
-            // Build filter string from filter options
-            const filterString = statusValue + ' ' + lessonValue + ' ' + classValue;
-
-            // Filter datatable --- official docs reference: https://datatables.net/reference/api/search()
-            datatable.search(filterString).draw();
-        });
-    }
-
-    // Passive unit
+    // Delete customer
     var handleDeleteRows = () => {
         // Select all delete buttons
         const deleteButtons = table.querySelectorAll('[data-kt-customer-table-filter="delete_row"]');
@@ -102,32 +94,15 @@ var KTCustomersList = function () {
 
                 // Get customer name
                 const customerName = parent.querySelectorAll('td')[1].innerText;
-
-                const tdElement = parent.querySelector('td[data-file-id]'); // İlk data-file-id'ye sahip td'yi seçer
-
-                if (tdElement) {
-                    var fileId = tdElement.dataset.fileId;
-                } else {
-                    console.log('Belirtilen <td> elemanı bulunamadı.');
-                }
-
-                var activeStatus = parent.querySelectorAll('td')[7].innerText;
-
-                if (activeStatus === "Aktif") {
-                    var activeStatus = "pasif";
-                    var statusVal = 0;
-                } else {
-                    var activeStatus = "aktif";
-                    var statusVal = 1;
-                }
+                const schoolEmail = parent.querySelectorAll('td')[3].innerText;
 
                 // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
                 Swal.fire({
-                    text: customerName + " isimli üniteyi " + activeStatus + " yapmak istediğinizden emin misiniz?",
+                    text: customerName + " isimli okulu pasif yapmak istediğinizden emin misiniz?",
                     icon: "warning",
                     showCancelButton: true,
                     buttonsStyling: false,
-                    confirmButtonText: "Evet, " + activeStatus + " yap!",
+                    confirmButtonText: "Evet, pasif yap!",
                     cancelButtonText: "Hayır, iptal et",
                     customClass: {
                         confirmButton: "btn fw-bold btn-danger",
@@ -138,17 +113,16 @@ var KTCustomersList = function () {
 
                         $.ajax({
                             type: "POST",
-                            url: "includes/update_active_unit.inc.php",
+                            url: "includes/update_active_school.inc.php",
                             data: {
-                                id: fileId,
-                                statusVal: statusVal,
+                                email: schoolEmail
                             },
                             dataType: "json",
                             success: function (response) {
                                 if (response.status === "success") {
 
                                     Swal.fire({
-                                        text: customerName + " adlı ünite " + activeStatus + " hale gelmiştir!",
+                                        text: customerName + "adlı okul pasif hale gelmiştir!.",
                                         icon: "success",
                                         buttonsStyling: false,
                                         confirmButtonText: "Tamam, anladım!",
@@ -158,8 +132,7 @@ var KTCustomersList = function () {
                                     }).then(function (result) {
                                         if (result.isConfirmed) {
                                             // Remove current row
-                                            //datatable.row($(parent)).remove().draw();
-                                            location.reload();
+                                            datatable.row($(parent)).remove().draw();
                                         }
                                     });
                                 } else {
@@ -229,25 +202,22 @@ var KTCustomersList = function () {
     }
 
     // Reset Filter
-    var handleResetForm = () => {
+    /*var handleResetForm = () => {
         // Select reset button
         const resetButton = document.querySelector('[data-kt-customer-table-filter="reset"]');
 
         // Reset datatable
         resetButton.addEventListener('click', function () {
-            // Reset status
-            filterStatus.val(null).trigger('change');
+            // Reset month
+            filterMonth.val(null).trigger('change');
 
-            // Reset lesson
-            filterLesson.val(null).trigger('change');
-
-            // Reset lesson
-            filterStudentClass.val(null).trigger('change');
+            // Reset payment type
+            filterPayment[0].checked = true;
 
             // Reset datatable --- official docs reference: https://datatables.net/reference/api/search()
             datatable.search('').draw();
         });
-    }
+    }*/
 
     // Init toggle toolbar
     var initToggleToolbar = () => {
@@ -364,9 +334,9 @@ var KTCustomersList = function () {
             initCustomerList();
             initToggleToolbar();
             handleSearchDatatable();
-            handleFilterDatatable();
+            /*handleFilterDatatable();*/
             handleDeleteRows();
-            handleResetForm();
+            /*handleResetForm();*/
         }
     }
 }();

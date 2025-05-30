@@ -5,13 +5,9 @@ session_start();
 define('GUARD', true);
 if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
     include_once "classes/dbh.classes.php";
-    include_once "classes/topics.classes.php";
-    include_once "classes/topics-view.classes.php";
     include_once "classes/addcontentstu.classes.php";
     include_once "classes/contentstu-view.classes.php";
     $contents = new ShowContents();
-    $topics = new ShowSubTopic();
-    $subtopics = new ShowSubTopic();
     include_once "views/pages-head.php";
 ?>
     <!--end::Head-->
@@ -67,25 +63,12 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
                                         <!--begin::Body-->
                                         <div class="card-body p-lg-17">
                                             <!--begin::Hero-->
-                                            <?php $subtopics->getHeaderImageStu(); ?>
+                                            <?php $contents->getHeaderImageStu(); ?>
                                             <!--end::-->
                                             <!--begin::Layout-->
-                                            <div class="d-flex flex-column flex-lg-row mb-17">
-                                                <!--begin::Sidebar-->
-                                                <div class="flex-lg-row-auto w-100 w-lg-275px w-xxl-350px mb-17">
-                                                    <!--begin::Careers about-->
-                                                    <div class="card bg-light">
-                                                        <!--begin::Body-->
-                                                        <?php $subtopics->getSidebarSubTopicsStu(); ?>
-                                                        <!--end::Body-->
-                                                    </div>
-                                                    <!--end::Careers about-->
-                                                </div>
-                                                <!--end::Sidebar-->
+                                            <div class="flex-column flex-lg-row mb-17">
                                                 <!--begin::Content-->
-                                                <div class="flex-lg-row-fluid row me-0 ms-lg-20">
-                                                    <?php $contents->getContentListForStudent(); ?>
-                                                </div>
+                                                <?php $contents->showOneContent(); ?>
                                                 <!--end::Content-->
                                             </div>
                                             <!--end::Layout-->
@@ -143,6 +126,42 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
         <script src="assets/js/custom/utilities/modals/create-account.js"></script>
         <script src="assets/js/custom/utilities/modals/create-app.js"></script>
         <script src="assets/js/custom/utilities/modals/users-search.js"></script>
+        <script>
+        /*    document.addEventListener('DOMContentLoaded', function() {
+                const videoPlayer = document.getElementById('my-video');
+                const videoSource = videoPlayer.querySelector('source');
+                const videoToLoad = 'DSC_1781as.mp4'; // Çekmek istediğiniz video dosya adı
+
+                fetch('https://oznarmaden.com/lineup/api/video/get.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded', // Form verisi göndermek için
+                        // İsteğe bağlı: 'Content-Type': 'application/json' eğer JSON gönderiyorsanız
+                    },
+                    body: new URLSearchParams({
+                        'video': videoToLoad,
+                    }),
+                    mode: 'no-cors'
+                })
+                /*.then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data && data.url) {
+                        videoSource.src = data.url;
+                        videoPlayer.load(); // Video kaynağını yükle
+                    } else {
+                        console.error('Beklenen URL bilgisi alınamadı.', data);
+                    }
+                })
+                .catch(error => {
+                    console.error('Video çekme hatası:', error);
+                });*/
+           /* });*/
+        </script>
         <!--end::Custom Javascript-->
         <!--end::Javascript-->
     </body>

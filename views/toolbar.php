@@ -6,6 +6,80 @@ if (!defined('GUARD')) {
 
 $slug = new ShowMenu();
 
+$requestUri = $_SERVER['REQUEST_URI'];
+
+$targetDers = '/ders/';
+$targetUnite = '/unite/';
+$targetKonu = '/konu/';
+$targetAltKonu = '/alt-konu/';
+$targetIcerik = '/icerik/';
+
+if (strpos($requestUri, $targetDers) !== false) {
+    // '/ders' deseni URL'de bulundu, istenen işlemi yap
+    $breadcrumbs = '
+                    <!--begin::Item-->
+                    <li class="breadcrumb-item">
+                        <i class="ki-duotone ki-right fs-4 text-gray-700 mx-n1"></i>
+                    </li>
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <li class="breadcrumb-item text-gray-700 fw-bold lh-1">Ders</li>
+                    <!--end::Item-->
+                    ';
+
+}elseif (strpos($requestUri, $targetUnite) !== false) {
+    // '/unite' deseni URL'de bulundu, istenen işlemi yap
+    $breadcrumbs = '
+                    <!--begin::Item-->
+                    <li class="breadcrumb-item">
+                        <i class="ki-duotone ki-right fs-4 text-gray-700 mx-n1"></i>
+                    </li>
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <li class="breadcrumb-item text-gray-700 fw-bold lh-1">Ünite</li>
+                    <!--end::Item-->
+                    ';
+
+} elseif (strpos($requestUri, $targetKonu) !== false) {
+    // '/konu' deseni URL'de bulundu, istenen işlemi yap
+    $breadcrumbs = '
+                    <!--begin::Item-->
+                    <li class="breadcrumb-item">
+                        <i class="ki-duotone ki-right fs-4 text-gray-700 mx-n1"></i>
+                    </li>
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <li class="breadcrumb-item text-gray-700 fw-bold lh-1">Konu</li>
+                    <!--end::Item-->
+                    ';
+} elseif (strpos($requestUri, $targetAltKonu) !== false) {
+    // '/alt-konu' deseni URL'de bulundu, istenen işlemi yap
+    $breadcrumbs = '
+                    <!--begin::Item-->
+                    <li class="breadcrumb-item">
+                        <i class="ki-duotone ki-right fs-4 text-gray-700 mx-n1"></i>
+                    </li>
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <li class="breadcrumb-item text-gray-700 fw-bold lh-1">Alt Konu</li>
+                    <!--end::Item-->
+                    ';
+} elseif (strpos($requestUri, $targetIcerik) !== false) {
+    // '/icerik' deseni URL'de bulundu, istenen işlemi yap
+    $breadcrumbs = '
+                    <!--begin::Item-->
+                    <li class="breadcrumb-item">
+                        <i class="ki-duotone ki-right fs-4 text-gray-700 mx-n1"></i>
+                    </li>
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <li class="breadcrumb-item text-gray-700 fw-bold lh-1">İçerik</li>
+                    <!--end::Item-->
+                    ';
+} else {
+    $breadcrumbs = '';
+}
+
 ?>
 
 <div id="kt_app_toolbar" class="app-toolbar pt-5">
@@ -24,6 +98,7 @@ $slug = new ShowMenu();
                         </a>
                     </li>
                     <!--end::Item-->
+                    <?php echo $breadcrumbs; ?>
                     <!--begin::Item-->
                     <li class="breadcrumb-item">
                         <i class="ki-duotone ki-right fs-4 text-gray-700 mx-n1"></i>

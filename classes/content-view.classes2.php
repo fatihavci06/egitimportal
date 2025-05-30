@@ -1,264 +1,22 @@
 <?php
-include_once "dateformat.classes.php";
 
-class ShowUnit extends Units
+class ShowContents extends GetContent
 {
 
-    // Get Unit List
+    // Get Content List
 
-    public function getUnitList()
+    public function getContentsList()
     {
 
-        $unitInfo = $this->getUnitsList();
+        $contentInfo = $this->getAllContents();
 
         $dateFormat = new DateFormat();
 
-        foreach ($unitInfo as $key => $value) {
+        foreach ($contentInfo as $key => $value) {
 
-            $sinifArama = 'data-filter="' . $value['classSlug'] . '"';
+            $subTopicName = $value['subTopicName'] ?? '-';
 
-            if ($value['unitActive'] == 1) {
-                $aktifArama = 'data-filter="Aktif"';
-                $aktifYazi = '<span class="badge badge-light-success">Aktif</span>';
-            } else {
-                $aktifArama = 'data-filter="Passive"';
-                $aktifYazi = '<span class="badge badge-light-danger">Pasif</span>';
-            }
-
-            $alter_button = $value['unitActive'] ? "Pasif Yap" : "Aktif Yap";
-
-            $lessonList = '
-                    <tr>
-                        <td>
-                            <div class="form-check form-check-sm form-check-custom form-check-solid">
-                                <input class="form-check-input" type="checkbox" value="1" />
-                            </div>
-                        </td>
-                        <td data-file-id="'. $value['unitID'] .'">
-                            <a href="./unite-detay/' . $value['unitSlug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['unitName'] . '</a>
-                        </td>
-                        <td>
-                            ' . $value['lessonName'] . '
-                        </td>
-                        <td ' . $sinifArama . '>
-                            ' . $value['className'] . '
-                        </td>
-                        <td>
-                            ' . $dateFormat->changeDate($value['unitStartDate']) . '
-                        </td>
-                        <td>
-                            ' . $dateFormat->changeDate($value['unitEndDate']) . '
-                        </td>
-                        <td>
-                            ' . $value['unitOrder'] . '
-                        </td>
-                        <td>' . $aktifYazi . '</td>
-                        <td class="text-end">
-                            <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
-                                data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
-                                <i class="ki-duotone ki-down fs-5 ms-1"></i></a>
-                            <!--begin::Menu-->
-                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
-                                data-kt-menu="true">
-                                <!--begin::Menu item-->
-                                <div class="menu-item px-3">
-                                    <a href="./unite-detay/' . $value['unitSlug'] . '" class="menu-link px-3">Görüntüle</a>
-                                </div>
-                                <!--end::Menu item-->
-                                <!--begin::Menu item-->
-                                <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">' . $alter_button . '</a>
-                                </div>
-                                <!--end::Menu item-->
-                            </div>
-                            <!--end::Menu-->
-                        </td>
-                    </tr>
-                ';
-            echo $lessonList;
-        }
-    }
-
-    // Get Lesson Id
-
-    public function getID()
-    {
-        $link = "$_SERVER[REQUEST_URI]";
-        $active_slug = htmlspecialchars(basename($link, ".php"));
-
-        $lessonIdInfo = $this->getLessonId($active_slug);
-
-        return $lessonIdInfo;
-    }
-
-    // Get Unit Name
-
-    public function getUnitsListStudent()
-    {
-
-        $lessonId = $this->getID();
-
-        $unitInfo = $this->getUnitsListStu($lessonId, $_SESSION['class_id'], $_SESSION['school_id']);
-
-        if ($unitInfo == NULL) {
-
-            $lessonList = '
-                        <!--begin::Col-->
-                            <div class="col-md-12 d-flex flex-center">
-                                <i class="fa-regular fa-face-frown-open text-danger fs-4x"></i>
-                                
-                            </div>
-
-                            <div class="text-center mt-2">
-                                <h4 class="fs-2hx text-gray-900 mb-5">Ünite Mevcut Değil!</h4>
-                            </div>
-
-                        <!--end::Col-->
-                        ';
-            echo $lessonList;
-        } else {
-
-            foreach ($unitInfo as $key => $value) {
-
-                $lessonList = '
-                            <!--begin::Col-->
-                            <div class="col-md-4">
-                                <!--begin::Publications post-->
-                                <div class="card-xl-stretch me-md-6">
-                                    <!--begin::Overlay-->
-                                    <a class="d-block overlay mb-4" href="unite/' . $value['slug'] . '">
-                                        <!--begin::Image-->
-                                        <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-175px" style="background-image:url(\'assets/media/units/' . $value['photo'] . '\')"></div>
-                                        <!--end::Image-->
-                                        <!--begin::Action-->
-                                        <div class="overlay-layer bg-dark card-rounded bg-opacity-25">
-                                            <i class="ki-duotone ki-eye fs-2x text-white"></i>
-                                        </div>
-                                        <!--end::Action-->
-                                    </a>
-                                    <!--end::Overlay-->
-                                    <!--begin::Body-->
-                                    <div class="m-0">
-                                        <!--begin::Title-->
-                                        <a href="unite/' . $value['slug'] . '" class="fs-4 text-gray-900 fw-bold text-hover-primary text-gray-900 lh-base">' . $value['name'] . '</a>
-                                        <!--end::Title-->
-                                        <!--begin::Text-->
-                                        <div class="fw-semibold fs-5 text-gray-600 text-gray-900 mt-3 mb-5">' . $value['short_desc'] . '</div>
-                                        <!--end::Text-->
-                                    </div>
-                                    <!--end::Body-->
-                                </div>
-                                <!--end::Publications post-->
-                            </div>
-                            <!--end::Col-->
-                    ';
-                echo $lessonList;
-            }
-        }
-    }
-
-    // Get Unit Image For Students
-
-    public function getHeaderImageStu()
-    {
-        $link = "$_SERVER[REQUEST_URI]";
-
-        $active_slug = htmlspecialchars(basename($link, ".php"));
-
-        $unitInfo = $this->getOneUnit($active_slug);
-
-        foreach ($unitInfo as $key => $value) {
-
-            $lessonList = '
-                    <div class="position-relative mb-17">
-                        <!--begin::Overlay-->
-                        <div class="overlay overlay-show">
-                            <!--begin::Image-->
-                            <div class="bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-250px" style="background-image:url(\'assets/media/units/' . $value['photo'] . '\')"></div>
-                            <!--end::Image-->
-                            <!--begin::layer-->
-                            <div class="overlay-layer rounded bg-black" style="opacity: 0.4"></div>
-                            <!--end::layer-->
-                        </div>
-                        <!--end::Overlay-->
-                        <!--begin::Heading-->
-                        <div class="position-absolute text-white mb-8 ms-10 bottom-0">
-                            <!--begin::Title-->
-                            <h3 class="text-white fs-2qx fw-bold mb-3 m">' . $value['short_desc'] . '</h3>
-                            <!--end::Title-->
-                            <!--begin::Text-->
-                            <!--<div class="fs-5 fw-semibold">You sit down. You stare at your screen. The cursor blinks.</div>-->
-                            <!--end::Text-->
-                        </div>
-                        <!--end::Heading-->
-                    </div>
-                ';
-            echo $lessonList;
-        }
-    }
-
-    // Get Units Topics Sidebar For Students
-
-    public function getSidebarTopicsStu()
-    {
-        $link = "$_SERVER[REQUEST_URI]";
-
-        $active_slug = htmlspecialchars(basename($link, ".php"));
-
-        $unitInfo = $this->getSameUnits($active_slug);
-
-        $lessonList = '<div class="card-body">
-                        <!--begin::Top-->
-                        <div class="mb-7">
-                            <!--begin::Title-->
-                            <h2 class="fs-1 text-gray-800 w-bolder mb-6">Diğer Üniteler</h2>
-                            <!--end::Title-->
-                        </div>
-                        <!--end::Top-->
-                        <!--begin::Item-->';
-
-        foreach ($unitInfo as $key => $value) {
-
-            $lessonList .= '
-                            <!--begin::Section-->
-                            <div class="my-2">
-                                <!--begin::Row-->
-                                <div class="d-flex align-items-center mb-3">
-                                    <!--begin::Bullet-->
-                                    <span class="bullet me-3"></span>
-                                    <!--end::Bullet-->
-                                    <!--begin::Label-->
-                                    <div class="text-gray-600 fw-semibold fs-6"><a href="unite/' . $value['unitSlug'] . '">' . $value['unitName'] . '</a></div>
-                                    <!--end::Label-->
-                                </div>
-                            <!--end::Row-->
-                        </div>
-                        <!--end::Section-->
-                ';
-        }
-
-        $lessonList .= '
-                    <!--end::Item-->
-                </div>
-            ';
-        echo $lessonList;
-    }
-
-    // Get Unit List For Students
-
-    public function getUnitListStu()
-    {
-        $link = "$_SERVER[REQUEST_URI]";
-
-        $active_slug = htmlspecialchars(basename($link, ".php"));
-
-        $unitInfo = $this->getUnitsList($active_slug);
-
-        $dateFormat = new DateFormat();
-
-        foreach ($unitInfo as $key => $value) {
-
-            $lessonList = '
+            $contentList = '
                     <tr>
                         <td>
                             <div class="form-check form-check-sm form-check-custom form-check-solid">
@@ -266,7 +24,16 @@ class ShowUnit extends Units
                             </div>
                         </td>
                         <td>
-                            <a href="apps/customers/view.html" class="text-gray-800 text-hover-primary mb-1">' . $value['unitName'] . '</a>
+                            <a href="./icerik-detay/' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
+                        </td>
+                        <td>
+                           '  .  $subTopicName . '
+                        </td>
+                        <td>
+                            ' . $value['topicName'] . '
+                        </td>
+                        <td>
+                            ' . $value['unitName'] . '
                         </td>
                         <td>
                             ' . $value['lessonName'] . '
@@ -283,7 +50,7 @@ class ShowUnit extends Units
                                 data-kt-menu="true">
                                 <!--begin::Menu item-->
                                 <div class="menu-item px-3">
-                                    <a href="./okul-detay/' . $value['unitSlug'] . '" class="menu-link px-3">Görüntüle</a>
+                                    <a href="./icerik-detay/' . $value['slug'] . '" class="menu-link px-3">Görüntüle</a>
                                 </div>
                                 <!--end::Menu item-->
                                 <!--begin::Menu item-->
@@ -296,47 +63,175 @@ class ShowUnit extends Units
                         </td>
                     </tr>
                 ';
-            echo $lessonList;
+            echo $contentList;
         }
     }
 
-    // Show Unit
+    // Show Content Details
 
-    public function showOneUnit($slug)
+    public function showOneContentForUpdate($slug)
     {
+        $contentId = $this->getContentIdBySlug($slug);
 
-        $unitInfo = $this->getOneUnitForDetails($slug);
+        $contentInfo = $this->getAllContentDetailsById($contentId['id']);
 
-        if (count($unitInfo) == 0) {
-            $unitList = header("Location: http://localhost/lineup_campus/404.php"); // 404 sayfasına yönlendir
-            echo $unitList;
+        $dateFormat = new DateFormat();
+
+        if (count($contentInfo) == 0) {
+            $contentList = header("Location: http://localhost/lineup_campus/404.php"); // 404 sayfasına yönlendir
+            echo $contentList;
             return;
         }
 
-
-        /* $lessonList = '
+       /*  $topicList = '
                 <div class="mb-3">
-                    <h1 class="h3 d-inline align-middle">Böyle bir okul mevcut değil.</h1>
+                    <h1 class="h3 d-inline align-middle">Böyle bir alt konu mevcut değil.</h1>
                 </div>
         '; */
 
-        foreach ($unitInfo as $value) {
+        if ($contentInfo['text_content'] != NULL) {
+            $content = $contentInfo['text_content'];
+        }else{
+            $contentFiles = $this->getContentFilesById($contentId['id']);
+            $wordwallFiles = $this->getContentWordwallsById($contentId['id']);
+            $videoFiles = $this->getContentVideosById($contentId['id']);
 
-            $unitId = $value['id'];
+            $content = '';
 
-            $topics = new Topics();
-            $subtopics = new SubTopics();
+            // Check if there are any files
+            if (count($contentFiles) > 0) {
+                $content = '';
+                foreach ($contentFiles as $file) {
+                    $content .= '<div class="mb-3"><h3>' . $file['description'] . '</h3></div>';
+                    $content .= '<div class="mb-3"><img src="' . $file['file_path'] . '""></div>';
+                }
+            } 
 
-            $dateFormat = new DateFormat();
+            // Check if there are any wordwall files
+            if (count($wordwallFiles) > 0) {
+                foreach ($wordwallFiles as $wordwall) {
+                    $content .= '<div class="mb-3"><h3>' . $wordwall['wordwall_title'] . '</h3></div>';
+                    $content .= '<div class="mb-3"><iframe src="' . $wordwall['wordwall_url'] . '" width="100%" height="500px"></iframe></div>';
+                }
+            } 
 
-            $getTopics = $topics->getTopicsByUnitId($unitId);
+            // Check if there are any videos
+            if (count($videoFiles) > 0) {
+                foreach ($videoFiles as $video) {
+                    $videoUrl = $video['video_url'];
+                    $vimeoEmbedCode = $this->generateVimeoIframe($videoUrl);
+                    $content .= '
+                            <div class="row mb-5">
+                                <label class="required fs-6 fw-semibold mb-2" for="video_url">Video Link (Vimeo):</label>
+                                <input type="text" class="form-control" name="video_url" data-file-id="' . $video['id'] . '" id="video_url" value="' . $video['video_url'] . '">
+                            </div>';
+                    /* $content .= '<div class="mb-3">' . $vimeoEmbedCode . '</div>'; */
+                }
+            } 
+        }
+        
+            $contentList = '
+                        <!--begin::Input group-->
+                            <div class="card-body mb-7">
+                                <!--begin::Label-->
+                                <label class="fs-6 fw-semibold mb-3">
+                                    <span>Görsel</span>
+                                    <span class="ms-1" data-bs-toggle="tooltip" title="İzin verilen dosya türleri: png, jpg, jpeg.">
+                                        <i class="ki-duotone ki-information fs-7">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                            <span class="path3"></span>
+                                        </i>
+                                    </span>
+                                </label>
+                                <!--end::Label-->
+                                <!--begin::Image input wrapper-->
+                                <div class="mt-1">
+                                    <!--begin::Image placeholder-->
+                                    <style>
+                                        .image-input-placeholder {
+                                            background-image: url("assets/media/svg/files/blank-image.svg");
+                                        }
 
-            $getSubTopics = $subtopics->getSubTopicsByUnitId($unitId);
+                                        [data-bs-theme="dark"] .image-input-placeholder {
+                                            background-image: url("assets/media/svg/files/blank-image-dark.svg");
+                                        }
+                                    </style>
+                                    <!--end::Image placeholder-->
+                                    <!--begin::Image input-->
+                                    <div class="image-input image-input-outline image-input-placeholder image-input-empty image-input-empty"
+                                        data-kt-image-input="true">
+                                        <!--begin::Preview existing avatar-->
+                                        <div class="image-input-wrapper w-100px h-100px" style="background-image: url(\'./uploads/contents/' . $contentInfo['cover_img'] . '\')"></div>
+                                        <!--end::Preview existing avatar-->
+                                        <!--begin::Edit-->
+                                        <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                            data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Görsel Ekle">
+                                            <i class="ki-duotone ki-pencil fs-7">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                            <!--begin::Inputs-->
+                                            <input type="file" name="photo" id="photo" accept=".png, .jpg, .jpeg, .PNG, .JPG, .JPEG" />
+                                            <input type="hidden" name="avatar_remove" />
+                                            <!--end::Inputs-->
+                                        </label>
+                                        <!--end::Edit-->
+                                        <!--begin::Cancel-->
+                                        <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                            data-kt-image-input-action="cancel" data-bs-toggle="tooltip" title="Fotoğrafı İptal Et">
+                                            <i class="ki-duotone ki-cross fs-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                        </span>
+                                        <!--end::Cancel-->
+                                        <!--begin::Remove-->
+                                        <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                            data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove avatar">
+                                            <i class="ki-duotone ki-cross fs-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                        </span>
+                                        <!--end::Remove-->
+                                    </div>
+                                    <!--end::Image input-->
+                                </div>
+                                <!--end::Image input wrapper-->
+                            </div>
+                            <!--end::Input group-->
+                        <div class="card-body border-0">
+                            <div class="row mb-5">
+                                <label class="required fs-6 fw-semibold mb-2" for="title">İçerik Başlığı</label>
+                                <input type="text" class="form-control" data-file-id="' . $contentInfo['id'] . '" id="title" name="title" value="' . $contentInfo['title'] . '">
+                            </div>
+                            <div class="row mb-5">
+                                <label class="required fs-6 fw-semibold mb-2" for="summary">Kısa Açıklama</label>
+                                <input type="text" class="form-control" id="summary" name="summary" value="' . $contentInfo['summary'] . '">
+                            </div>
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0 pb-5">
 
-            $topicNumber = count($getTopics);
-            $subTopicNumber = count($getSubTopics);
+                            '. $content . '
 
-            $lessonList = '
+                        </div> 
+            ';
+
+
+           /*  $subTopicId = $value['id'];
+
+            $getContents = new GetContent();
+
+            $content = $getContents->getContentInfoByIdsUnderSubTopic($subTopicId, $value['topic_id'], $value['unit_id'], $value['lesson_id'], $value['class_id']);
+
+            $statNumber = count($content);
+
+            $statText = "İçerik";
+
+            $subTopicList = '
                 <div class="flex-column flex-lg-row-auto w-100 w-xl-350px mb-10">
                     <!--begin::Card-->
                     <div class="card mb-5 mb-xl-8">
@@ -346,12 +241,18 @@ class ShowUnit extends Units
                             <div class="d-flex flex-center flex-column mb-5">
                                 <!--begin::Avatar-->
                                 <div class="mb-7">
-                                    <img class="mw-100" src="assets/media/units/' . $value['photo'] . '" alt="image" />
+                                    <img class="mw-100" src="assets/media/topics/' . $value['image'] . '" alt="image" />
                                 </div>
                                 <!--end::Avatar-->
                                 <!--begin::Name-->
-                                <p class="fs-3 text-gray-800 fw-bold mb-1">' . $value['name'] . '</p>
+                                <p class="fs-3 text-gray-800  fw-bold mb-1">' . $value['name'] . '</p>
                                 <!--end::Name-->
+                                <!--begin::Position-->
+                                <div class="fs-5 fw-semibold text-muted mb-6">' . $value['topicName'] . '</div>
+                                <!--end::Position-->
+                                <!--begin::Position-->
+                                <div class="fs-5 fw-semibold text-muted mb-6">' . $value['unitName'] . '</div>
+                                <!--end::Position-->
                                 <!--begin::Position-->
                                 <div class="fs-5 fw-semibold text-muted mb-6">' . $value['lessonName'] . '</div>
                                 <!--end::Position-->
@@ -363,19 +264,10 @@ class ShowUnit extends Units
                                     <!--begin::Stats-->
                                     <div class="border border-gray-300 border-dashed rounded py-3 px-3 mx-4 mb-3">
                                         <div class="fs-4 fw-bold text-gray-700">
-                                            <span class="w-75px">' . $topicNumber . '</span>
+                                            <span class="w-75px">' . $statNumber . '</span>
                                             <i class="fa-solid fa-book-open fs-3 text-success"></i>
                                         </div>
-                                        <div class="fw-semibold text-muted">Konu</div>
-                                    </div>
-                                    <!--end::Stats-->
-                                    <!--begin::Stats-->
-                                    <div class="border border-gray-300 border-dashed rounded py-3 px-3 mx-4 mb-3">
-                                        <div class="fs-4 fw-bold text-gray-700">
-                                            <span class="w-75px">' . $subTopicNumber . '</span>
-                                            <i class="fa-solid fa-book-open fs-3 text-success"></i>
-                                        </div>
-                                        <div class="fw-semibold text-muted">Alt Konu</div>
+                                        <div class="fw-semibold text-muted">' . $statText . '</div>
                                     </div>
                                     <!--end::Stats-->
                                 </div>
@@ -389,7 +281,7 @@ class ShowUnit extends Units
                                         <i class="ki-duotone ki-down fs-3"></i>
                                     </span>
                                 </div>
-                                <span data-bs-toggle="tooltip" data-bs-trigger="hover" title="Ünite bilgilerini düzenle">
+                                <span data-bs-toggle="tooltip" data-bs-trigger="hover" title="Konu bilgilerini düzenle">
                                     <a href="#" class="btn btn-sm btn-light-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_update_customer">Düzenle</a>
                                 </span>
                             </div>
@@ -406,15 +298,15 @@ class ShowUnit extends Units
                                     <div class="text-gray-600">' . $value['short_desc'] . '</div>
                                     <!--end::Details item-->
                                     <!--begin::Details item-->
-                                    <div class="fw-bold mt-5">Ünite Başlama Tarihi</div>
+                                    <div class="fw-bold mt-5">Konu Başlama Tarihi</div>
                                     <div class="text-gray-600">' . $dateFormat->changeDate($value['start_date']) . '</div>
                                     <!--end::Details item-->
                                     <!--begin::Details item-->
-                                    <div class="fw-bold mt-5">Ünite Bitiş Tarihi</div>
+                                    <div class="fw-bold mt-5">Konu Bitiş Tarihi</div>
                                     <div class="text-gray-600">' . $dateFormat->changeDate($value['end_date']) . '</div>
                                     <!--end::Details item-->
                                     <!--begin::Details item-->
-                                    <div class="fw-bold mt-5">Ünite Sırası</div>
+                                    <div class="fw-bold mt-5">Konu Sırası</div>
                                     <div class="text-gray-600">' . $value['order_no'] . '</div>
                                     <!--end::Details item-->
                                 </div>
@@ -425,28 +317,24 @@ class ShowUnit extends Units
                     </div>
                     <!--end::Card-->
                 </div>
-                ';
-        }
-        echo $lessonList;
+                '; */
+        
+        echo $contentList;
     }
 
-    // Update Unit
+    // Update SubTopic
 
-    public function updateOneUnit($slug)
+    public function updateOneSubTopic($slug)
     {
 
-        $chooseClass = new ShowClass();
-        $chooseLesson = new ShowLesson();
-        $unitInfo = $this->getOneUnitForDetails($slug);
+        $subTopicInfo = $this->getOneSubTopicDetailsAdmin($slug);
 
-        $classList = $chooseClass->getClassSelectList();
+        foreach ($subTopicInfo as $value) {
 
-        foreach ($unitInfo as $value) {
-
-            if ($value['photo'] == NULL) {
-                $image = 'assets/media/units/blank-image.svg';
+            if ($value['image'] == NULL) {
+                $image = 'assets/media/topics/blank-image.svg';
             } else {
-                $image = 'assets/media/units/' . $value['photo'];
+                $image = 'assets/media/topics/' . $value['image'];
             }
 
             $order_no = $value['order_no'] ?? '';
@@ -454,15 +342,15 @@ class ShowUnit extends Units
             $startDate = htmlspecialchars($value['start_date'] ?? '');
             $endDate = htmlspecialchars($value['end_date'] ?? '');
 
-            $lessonList = '
-                <form class="form" action="#" id="kt_modal_add_customer_form" data-kt-redirect="uniteler">
+            $subTopicList = '
+                <form class="form" action="#" id="kt_modal_update_customer_form" data-kt-redirect="alt-konular">
                     <!--begin::Modal header-->
-                    <div class="modal-header" id="kt_modal_add_customer_header">
+                    <div class="modal-header" id="kt_modal_update_customer_header">
                         <!--begin::Modal title-->
-                        <h2 class="fw-bold">Ünite Ekleyin</h2>
+                        <h2 class="fw-bold">Alt Konu Güncelle</h2>
                         <!--end::Modal title-->
                         <!--begin::Close-->
-                        <div id="kt_modal_add_customer_close" class="btn btn-icon btn-sm btn-active-icon-primary">
+                        <div id="kt_modal_update_customer_close" class="btn btn-icon btn-sm btn-active-icon-primary">
                             <i class="ki-duotone ki-cross fs-1">
                                 <span class="path1"></span>
                                 <span class="path2"></span>
@@ -551,12 +439,12 @@ class ShowUnit extends Units
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
-                                <label class="required fs-6 fw-semibold mb-2">Ünite</label>
+                                <label class="required fs-6 fw-semibold mb-2">Alt Konu</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" id="name" class="form-control form-control-solid" value="' . $value['name'] . '"
                                     name="name" />
-                                <input type="hidden" id="unit_slug" name="unit_slug" value="' . $slug . '">
+                                <input type="hidden" id="slug" name="slug" value="' . $slug . '">
                                 <!--end::Input-->
                             </div>
                             <!--end::Input group-->
@@ -574,30 +462,30 @@ class ShowUnit extends Units
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
-                                <label class="required fs-6 fw-semibold mb-2">Ünite Başlangıç Tarihi</label>
+                                <label class="required fs-6 fw-semibold mb-2">Konu Başlangıç Tarihi</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                    <input type="date" class="form-control form-control-solid fw-bold pe-5" value="' . $startDate . '" placeholder="Ünite Başlangıç Tarihi Seçin" name="unit_start_date" id="unit_start_date">
+                                    <input type="date" class="form-control form-control-solid fw-bold pe-5" value="' . $startDate . '" placeholder="Alt Konu Başlangıç Tarihi Seçin" name="start_date" id="start_date">
                                 <!--end::Input-->
                             </div>
                             <!--end::Input group-->
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
-                                <label class="required fs-6 fw-semibold mb-2">Ünite Bitiş Tarihi</label>
+                                <label class="required fs-6 fw-semibold mb-2">Konu Bitiş Tarihi</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                    <input type="date" class="form-control form-control-solid fw-bold pe-5" value="' . $endDate . '" placeholder="Ünite Bitiş Tarihi Seçin" name="unit_end_date" id="unit_end_date">
+                                    <input type="date" class="form-control form-control-solid fw-bold pe-5" value="' . $endDate . '" placeholder="Alt Konu Bitiş Tarihi Seçin" name="end_date" id="end_date">
                                 <!--end::Input-->
                             </div>
                             <!--end::Input group-->
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
-                                <label class="required fs-6 fw-semibold mb-2">Ünite Sırası</label>
+                                <label class="required fs-6 fw-semibold mb-2">Konu Sırası</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                    <input type="number" class="form-control form-control-solid fw-bold pe-5" value=' . $order_no . ' placeholder="Ünite Sırası Girin" name="unit_order" id="unit_order">
+                                    <input type="number" class="form-control form-control-solid fw-bold pe-5" value=' . $order_no . ' placeholder="Konu Sırası Girin" name="order" id="order">
                                 <!--end::Input-->
                             </div>
                             <!--end::Input group-->
@@ -621,57 +509,8 @@ class ShowUnit extends Units
                 </form>
                 ';
         }
-        echo $lessonList;
+        echo $subTopicList;
     }
 
-    // List of Unit
-
-    public function showUnitList()
-    {
-
-        $unitInfo = $this->getUnits();
-
-        $lessonList = '';
-
-        $divStart = '<div class="row"><div class="overflow-auto col-12 col-lg-2" style="max-height: 150px">';
-
-        $divEnd = '</div></div>';
-
-        foreach ($unitInfo as $value) {
-
-            $parentId = $value['id'];
-
-            $classForms = '<div class="form-check">
-                                            <input class="form-check-input" name="category[]" type="checkbox" value="' . $value['id'] . '" id="' . $value['slug'] . '">
-                                                <label class="form-check-label" for="' . $value['slug'] . '">
-                                                ' . $value['catName'] . '
-                                                </label>
-                                        </div>';
-
-
-
-            $lessonList .=  $classForms;
-        }
-
-
-        echo $divStart . $lessonList . $divEnd;
-    }
-
-    // Get Units For Topic List
-
-    public function showUnitForTopicList($class, $lessons)
-    {
-
-        $unitInfo = $this->getUnitForTopicList($class, $lessons);
-
-        $units = array();
-
-        foreach ($unitInfo as $key => $value) {
-
-            $units[] = array("id" => $value["id"], "text" => $value["name"]);
-        }
-
-
-        echo json_encode($units);
-    }
 }
+?>

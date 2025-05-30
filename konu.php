@@ -7,6 +7,8 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
     include_once "classes/dbh.classes.php";
     include_once "classes/topics.classes.php";
     include_once "classes/topics-view.classes.php";
+    include_once "classes/addcontentstu.classes.php";
+    include_once "classes/contentstu-view.classes.php";
     $topics = new ShowTopic();
     $subtopics = new ShowSubTopic();
     include_once "views/pages-head.php";
