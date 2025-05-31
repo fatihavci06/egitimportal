@@ -15,28 +15,21 @@ class ShowSupport extends Support
 
         foreach ($supportInfo as $key => $value) {
 
-            if($value['subject'] == 1){
-                $subject = "Şikayet";
-            }elseif($value['subject'] == 2){
-                $subject = "Öneri";
-            }elseif($value['subject'] == 3){
-                $subject = "Soru";
-            }
 
             $supportList = '
                     <tr>
                         <td>
-                            <a href="destek-talebi?id='. $value['slug'] .'" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
+                            <a href="destek-talebi?id=' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
                         </td>
                         <td>
-                            ' . $subject . '
+                            ' . $value['subjectName'] . '
                         </td>
                         <td>
                             ' . $value['userName'] . ' ' . $value['userSurname'] . '
                         </td>
                         <td>' . $dateFormat->changeDateHour($value['created_at']) . '</td>
                         <td class="text-end">
-                            <a href="destek-talebi?id='. $value['slug'] .'" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
+                            <a href="destek-talebi?id=' . $value['slug'] . '" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Oku / Cevap Ver
                                 <i class="ki-duotone ki-arrow-right fs-5 ms-1">
                                     <span class="path1"></span>
@@ -50,7 +43,7 @@ class ShowSupport extends Support
                 ';
             echo $supportList;
         }
-    }   
+    }
 
     // Get Support List (Admin)
 
@@ -63,28 +56,20 @@ class ShowSupport extends Support
 
         foreach ($supportInfo as $key => $value) {
 
-            if($value['subject'] == 1){
-                $subject = "Şikayet";
-            }elseif($value['subject'] == 2){
-                $subject = "Öneri";
-            }elseif($value['subject'] == 3){
-                $subject = "Soru";
-            }
-
             $supportList = '
                     <tr>
                         <td>
-                            <a href="destek-talebi?id='. $value['slug'] .'" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
+                            <a href="destek-talebi?id=' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
                         </td>
                         <td>
-                            ' . $subject . '
+                            ' . $value['subjectName'] . '
                         </td>
                         <td>
                             ' . $value['userName'] . ' ' . $value['userSurname'] . '
                         </td>
                         <td>' . $dateFormat->changeDateHour($value['created_at']) . '</td>
                         <td class="text-end">
-                            <a href="destek-talebi?id='. $value['slug'] .'" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
+                            <a href="destek-talebi?id=' . $value['slug'] . '" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Oku / Cevap Ver
                                 <i class="ki-duotone ki-arrow-right fs-5 ms-1">
                                     <span class="path1"></span>
@@ -97,7 +82,7 @@ class ShowSupport extends Support
                 ';
             echo $supportList;
         }
-    }   
+    }
 
     // Get Solved Support List
 
@@ -110,28 +95,20 @@ class ShowSupport extends Support
 
         foreach ($supportInfo as $key => $value) {
 
-            if($value['subject'] == 1){
-                $subject = "Şikayet";
-            }elseif($value['subject'] == 2){
-                $subject = "Öneri";
-            }elseif($value['subject'] == 3){
-                $subject = "Soru";
-            }
-
             $supportList = '
                     <tr>
                         <td>
-                            <a href="destek-talebi?id='. $value['slug'] .'" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
+                            <a href="destek-talebi?id=' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
                         </td>
                         <td>
-                            ' . $subject . '
+                            ' .  $value['subjectName'] . '
                         </td>
                         <td>
                             ' . $value['userName'] . ' ' . $value['userSurname'] . '
                         </td>
                         <td>' . $dateFormat->changeDateHour($value['created_at']) . '</td>
                         <td class="text-end">
-                            <a href="destek-talebi?id='. $value['slug'] .'" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
+                            <a href="destek-talebi?id=' . $value['slug'] . '" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Oku
                                 <i class="ki-duotone ki-arrow-right fs-5 ms-1">
                                     <span class="path1"></span>
@@ -145,7 +122,7 @@ class ShowSupport extends Support
                 ';
             echo $supportList;
         }
-    }   
+    }
 
     // Get Solved Support List (Admin)
 
@@ -158,28 +135,20 @@ class ShowSupport extends Support
 
         foreach ($supportInfo as $key => $value) {
 
-            if($value['subject'] == 1){
-                $subject = "Şikayet";
-            }elseif($value['subject'] == 2){
-                $subject = "Öneri";
-            }elseif($value['subject'] == 3){
-                $subject = "Soru";
-            }
-
             $supportList = '
                     <tr>
                         <td>
-                            <a href="destek-talebi?id='. $value['slug'] .'" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
+                            <a href="destek-talebi?id=' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
                         </td>
                         <td>
-                            ' . $subject . '
+                            ' . $value['subjectName'] . '
                         </td>
                         <td>
                             ' . $value['userName'] . ' ' . $value['userSurname'] . '
                         </td>
                         <td>' . $dateFormat->changeDateHour($value['created_at']) . '</td>
                         <td class="text-end">
-                            <a href="destek-talebi?id='. $value['slug'] .'" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
+                            <a href="destek-talebi?id=' . $value['slug'] . '" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Oku
                                 <i class="ki-duotone ki-arrow-right fs-5 ms-1">
                                     <span class="path1"></span>
@@ -193,9 +162,9 @@ class ShowSupport extends Support
                 ';
             echo $supportList;
         }
-    } 
-    
-    
+    }
+
+
     // Get Support Detail List
 
     public function getSupportDetails($userId, $supportID)
@@ -215,19 +184,11 @@ class ShowSupport extends Support
 
         foreach ($supportInfo as $key => $value) {
 
-            if($value['subject'] == 1){
-                $subject = "Şikayet";
-            }elseif($value['subject'] == 2){
-                $subject = "Öneri";
-            }elseif($value['subject'] == 3){
-                $subject = "Soru";
-            }
-
             if ($i == 0) {
-                
-                if($value['completed'] == 0){
 
-                $form = '<form class="form" action="#" id="kt_modal_add_customer_form" data-kt-redirect="aktif-destek-talepleri">
+                if ($value['completed'] == 0) {
+
+                    $form = '<form class="form" action="#" id="kt_modal_add_customer_form" data-kt-redirect="aktif-destek-talepleri">
                     <div class="fv-row mt-7">
                         <input type="hidden" name="writer" value="' . $userId . '">
                         <input type="hidden" name="supId" value="' . $supportID . '">
@@ -251,18 +212,18 @@ class ShowSupport extends Support
                         <!--end::Submit-->
                     </div>
                 </form>';
-                }else{
+                } else {
                     $solved = "<b>Çözüm Tarihi: </b>" . $dateFormat->changeDateHour($value['updated_at']);
                 }
 
                 $details = '<div class="mt-7 mb-10">
                         <b>Başlık: </b>' . $value['title'] . ' <br>
-                        <b>Konu: </b>' . $subject . ' <br>
+                        <b>Konu: </b>' .  $value['subjectName'] . ' <br>
                         <b>Yazan: </b>' . $value['userName'] . ' ' . $value['userSurname'] . ' <br>
                         ' . $solved . '
                     </div>';
             }
-            
+
             $supportList .= '
                 <!--begin::Comment-->
                     <div class="mb-9">
@@ -290,7 +251,7 @@ class ShowSupport extends Support
                                             </div>
                                             <!--end::Text-->
                                             <!--begin::Date-->
-                                            <span class="text-muted fw-semibold fs-6">'. $dateFormat->changeDateHour($value['created_at']) .'</span>
+                                            <span class="text-muted fw-semibold fs-6">' . $dateFormat->changeDateHour($value['created_at']) . '</span>
                                             <!--end::Date-->
                                         </div>
                                         <!--end::Info-->
@@ -309,10 +270,10 @@ class ShowSupport extends Support
                 <!--end::Comment-->
                 ';
         }
-        
-            echo $details . $form . $supportList;
+
+        echo $details . $form . $supportList;
     }
-    
+
     // Get Support Detail List (Admin)
 
     public function getSupportAdminDetails($role, $userId, $supportID)
@@ -332,19 +293,11 @@ class ShowSupport extends Support
 
         foreach ($supportInfo as $key => $value) {
 
-            if($value['subject'] == 1){
-                $subject = "Şikayet";
-            }elseif($value['subject'] == 2){
-                $subject = "Öneri";
-            }elseif($value['subject'] == 3){
-                $subject = "Soru";
-            }
-
             if ($i == 0) {
 
-                if($role == 1){
+                if ($role == 1) {
                     $solvedButton = "";
-                }else{
+                } else {
                     $solvedButton = '<button type="submit" id="solved" class="btn btn-success btn-sm mt-n20 mb-20 position-relative ms-7">
                             <span class="indicator-label">Çözümlendi</span>
                             <span class="indicator-progress">Lütfen Bekleyin...
@@ -352,10 +305,10 @@ class ShowSupport extends Support
                             </span>
                         </button>';
                 }
-                
-                if($value['completed'] == 0){
 
-                $form = '<form class="form" action="#" id="kt_modal_add_customer_form" data-kt-redirect="aktif-destek-talepleri">
+                if ($value['completed'] == 0) {
+
+                    $form = '<form class="form" action="#" id="kt_modal_add_customer_form" data-kt-redirect="aktif-destek-talepleri">
                     <div class="fv-row mt-7">
                         <input type="hidden" name="writer" value="' . $userId . '">
                         <input type="hidden" name="supId" value="' . $supportID . '">
@@ -374,18 +327,18 @@ class ShowSupport extends Support
                         <!--end::Submit-->
                     </div>
                 </form>';
-                }else{
+                } else {
                     $solved = "<b>Çözüm Tarihi: </b>" . $dateFormat->changeDateHour($value['updated_at']);
                 }
 
                 $details = '<div class="mt-7 mb-10">
                         <b>Başlık: </b>' . $value['title'] . ' <br>
-                        <b>Konu: </b>' . $subject . ' <br>
+                        <b>Konu: </b>' .  $value['subjectName'] . ' <br>
                         <b>Yazan: </b>' . $value['userName'] . ' ' . $value['userSurname'] . ' <br>
                         ' . $solved . '
                     </div>';
             }
-            
+
             $supportList .= '
                 <!--begin::Comment-->
                     <div class="mb-9">
@@ -413,7 +366,7 @@ class ShowSupport extends Support
                                             </div>
                                             <!--end::Text-->
                                             <!--begin::Date-->
-                                            <span class="text-muted fw-semibold fs-6">'. $dateFormat->changeDateHour($value['created_at']) .'</span>
+                                            <span class="text-muted fw-semibold fs-6">' . $dateFormat->changeDateHour($value['created_at']) . '</span>
                                             <!--end::Date-->
                                         </div>
                                         <!--end::Info-->
@@ -432,8 +385,8 @@ class ShowSupport extends Support
                 <!--end::Comment-->
                 ';
         }
-        
-            echo $details . $form . $supportList;
+
+        echo $details . $form . $supportList;
     }
 
     // Get Support List Select
@@ -622,8 +575,8 @@ class ShowSupport extends Support
                                 <label class="required fs-6 fw-semibold mb-2">Okul Adı</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <input type="text" id="name" class="form-control form-control-solid" value="'. $value['name'] .'" name="name" />
-                                    <input type="hidden" name="old_slug" id="old_slug" value="'. $value['slug'] .'" />
+                                <input type="text" id="name" class="form-control form-control-solid" value="' . $value['name'] . '" name="name" />
+                                    <input type="hidden" name="old_slug" id="old_slug" value="' . $value['slug'] . '" />
                                 <!--end::Input-->
                             </div>
 
@@ -635,7 +588,7 @@ class ShowSupport extends Support
                                     <label class="required fs-6 fw-semibold mb-2">Adres</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input class="form-control form-control-solid" name="address" id="address" value="'. $value['address'] .'" />
+                                    <input class="form-control form-control-solid" name="address" id="address" value="' . $value['address'] . '" />
                                     <!--end::Input-->
                                 </div>
                                 <!--begin::Input group-->
@@ -646,7 +599,7 @@ class ShowSupport extends Support
                                         <label class="required fs-6 fw-semibold mb-2">İlçe</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input class="form-control form-control-solid" name="district" id="district" value="'. $value['district'] .'" />
+                                        <input class="form-control form-control-solid" name="district" id="district" value="' . $value['district'] . '" />
                                         <!--end::Input-->
                                     </div>
                                     <!--end::Col-->
@@ -656,7 +609,7 @@ class ShowSupport extends Support
                                         <label class="fs-6 fw-semibold mb-2">Posta Kodu</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input class="form-control form-control-solid" name="postcode" id="postcode" value="'. $value['postcode'] .'" />
+                                        <input class="form-control form-control-solid" name="postcode" id="postcode" value="' . $value['postcode'] . '" />
                                         <!--end::Input-->
                                     </div>
                                     <!--end::Col-->
@@ -672,7 +625,7 @@ class ShowSupport extends Support
                                     <!--begin::Input-->
                                     <select id="city" name="city" aria-label="Sehir Seçiniz" data-control="select2" data-dropdown-parent="#kt_modal_update_customer"
                                         class="form-select form-select-solid fw-bold">
-                                        <option value="'. $value['city'] .'">'. $value['city'] .'</option>
+                                        <option value="' . $value['city'] . '">' . $value['city'] . '</option>
                                         <option value="Adana">Adana</option>
                                         <option value="Adıyaman">Adıyaman</option>
                                         <option value="Afyonkarahisar">Afyonkarahisar</option>
@@ -766,8 +719,8 @@ class ShowSupport extends Support
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input type="email" class="form-control form-control-solid" name="email" id="email" value="'. $value['email'] .'" />
-                                    <input type="hidden" name="email_old" id="email_old" value="'. $value['email'] .'" />
+                                    <input type="email" class="form-control form-control-solid" name="email" id="email" value="' . $value['email'] . '" />
+                                    <input type="hidden" name="email_old" id="email_old" value="' . $value['email'] . '" />
                                     <!--end::Input-->
                                 </div>
                                 <!--end::Input group-->
@@ -777,7 +730,7 @@ class ShowSupport extends Support
                                     <label class="required fs-6 fw-semibold mb-2">Telefon Numarası</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input type="number" class="form-control form-control-solid" value="'. $value['telephone'] .'" id="telephone" name="telephone" />
+                                    <input type="number" class="form-control form-control-solid" value="' . $value['telephone'] . '" id="telephone" name="telephone" />
                                     <!--end::Input-->
                                 </div>
                                 <!--end::Input group-->
@@ -855,11 +808,11 @@ class ShowSupportForUsers extends Support
 
         foreach ($supportInfo as $key => $value) {
 
-            if($value['toAll'] == 1){
+            if ($value['toAll'] == 1) {
                 $toWhom = "Herkese";
-            }elseif ($value['class_id'] != 0) {
+            } elseif ($value['class_id'] != 0) {
                 $toWhom = $this->getSupportsForUsersClass($value['class_id']);
-            }elseif ($value['role_id'] != 0) {
+            } elseif ($value['role_id'] != 0) {
                 $toWhom = $this->getSupportsForUsersRole($value['role_id']);
             }
 
@@ -1092,8 +1045,8 @@ class ShowSupportForUsers extends Support
                                 <label class="required fs-6 fw-semibold mb-2">Okul Adı</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <input type="text" id="name" class="form-control form-control-solid" value="'. $value['name'] .'" name="name" />
-                                    <input type="hidden" name="old_slug" id="old_slug" value="'. $value['slug'] .'" />
+                                <input type="text" id="name" class="form-control form-control-solid" value="' . $value['name'] . '" name="name" />
+                                    <input type="hidden" name="old_slug" id="old_slug" value="' . $value['slug'] . '" />
                                 <!--end::Input-->
                             </div>
 
@@ -1105,7 +1058,7 @@ class ShowSupportForUsers extends Support
                                     <label class="required fs-6 fw-semibold mb-2">Adres</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input class="form-control form-control-solid" name="address" id="address" value="'. $value['address'] .'" />
+                                    <input class="form-control form-control-solid" name="address" id="address" value="' . $value['address'] . '" />
                                     <!--end::Input-->
                                 </div>
                                 <!--begin::Input group-->
@@ -1116,7 +1069,7 @@ class ShowSupportForUsers extends Support
                                         <label class="required fs-6 fw-semibold mb-2">İlçe</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input class="form-control form-control-solid" name="district" id="district" value="'. $value['district'] .'" />
+                                        <input class="form-control form-control-solid" name="district" id="district" value="' . $value['district'] . '" />
                                         <!--end::Input-->
                                     </div>
                                     <!--end::Col-->
@@ -1126,7 +1079,7 @@ class ShowSupportForUsers extends Support
                                         <label class="fs-6 fw-semibold mb-2">Posta Kodu</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input class="form-control form-control-solid" name="postcode" id="postcode" value="'. $value['postcode'] .'" />
+                                        <input class="form-control form-control-solid" name="postcode" id="postcode" value="' . $value['postcode'] . '" />
                                         <!--end::Input-->
                                     </div>
                                     <!--end::Col-->
@@ -1142,7 +1095,7 @@ class ShowSupportForUsers extends Support
                                     <!--begin::Input-->
                                     <select id="city" name="city" aria-label="Sehir Seçiniz" data-control="select2" data-dropdown-parent="#kt_modal_update_customer"
                                         class="form-select form-select-solid fw-bold">
-                                        <option value="'. $value['city'] .'">'. $value['city'] .'</option>
+                                        <option value="' . $value['city'] . '">' . $value['city'] . '</option>
                                         <option value="Adana">Adana</option>
                                         <option value="Adıyaman">Adıyaman</option>
                                         <option value="Afyonkarahisar">Afyonkarahisar</option>
@@ -1236,8 +1189,8 @@ class ShowSupportForUsers extends Support
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input type="email" class="form-control form-control-solid" name="email" id="email" value="'. $value['email'] .'" />
-                                    <input type="hidden" name="email_old" id="email_old" value="'. $value['email'] .'" />
+                                    <input type="email" class="form-control form-control-solid" name="email" id="email" value="' . $value['email'] . '" />
+                                    <input type="hidden" name="email_old" id="email_old" value="' . $value['email'] . '" />
                                     <!--end::Input-->
                                 </div>
                                 <!--end::Input group-->
@@ -1247,7 +1200,7 @@ class ShowSupportForUsers extends Support
                                     <label class="required fs-6 fw-semibold mb-2">Telefon Numarası</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input type="number" class="form-control form-control-solid" value="'. $value['telephone'] .'" id="telephone" name="telephone" />
+                                    <input type="number" class="form-control form-control-solid" value="' . $value['telephone'] . '" id="telephone" name="telephone" />
                                     <!--end::Input-->
                                 </div>
                                 <!--end::Input group-->
@@ -1310,4 +1263,3 @@ class ShowSupportForUsers extends Support
         echo $divStart . $supportList . $divEnd;
     }
 }
-
