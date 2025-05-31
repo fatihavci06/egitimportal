@@ -70,6 +70,7 @@ var KTAppCalendar = function () {
             navLinks: true, // can click day/week names to navigate views
             selectable: true,
             selectMirror: true,
+            initialView: 'dayGridMonth',
 
             // Select dates action --- more info: https://fullcalendar.io/docs/select-callback
             select: function (arg) {
@@ -98,8 +99,8 @@ var KTAppCalendar = function () {
                 {
                     id: uid(),
                     title: 'All Day Event',
-                    start: YM + '-01',
-                    end: YM + '-02',
+                    start: '2025-04-27',
+                    end: '2025-04-28',
                     description: 'Toto lorem ipsum dolor sit incid idunt ut',
                     className: "border-success bg-success text-inverse-success",
                     location: 'Federation Square'
