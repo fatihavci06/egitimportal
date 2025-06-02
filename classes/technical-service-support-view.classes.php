@@ -221,7 +221,7 @@ class ShowTechnicalServiceSupport extends TechnicalServiceSupport
 
                 if ($value['completed'] == 0) {
 
-                    $form = '<form class="form" action="#" id="kt_modal_add_customer_form" data-kt-redirect="aktif-destek-talepleri">
+                    $form = '<form class="form" action="#" id="kt_modal_add_customer_form" data-kt-redirect="aktif-teknik-servis-destek-talepleri">
                     <div class="fv-row mt-7">
                         <input type="hidden" name="writer" value="' . $userId . '">
                         <input type="hidden" name="supId" value="' . $supportID . '">
