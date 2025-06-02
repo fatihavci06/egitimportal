@@ -160,7 +160,7 @@ class Classes extends Dbh
 				exit();
 			}
 		} else {
-			
+
 			$userId = $_SESSION['id']; // Session'dan user_id'yi al
 
 			$stmt = $this->connect()->prepare('
@@ -180,7 +180,7 @@ class Classes extends Dbh
 				WHERE t.class_id = :class_id AND t.status = 1 
 				ORDER BY t.id DESC
 			');
-			
+
 			// Parametreleri geç
 			if (!$stmt->execute(['class_id' => $classId, 'user_id' => $userId])) {
 				$stmt = null;
@@ -191,7 +191,7 @@ class Classes extends Dbh
 
 
 		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		
+
 		return $classData;
 	}
 	public function getClassesList()
@@ -355,10 +355,54 @@ WHERE t.id = :id";
 		return $classData;
 	}
 
-	protected function getMainSchoolClassesList()
+	public function getMainSchoolClassesList()
 	{
 
 		$stmt = $this->connect()->prepare('SELECT id, name, slug FROM classes_lnp where school_id = 1 and class_type=1');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
+	public function getMainSchoolLessonList()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM main_school_lessons_lnp  ');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
+	public function getMainSchoolTopicList()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT t.id id, u.name unit_name,l.name lesson_name,t.name topic_name FROM main_school_topics_lnp t
+		inner JOIN main_school_units_lnp u on t.unit_id=u.id
+		inner JOIN main_school_lessons_lnp l on u.lesson_id=l.id;  ');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
+	public function getMainSchoolUnitList()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT mu.name as unit_name, mu.id as id, ml.name as lesson_name FROM `main_school_units_lnp` mu inner JOIN main_school_lessons_lnp ml on ml.id=mu.lesson_id; ');
 
 		if (!$stmt->execute(array())) {
 			$stmt = null;

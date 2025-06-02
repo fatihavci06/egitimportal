@@ -100,6 +100,31 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         </select>
                                                     </div>
                                                     <div class="col-lg-4">
+
+                                                        <label for="lesson_id" class="  form-label">Ders Adı</label>
+                                                        <select class="form-select form-control" id="lesson_id" name="lesson_id">
+                                                            <option selected disabled>Önce yaş grubu seçiniz...</option>
+                                                        </select>
+
+                                                    </div>
+                                                    <div class="col-lg-4">
+
+                                                        <label for="unit_id" class="  form-label">Ünite Adı</label>
+                                                        <select class="form-select form-control" id="unit_id" name="lesson_id">
+                                                            <option selected disabled>Önce ders seçiniz...</option>
+                                                        </select>
+
+
+                                                    </div>
+                                                    <div class="col-lg-4 mt-4">
+
+                                                        <label for="topic_id" class="  form-label">Konu Adı</label>
+                                                        <select class="form-select form-control" id="topic_id" name="lesson_id">
+                                                            <option selected disabled>Önce ünite seçiniz...</option>
+                                                        </select>
+
+                                                    </div>
+                                                    <div class="col-lg-4 mt-4">
                                                         <label class="required fs-6 fw-semibold mb-2" for="month">Ay </label>
                                                         <select class="form-select" id="month" required>
                                                             <option value="">Seçiniz</option>
@@ -113,7 +138,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     </div>
 
 
-                                                    <div class="col-lg-4">
+                                                    <div class="col-lg-4 mt-4">
                                                         <label class="fs-6 fw-semibold mb-2" for="week">Özel Hafta Seçimi </label>
                                                         <select class="form-select" id="week" required>
                                                             <option value="">Seçiniz</option>
@@ -362,6 +387,153 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/js/custom/utilities/modals/users-search.js"></script>
         <script>
             $(document).ready(function() {
+                var currentData = {
+                    main_school_class_id: <?= isset($data['main_school_class_id']) ? $data['main_school_class_id'] : 'null' ?>,
+                    lesson_id: <?= isset($data['lesson_id']) ? $data['lesson_id'] : 'null' ?>,
+                    unit_id: <?= isset($data['unit_id']) ? $data['unit_id'] : 'null' ?>,
+                    topic_id: <?= isset($data['topic_id']) ? $data['topic_id'] : 'null' ?>
+                };
+                console.log("Current Data:", currentData);
+                // --- Dersleri Yükleme Fonksiyonu ---
+                function loadLessons(ageGroupId, selectedLessonId = null) {
+                    if (!ageGroupId) {
+                        $('#lesson_id').html('<option value="">Seçiniz</option><option selected disabled>Önce yaş grubu seçiniz...</option>');
+                        $('#unit_id').html('<option value="">Seçiniz</option><option selected disabled>Önce ders seçiniz...</option>');
+                        $('#topic_id').html('<option value="">Seçiniz</option><option selected disabled>Önce ünite seçiniz...</option>');
+                        return;
+                    }
+
+                    $.ajax({
+                        url: 'includes/ajax.php?service=mainSchoolGetLessons',
+                        type: 'POST',
+                        data: {
+                            class_id: ageGroupId
+                        },
+                        success: function(lessons) {
+                            var options = '<option value="">Seçiniz</option>';
+                            $.each(lessons.data, function(i, lesson) {
+                                options += '<option value="' + lesson.id + '"';
+                                if (selectedLessonId && selectedLessonId == lesson.id) {
+                                    options += ' selected';
+                                }
+                                options += '>' + lesson.name + '</option>';
+                            });
+                            $('#lesson_id').html(options);
+
+                            // Eğer mevcut bir ders ID'si varsa, üniteleri de yükle
+                            if (selectedLessonId) {
+                                loadUnits(selectedLessonId, currentData.unit_id);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Dersler yüklenirken hata oluştu: " + error);
+                        }
+                    });
+
+                }
+
+                // --- Üniteleri Yükleme Fonksiyonu ---
+                function loadUnits(lessonId, selectedUnitId = null) {
+                    if (!lessonId) {
+                        $('#unit_id').html('<option value="">Seçiniz</option><option selected disabled>Önce ders seçiniz...</option>');
+                        $('#topic_id').html('<option value="">Seçiniz</option><option selected disabled>Önce ünite seçiniz...</option>');
+                        return;
+                    }
+
+                    $.ajax({
+                        url: 'includes/ajax.php?service=mainSchoolGetUnits',
+                        type: 'POST',
+                        data: {
+                            lesson_id: lessonId
+                        },
+                        success: function(units) {
+                            var options = '<option value="">Seçiniz</option>';
+                            $.each(units.data, function(i, unit) {
+                                options += '<option value="' + unit.id + '"';
+                                if (selectedUnitId && selectedUnitId == unit.id) {
+                                    options += ' selected';
+                                }
+                                options += '>' + unit.name + '</option>';
+                            });
+                            $('#unit_id').html(options);
+
+                            // Eğer mevcut bir ünite ID'si varsa, konuları da yükle
+                            if (selectedUnitId) {
+                                loadTopics(selectedUnitId, currentData.topic_id);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Üniteler yüklenirken hata oluştu: " + error);
+                        }
+                    });
+
+                }
+
+                // --- Konuları Yükleme Fonksiyonu ---
+                function loadTopics(unitId, selectedTopicId = null) {
+                    if (!unitId) {
+                        $('#topic_id').html('<option value="">Seçiniz</option><option selected disabled>Önce ünite seçiniz...</option>');
+                        return;
+                    }
+
+                    $.ajax({
+                        url: 'includes/ajax.php?service=mainSchoolGetTopics',
+                        type: 'POST',
+                        data: {
+                            unit_id: unitId
+                        }, // unit_id POST olarak gönderiliyor
+
+                        success: function(topics) {
+                            console.log("Topics Data:", topics);
+
+                            let options = '';
+                            $.each(topics.data, function(i, topic) {
+                                options += '<option value="' + topic.id + '"';
+                                if (selectedTopicId && selectedTopicId == topic.id) {
+                                    options += ' selected';
+                                }
+                                options += '>' + topic.name + '</option>';
+                            });
+                            $('#topic_id').html(options);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Konular yüklenirken hata oluştu: " + error);
+                        }
+                    });
+
+                }
+
+                // --- Sayfa Yüklendiğinde İlk Durumu Ayarla ---
+                if (currentData.main_school_class_id) {
+                    loadLessons(currentData.main_school_class_id, currentData.lesson_id);
+                } else {
+                    // Yaş grubu seçili değilse diğerlerini boşalt
+                    $('#lesson_id').html('<option value="">Seçiniz</option><option selected disabled>Önce yaş grubu seçiniz...</option>');
+                    $('#unit_id').html('<option value="">Seçiniz</option><option selected disabled>Önce ders seçiniz...</option>');
+                    $('#topic_id').html('<option value="">Seçiniz</option><option selected disabled>Önce ünite seçiniz...</option>');
+                }
+
+                // --- Yaş Grubu Değiştiğinde Dersleri Yükle ---
+                $('#main_school_class_id').on('change', function() {
+                    var ageGroupId = $(this).val();
+                    loadLessons(ageGroupId); // Dersleri sıfırdan yükle (selected ID yok)
+                    $('#unit_id').html('<option value="">Seçiniz</option><option selected disabled>Önce ders seçiniz...</option>'); // Ünite ve Konuyu sıfırla
+                    $('#topic_id').html('<option value="">Seçiniz</option><option selected disabled>Önce ünite seçiniz...</option>');
+                });
+
+                // --- Ders Değiştiğinde Üniteleri Yükle ---
+                $('#lesson_id').on('change', function() {
+                    var lessonId = $(this).val();
+                    loadUnits(lessonId); // Üniteleri sıfırdan yükle
+                    $('#topic_id').html('<option value="">Seçiniz</option><option selected disabled>Önce ünite seçiniz...</option>'); // Konuyu sıfırla
+                });
+
+                // --- Ünite Değiştiğinde Konuları Yükle ---
+                $('#unit_id').on('change', function() {
+                    var unitId = $(this).val();
+                    console.log("Selected Unit ID:", unitId);
+                    loadTopics(unitId); // Konuları sıfırdan yükle
+                });
                 let fieldCount = 0;
 
                 $('#addField').on('click', function() {
@@ -505,6 +677,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         formData.append(`wordWallUrls[${index}]`, url);
                     });
                     formData.append('id', $('#id').val());
+                    formData.append('lesson_id', $('#lesson_id').val());
+                    formData.append('unit_id', $('#unit_id').val());
+                    formData.append('topic_id', $('#topic_id').val());
+
                     formData.append('month', $('#month').val());
                     formData.append('week', $('#week').val());
                     formData.append('activity_title', $('#activity_title').val());

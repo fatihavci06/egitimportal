@@ -19,6 +19,9 @@ $content = $_POST['content'] ?? '';
 $id = $_POST['id'] ?? null;
 $content_description = $_POST['content_description'] ?? null;
 $main_school_class_id = $_POST['main_school_class_id'] ?? null;
+$topic_id = $_POST['topic_id'] ?? null;
+$lesson_id = $_POST['lesson_id'] ?? null;
+$unit_id = $_POST['unit_id'] ?? null;
 
 $file_urls = [];
 
@@ -74,21 +77,24 @@ try {
 
     if ($service === 'update' && $id) {
 
-       
+
         // Güncelleme işlemi
         $sql = "UPDATE main_school_content_lnp SET
-			roles = :roles,
-			month = :month,
-			week_id = :week_id,
-			activity_title_id = :activity_title,
-			content_title_id = :content_title,
-			concept_title_id = :concept_title,
-			content_description=:content_description,
-            main_school_class_id=:main_school_class_id,
-			subject = :subject,
-			video_url = :video_url,
-			content = :content
-			WHERE id = :id";
+    roles = :roles,
+    month = :month,
+    week_id = :week_id,
+    activity_title_id = :activity_title,
+    content_title_id = :content_title,
+    concept_title_id = :concept_title,
+    content_description = :content_description,
+    main_school_class_id = :main_school_class_id,
+    lesson_id = :lesson_id,
+    unit_id = :unit_id,
+    topic_id = :topic_id,
+    subject = :subject,
+    video_url = :video_url,
+    content = :content
+    WHERE id = :id";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
@@ -97,9 +103,12 @@ try {
             ':week_id' => $week,
             ':activity_title' => $activity_title,
             ':content_title' => $content_title,
-            ':content_description' => $content_description,
             ':concept_title' => $concept_title,
+            ':content_description' => $content_description,
             ':main_school_class_id' => $main_school_class_id,
+            ':lesson_id' => $lesson_id,
+            ':unit_id' => $unit_id,
+            ':topic_id' => $topic_id,
             ':subject' => $subject,
             ':video_url' => $video_url,
             ':content' => $content,
@@ -140,7 +149,7 @@ try {
 
 
         if (isset($_POST['wordWallTitles']) && isset($_POST['wordWallUrls'])) {
-          
+
             $titles = $_POST['wordWallTitles']; // ['Başlık1', 'Başlık2', ...]
             $urls = $_POST['wordWallUrls'];     // ['url1', 'url2', ...]
 
@@ -169,9 +178,9 @@ try {
     } else {
         // Yeni kayıt işlemi
         $sql = "INSERT INTO main_school_content_lnp 
-        (roles, month, week_id, main_school_class_id, activity_title_id, content_title_id, concept_title_id, subject, video_url, content_description, content) 
-        VALUES 
-        (:roles, :month, :week_id, :main_school_class_id, :activity_title, :content_title, :concept_title, :subject, :video_url, :content_description, :content)";
+    (roles, month, week_id, main_school_class_id, lesson_id, unit_id, topic_id, activity_title_id, content_title_id, concept_title_id, subject, video_url, content_description, content) 
+    VALUES 
+    (:roles, :month, :week_id, :main_school_class_id, :lesson_id, :unit_id, :topic_id, :activity_title, :content_title, :concept_title, :subject, :video_url, :content_description, :content)";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
@@ -179,6 +188,9 @@ try {
             ':month' => $month,
             ':week_id' => $week,
             ':main_school_class_id' => $main_school_class_id,
+            ':lesson_id' => $lesson_id,
+            ':unit_id' => $unit_id,
+            ':topic_id' => $topic_id,
             ':activity_title' => $activity_title,
             ':content_title' => $content_title,
             ':concept_title' => $concept_title,
@@ -187,7 +199,6 @@ try {
             ':content_description' => $content_description,
             ':content' => $content
         ]);
-
         $mainId = $pdo->lastInsertId();
 
         // Eğer dosya yüklendiyse ayrı tabloya kaydet
