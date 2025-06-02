@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html lang="tr">
 <?php
-
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 2 or $_SESSION['role'] == 5)) {
-	include_once "classes/dbh.classes.php";
-	include_once "classes/addsupport.classes.php";
-    include_once "classes/support-view.classes.php";
-	$supportList = new ShowTechnicalServiceSupport();
-	include_once "views/pages-head.php";
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 4)) {
+    include_once "classes/dbh.classes.php";
+    include "classes/topics.classes.php";
+    include "classes/topics-view.classes.php";
+    $topics = new ShowTopic();
+    include_once "views/pages-head.php";
 ?>
     <!--end::Head-->
     <!--begin::Body-->
@@ -60,42 +59,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <!--begin::Card-->
-                                    <div class="card">
-                                        <!--begin::Card body-->
-                                        <div class="card-body pt-0">
-                                            <!--begin::Table-->
-                                            <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_customers_table">
-                                                <thead>
-                                                    
-                                                <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                        <th class="min-w-125px">Başlık</th>
-                                                        <th class="min-w-125px">Konu</th>
-                                                        <th class="min-w-125px">Son Yazan</th>
-                                                        <th class="min-w-125px">Tarih - Saat</th>
-                                                        <th class="text-end min-w-70px">İşlemler</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="fw-semibold text-gray-600">
-                                                    <?php 
-														if($_SESSION['role'] == 6 OR $_SESSION['role'] == 7){
-															$supportList->getTechnicalServiceSupportSolvedList($_SESSION['id']);
-														}if($_SESSION['role'] == 1){
-															$supportList->getTechnicalServiceSupportSolvedAdminList();
-														} 
-													?>
-                                                </tbody>
-                                            </table>
-                                            <!--end::Table-->
-                                        </div>
-                                        <!--end::Card body-->
-                                    </div>
+                                    <?php include_once "views/contents/add_content.php"; ?>
                                     <!--end::Card-->
-                                    <!--begin::Modals-->
-                                    <!--begin::Modal - Customers - Add-->
-                                    <?php // include_once "views/topics/add_topic.php" 
-                                    ?>
-                                    <!--end::Modal - Customers - Add-->
-                                    <!--end::Modals-->
                                 </div>
                                 <!--end::Content container-->
                             </div>
@@ -136,9 +101,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
         <!--end::Vendors Javascript-->
         <!--begin::Custom Javascript(used for this page only)-->
-        <script src="assets/js/custom/apps/showsupport/list/export.js"></script>
-        <script src="assets/js/custom/apps/showsupport/list/list.js"></script>
-        <script src="assets/js/custom/apps/showsupport/add.js"></script>
+        <script src="assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
+        <script src="assets/js/custom/apps/contents/list/export.js"></script>
+        <script src="assets/js/custom/apps/contents/list/list.js"></script>
+        <script src="assets/js/custom/apps/contents/list/topicadd.js"></script>
+        <script src="assets/js/custom/apps/contents/add.js"></script>
+        <script src="assets/js/custom/apps/contents/create.js"></script>
         <script src="assets/js/widgets.bundle.js"></script>
         <script src="assets/js/custom/widgets.js"></script>
         <script src="assets/js/custom/apps/chat/chat.js"></script>

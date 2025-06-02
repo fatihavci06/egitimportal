@@ -314,7 +314,7 @@ class ShowTechnicalServiceSupport extends TechnicalServiceSupport
             $supportList = '
                     <tr>
                         <td>
-                            <a href="destek-talebi?id=' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
+                            <a href="teknik-servis-destek-talebi?id=' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
                         </td>
                         <td>
                             ' .  $value['subjectName'] . '
@@ -324,7 +324,7 @@ class ShowTechnicalServiceSupport extends TechnicalServiceSupport
                         </td>
                         <td>' . $dateFormat->changeDateHour($value['created_at']) . '</td>
                         <td class="text-end">
-                            <a href="destek-talebi?id=' . $value['slug'] . '" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
+                            <a href="teknik-servis-destek-talebi?id=' . $value['slug'] . '" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Oku
                                 <i class="ki-duotone ki-arrow-right fs-5 ms-1">
                                     <span class="path1"></span>
@@ -352,7 +352,7 @@ class ShowTechnicalServiceSupport extends TechnicalServiceSupport
             $supportList = '
                     <tr>
                         <td>
-                            <a href="destek-talebi?id=' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
+                            <a href="teknik-servis-destek-talebi?id=' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
                         </td>
                         <td>
                             ' . $value['subjectName'] . '
@@ -362,7 +362,7 @@ class ShowTechnicalServiceSupport extends TechnicalServiceSupport
                         </td>
                         <td>' . $dateFormat->changeDateHour($value['created_at']) . '</td>
                         <td class="text-end">
-                            <a href="destek-talebi?id=' . $value['slug'] . '" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
+                            <a href="teknik-servis-destek-talebi?id=' . $value['slug'] . '" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Oku
                                 <i class="ki-duotone ki-arrow-right fs-5 ms-1">
                                     <span class="path1"></span>
