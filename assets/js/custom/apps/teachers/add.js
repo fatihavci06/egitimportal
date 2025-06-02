@@ -9,6 +9,26 @@ var KTModalCustomersAdd = function () {
 	var form;
 	var modal;
 
+	
+    const maxLength = 11;
+	
+    const inputTel = $('#telephone');
+
+    // Karakter girişini engelleme
+    inputTel.on('input', function () {
+        if (this.value.length > maxLength) {
+            this.value = this.value.slice(0, maxLength);
+        }
+    });
+
+    const sayiGirisInput = document.getElementById("telephone");
+
+    sayiGirisInput.addEventListener("input", function (e) {
+        const girilenDeger = e.target.value;
+        const sadeceRakam = girilenDeger.replace(/[^0-9]/g, ""); // Sadece rakamları al
+        e.target.value = sadeceRakam; // Giriş değerini güncelle
+    });
+
 	// Init form inputs
 	var handleForm = function () {
 		// Init form validation rules. For more info check the FormValidation plugin's official documentation:https://formvalidation.io/
@@ -61,13 +81,22 @@ var KTModalCustomersAdd = function () {
 							}
 						}
 					},
-					'telephone': {
-						validators: {
+                    'telephone': {
+                        validators: {
+                            regexp: {
+                                regexp: /^0/,
+                                message: 'Telefon numarası 0 ile başlamalıdır'
+                            },
+                            stringLength: {
+                                min: 11,
+                                max: 11,
+                                message: 'Telefon numarası 11 haneli olmalıdır'
+                            },
 							notEmpty: {
-								message: 'Telefon Numarası zorunlu'
+								message: 'Telefon numarası zorunlu'
 							}
-						}
-					},
+                        }
+                    },
 					'school': {
 						validators: {
 							notEmpty: {
@@ -86,13 +115,6 @@ var KTModalCustomersAdd = function () {
 						validators: {
 							notEmpty: {
 								message: 'Ders zorunlu'
-							}
-						}
-					},
-					'password': {
-						validators: {
-							notEmpty: {
-								message: 'Parola zorunlu'
 							}
 						}
 					},

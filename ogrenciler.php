@@ -84,9 +84,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <!--begin::Toolbar-->
                                                 <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
                                                     <!--begin::Add school-->
-                                                    <?php if (!empty($waitingStudents->getWaitingMoneyTransfers())) { ?><a href="havale-beklenenler"><button type="button" class="btn btn-primary me-3" data-bs-toggle="modal">Havalesi Beklenen Öğrenciler</button></a><?php } ?>
+                                                    <?php if (!empty($waitingStudents->getWaitingMoneyTransfers()) AND $_SESSION['role'] == 1) { ?><a href="havale-beklenenler"><button type="button" class="btn btn-primary me-3" data-bs-toggle="modal">Havalesi Beklenen Öğrenciler</button></a><?php } ?>
                                                     <!--end::Add school-->
                                                     <!--begin::Filter-->
+                                                    <?php if ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 OR $_SESSION['role'] == 8) { ?>
                                                     <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
                                                         <i class="ki-duotone ki-filter fs-2">
                                                             <span class="path1"></span>
@@ -159,6 +160,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     </div>
                                                     <!--end::Menu 1-->
                                                     <!--end::Filter-->
+                                                    <?php } ?>
                                                     <!--begin::Add school-->
                                                     <?php if ($_SESSION['role'] != 4) { ?><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_customer">Öğrenci Ekle</button><?php } ?>
                                                     <!--end::Add school-->

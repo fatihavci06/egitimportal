@@ -116,12 +116,32 @@ class GetContent extends Dbh
 
 	public function getAllContents()
 	{
-		$stmt = $this->connect()->prepare('SELECT school_content_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName, subtopics_lnp.name AS subTopicName FROM school_content_lnp LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id ORDER BY school_content_lnp.id DESC');
+		if ($_SESSION['role'] == 1) {
+			$stmt = $this->connect()->prepare('SELECT school_content_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName, subtopics_lnp.name AS subTopicName FROM school_content_lnp LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id ORDER BY school_content_lnp.id DESC');
 
-		if (!$stmt->execute()) {
-			$stmt = null;
-			exit();
-		}
+			if (!$stmt->execute()) {
+				$stmt = null;
+				exit();
+			}
+		} elseif ($_SESSION['role'] == 3) {
+			$school = $_SESSION['school_id'];
+			$stmt = $this->connect()->prepare('SELECT school_content_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName, subtopics_lnp.name AS subTopicName FROM school_content_lnp LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id WHERE school_content_lnp.school_id = ? ORDER BY school_content_lnp.id DESC');
+
+			if (!$stmt->execute([$school])) {
+				$stmt = null;
+				exit();
+			}
+		}  elseif ($_SESSION['role'] == 4) {
+			$school = $_SESSION['school_id'];
+			$class_id = $_SESSION['class_id'];
+			$lesson_id = $_SESSION['lesson_id'];
+			$stmt = $this->connect()->prepare('SELECT school_content_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName, subtopics_lnp.name AS subTopicName FROM school_content_lnp LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id WHERE school_content_lnp.school_id = ? AND school_content_lnp.class_id = ? AND school_content_lnp.lesson_id = ? ORDER BY school_content_lnp.id DESC');
+
+			if (!$stmt->execute([$school, $class_id, $lesson_id])) {
+				$stmt = null;
+				exit();
+			}
+		} 
 
 		$contentData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -180,7 +200,6 @@ class GetContent extends Dbh
 		return $contentData;
 
 		$stmt = null;
-
 	}
 
 	public function getContentWordwallsById($id)
@@ -197,7 +216,6 @@ class GetContent extends Dbh
 		return $contentData;
 
 		$stmt = null;
-
 	}
 
 	public function getContentVideosById($id)
@@ -214,26 +232,25 @@ class GetContent extends Dbh
 		return $contentData;
 
 		$stmt = null;
-
 	}
 
 	//Vimeo linkinden iframe kodu oluşturma fonksiyonu
 
 
-	public function generateVimeoIframe($vimeoUrl,$id ,$video_timestamp)
+	public function generateVimeoIframe($vimeoUrl, $id, $video_timestamp)
 	{
 		// Vimeo linkinden video ID'sini ve varsa hash'i ayıklamak için bir düzenli ifade kullanalım.
 		// Bu ifade hem "https://vimeo.com/VIDEO_ID" hem de "https://vimeo.com/VIDEO_ID/HASH" formatlarını yakalar.
 		$pattern = '/vimeo\.com\/(\d+)(?:\/([a-zA-Z0-9]+))?/';
 		preg_match($pattern, $vimeoUrl, $matches);
 
-		
+
 		if (isset($matches[1])) {
 			$videoId = $matches[1];
 			$hash = isset($matches[2]) ? $matches[2] : ''; // Hash varsa al, yoksa boş bırak
-		
-			$timestamp = $video_timestamp['timestamp_in_seconds']?? 0;
-        
+
+			$timestamp = $video_timestamp['timestamp_in_seconds'] ?? 0;
+
 			// Iframe için temel embed URL'si
 			$embedUrl = "https://player.vimeo.com/video/{$videoId}";
 
@@ -245,7 +262,7 @@ class GetContent extends Dbh
 				$embedUrl .= "#t={$timestamp}";
 			}
 			// Iframe HTML kodunu oluştur
-			$iframeCode = '<iframe id="'.$id.'" src="' . htmlspecialchars($embedUrl) . '" width="100%" height="600" frameborder="0" allow="autoplay; fullscreen; picture-in-picture"></iframe>';
+			$iframeCode = '<iframe id="' . $id . '" src="' . htmlspecialchars($embedUrl) . '" width="100%" height="600" frameborder="0" allow="autoplay; fullscreen; picture-in-picture"></iframe>';
 			// 
 			// Opsiyonel: Videonun başlığını da ekleyebilirsiniz (aşağıdaki p etiketi gibi)
 			// $iframeCode .= '<p><a href="' . htmlspecialchars($vimeoUrl) . '">Vimeo\'da izle</a>.</p>';
@@ -270,7 +287,6 @@ class GetContent extends Dbh
 		return $contentData;
 
 		$stmt = null;
-
 	}
 
 	public function getContentInfoByIdsUnderSubTopic($subTopicId, $topicId, $unitId, $lessonId, $classId)
@@ -287,7 +303,6 @@ class GetContent extends Dbh
 		return $contentData;
 
 		$stmt = null;
-
 	}
 
 	protected function setContent($imgName, $slug, $name, $classes, $lessons, $units, $short_desc, $topics, $sub_topics, $content, $video_url, $file_urls, $imageFiles, $descriptions, $titles, $urls)

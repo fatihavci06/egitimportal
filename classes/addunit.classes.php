@@ -1,19 +1,28 @@
 <?php
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    // Oturum henüz başlatılmamışsa başlat
+    session_start();
+}
 
 class AddUnit extends Dbh {
 
 	protected function setUnit($imgName, $slug, $name, $classes, $lessons, $short_desc, $start_date, $end_date, $unit_order){
-		$stmt = $this->connect()->prepare('INSERT INTO units_lnp SET slug = ?, name = ?, class_id = ?, lesson_id = ?, short_desc=?, photo=?, school_id=?, start_date=?, end_date=?, order_no=?');
+		$stmt = $this->connect()->prepare('INSERT INTO units_lnp SET slug = ?, name = ?, class_id = ?, lesson_id = ?, short_desc=?, photo=?, school_id=?, teacher_id=?, start_date=?, end_date=?, order_no=?');
 
-		if ($_SESSION['role'] == 3){
+		if ($_SESSION['role'] == 3 OR $_SESSION['role'] == 4 OR $_SESSION['role'] == 8){
 			$school = $_SESSION['school_id'];
 		}else{
 			$school = 1;
 		}
 
-		if(!$stmt->execute([$slug, $name, $classes, $lessons, $short_desc, $imgName, $school, $start_date, $end_date, $unit_order])){
+		if($_SESSION ['role'] == 4){
+			$teacher = $_SESSION['id'];
+		}else{
+			$teacher = NULL;
+		}
+
+		if(!$stmt->execute([$slug, $name, $classes, $lessons, $short_desc, $imgName, $school, $teacher, $start_date, $end_date, $unit_order])){
 			$stmt = null;
 			//header("location: ../admin.php?error=stmtfailed");
 			exit();

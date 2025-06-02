@@ -84,6 +84,13 @@ var KTModalCustomersAdd = function () {
 							}
 						}
 					},
+					'units': {
+						validators: {
+							notEmpty: {
+								message: 'Ünite Seçimi zorunlu'
+							}
+						}
+					},
 				},
 				plugins: {
 					trigger: new FormValidation.plugins.Trigger(),

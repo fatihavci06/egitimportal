@@ -18,6 +18,28 @@ class ShowContents extends GetContent
 
         foreach ($contentInfo as $key => $value) {
 
+
+            if ($value['active'] == 1) {
+                $aktifArama = 'data-filter="Aktif"';
+                $aktifYazi = '<span class="badge badge-light-success">Aktif</span>';
+            } else {
+                $aktifArama = 'data-filter="Passive"';
+                $aktifYazi = '<span class="badge badge-light-danger">Pasif</span>';
+            }
+
+            $alter_button = $value['active'] ? "Pasif Yap" : "Aktif Yap";
+
+            if($_SESSION['role'] == 4) {
+                $passiveButton = '';
+            }else{
+                $passiveButton = '
+                                <!--begin::Menu item-->
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">' . $alter_button . '</a>
+                                </div>
+                                <!--end::Menu item-->';
+            }
+
             $subTopicName = $value['subTopicName'] ?? '-';
 
             $contentList = '
@@ -27,7 +49,7 @@ class ShowContents extends GetContent
                                 <input class="form-check-input" type="checkbox" value="1" />
                             </div>
                         </td>
-                        <td>
+                        <td data-file-id="'. $value['id'] .'">
                             <a href="./icerik-detay/' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
                         </td>
                         <td>
@@ -45,6 +67,7 @@ class ShowContents extends GetContent
                         <td>
                             ' . $value['className'] . '
                         </td>
+                        <td>' . $aktifYazi . '</td>
                         <td class="text-end">
                             <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
@@ -57,11 +80,7 @@ class ShowContents extends GetContent
                                     <a href="./icerik-detay/' . $value['slug'] . '" class="menu-link px-3">Görüntüle</a>
                                 </div>
                                 <!--end::Menu item-->
-                                <!--begin::Menu item-->
-                                <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
-                                </div>
-                                <!--end::Menu item-->
+                                ' . $passiveButton . '
                             </div>
                             <!--end::Menu-->
                         </td>

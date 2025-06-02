@@ -6,8 +6,11 @@ if (!defined('GUARD')) {
 include_once "classes/dbh.classes.php";
 include_once "classes/classes.classes.php";
 include_once "classes/classes-view.classes.php";
+include_once "classes/units.classes.php";
+include_once "classes/units-view.classes.php";
 
 $chooseClass = new ShowClass();
+$chooseUnit = new ShowUnit();
 
 ?>
 <!--begin::Form-->
@@ -101,6 +104,10 @@ $chooseClass = new ShowClass();
         </div>
         <!--end::Input group-->
 
+        <?php
+        if ($_SESSION['role'] != 4) {
+        ?>
+
         <!--begin::Input group-->
         <div class="fv-row mb-7 mt-7">
             <!--begin::Label-->
@@ -138,6 +145,39 @@ $chooseClass = new ShowClass();
             <!--end::Input-->
         </div>
         <!--end::Input group-->
+
+        <?php
+        } else {
+            $class_id = $_SESSION['class_id'];
+            $lesson_id = $_SESSION['lesson_id'];
+        ?>
+
+            <div class="fv-row">
+            <input class="form-select form-select-solid fw-bold" type="hidden" name="classes" id="classes" value="<?php echo $class_id; ?>">
+            </div>
+            <div class="fv-row">
+            <input class="form-select form-select-solid fw-bold" type="hidden" name="lessons" id="lessons" value="<?php echo $lesson_id; ?>">
+            </div>
+
+            <!--begin::Input group-->
+            <div class="fv-row mb-7">
+                <!--begin::Label-->
+                <label class="required fs-6 fw-semibold mb-2">Ünite</label>
+                <!--end::Label-->
+                <!--begin::Input-->
+                <select id="units" name="units" aria-label="Ünite Seçiniz" data-control="select2" data-placeholder="Ünite Seçiniz..." class="form-select form-select-solid fw-bold">
+                    <option value="">Ünite Seçin</option>
+                    <?php echo $chooseUnit->getUnitSelectList(); ?>
+                </select>
+                <!--end::Input-->
+            </div>
+            <!--end::Input group-->
+
+        
+
+        <?php
+        }
+        ?>
 
         <!--begin::Input group-->
         <div class="fv-row mb-7">
@@ -177,10 +217,10 @@ $chooseClass = new ShowClass();
         <!--begin::Input group-->
         <div class="fv-row mb-7">
             <!--begin::Label-->
-            <label class="required fs-6 fw-semibold mb-2">Konu Sırası</label>
+            <label class="required fs-6 fw-semibold mb-2">Alt Konu Sırası</label>
             <!--end::Label-->
             <!--begin::Input-->
-            <input type="number" class="form-control form-control-solid fw-bold pe-5" placeholder="Konu Sırası Girin" name="order" id="order">
+            <input type="number" class="form-control form-control-solid fw-bold pe-5" placeholder="Alt Konu Sırası Girin" name="order" id="order">
             <!--end::Input-->
         </div>
         <!--end::Input group-->

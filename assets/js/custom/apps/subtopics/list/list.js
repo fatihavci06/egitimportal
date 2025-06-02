@@ -23,11 +23,13 @@ var KTCustomersList = function () {
         datatable = $(table).DataTable({
             "info": false,
             'order': [
-                [1, 'asc']
+                [6, 'asc'],
+                [5, 'asc'],
+                [4, 'asc']
             ],
             'columnDefs': [
                 { orderable: false, targets: 0 }, // Disable ordering on column 0 (checkbox)
-                { orderable: false, targets: 5 }, // Disable ordering on column 6 (actions)
+                { orderable: false, targets: 10 }, // Disable ordering on column 10 (actions)
             ]
         });
 
@@ -81,7 +83,7 @@ var KTCustomersList = function () {
          });
      }*/
 
-    // Delete customer
+    // Delete alt konular
     var handleDeleteRows = () => {
         // Select all delete buttons
         const deleteButtons = table.querySelectorAll('[data-kt-customer-table-filter="delete_row"]');
@@ -96,15 +98,32 @@ var KTCustomersList = function () {
 
                 // Get customer name
                 const customerName = parent.querySelectorAll('td')[1].innerText;
-                const schoolEmail = parent.querySelectorAll('td')[3].innerText;
+
+                const tdElement = parent.querySelector('td[data-file-id]'); // İlk data-file-id'ye sahip td'yi seçer
+
+                if (tdElement) {
+                    var fileId = tdElement.dataset.fileId;
+                } else {
+                    console.log('Belirtilen <td> elemanı bulunamadı.');
+                }
+
+                var activeStatus = parent.querySelectorAll('td')[9].innerText;
+
+                if (activeStatus === "Aktif") {
+                    var activeStatus = "pasif";
+                    var statusVal = 0;
+                } else {
+                    var activeStatus = "aktif";
+                    var statusVal = 1;
+                }
 
                 // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
                 Swal.fire({
-                    text: customerName + " isimli okulu pasif yapmak istediğinizden emin misiniz?",
+                    text: customerName + " isimli alt konuyu " + activeStatus + " yapmak istediğinizden emin misiniz?",
                     icon: "warning",
                     showCancelButton: true,
                     buttonsStyling: false,
-                    confirmButtonText: "Evet, pasif yap!",
+                    confirmButtonText: "Evet, " + activeStatus + " yap!",
                     cancelButtonText: "Hayır, iptal et",
                     customClass: {
                         confirmButton: "btn fw-bold btn-danger",
@@ -115,16 +134,17 @@ var KTCustomersList = function () {
 
                         $.ajax({
                             type: "POST",
-                            url: "includes/update_active_school.inc.php",
+                            url: "includes/update_active_subtopic.inc.php",
                             data: {
-                                email: schoolEmail
+                                id: fileId,
+                                statusVal: statusVal,
                             },
                             dataType: "json",
                             success: function (response) {
                                 if (response.status === "success") {
 
                                     Swal.fire({
-                                        text: customerName + "adlı okul pasif hale gelmiştir!.",
+                                        text: customerName + "adlı alt konu " + activeStatus + " hale gelmiştir!.",
                                         icon: "success",
                                         buttonsStyling: false,
                                         confirmButtonText: "Tamam, anladım!",
@@ -134,7 +154,8 @@ var KTCustomersList = function () {
                                     }).then(function (result) {
                                         if (result.isConfirmed) {
                                             // Remove current row
-                                            datatable.row($(parent)).remove().draw();
+                                            //datatable.row($(parent)).remove().draw();
+                                            location.reload();
                                         }
                                     });
                                 } else {

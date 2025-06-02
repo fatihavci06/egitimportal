@@ -3,14 +3,19 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 4 )) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] == 3 or  $_SESSION['role'] == 4)) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
-
+    include "classes/weekly.classes.php";
+    include "classes/weekly-view.classes.php";
+    $weekly = new ShowWeekly();
     include_once "views/pages-head.php";
 ?>
+    <!--end::Head-->
+    <!--begin::Body-->
 
-    <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" class="app-default">
+    <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
+        <!--begin::Theme mode setup on page load-->
         <script>
             var defaultThemeMode = "light";
             var themeMode;
@@ -30,22 +35,29 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 document.documentElement.setAttribute("data-bs-theme", themeMode);
             }
         </script>
+        <!--end::Theme mode setup on page load-->
+        <!--begin::App-->
         <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
+            <!--begin::Page-->
             <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
+                <!--begin::Header-->
                 <?php include_once "views/header.php"; ?>
+                <!--end::Header-->
+                <!--begin::Wrapper-->
                 <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
+                    <!--begin::Sidebar-->
                     <?php include_once "views/sidebar.php"; ?>
+                    <!--end::Sidebar-->
+                    <!--begin::Main-->
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+                        <!--begin::Content wrapper-->
                         <div class="d-flex flex-column flex-column-fluid">
+                            <!--begin::Toolbar-->
                             <?php include_once "views/toolbar.php"; ?>
+                            <!--end::Toolbar-->
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <div class="row">
-
-                                        <div class="col-lg-4">
-                                            <label class=" fs-6 fw-semibold mb-2" for="title">Başlık</label>
-                                            <input type="text" class="form-control " placeholder="Test Başlığı" id="title">
-                                        </div>
 
                                         <div class="col-lg-4">
                                             <label class="required fs-6 fw-semibold mb-2" for="class_id">Sınıf Seçimi </label>
@@ -60,21 +72,21 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <?php } ?>
                                             </select>
                                         </div>
-                                        <div class="col-lg-4 mt-3">
+                                        <div class="col-lg-4">
                                             <label class="required fs-6 fw-semibold mb-2" for="lesson_id">Dersler</label>
                                             <select class="form-select" id="lesson_id" required>
                                                 <option value="">Ders seçiniz</option>
                                             </select>
                                         </div>
-                                    </div>
-                                    <div class="row mt-3">
 
-                                        <div class="col-lg-4 mt-4">
-                                            <label class="required fs-6 fw-semibold mb-2" for="unit_id">Ünite Seçimi</label>
+                                        <div class="col-lg-4">
+                                            <label class="fs-6 fw-semibold mb-2" for="unit_id">Ünite Seçimi</label>
                                             <select class="form-select" id="unit_id" required>
                                                 <option value="">Ünite seçiniz</option>
                                             </select>
                                         </div>
+                                    </div>
+                                    <div class="row mt-3">
                                         <div class="col-lg-4 mt-4">
                                             <label class="fs-6 fw-semibold mb-2" for="topic_id">Konu Seçimi</label>
                                             <select class="form-select" id="topic_id" required>
@@ -97,132 +109,88 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             <button type="button" id="clearFiltersButton" class="btn btn-secondary btn-sm w-100">Temizle</button>
                                         </div>
                                     </div>
-                                    <div id="tests_container"></div>
-
-                                    <div class="card mt-5">
-                                        <div class="card-header border-0 pt-6">
-                                            <h3 class="card-title align-items-start flex-column">
-                                                <span class="card-label fw-bold fs-3 mb-1">Filtrelenmiş Test Sonuçları</span>
-                                            </h3>
-                                        </div>
-                                        <div class="card-body py-4">
-                                            <table class="table align-middle table-row-dashed fs-6 gy-5" id="tests_datatable">
-                                                <thead>
-                                                    <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
-                                                        <th>ID</th>
-                                                        <th>Test Başlığı</th>
-
-                                                        <th>Oluşturulma Tarihi</th>
-                                                        <th>İşlemler</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="text-gray-600 fw-semibold">
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-
 
                                 </div>
                             </div>
+                            <!--begin::Content-->
+                            <div id="kt_app_content" class="app-content flex-column-fluid">
+                                <!--begin::Content container-->
+                                <div id="kt_app_content_container" class="app-container container-fluid">
+                                    <!--begin::Card-->
+                                    <div class="card">
+                                        <!--begin::Card header-->
+                                        <div class="card-header">
+                                            <h2 class="card-title fw-bold">Takvim</h2>
+                                        </div>
+                                        <!--end::Card header-->
+                                        <!--begin::Card body-->
+                                        <div class="card-body">
+                                            <!--begin::Calendar-->
+                                            <div id="kt_calendar_app"></div>
+                                            <!--end::Calendar-->
+                                        </div>
+                                        <!--end::Card body-->
+                                    </div>
+                                    <!--end::Card-->
+                                    <!--begin::Modals-->
+                                    <!--end::Modals-->
+                                </div>
+                                <!--end::Content container-->
+                            </div>
+                            <!--end::Content-->
                         </div>
+                        <!--end::Content wrapper-->
+                        <!--begin::Footer-->
+                        <?php include_once "views/footer.php"; ?>
+                        <!--end::Footer-->
                     </div>
-                    <?php include_once "views/footer.php"; ?>
+                    <!--end:::Main-->
+                    <!--begin::aside-->
+                    <?php include_once "views/aside.php"; ?>
+                    <!--end::aside-->
                 </div>
-                <?php include_once "views/aside.php"; ?>
+                <!--end::Wrapper-->
             </div>
+            <!--end::Page-->
         </div>
-        </div>
+        <!--end::App-->
+        <!--begin::Scrolltop-->
         <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
             <i class="ki-duotone ki-arrow-up">
                 <span class="path1"></span>
                 <span class="path2"></span>
             </i>
         </div>
+        <!--end::Scrolltop-->
+        <!--begin::Javascript-->
         <script>
             var hostUrl = "assets/";
         </script>
+        <!--begin::Global Javascript Bundle(mandatory for all pages)-->
         <script src="assets/plugins/global/plugins.bundle.js"></script>
         <script src="assets/js/scripts.bundle.js"></script>
+        <!--end::Global Javascript Bundle-->
+        <!--begin::Vendors Javascript(used for this page only)-->
+        <script src="assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
         <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-        <script src="assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
-
+        <!--end::Vendors Javascript-->
+        <!--begin::Custom Javascript(used for this page only)-->
+        <script src="assets/js/custom/apps/weekly-calendar/calendar.js"></script>
+        <script src="assets/js/widgets.bundle.js"></script>
+        <script src="assets/js/custom/widgets.js"></script><!-- 
+        <script src="assets/js/custom/apps/chat/chat.js"></script>
+        <script src="assets/js/custom/utilities/modals/upgrade-plan.js"></script>
+        <script src="assets/js/custom/utilities/modals/create-account.js"></script>
+        <script src="assets/js/custom/utilities/modals/create-app.js"></script>
+        <script src="assets/js/custom/utilities/modals/users-search.js"></script> -->
+        <!--end::Custom Javascript-->
         <script>
-            $(document).ready(function() {
-
-                // DataTable'ı başlat
-                // Başlangıçta ajax yapılandırmasını kaldırdık, böylece tablo boş başlayacak.
-                var testsDataTable = $('#tests_datatable').DataTable({
-                    ajax: {
-                        url: 'includes/ajax.php?service=getFilteredTests',
-                        type: 'POST',
-                        data: function(d) {
-                            // 'd' objesi DataTables'ın varsayılan parametrelerini (arama, sayfalama, sıralama) içerir.
-                            // Biz buraya kendi filtre input'larımızdan gelen değerleri ekliyoruz.
-                            // Bu değerler, AJAX isteği ile backend'e POST olarak gönderilecektir.
-                            d.title = $('#title').val();
-                            d.class_id = $('#class_id').val();
-                            d.lesson_id = $('#lesson_id').val();
-                            d.unit_id = $('#unit_id').val();
-                            d.topic_id = $('#topic_id').val();
-                            d.subtopic_id = $('#subtopic_id').val();
-                            // DataTables'ın global arama kutusu değeri otomatik olarak 'd.search.value' olarak zaten gönderilir.
-                        },
-                        dataSrc: function(json) {
-                            // Backend'den gelen JSON yanıtını kontrol ediyoruz.
-                            // Eğer status 'success' ise, 'data' anahtarındaki diziyi DataTables'a gönderiyoruz.
-                            if (json.status === 'success') {
-                                return json.data;
-                            } else {
-                                // Hata durumunda konsola log düşüp boş bir dizi döndürüyoruz.
-                                console.error("Backend'den hata döndü:", json.message);
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Hata!',
-                                    text: json.message || 'Veriler yüklenirken bir hata oluştu.',
-                                    confirmButtonText: 'Tamam'
-                                });
-                                return [];
-                            }
-                    }
-                    }, // Yükleme göstergesini etkinleştir
-                    order: [[0, 'desc']],
-                    // ajax yapılandırması burada yok, sadece filtreleme ile tetiklenecek.
-                    columns: [{
-                            data: 'id'
-                        },
-                        {
-                            data: 'test_title'
-                        },
-                        {
-                            data: 'created_at'
-                        },
-                        {
-                            data: null,
-                            orderable: false,
-                            searchable: false,
-                            render: function(data, type, row) {
-                                return `
-                        <button class="btn btn-sm btn-primary edit-test-btn" data-id="${row.id}" title="Testi Düzenle">
-                            <i class="fas fa-edit"></i> Düzenle
-                        </button>
-                        <button class="btn btn-sm btn-danger delete-test-btn" data-id="${row.id}" title="Testi Sil">
-                            <i class="fas fa-trash"></i> Sil
-                        </button>
-                    `;
-                            }
-                        }
-                    ]
-                    // ... (Diğer DataTables ayarları: dom, vb. eklenebilir) ...
-                });
+            
 
                 // Filtreleme butonu tıklaması
                 $('#filterButton').on('click', function() {
                     var classId = $('#class_id').val();
                     var lessonId = $('#lesson_id').val();
-                    var unitId = $('#unit_id').val();
 
                     // Sınıf ve Ders seçimi zorunlu kontrolü
                     if (!classId || classId === '') {
@@ -233,21 +201,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             confirmButtonText: 'Tamam'
                         });
                         $('#class_id').addClass('is-invalid'); // Bootstrap ile görsel uyarı
-                        $('#lesson_id').addClass('is-invalid'); // Bootstrap ile görsel uyarı
-                        $('#unit_id').addClass('is-invalid'); // Bootstrap ile görsel uyarı
                         return; // Filtreleme işlemini durdur
                     } else {
                         $('#class_id').removeClass('is-invalid');
-                        $('#lesson_id').removeClass('is-invalid');
-                        $('#unit_id').removeClass('is-invalid');
                     }
 
-
-                    testsDataTable.ajax.reload(function(json) {
-                        // Bu callback fonksiyonu, AJAX isteği tamamlandığında ve DataTables verileri işlediğinde çalışır.
-                        // dataSrc zaten hata durumunu ele aldığı için burası opsiyoneldir.
-                        // console.log("DataTables yeniden yüklendi:", json);
-                    });
                 });
 
                 // Temizle butonu tıklaması
@@ -259,7 +217,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     $('#unit_id').val('');
                     $('#topic_id').val('');
                     $('#subtopic_id').val('');
-                    testsDataTable.ajax.reload(null, false);
                     // Temizlenmiş filtrelerle DataTable'ı yeniden yükle.
                     // Bu, 'getFilteredTests' servisinize boş filtre değerleri gönderecektir.
 
@@ -423,74 +380,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         });
                     }
                 });
-
-                // --- İşlemler Butonları İçin Fonksiyonlar ---
-
-                // Testi Düzenle butonu tıklama olayı
-                $('#tests_datatable tbody').on('click', '.edit-test-btn', function() {
-                    var testId = $(this).data('id');
-                    // Düzenleme sayfasına yönlendirme
-                    window.location.href = 'test-guncelle.php?id=' + testId; // edit_test.php sayfasını sizin oluşturmanız gerekecek
-                });
-
-                // Testi Sil butonu tıklama olayı
-                $('#tests_datatable tbody').on('click', '.delete-test-btn', function() {
-                    var testId = $(this).data('id');
-                    Swal.fire({
-                        title: 'Emin misiniz?',
-                        text: "Bu testi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#3085d6',
-                        confirmButtonText: 'Evet, Sil!',
-                        cancelButtonText: 'İptal'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            $.ajax({
-                                url: 'includes/ajax.php?service=deleteTest', // Silme işlemini yapacak backend endpoint'iniz
-                                type: 'POST',
-                                data: {
-                                    id: testId
-                                },
-                                dataType: 'json',
-                                success: function(response) {
-                                    if (response.status === 'success') {
-                                        Swal.fire(
-                                            'Silindi!',
-                                            'Test başarıyla silindi.',
-                                            'success'
-                                        );
-                                        testsDataTable.ajax.reload(); // DataTable'ı yenile
-                                    } else {
-                                        Swal.fire(
-                                            'Hata!',
-                                            response.message || 'Test silinirken bir hata oluştu.',
-                                            'error'
-                                        );
-                                    }
-                                },
-                                error: function(xhr) {
-                                    Swal.fire(
-                                        'Hata!',
-                                        'Sunucu ile iletişimde bir sorun oluştu.',
-                                        'error'
-                                    );
-                                    handleAjaxError(xhr);
-                                }
-                            });
-                        }
-                    });
-                });
-
-                // AJAX hatalarını işlemek için genel bir fonksiyon (isteğe bağlı)
-                function handleAjaxError(xhr) {
-                    console.error("AJAX isteğinde hata:", xhr.status, xhr.statusText, xhr.responseText);
-                    // Kullanıcıya daha bilgilendirici bir hata mesajı gösterebilirsiniz.
-                }
-            });
         </script>
+        <!--end::Javascript-->
     </body>
+    <!--end::Body-->
 
 </html>
 <?php } else {

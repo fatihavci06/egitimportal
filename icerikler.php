@@ -113,6 +113,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <th class="min-w-125px">Ünite</th>
                                                         <th class="min-w-125px">Ders</th>
                                                         <th class="min-w-125px">Sınıf</th>
+                                                        <th class="min-w-125px">Durum</th>
                                                         <th class="text-end min-w-70px">İşlemler</th>
                                                     </tr>
                                                 </thead>
@@ -173,7 +174,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <!--begin::Custom Javascript(used for this page only)-->
         <script src="assets/js/custom/apps/contents/list/export.js"></script>
         <script src="assets/js/custom/apps/contents/list/list.js"></script>
-        <script src="assets/js/custom/apps/contents/add.js"></script>
+        <!-- <script src="assets/js/custom/apps/contents/add.js"></script> -->
         <script src="assets/js/widgets.bundle.js"></script>
         <script src="assets/js/custom/widgets.js"></script>
         <script src="assets/js/custom/apps/chat/chat.js"></script>

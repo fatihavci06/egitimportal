@@ -211,7 +211,7 @@ var KTModalCustomersAdd = function () {
 			var classChoose = $("#classes").val();
 
 			var lessonsChoose = $("#lessons").val();
-
+			
 			var unitsChoose = $("#units").val();
 
 

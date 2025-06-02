@@ -33,7 +33,7 @@ class Units extends Dbh
 			$school = $_SESSION['school_id'];
 			$class_id = $_SESSION['class_id'];
 			$lesson_id = $_SESSION['lesson_id'];
-			$stmt = $this->connect()->prepare('SELECT units_lnp.id AS unitID, units_lnp.name AS unitName, units_lnp.slug AS unitSlug, classes_lnp.name AS className, lessons_lnp.name AS lessonName FROM units_lnp INNER JOIN classes_lnp ON units_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON units_lnp.lesson_id = lessons_lnp.id WHERE units_lnp.school_id = ? AND units_lnp.class_id = ? AND units_lnp.lesson_id = ?');
+			$stmt = $this->connect()->prepare('SELECT units_lnp.id AS unitID, units_lnp.name AS unitName, units_lnp.slug AS unitSlug, units_lnp.start_date AS unitStartDate, units_lnp.end_date AS unitEndDate, units_lnp.order_no AS unitOrder, units_lnp.active AS unitActive, classes_lnp.name AS className, classes_lnp.slug AS classSlug, lessons_lnp.name AS lessonName FROM units_lnp INNER JOIN classes_lnp ON units_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON units_lnp.lesson_id = lessons_lnp.id WHERE units_lnp.school_id = ? AND units_lnp.class_id = ? AND units_lnp.lesson_id = ?');
 
 			if (!$stmt->execute(array($school, $class_id, $lesson_id))) {
 				$stmt = null;
@@ -83,7 +83,7 @@ class Units extends Dbh
 
 	protected function getUnitsListStu($lessonId, $classId, $schoolId)
 	{
-		$stmt = $this->connect()->prepare('SELECT id, name, slug, short_desc, photo FROM units_lnp WHERE lesson_id = ? AND class_id = ? AND school_id = ?');
+		$stmt = $this->connect()->prepare('SELECT id, name, slug, short_desc, photo FROM units_lnp WHERE lesson_id = ? AND class_id = ? AND school_id = ? AND active = 1');
 
 		if (!$stmt->execute(array($lessonId, $classId, $schoolId))) {
 			$stmt = null;
@@ -117,11 +117,31 @@ class Units extends Dbh
 	public function getOneUnitForDetails($slug)
 	{
 
-		$stmt = $this->connect()->prepare('SELECT units_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, lessons_lnp.id AS lessonId FROM units_lnp INNER JOIN classes_lnp ON units_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON units_lnp.lesson_id = lessons_lnp.id WHERE units_lnp.slug = ?');
+		if ($_SESSION['role'] == 1) {
+			$stmt = $this->connect()->prepare('SELECT units_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, lessons_lnp.id AS lessonId FROM units_lnp INNER JOIN classes_lnp ON units_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON units_lnp.lesson_id = lessons_lnp.id WHERE units_lnp.slug = ?');
 
-		if (!$stmt->execute(array($slug))) {
-			$stmt = null;
-			exit();
+			if (!$stmt->execute(array($slug))) {
+				$stmt = null;
+				exit();
+			}
+		} elseif ($_SESSION['role'] == 3 OR $_SESSION['role'] == 8) {
+			$school = $_SESSION['school_id'];
+			$stmt = $this->connect()->prepare('SELECT units_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, lessons_lnp.id AS lessonId FROM units_lnp INNER JOIN classes_lnp ON units_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON units_lnp.lesson_id = lessons_lnp.id WHERE units_lnp.slug = ? AND units_lnp.school_id = ?');
+
+			if (!$stmt->execute(array($slug, $school))) {
+				$stmt = null;
+				exit();
+			}
+		} elseif ($_SESSION['role'] == 4) {
+			$school = $_SESSION['school_id'];
+			$class_id = $_SESSION['class_id'];
+			$lesson_id = $_SESSION['lesson_id'];
+			$stmt = $this->connect()->prepare('SELECT units_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, lessons_lnp.id AS lessonId FROM units_lnp INNER JOIN classes_lnp ON units_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON units_lnp.lesson_id = lessons_lnp.id WHERE units_lnp.slug = ? AND units_lnp.school_id = ? AND units_lnp.class_id = ? AND units_lnp.lesson_id = ?');
+
+			if (!$stmt->execute(array($slug, $school, $class_id, $lesson_id))) {
+				$stmt = null;
+				exit();
+			}
 		}
 
 		$unitData = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -205,5 +225,4 @@ class Units extends Dbh
 		$stmt = null;
 		$stmt2 = null;
 	}
-
 }
