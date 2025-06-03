@@ -27,6 +27,17 @@ class ShowUnit extends Units
 
             $alter_button = $value['unitActive'] ? "Pasif Yap" : "Aktif Yap";
 
+            if($_SESSION['role'] == 4) {
+                $passiveButton = '';
+            }else{
+                $passiveButton = '
+                                <!--begin::Menu item-->
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">' . $alter_button . '</a>
+                                </div>
+                                <!--end::Menu item-->';
+            }
+
             $lessonList = '
                     <tr>
                         <td>
@@ -65,11 +76,7 @@ class ShowUnit extends Units
                                     <a href="./unite-detay/' . $value['unitSlug'] . '" class="menu-link px-3">Görüntüle</a>
                                 </div>
                                 <!--end::Menu item-->
-                                <!--begin::Menu item-->
-                                <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">' . $alter_button . '</a>
-                                </div>
-                                <!--end::Menu item-->
+                                ' . $passiveButton . '
                             </div>
                             <!--end::Menu-->
                         </td>
@@ -300,6 +307,26 @@ class ShowUnit extends Units
         }
     }
 
+    // Get Unit List Select For Teacher
+
+    public function getUnitSelectList()
+    {
+
+        $unitInfo = $this->getUnitsList();
+
+        $dateFormat = new DateFormat();
+
+        $unitList = '';
+
+        foreach ($unitInfo as $key => $value) {
+
+            $unitList .= '
+                    <option value="' . $value['unitID'] . '">' . $value['unitName'] . '</option>
+                ';
+        }
+            return $unitList;
+    }
+
     // Show Unit
 
     public function showOneUnit($slug)
@@ -308,7 +335,7 @@ class ShowUnit extends Units
         $unitInfo = $this->getOneUnitForDetails($slug);
 
         if (count($unitInfo) == 0) {
-            $unitList = header("Location: http://localhost/lineup_campus/404.php"); // 404 sayfasına yönlendir
+            $unitList = header("Location: ../404.php"); // 404 sayfasına yönlendir
             echo $unitList;
             return;
         }

@@ -1,5 +1,9 @@
 <?php
 
+include_once 'createpassword.classes.php';
+include_once 'Mailer.php';
+include_once 'school.classes.php';
+
 class AddTeacherContr extends AddTeacher
 {
 
@@ -16,9 +20,8 @@ class AddTeacherContr extends AddTeacher
 	private $school;
 	private $classes;
 	private $lesson;
-	private $password;
 
-	public function __construct($photoSize, $photoName, $fileTmpName, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $lesson, $password)
+	public function __construct($photoSize, $photoName, $fileTmpName, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $lesson)
 	{
 		$this->photoSize = $photoSize;
 		$this->photoName = $photoName;
@@ -33,7 +36,6 @@ class AddTeacherContr extends AddTeacher
 		$this->school = $school;
 		$this->classes = $classes;
 		$this->lesson = $lesson;
-		$this->password = $password;
 	}
 
 	public function addTeacherDb()
@@ -60,14 +62,14 @@ class AddTeacherContr extends AddTeacher
 			$slug = $slug;
 		}*/
 
-		if($this->fileTmpName != NULL){
+		if ($this->fileTmpName != NULL) {
 			$imageSent = new ImageUpload();
 			$img = $imageSent->profileImage($this->photoName, $this->photoSize, $this->fileTmpName, $slug);
 			$imgName = $img['image'];
-		}else{
-			if($this->gender == "Kız"){
+		} else {
+			if ($this->gender == "Kız") {
 				$imgName = 'kiz.jpg';
-			}else{
+			} else {
 				$imgName = 'erkek.jpg';
 			}
 		}
@@ -75,7 +77,7 @@ class AddTeacherContr extends AddTeacher
 		$usernameRes = $this->checkUsername($this->username);
 
 		if (count($usernameRes) > 0) {
-			echo json_encode(["status" => "error", "message" => "Hata: Bu kullanıcı daha önce kullanılmış!"]);
+			echo json_encode(["status" => "error", "message" => "Hata: Bu kullanıcı adı daha önce kullanılmış!"]);
 			die();
 		}
 
@@ -86,6 +88,16 @@ class AddTeacherContr extends AddTeacher
 			die();
 		}
 
-		$this->setTeacher($imgName, $this->name, $this->surname, $this->username, $this->gender, $this->birthdate, $this->email, $this->telephone, $this->school, $this->classes, $this->lesson, $this->password);
+		$createPassword = new CreatePassword();
+		$teacherPassword = $createPassword->gucluSifreUret(15);
+		$teacherPasswordHash = password_hash($teacherPassword, PASSWORD_DEFAULT);
+
+		$this->setTeacher($imgName, $this->name, $this->surname, $this->username, $this->gender, $this->birthdate, $this->email, $this->telephone, $this->school, $this->classes, $this->lesson, $teacherPasswordHash);
+
+		$getSchool = new School();
+		$schoolData = $getSchool->getOneSchoolById($this->school);
+
+		$mailer = new Mailer();
+		$mailer->sendTeacherEmail($this->name, $this->surname, $this->email, $teacherPassword, $this->username, $schoolData['name']);
 	}
 }

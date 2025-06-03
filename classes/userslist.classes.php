@@ -7,7 +7,7 @@ class User extends Dbh
 	{
 
 		if ($_SESSION['role'] == 1) {
-			$stmt = $this->connect()->prepare('SELECT users_lnp.id, users_lnp.active, users_lnp.name, users_lnp.surname, users_lnp.username, users_lnp.created_at, users_lnp.email, users_lnp.telephone, users_lnp.photo, userroles_lnp.name AS roleName FROM users_lnp INNER JOIN userroles_lnp ON users_lnp.role = userroles_lnp.id ORDER BY users_lnp.role ASC');
+			$stmt = $this->connect()->prepare(query: 'SELECT users_lnp.id, users_lnp.active, users_lnp.name, users_lnp.surname, users_lnp.username, users_lnp.created_at, users_lnp.email, users_lnp.telephone, users_lnp.photo, userroles_lnp.name AS roleName FROM users_lnp INNER JOIN userroles_lnp ON users_lnp.role = userroles_lnp.id ORDER BY users_lnp.role ASC');
 
 			if (!$stmt->execute(array())) {
 				$stmt = null;
@@ -40,6 +40,26 @@ class User extends Dbh
 		$stmt = null;
 	}
 
+	public function getAllUsers()
+	{
+		$query = "
+		SELECT 
+		users_lnp.id,
+		users_lnp.name,
+		users_lnp.surname,
+		users_lnp.username,
+		users_lnp.email,
+		users_lnp.telephone,
+		users_lnp.photo,
+		userroles_lnp.name AS roleName 
+		FROM users_lnp 
+		INNER JOIN userroles_lnp ON users_lnp.role = userroles_lnp.id ORDER BY users_lnp.role ASC
+		";
+		$stmt = $this->connect()->prepare($query);
+		$stmt->execute();
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+	}
 	public function getOneUser($slug)
 	{
 
@@ -91,7 +111,8 @@ class User extends Dbh
 		$stmt = null;
 	}
 
-	public function getlnpAdmin(){
+	public function getlnpAdmin()
+	{
 		$stmt = $this->connect()->prepare('SELECT email FROM users_lnp WHERE school_id = ? AND role = ?');
 
 		if (!$stmt->execute(array("1", "1"))) {

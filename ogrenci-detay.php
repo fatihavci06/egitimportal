@@ -15,7 +15,18 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 	$school = new School();
 	$slug = $_GET['q'];
 	include_once "views/pages-head.php";
-	$getStudentId = $studentId->getStudentId($slug);
+
+	if($_SESSION['role'] == 1){
+		$getStudentId = $studentId->getStudentId($slug);
+	}elseif($_SESSION['role'] == 4){
+		$getStudentId = $studentId->getStudentIdForTeacher($slug, $_SESSION['school_id'], $_SESSION['class_id']);
+	}
+
+	if($getStudentId == null){
+		header("location: ../404.php");
+		exit();
+	}
+
 
 	$studentInfo = $student->getOneStudent($getStudentId);
 

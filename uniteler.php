@@ -3,7 +3,7 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] == 3 or  $_SESSION['role'] == 4)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] == 3 or  $_SESSION['role'] == 4 or  $_SESSION['role'] == 8)) {
     include_once "classes/dbh.classes.php";
     include "classes/units.classes.php";
     include "classes/units-view.classes.php";
@@ -82,7 +82,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                                             <div class="card-toolbar">
                                                 <!--begin::Toolbar-->
                                                 <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
-
+                                                    <?php if ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 OR $_SESSION['role'] == 8) { ?>
                                                     <!--begin::Filter-->
                                                     <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
                                                         <i class="ki-duotone ki-filter fs-2">
@@ -157,6 +157,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                                                     </div>
                                                     <!--end::Menu 1-->
                                                     <!--end::Filter-->
+                                                    <?php } ?>
                                                     <!--begin::Add school-->
                                                     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#kt_modal_add_customer">Ünite Ekle</button>
                                                     <!--end::Add school-->

@@ -210,6 +210,28 @@ class ShowTopic extends Topics
 
         foreach ($topicInfo as $key => $value) {
 
+
+            if ($value['topicActive'] == 1) {
+                $aktifArama = 'data-filter="Aktif"';
+                $aktifYazi = '<span class="badge badge-light-success">Aktif</span>';
+            } else {
+                $aktifArama = 'data-filter="Passive"';
+                $aktifYazi = '<span class="badge badge-light-danger">Pasif</span>';
+            }
+
+            $alter_button = $value['topicActive'] ? "Pasif Yap" : "Aktif Yap";
+
+            if($_SESSION['role'] == 4) {
+                $passiveButton = '';
+            }else{
+                $passiveButton = '
+                                <!--begin::Menu item-->
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">' . $alter_button . '</a>
+                                </div>
+                                <!--end::Menu item-->';
+            }
+
             $topicList = '
                     <tr>
                         <td>
@@ -217,7 +239,7 @@ class ShowTopic extends Topics
                                 <input class="form-check-input" type="checkbox" value="1" />
                             </div>
                         </td>
-                        <td>
+                        <td data-file-id="'. $value['topicID'] .'">
                             <a href="./konu-detay/' . $value['topicSlug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['topicName'] . '</a>
                         </td>
                         <td>
@@ -238,6 +260,7 @@ class ShowTopic extends Topics
                         <td>
                             ' . $value['topicOrder'] . '
                         </td>
+                        <td>' . $aktifYazi . '</td>
                         <td class="text-end">
                             <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
@@ -250,11 +273,7 @@ class ShowTopic extends Topics
                                     <a href="./konu-detay/' . $value['topicSlug'] . '" class="menu-link px-3">Görüntüle</a>
                                 </div>
                                 <!--end::Menu item-->
-                                <!--begin::Menu item-->
-                                <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
-                                </div>
-                                <!--end::Menu item-->
+                                ' . $passiveButton . '
                             </div>
                             <!--end::Menu-->
                         </td>
@@ -1001,6 +1020,28 @@ class ShowSubTopic extends SubTopics
 
         foreach ($subTopicInfo as $key => $value) {
 
+
+            if ($value['subTopicActive'] == 1) {
+                $aktifArama = 'data-filter="Aktif"';
+                $aktifYazi = '<span class="badge badge-light-success">Aktif</span>';
+            } else {
+                $aktifArama = 'data-filter="Passive"';
+                $aktifYazi = '<span class="badge badge-light-danger">Pasif</span>';
+            }
+
+            $alter_button = $value['subTopicActive'] ? "Pasif Yap" : "Aktif Yap";
+
+            if($_SESSION['role'] == 4) {
+                $passiveButton = '';
+            }else{
+                $passiveButton = '
+                                <!--begin::Menu item-->
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">' . $alter_button . '</a>
+                                </div>
+                                <!--end::Menu item-->';
+            }
+
             $subTopicList = '
                     <tr>
                         <td>
@@ -1008,7 +1049,7 @@ class ShowSubTopic extends SubTopics
                                 <input class="form-check-input" type="checkbox" value="1" />
                             </div>
                         </td>
-                        <td>
+                        <td data-file-id="'. $value['subTopicID'] .'">
                             <a href="./alt-konu-detay/' . $value['subTopicSlug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['subTopicName'] . '</a>
                         </td>
                         <td>
@@ -1032,6 +1073,7 @@ class ShowSubTopic extends SubTopics
                         <td>
                             ' . $value['subTopicOrder'] . '
                         </td>
+                        <td>' . $aktifYazi . '</td>
                         <td class="text-end">
                             <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
@@ -1044,11 +1086,7 @@ class ShowSubTopic extends SubTopics
                                     <a href="./alt-konu-detay/' . $value['subTopicSlug'] . '" class="menu-link px-3">Görüntüle</a>
                                 </div>
                                 <!--end::Menu item-->
-                                <!--begin::Menu item-->
-                                <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
-                                </div>
-                                <!--end::Menu item-->
+                                ' . $passiveButton . '
                             </div>
                             <!--end::Menu-->
                         </td>
@@ -1889,6 +1927,7 @@ class ShowSubTopic extends SubTopics
 
         echo json_encode($units);
     }
+    
     public function showSubtopicForTopic($class, $lessons, $units, $topic)
     {
 

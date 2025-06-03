@@ -128,30 +128,41 @@ $chooseLesson = new ShowLesson();
                             <!--end::Input-->
                         </div>
                         <!--end::Input group-->
+
                         <!--begin::Input group-->
                         <div class="fv-row mb-7">
                             <!--begin::Label-->
-                            <label class="required fs-6 fw-semibold mb-2">Sınıf</label>
+                            <label class="required fs-6 fw-semibold mb-2">Ünite Başlangıç Tarihi</label>
                             <!--end::Label-->
                             <!--begin::Input-->
-                            <select id="classes" name="classes" aria-label="Sehir Seçiniz" data-control="select2" data-placeholder="Sınıf Seçiniz..." class="form-select form-select-solid fw-bold">
-                                <option value="<?php echo $_SESSION['class_id'] ?>">Sınıfınız</option>
-                            </select>
+                            <input type="date" class="form-control form-control-solid fw-bold pe-5" placeholder="Ünite Başlangıç Tarihi Seçin" name="unit_start_date" id="unit_start_date">
                             <!--end::Input-->
                         </div>
                         <!--end::Input group-->
+
                         <!--begin::Input group-->
                         <div class="fv-row mb-7">
                             <!--begin::Label-->
-                            <label class="required fs-6 fw-semibold mb-2">Ders</label>
+                            <label class="required fs-6 fw-semibold mb-2">Ünite Bitiş Tarihi</label>
                             <!--end::Label-->
                             <!--begin::Input-->
-                            <select id="lessons" name="lessons" aria-label="Ders Seçiniz" data-control="select2" data-placeholder="Ders Seçiniz..." class="form-select form-select-solid fw-bold">
-                            <option value="<?php echo $_SESSION['lesson_id'] ?>">Dersiniz</option>
-                            </select>
+                            <input type="date" class="form-control form-control-solid fw-bold pe-5" placeholder="Ünite Bitiş Tarihi Seçin" name="unit_end_date" id="unit_end_date">
                             <!--end::Input-->
                         </div>
                         <!--end::Input group-->
+
+
+                        <!--begin::Input group-->
+                        <div class="fv-row mb-7">
+                            <!--begin::Label-->
+                            <label class="required fs-6 fw-semibold mb-2">Ünite Sırası</label>
+                            <!--end::Label-->
+                            <!--begin::Input-->
+                            <input type="number" class="form-control form-control-solid fw-bold pe-5" placeholder="Ünite Sırası Girin" name="unit_order" id="unit_order">
+                            <!--end::Input-->
+                        </div>
+                        <!--end::Input group-->
+
                         <!--end::Scroll-->
                     </div>
                     <!--end::Modal body-->

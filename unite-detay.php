@@ -3,7 +3,7 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 OR $_SESSION['role'] == 8 OR $_SESSION['role'] == 3 OR $_SESSION['role'] == 4)) {
 	include_once "classes/dbh.classes.php";
 	include_once "classes/units.classes.php";
 	include_once "classes/units-view.classes.php";
@@ -351,5 +351,5 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 
 </html>
 <?php } else {
-	header("location: index");
+	header("location: ../index");
 }

@@ -4,7 +4,7 @@
 error_reporting(E_ALL); ini_set('display_errors', 1);
 	session_start();
     define('GUARD', true);
-    if (isset($_SESSION['role']) AND ($_SESSION['role'] == 1 OR $_SESSION['role'] == 3 OR $_SESSION['role'] == 4)) {
+    if (isset($_SESSION['role']) AND ($_SESSION['role'] == 1 OR $_SESSION['role'] == 3 OR $_SESSION['role'] == 4 OR $_SESSION['role'] == 8)) {
     include_once "classes/dbh.classes.php";
     include_once "classes/parent.classes.php";
     include_once "classes/parent-view.classes.php";
@@ -119,11 +119,11 @@ error_reporting(E_ALL); ini_set('display_errors', 1);
                                 <!--end::Card-->
                                 <!--begin::Modals-->
                                 <!--begin::Modal - Customers - Add-->
-                                    <?php if ($_SESSION['role'] == 1){
+                                    <?php /* if ($_SESSION['role'] == 1){
                                             include_once "views/parent/add_parent.php";
                                         }else{
                                             include_once "views/student/add_student_school.php";
-                                        } ?>
+                                        } */ ?>
                                 <!--end::Modal - Customers - Add-->
                                 <!--begin::Modal - Adjust Balance-->
                                 <div class="modal fade" id="kt_customers_export_modal" tabindex="-1" aria-hidden="true">

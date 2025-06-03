@@ -70,7 +70,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                     <div class="row mt-3">
 
                                         <div class="col-lg-4 mt-4">
-                                            <label class="fs-6 fw-semibold mb-2" for="unit_id">Ünite Seçimi</label>
+                                            <label class="required fs-6 fw-semibold mb-2" for="unit_id">Ünite Seçimi</label>
                                             <select class="form-select" id="unit_id" required>
                                                 <option value="">Ünite seçiniz</option>
                                             </select>
@@ -222,6 +222,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 $('#filterButton').on('click', function() {
                     var classId = $('#class_id').val();
                     var lessonId = $('#lesson_id').val();
+                    var unitId = $('#unit_id').val();
 
                     // Sınıf ve Ders seçimi zorunlu kontrolü
                     if (!classId || classId === '') {
@@ -232,9 +233,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             confirmButtonText: 'Tamam'
                         });
                         $('#class_id').addClass('is-invalid'); // Bootstrap ile görsel uyarı
+                        $('#lesson_id').addClass('is-invalid'); // Bootstrap ile görsel uyarı
+                        $('#unit_id').addClass('is-invalid'); // Bootstrap ile görsel uyarı
                         return; // Filtreleme işlemini durdur
                     } else {
                         $('#class_id').removeClass('is-invalid');
+                        $('#lesson_id').removeClass('is-invalid');
+                        $('#unit_id').removeClass('is-invalid');
                     }
 
 

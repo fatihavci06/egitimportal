@@ -71,7 +71,7 @@ if (isset($_SESSION['role'])) {
                                             <div class="card-toolbar">
                                                 <div class="d-flex justify-content-end"
                                                     data-kt-customer-table-toolbar="base">
-                                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
                                                         data-bs-target="#kt_modal_add_customer">Bildirim Ekle</button>
                                                 </div>
                                                 <div class="d-flex justify-content-end align-items-center d-none"
@@ -80,7 +80,7 @@ if (isset($_SESSION['role'])) {
                                                         <span class="me-2"
                                                             data-kt-customer-table-select="selected_count"></span>Seçildi
                                                     </div>
-                                                    <button type="button" class="btn btn-danger"
+                                                    <button type="button" class="btn btn-sm btn-danger"
                                                         data-kt-customer-table-select="delete_selected">Seçilenleri Pasif
                                                         Yap</button>
                                                 </div>
@@ -185,11 +185,7 @@ if (isset($_SESSION['role'])) {
         <script src="assets/js/custom/apps/notifications/add.js"></script>
         <script src="assets/js/widgets.bundle.js"></script>
         <script src="assets/js/custom/widgets.js"></script>
-        <script src="assets/js/custom/apps/chat/chat.js"></script>
-        <script src="assets/js/custom/utilities/modals/upgrade-plan.js"></script>
-        <script src="assets/js/custom/utilities/modals/create-account.js"></script>
-        <script src="assets/js/custom/utilities/modals/create-app.js"></script>
-        <script src="assets/js/custom/utilities/modals/users-search.js"></script>
+
         <!--end::Custom Javascript-->
         <!--end::Javascript-->
     </body>

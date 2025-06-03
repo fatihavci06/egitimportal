@@ -107,8 +107,16 @@ class ShowContents extends GetContent
             if (count($contentFiles) > 0) {
                 $content = '';
                 foreach ($contentFiles as $file) {
-                    $content .= '<div class="mb-3"><h3>' . $file['description'] . '</h3></div>';
-                    $content .= '<div class="mb-3"><img src="' . $file['file_path'] . '""></div>';
+                    $dosyaUzantisi = pathinfo($file['file_path'], PATHINFO_EXTENSION);
+                    $dosyaUzantisi = strtolower($dosyaUzantisi);
+                    $izinVerilenUzantilar = ['pdf', 'pptx', 'xlsx', 'xls', 'csv'];
+                    if (in_array($dosyaUzantisi, $izinVerilenUzantilar)) {
+                        $content .= '<div class="mb-3"><h3>' . $file['description'] . '</h3></div>';
+                        $content .= '<div class="mb-10"><a href="' . $file['file_path'] . '" download class="btn btn-primary btn-sm" target="_blank"> <i class="bi bi-download"></i> Dosyayı İndir </a></div>';
+                    }else{
+                        $content .= '<div class="mb-3"><h3>' . $file['description'] . '</h3></div>';
+                        $content .= '<div class="mb-10"><img src="' . $file['file_path'] . '""></div>';
+                    }
                 }
             }
 

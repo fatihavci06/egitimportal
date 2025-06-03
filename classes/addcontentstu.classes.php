@@ -282,7 +282,7 @@ class GetContent extends Dbh
 
 	public function getContentInfoByIdUnderSubTopic($subTopicId)
 	{
-		$stmt = $this->connect()->prepare('SELECT * FROM school_content_lnp WHERE subtopic_id = ? AND class_id = ?');
+		$stmt = $this->connect()->prepare('SELECT * FROM school_content_lnp WHERE subtopic_id = ? AND class_id = ? AND active = 1');
 
 		if (!$stmt->execute([$subTopicId, $_SESSION['class_id']])) {
 			$stmt = null;
@@ -299,7 +299,7 @@ class GetContent extends Dbh
 
 	public function getContentInfoByIdUnderTopic($topicId)
 	{
-		$stmt = $this->connect()->prepare('SELECT * FROM school_content_lnp WHERE topic_id = ? AND class_id = ?');
+		$stmt = $this->connect()->prepare('SELECT * FROM school_content_lnp WHERE topic_id = ? AND class_id = ? AND active = 1');
 
 		if (!$stmt->execute([$topicId, $_SESSION['class_id']])) {
 			$stmt = null;

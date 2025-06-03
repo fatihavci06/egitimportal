@@ -70,6 +70,7 @@ var KTAppCalendar = function () {
             navLinks: true, // can click day/week names to navigate views
             selectable: true,
             selectMirror: true,
+            locale: 'tr',
 
             // Select dates action --- more info: https://fullcalendar.io/docs/select-callback
             select: function (arg) {
@@ -92,14 +93,14 @@ var KTAppCalendar = function () {
                 handleViewEvent();
             },
 
-            editable: true,
+            editable: false,
             dayMaxEvents: true, // allow "more" link when too many events
             events: [
                 {
                     id: uid(),
                     title: 'All Day Event',
-                    start: YM + '-01',
-                    end: YM + '-02',
+                    start: '2025-04-27',
+                    end: '2025-05-01',
                     description: 'Toto lorem ipsum dolor sit incid idunt ut',
                     className: "border-success bg-success text-inverse-success",
                     location: 'Federation Square'
@@ -107,9 +108,8 @@ var KTAppCalendar = function () {
                 {
                     id: uid(),
                     title: 'Reporting',
-                    start: YM + '-14T13:30:00',
-                    description: 'Lorem ipsum dolor incid idunt ut labore',
-                    end: YM + '-14T14:30:00',
+                    start: '2025-04-27',
+                    end: '2025-05-01',
                     className: "border-warning bg-warning text-inverse-success",
                     location: 'Meeting Room 7.03'
                 },

@@ -114,6 +114,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <th class="min-w-125px">Konu Başlama Tarihi</th>
                                                         <th class="min-w-125px">Konu Bitiş Tarihi</th>
                                                         <th class="min-w-125px">Sıra</th>
+                                                        <th class="min-w-125px">Durum</th>
                                                         <th class="text-end min-w-70px">İşlemler</th>
                                                     </tr>
                                                 </thead>

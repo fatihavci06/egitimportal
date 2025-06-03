@@ -13,15 +13,19 @@ if (!defined('GUARD')) {
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta property="og:locale" content="tr_TR" />
 		<meta property="og:type" content="article" />
-		<meta property="og:title" content="Saul Theme by KeenThemes" />
+		<meta property="og:title" content="Lineup Campus" />
 		<meta property="og:url" content="https://keenthemes.com/products/saul-html-pro" />
-		<meta property="og:site_name" content="Saul HTML Pro by Keenthemes" />
+		<meta property="og:site_name" content="Lineup Campus" />
+		<link rel="canonical" href="http://preview.keenthemes.comapps/calendar.html" />
 		<link rel="canonical" href="http://preview.keenthemes.comauthentication/sign-in/basic.html" />
 		<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/tr.js"></script>
 		<link rel="shortcut icon" href="assets/media/logos/lineup-campus-logo.ico" />
 		<!--begin::Fonts(mandatory for all pages)-->
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
 		<!--end::Fonts-->
+		<!--begin::Vendor Stylesheets(used for this page only)-->
+		<link href="assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" rel="stylesheet" type="text/css" />
+		<link href="assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
 		<!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
 		<link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
 		<link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />

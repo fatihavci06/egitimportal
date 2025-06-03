@@ -18,6 +18,28 @@ class ShowContents extends GetContent
 
         foreach ($contentInfo as $key => $value) {
 
+
+            if ($value['active'] == 1) {
+                $aktifArama = 'data-filter="Aktif"';
+                $aktifYazi = '<span class="badge badge-light-success">Aktif</span>';
+            } else {
+                $aktifArama = 'data-filter="Passive"';
+                $aktifYazi = '<span class="badge badge-light-danger">Pasif</span>';
+            }
+
+            $alter_button = $value['active'] ? "Pasif Yap" : "Aktif Yap";
+
+            if($_SESSION['role'] == 4) {
+                $passiveButton = '';
+            }else{
+                $passiveButton = '
+                                <!--begin::Menu item-->
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">' . $alter_button . '</a>
+                                </div>
+                                <!--end::Menu item-->';
+            }
+
             $subTopicName = $value['subTopicName'] ?? '-';
 
             $contentList = '
@@ -27,7 +49,7 @@ class ShowContents extends GetContent
                                 <input class="form-check-input" type="checkbox" value="1" />
                             </div>
                         </td>
-                        <td>
+                        <td data-file-id="'. $value['id'] .'">
                             <a href="./icerik-detay/' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
                         </td>
                         <td>
@@ -45,6 +67,7 @@ class ShowContents extends GetContent
                         <td>
                             ' . $value['className'] . '
                         </td>
+                        <td>' . $aktifYazi . '</td>
                         <td class="text-end">
                             <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
@@ -57,11 +80,7 @@ class ShowContents extends GetContent
                                     <a href="./icerik-detay/' . $value['slug'] . '" class="menu-link px-3">Görüntüle</a>
                                 </div>
                                 <!--end::Menu item-->
-                                <!--begin::Menu item-->
-                                <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
-                                </div>
-                                <!--end::Menu item-->
+                                ' . $passiveButton . '
                             </div>
                             <!--end::Menu-->
                         </td>
@@ -106,8 +125,16 @@ class ShowContents extends GetContent
             if (count($contentFiles) > 0) {
                 $content = '';
                 foreach ($contentFiles as $file) {
-                    $content .= '<div class="mb-3"><h3>' . $file['description'] . '</h3></div>';
-                    $content .= '<div class="mb-3"><img src="' . $file['file_path'] . '""></div>';
+                    $dosyaUzantisi = pathinfo($file['file_path'], PATHINFO_EXTENSION);
+                    $dosyaUzantisi = strtolower($dosyaUzantisi);
+                    $izinVerilenUzantilar = ['pdf', 'pptx', 'xlsx', 'xls', 'csv'];
+                    if (in_array($dosyaUzantisi, $izinVerilenUzantilar)) {
+                        $content .= '<div class="mb-3"><h3>' . $file['description'] . '</h3></div>';
+                        $content .= '<div class="mb-10"><a href="' . $file['file_path'] . '" download class="btn btn-primary btn-sm" target="_blank"> <i class="bi bi-download"></i> Dosyayı İndir </a></div>';
+                    }else{
+                        $content .= '<div class="mb-3"><h3>' . $file['description'] . '</h3></div>';
+                        $content .= '<div class="mb-10"><img src="' . $file['file_path'] . '""></div>';
+                    }
                 }
             }
 
@@ -139,9 +166,6 @@ class ShowContents extends GetContent
                             <!--begin::Card title-->
                             <div class="card-title">
                                 <h2>' . $contentInfo['title'] . '</h2>
-                            </div>
-                            <div class="card-title">
-                                <a href="icerik-ekle"><button type="button" class="btn btn-primary btn-sm">İçerik Güncelle</button></a>
                             </div>
                             <!--end::Card title-->
                         </div>
@@ -453,6 +477,4 @@ class ShowContents extends GetContent
         }
         echo $subTopicList;
     }
-
 }
-?>
