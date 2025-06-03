@@ -1,8 +1,8 @@
 <?php
 
 if (session_status() == PHP_SESSION_NONE) {
-    // Oturum henüz başlatılmamışsa başlat
-    session_start();
+	// Oturum henüz başlatılmamışsa başlat
+	session_start();
 }
 
 class AddContent extends Dbh
@@ -58,7 +58,7 @@ class AddContent extends Dbh
 			if (isset($titles) && isset($urls)) {
 
 				/* $titles = $_POST['wordWallTitles'] ?? null; // ['Başlık1', 'Başlık2', ...]
-            $urls = $_POST['wordWallUrls'] ?? null;     // ['url1', 'url2', ...] */
+						$urls = $_POST['wordWallUrls'] ?? null;     // ['url1', 'url2', ...] */
 
 				// Temel güvenlik filtresi
 				$titles = array_map('strip_tags', $titles);
@@ -79,10 +79,10 @@ class AddContent extends Dbh
 					}
 				}
 			}
-			
+
 
 			$pdo->commit(); // Tüm işlemler başarılıysa commit et
-			
+
 			echo json_encode(["status" => "success", "message" => $name]);
 			$pdo = null;
 		} catch (\Exception $e) {
@@ -114,7 +114,8 @@ class AddContent extends Dbh
 class GetContent extends Dbh
 {
 
-	public function getAllContents(){
+	public function getAllContents()
+	{
 		$stmt = $this->connect()->prepare('SELECT school_content_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName, subtopics_lnp.name AS subTopicName FROM school_content_lnp LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id ORDER BY school_content_lnp.id DESC');
 
 		if (!$stmt->execute()) {
@@ -131,7 +132,8 @@ class GetContent extends Dbh
 
 	// Content ID'sini slug'dan alıp çek
 
-	public function getContentIdBySlug($slug){
+	public function getContentIdBySlug($slug)
+	{
 		$stmt = $this->connect()->prepare('SELECT * FROM school_content_lnp WHERE slug = ? AND class_id = ?');
 
 		if (!$stmt->execute([$slug, $_SESSION['class_id']])) {
@@ -148,7 +150,8 @@ class GetContent extends Dbh
 
 	// Content ID'sine göre tüm içerikleri getirir
 
-	public function getAllContentDetailsById($id){
+	public function getAllContentDetailsById($id)
+	{
 		$stmt = $this->connect()->prepare('SELECT school_content_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName, subtopics_lnp.name AS subTopicName FROM school_content_lnp LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id WHERE school_content_lnp.id = ? AND school_content_lnp.class_id = ?');
 
 		if (!$stmt->execute([$id, $_SESSION['class_id']])) {
@@ -216,35 +219,39 @@ class GetContent extends Dbh
 
 	//Vimeo linkinden iframe kodu oluşturma fonksiyonu
 
-	public function generateVimeoIframe($vimeoUrl) {
-    // Vimeo linkinden video ID'sini ve varsa hash'i ayıklamak için bir düzenli ifade kullanalım.
-    // Bu ifade hem "https://vimeo.com/VIDEO_ID" hem de "https://vimeo.com/VIDEO_ID/HASH" formatlarını yakalar.
-    $pattern = '/vimeo\.com\/(\d+)(?:\/([a-zA-Z0-9]+))?/';
-    preg_match($pattern, $vimeoUrl, $matches);
+	public function generateVimeoIframe($vimeoUrl, $id,$video_timestamp)
+	{
+		// Vimeo linkinden video ID'sini ve varsa hash'i ayıklamak için bir düzenli ifade kullanalım.
+		// Bu ifade hem "https://vimeo.com/VIDEO_ID" hem de "https://vimeo.com/VIDEO_ID/HASH" formatlarını yakalar.
+		$pattern = '/vimeo\.com\/(\d+)(?:\/([a-zA-Z0-9]+))?/';
+		preg_match($pattern, $vimeoUrl, $matches);
 
-    if (isset($matches[1])) {
-        $videoId = $matches[1];
-        $hash = isset($matches[2]) ? $matches[2] : ''; // Hash varsa al, yoksa boş bırak
+		if (isset($matches[1])) {
+			$videoId = $matches[1];
+			$hash = isset($matches[2]) ? $matches[2] : ''; // Hash varsa al, yoksa boş bırak
+			$timestamp = $video_timestamp['timestamp_in_seconds'] ?? 0;
 
-        // Iframe için temel embed URL'si
-        $embedUrl = "https://player.vimeo.com/video/{$videoId}";
+			// Iframe için temel embed URL'si
+			$embedUrl = "https://player.vimeo.com/video/{$videoId}";
 
-        // Hash varsa URL'ye ekle
-        if (!empty($hash)) {
-            $embedUrl .= "?h={$hash}";
-        }
+			// Hash varsa URL'ye ekle
+			if (!empty($hash)) {
+				$embedUrl .= "?h={$hash}";
+			}
+			if (!empty($hash)) {
+				$embedUrl .= "#t={$timestamp}";
+			}
+			// Iframe HTML kodunu oluştur
+			$iframeCode = '<iframe id="' . $id . '"  src="' . htmlspecialchars($embedUrl) . '" width="100%" height="600" frameborder="0" allow="autoplay; fullscreen; picture-in-picture"></iframe>';
+			// 
+			// Opsiyonel: Videonun başlığını da ekleyebilirsiniz (aşağıdaki p etiketi gibi)
+			// $iframeCode .= '<p><a href="' . htmlspecialchars($vimeoUrl) . '">Vimeo\'da izle</a>.</p>';
 
-        // Iframe HTML kodunu oluştur
-        $iframeCode = '<iframe src="' . htmlspecialchars($embedUrl) . '" width="100%" height="600" frameborder="0" allow="autoplay; fullscreen; picture-in-picture"></iframe>';
-		// 
-        // Opsiyonel: Videonun başlığını da ekleyebilirsiniz (aşağıdaki p etiketi gibi)
-        // $iframeCode .= '<p><a href="' . htmlspecialchars($vimeoUrl) . '">Vimeo\'da izle</a>.</p>';
-
-        return $iframeCode;
-    } else {
-        return "Geçersiz Vimeo linki.";
-    }
-}
+			return $iframeCode;
+		} else {
+			return "Geçersiz Vimeo linki.";
+		}
+	}
 
 	public function getContentInfoByIds($topicId, $unitId, $lessonId, $classId)
 	{
@@ -364,7 +371,7 @@ class GetContent extends Dbh
 			if (isset($titles) && isset($urls)) {
 
 				/* $titles = $_POST['wordWallTitles'] ?? null; // ['Başlık1', 'Başlık2', ...]
-            $urls = $_POST['wordWallUrls'] ?? null;     // ['url1', 'url2', ...] */
+						$urls = $_POST['wordWallUrls'] ?? null;     // ['url1', 'url2', ...] */
 
 				// Temel güvenlik filtresi
 				$titles = array_map('strip_tags', $titles);
@@ -385,10 +392,10 @@ class GetContent extends Dbh
 					}
 				}
 			}
-			
+
 
 			$pdo->commit(); // Tüm işlemler başarılıysa commit et
-			
+
 			echo json_encode(["status" => "success", "message" => $name]);
 			$pdo = null;
 		} catch (\Exception $e) {

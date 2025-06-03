@@ -27,7 +27,7 @@ class ShowContents extends GetContent
                             <a href="./icerik-detay/' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
                         </td>
                         <td>
-                           '  .  $subTopicName . '
+                           ' . $subTopicName . '
                         </td>
                         <td>
                             ' . $value['topicName'] . '
@@ -71,7 +71,7 @@ class ShowContents extends GetContent
 
     public function showOneContent()
     {
-        
+
         $link = "$_SERVER[REQUEST_URI]";
 
         $active_slug = htmlspecialchars(basename($link, ".php"));
@@ -112,10 +112,10 @@ class ShowContents extends GetContent
                     $izinVerilenUzantilar = ['pdf', 'pptx', 'xlsx', 'xls', 'csv'];
                     if (in_array($dosyaUzantisi, $izinVerilenUzantilar)) {
                         $content .= '<div class="mb-3"><h3>' . $file['description'] . '</h3></div>';
-                        $content .= '<div class="mb-10"><a href="' . $file['file_path'] . '" download class="btn btn-primary btn-sm" target="_blank"> <i class="bi bi-download"></i> Dosyayı İndir </a></div>';
-                    }else{
+                        $content .= '<div class="mb-10"><a data-file-id="' . $file["id"] . '"  href="' . $file['file_path'] . '" download class="btn btn-primary btn-sm" target="_blank"> <i class="bi bi-download"></i> Dosyayı İndir </a></div>';
+                    } else {
                         $content .= '<div class="mb-3"><h3>' . $file['description'] . '</h3></div>';
-                        $content .= '<div class="mb-10"><img src="' . $file['file_path'] . '""></div>';
+                        $content .= '<div class="mb-10"><img data-image-id="' . $file["id"] . '" src="' . $file['file_path'] . '""></div>';
                     }
                 }
             }
@@ -124,15 +124,23 @@ class ShowContents extends GetContent
             if (count($wordwallFiles) > 0) {
                 foreach ($wordwallFiles as $wordwall) {
                     $content .= '<div class="mb-3"><h3>' . $wordwall['wordwall_title'] . '</h3></div>';
-                    $content .= '<div class="mb-3"><iframe src="' . $wordwall['wordwall_url'] . '" width="100%" height="500px"></iframe></div>';
+                    $content .= '
+                    <div class="mb-3" style="position: relative; width: 100%; height: 100%;">
+                        <iframe  src="' . $wordwall['wordwall_url'] . '" width="100%" height="500px"></iframe>
+                        <div data-wordwall-id="' . $wordwall["id"] . '"  style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;"></div>
+                    </div>';
                 }
             }
+            require_once 'video-tracker.classes.php';
 
+            $tracker = new VideoTracker();
             // Check if there are any videos
             if (count($videoFiles) > 0) {
                 foreach ($videoFiles as $video) {
                     $videoUrl = $video['video_url'];
-                    $vimeoEmbedCode = $this->generateVimeoIframe($videoUrl);
+                    $videoId = $video['id'];
+                    $video_timestamp = $tracker->getWatchProgress($_SESSION['id'], $videoId);
+                    $vimeoEmbedCode = $this->generateVimeoIframe($videoUrl, $videoId, $video_timestamp);
                     $content .= '<div class="mb-3">' . $vimeoEmbedCode . '</div>';
                 }
             }
@@ -443,7 +451,8 @@ class ShowContents extends GetContent
 
     // Show Contents For Student
 
-    public function getContentListForStudent(){
+    public function getContentListForStudent()
+    {
         $dateFormat = new DateFormat();
 
         $link = "$_SERVER[REQUEST_URI]";
@@ -515,7 +524,7 @@ class ShowContents extends GetContent
 
     }
 
-    
+
 
     // Get Content Image For Students
 
@@ -533,7 +542,7 @@ class ShowContents extends GetContent
             return;
         }
 
-            $contentList = '
+        $contentList = '
                     <div class="position-relative mb-17">
                         <!--begin::Overlay-->
                         <div class="overlay overlay-show">
@@ -554,8 +563,8 @@ class ShowContents extends GetContent
                         <!--end::Heading-->
                     </div>
                 ';
-            echo $contentList;
-        
+        echo $contentList;
+
     }
 
 }

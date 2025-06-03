@@ -56,7 +56,7 @@ class ShowStudent extends Student
         foreach ($schoolInfo as $key => $value) {
 
             $lessonList .= '<option value="' . $value['name'] . '">' . $value['name'] . '</option>';
-            
+
         }
         echo $lessonList;
     }
@@ -93,11 +93,11 @@ class ShowStudent extends Student
                                 <input class="form-check-input" type="checkbox" value="1" />
                             </div>
                         </td>
-                        <td '. $aktifArama . '>
+                        <td ' . $aktifArama . '>
                             <div class="cursor-pointer symbol symbol-90px symbol-lg-90px"><img src="assets/media/profile/' . $value['photo'] . '"></div>
                         </td>
                         <td>
-                            <a href="./ogrenci-detay/' . $value['username'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['name'] . ' ' . $value['surname']  . '</a>
+                            <a href="./ogrenci-detay/' . $value['username'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['name'] . ' ' . $value['surname'] . '</a>
                         </td>
                         <td>
                             <a href="mailto:' . $value['email'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['email'] . '</a>
@@ -132,9 +132,9 @@ class ShowStudent extends Student
                         </td>
                     </tr>
                 ';
-            
+
         }
-            echo $studentList;
+        echo $studentList;
     }
 
     // Get Waiting Money Transfer Student List
@@ -166,7 +166,7 @@ class ShowStudent extends Student
             $studentList = '
                     <tr>
                         <td>
-                            ' . $value['name'] . ' ' . $value['surname']  . '
+                            ' . $value['name'] . ' ' . $value['surname'] . '
                         </td>
                         <td>
                             ' . $parentName . '
@@ -965,7 +965,7 @@ class ShowStudent extends Student
 
 
 
-            $studentList .=  $schoolForms;
+            $studentList .= $schoolForms;
         }
 
 
@@ -981,8 +981,18 @@ class ShowStudent extends Student
         $styles = ["danger", "success", "primary", "warning", "info", "secondary", "light", "dark"];
         $styleIndex = 0;
 
+        require_once "content-tracker.classes.php";
+        require_once "download-tracker.classes.php";
+        require_once "wordwall-tracker.classes.php";
+        require_once "video-tracker.classes.php";
+        $contentObj = new ContentTracker();
+        $downloadObj = new DownloadTracker();
+        $wordwallObj = new WordwallTracker();
+        $videoObj = new VideoTracker();
 
 
+        // $contentObj->
+        
         foreach ($lessonsInfo as $value) {
 
             $style = $styles[$styleIndex % count($styles)];
@@ -1004,6 +1014,7 @@ class ShowStudent extends Student
 
                 $units = '';
 
+
                 foreach ($unitData as $unit) {
                     $topicCount = 0;
                     $topicData = $this->getTopics($lesson_id, $class_id, $school_id, $unit['id']);
@@ -1021,7 +1032,7 @@ class ShowStudent extends Student
                                     <div class="d-flex align-items-center flex-row-fluid flex-wrap">
                                         <!--begin:Author-->
                                         <div class="flex-grow-1 me-2">
-                                            <a href="' . $unit['id'] .  '" class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $unit['name'] . '</a>
+                                            <a href="' . $unit['id'] . '" class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $unit['name'] . '</a>
                                             <span class="text-muted fw-semibold d-block fs-7">' . $topicCount . ' Konu</span>
                                         </div>
                                         <!--end:Author-->
@@ -1076,6 +1087,10 @@ class ShowStudent extends Student
 
                 echo $leftUnits;
             }
+            echo "<pre>";
+            var_dump($lessonsInfo);
+            echo "</pre>";
+
         }
     }
 
@@ -1100,7 +1115,7 @@ class ShowStudent extends Student
             foreach ($loginInfo as $value) {
 
                 $logoutTime = $dateFormat->changeDateHour($value['logoutTime']);
-                if($value['logoutTime'] == '0000-00-00 00:00:00'){
+                if ($value['logoutTime'] == '0000-00-00 00:00:00') {
                     $logoutTime = 'Çıkış Bilgisi Yok';
                 }
 
