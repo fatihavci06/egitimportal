@@ -8,7 +8,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 	include_once "classes/dbh.classes.php";
 	include_once "classes/addsupport.classes.php";
     include_once "classes/support-view.classes.php";
-	$supportList = new ShowTechnicalServiceSupport();
+	$supportList = new ShowSupport();
 	include_once "views/pages-head.php";
 ?>
     <!--end::Head-->
@@ -78,9 +78,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <tbody class="fw-semibold text-gray-600">
                                                     <?php 
 														if($_SESSION['role'] == 6 OR $_SESSION['role'] == 7){
-															$supportList->getTechnicalServiceSupportSolvedList($_SESSION['id']);
+															$supportList->getSupportSolvedList($_SESSION['id']);
 														}if($_SESSION['role'] == 1){
-															$supportList->getTechnicalServiceSupportSolvedAdminList();
+															$supportList->getSupportSolvedAdminList();
 														} 
 													?>
                                                 </tbody>
