@@ -5,9 +5,9 @@ session_start();
 define('GUARD', true);
 if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 4)) {
     include_once "classes/dbh.classes.php";
-    include "classes/addcontent.classes.php";
-    include "classes/content-view.classes.php";
-    $contents = new ShowContents();
+    include "classes/addhomework.classes.php";
+    include "classes/homework-view.classes.php";
+    $contents = new ShowHomeworkContents();
     include_once "views/pages-head.php";
 ?>
     <!--end::Head-->
@@ -70,7 +70,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <span class="path1"></span>
                                                         <span class="path2"></span>
                                                     </i>
-                                                    <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder="İçerik Ara" />
+                                                    <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder="Ödev Ara" />
                                                 </div>
                                                 <!--end::Search-->
                                             </div>
@@ -80,7 +80,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <!--begin::Toolbar-->
                                                 <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
                                                     <!--begin::Add school-->
-                                                    <a href="icerik-ekle"><button type="button" class="btn btn-primary btn-sm">İçerik Ekle</button></a>
+                                                    <a href="odev-ekle"><button type="button" class="btn btn-primary btn-sm">Ödev Ekle</button></a>
                                                     <!--end::Add school-->
                                                 </div>
                                                 <!--end::Toolbar-->
@@ -107,7 +107,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                 <input class="form-check-input" type="checkbox" data-kt-check="true" data-kt-check-target="#kt_customers_table .form-check-input" value="1" />
                                                             </div>
                                                         </th>
-                                                        <th class="min-w-125px">İçerik</th>
+                                                        <th class="min-w-125px">Ödev</th>
+                                                        <!-- <?php if ($_SESSION['role'] == 1): ?>
+                                                            <th class="min-w-125px">Öğretmen</th>
+                                                        <?php endif; ?> -->
                                                         <th class="min-w-125px">Alt Konu</th>
                                                         <th class="min-w-125px">Konu</th>
                                                         <th class="min-w-125px">Ünite</th>
@@ -118,7 +121,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     </tr>
                                                 </thead>
                                                 <tbody class="fw-semibold text-gray-600">
-                                                    <?php $contents->getContentsList(); ?>
+                                                    <?php $contents->getHomeworkContentsList(); ?>
                                                 </tbody>
                                             </table>
                                             <!--end::Table-->

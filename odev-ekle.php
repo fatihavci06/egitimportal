@@ -59,7 +59,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <!--begin::Card-->
-                                    <?php include_once "views/contents/add_content.php"; ?>
+                                    <?php include_once "views/homeworks/add-homework.php"; ?>
                                     <!--end::Card-->
                                 </div>
                                 <!--end::Content container-->
@@ -105,8 +105,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/js/custom/apps/contents/list/export.js"></script>
         <script src="assets/js/custom/apps/contents/list/list.js"></script>
         <script src="assets/js/custom/apps/contents/list/topicadd.js"></script>
-        <script src="assets/js/custom/apps/contents/add.js"></script>
-        <script src="assets/js/custom/apps/contents/create.js"></script>
+        <script src="assets/js/custom/apps/homeworks/add.js"></script>
+        <!-- <script src="assets/js/custom/apps/contents/create.js"></script> -->
         <script src="assets/js/widgets.bundle.js"></script>
         <script src="assets/js/custom/widgets.js"></script>
         <script src="assets/js/custom/apps/chat/chat.js"></script>
