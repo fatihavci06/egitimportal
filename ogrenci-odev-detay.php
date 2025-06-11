@@ -3,10 +3,10 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and $_SESSION['role'] == 1  or $_SESSION['role'] == 4 or $_SESSION['role'] == 10001) {
+if (isset($_SESSION['role']) and $_SESSION['role'] == 1  or $_SESSION['role'] == 2 or $_SESSION['role'] == 10002) {
     include_once "classes/dbh.classes.php";
-    include_once "classes/addhomework.classes.php";
-    include_once "classes/homework-view.classes.php";
+    include_once "classes/addhomework-std.classes.php";
+    include_once "classes/homework-std-view.classes.php";
     $contents = new ShowHomeworkContents();
     $slug = $_GET['q'];
 
@@ -112,7 +112,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1  or $_SESSION['role'] ==
                                                 <div class="tab-pane fade show active" id="konular" role="tabpanel">
                                                     <!--begin::Card-->
                                                     <div class="card pt-4 mb-6 mb-xl-9">
-                                                        <?php $contents->showHomeworkDetail($slug); ?>
+                                                        <?php $contents->showHomeworkDetailForStudent($slug); ?>
                                                     </div>
                                                     <!--end::Card-->
                                                 </div>

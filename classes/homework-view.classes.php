@@ -7,7 +7,7 @@ if (session_status() == PHP_SESSION_NONE) {
 class ShowHomeworkContents extends GetHomework
 {
 
-    // Get Content List
+    // Get Homework List
 
     public function getHomeworkContentsList()
     {
@@ -129,7 +129,7 @@ class ShowHomeworkContents extends GetHomework
         echo $contentList;
     }
 
-    // Show Content Details
+    // Show Homework Details
 
     public function showHomeworkDetail($slug)
     {
@@ -172,7 +172,7 @@ class ShowHomeworkContents extends GetHomework
                         $content .= '<div class="mb-10"><a href="' . $file['file_path'] . '" download class="btn btn-primary btn-sm" target="_blank"> <i class="bi bi-download"></i> Dosyayı İndir </a></div>';
                     } else {
                         $content .= '<div class="mb-3"><h3>' . $file['description'] . '</h3></div>';
-                        $content .= '<div class="mb-10"><img src="' . $file['file_path'] . '""></div>';
+                        $content .= '<div class="mb-10"><img src="' . $file['file_path'] . '"  class="img-fluid""></div>';
                     }
                 }
             }

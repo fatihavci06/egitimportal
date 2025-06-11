@@ -226,7 +226,7 @@ class GetHomework extends Dbh
         $stmt = null;
     }
 
-    // Content ID'sini slug'dan alıp çek
+    // Homework ID'sini slug'dan alıp çek
 
     public function getHomeworkContentIdBySlug($slug)
     {
@@ -245,7 +245,7 @@ class GetHomework extends Dbh
         $stmt = null;
     }
 
-    // Content ID'sine göre tüm içerikleri getirir
+    // Homework ID'sine göre tüm içerikleri getirir
 
     public function getAllHomeworkContentDetailsById($id)
     {
