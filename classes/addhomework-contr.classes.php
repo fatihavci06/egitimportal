@@ -13,7 +13,7 @@ class AddHomeworkContr extends AddHomework
     private $short_desc;
     private $units;
     private $topics;
-    private $content;
+    private $text_content;
     private $video_url;
     private $sub_topics;
     private $imageFiles;
@@ -23,10 +23,8 @@ class AddHomeworkContr extends AddHomework
     private $urls;
     private $start_date;
     private $end_date;
-    private $school_id;
-    private $teacher_id;
 
-    public function __construct($name, $classes, $lessons, $units, $topics, $sub_topics, $short_desc, $content, $video_url, $files, $imageFiles, $photoSize, $photoName, $fileTmpName, $descriptions, $titles, $urls, $start_date, $end_date, $school_id, $teacher_id)
+    public function __construct($name, $classes, $lessons, $units, $topics, $sub_topics, $short_desc, $text_content, $video_url, $files, $imageFiles, $photoSize, $photoName, $fileTmpName, $descriptions, $titles, $urls, $start_date, $end_date)
     {
         $this->photoSize = $photoSize;
         $this->photoName = $photoName;
@@ -37,7 +35,7 @@ class AddHomeworkContr extends AddHomework
         $this->units = $units;
         $this->short_desc = $short_desc;
         $this->topics = $topics;
-        $this->content = $content;
+        $this->text_content = $text_content;
         $this->video_url = $video_url;
         $this->sub_topics = $sub_topics;
         $this->imageFiles = $imageFiles;
@@ -47,8 +45,6 @@ class AddHomeworkContr extends AddHomework
         $this->urls = $urls;
         $this->start_date = $start_date;
         $this->end_date = $end_date;
-        $this->school_id = $school_id;
-        $this->teacher_id = $teacher_id;
     }
 
     public function addHomeworkDb()
@@ -107,6 +103,6 @@ class AddHomeworkContr extends AddHomework
         }
 
 
-        $this->setHomeworkContent($imgName, $slug, $this->name, $this->classes, $this->lessons, $this->units, $this->short_desc, $this->topics, $this->sub_topics, $this->content, $this->video_url, $file_urls, $this->imageFiles, $this->descriptions, $this->titles, $this->urls, $this->start_date, $this->end_date, $this->school_id, $this->teacher_id);
+        $this->setHomeworkContent($imgName, $slug, $this->name, $this->classes, $this->lessons, $this->units, $this->short_desc, $this->topics, $this->sub_topics, $this->text_content, $this->video_url, $file_urls, $this->imageFiles, $this->descriptions, $this->titles, $this->urls, $this->start_date, $this->end_date);
     }
 }

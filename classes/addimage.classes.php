@@ -348,7 +348,7 @@ class ImageUpload {
         $fileName = $name;
         $maxFileSize = 1024 * 1024 * 2;
         $fileTypes = array("jpg", "jpeg", "png", "JPG", "JPEG", "PNG");
-        $uploadFolder = "/../uploads/contents/";
+        $uploadFolder = "../uploads/contents/";
 
         if($fileSize > $maxFileSize) {
             $message = "Dosya boyutu 2mb'dan fazla.<br>";
@@ -396,7 +396,7 @@ class ImageUpload {
         $fileName = $name;
         $maxFileSize = 1024 * 1024 * 2;
         $fileTypes = array("jpg", "jpeg", "png", "JPG", "JPEG", "PNG");
-        $uploadFolder = "/../uploads/homeworks/";
+        $uploadFolder = "../uploads/homeworks/";
 
         if($fileSize > $maxFileSize) {
             $message = "Dosya boyutu 2mb'dan fazla.<br>";

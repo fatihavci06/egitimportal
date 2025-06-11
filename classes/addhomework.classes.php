@@ -8,8 +8,10 @@ if (session_status() == PHP_SESSION_NONE) {
 class AddHomework extends Dbh
 {
 
-    protected function setHomeworkContent($imgName, $slug, $name, $classes, $lessons, $units, $short_desc, $topics, $sub_topics, $text_content, $video_url, $file_urls, $imageFiles, $descriptions, $titles, $urls, $start_date, $end_date, $school_id, $teacher_id)
+    protected function setHomeworkContent($imgName, $slug, $name, $classes, $lessons, $units, $short_desc, $topics, $sub_topics, $text_content, $video_url, $file_urls, $imageFiles, $descriptions, $titles, $urls, $start_date, $end_date)
     {
+        $school_id = $_SESSION['school_id'];
+        $teacher_id = $_SESSION['teacher_id'];
 
         $pdo = $this->connect();
 

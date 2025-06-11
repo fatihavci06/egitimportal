@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $topics = trim($_POST["topics"]) ?? '';
     $sub_topics = trim($_POST["sub_topics"]) ?? null;
     $short_desc = trim($_POST["short_desc"]) ?? '';
-    $text_content = $_POST["content"] ?? '';
+    $text_content = $_POST["icerik"] ?? '';
     $video_url = trim($_POST["video_url"]) ?? '';
     $files = $_FILES['file_path'] ?? '';
     $imageFiles = $_FILES['images'] ?? '';
@@ -25,8 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $photoName = $_FILES['photo']['name'];
     $fileTmpName = $_FILES['photo']['tmp_name'];
 
-    $school_id = $_SESSION['school_id'] ?? null;
-    $teacher_id = $_SESSION['teacher_id'] ?? null;
 
     // Instantiate AddContentContr class
     include_once "../classes/dbh.classes.php";
@@ -36,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     include_once "../classes/addimage.classes.php";
 
 
-    $addHomework = new AddHomeworkContr($name, $classes, $lessons, $units, $topics, $sub_topics, $short_desc, $text_content, $video_url, $files, $imageFiles, $photoSize, $photoName, $fileTmpName, $descriptions, $titles, $urls, $startDate, $endDate, $school_id, $teacher_id);
+    $addHomework = new AddHomeworkContr($name, $classes, $lessons, $units, $topics, $sub_topics, $short_desc, $text_content, $video_url, $files, $imageFiles, $photoSize, $photoName, $fileTmpName, $descriptions, $titles, $urls, $startDate, $endDate);
 
     // Running error handlers and addContent
     $addHomework->addHomeworkDb();
