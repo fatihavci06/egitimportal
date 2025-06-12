@@ -331,31 +331,9 @@ include_once "views/pages-head.php";
         <!--begin::Authentication - Sign-in -->
         <div class="d-flex flex-column flex-lg-row flex-column-fluid">
             <!--begin::Aside-->
-            <div class="d-flex flex-column flex-lg-row-auto bg-primary w-xl-600px positon-xl-relative">
-                <!--begin::Wrapper-->
-                <div class="d-flex flex-column position-xl-fixed top-0 bottom-0 w-xl-600px">
-                    <!--begin::Header-->
-                    <div class="d-flex flex-row-fluid flex-column text-center p-5 p-lg-10 pt-lg-20">
-                        <!--begin::Logo-->
-                        <a href="index.html" class="py-2 py-lg-20">
-                            <img alt="Logo" src="assets/media/logos/lineup-campus.jpg" class="h-100px h-lg-150px" />
-                        </a>
-                        <!--end::Logo-->
-                        <!--begin::Title-->
-                        <h1 class="d-none d-lg-block fw-bold text-green fs-2qx pb-5 pb-md-10">Lineup Campus'e Hoş Geldiniz</h1>
-                        <!--end::Title-->
-                        <!--begin::Description-->
-                        <!--<p class="d-none d-lg-block fw-semibold fs-2 text-white">Plan your blog post by choosing a topic creating 
-							<br />an outline and checking facts</p>-->
-                        <!--end::Description-->
-                    </div>
-                    <!--end::Header-->
-                    <!--begin::Illustration-->
-                    <!--<div class="d-none d-lg-block d-flex flex-row-auto bgi-no-repeat bgi-position-x-center bgi-size-contain bgi-position-y-bottom min-h-100px min-h-lg-350px" style="background-image: url(assets/media/illustrations/illustration/lineup-home.svg)"></div>-->
-                    <!--end::Illustration-->
-                </div>
-                <!--end::Wrapper-->
-            </div>
+			<?php
+			include_once "views/home-side.php";
+			?>
             <!--begin::Aside-->
             <!--begin::Body-->
             <div class="d-flex flex-column flex-lg-row-fluid py-10">

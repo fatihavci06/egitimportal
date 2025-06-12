@@ -7876,6 +7876,10 @@ textarea.form-control-lg {
   width: 25% !important;
 }
 
+.w-37 {
+  width: 37.5% !important; 
+}
+
 .w-50 {
   width: 50% !important;
 }
@@ -45534,7 +45538,7 @@ label.rating-label:hover ~ .rating-label > i, label.rating-label:hover ~ .rating
 
 .bg-primary {
   --bs-bg-rgb-color: var(--bs-primary-rgb);
-  background-color: #E3E3E3 !important;
+  background-color: #fa6000 !important;
  /* background-color: var(--bs-primary-active) !important;*/
 }
 

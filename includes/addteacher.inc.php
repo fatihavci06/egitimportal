@@ -16,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 	$school = trim($_POST["school"]);
 	$classes = trim($_POST["classAdd"]);
 	$lesson = trim($_POST["lessonAdd"]);
+	$teacher_role = trim($_POST["teacher_role"]);
     /*$fileTempPath = $_FILES['image']['tmp_name'];
     $fileName = $_FILES['image']['name'];
     $fileSize = $_FILES['image']['size'];*/
@@ -28,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 	include_once "../classes/addimage.classes.php";
 
 
-	$addTeacher = new AddTeacherContr($photoSize, $photoName, $fileTmpName, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $lesson);
+	$addTeacher = new AddTeacherContr($photoSize, $photoName, $fileTmpName, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $lesson, $teacher_role);
 
 	// Running error handlers and school addTeacher
 	$addTeacher->addTeacherDb();

@@ -4,10 +4,10 @@ session_start();
 
 class AddTeacher extends Dbh {
 
-	protected function setTeacher($photo, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $lesson, $password){
+	protected function setTeacher($photo, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $lesson, $password, $role) {
 		$stmt = $this->connect()->prepare('INSERT INTO users_lnp SET photo = ?, name = ?, surname = ?, username = ?, gender = ?, birth_date = ?, email = ?, telephone = ?, school_id = ?, class_id = ?, lesson_id=?, password=?, role=?, active = ?');
 
-		if(!$stmt->execute([$photo, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $lesson, $password, "4", "1"])){
+		if(!$stmt->execute([$photo, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $lesson, $password, $role, "1"])){
 			$stmt = null;
 			//header("location: ../admin.php?error=stmtfailed");
 			exit();

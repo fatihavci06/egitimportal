@@ -142,6 +142,25 @@ $chooseLesson = new ShowLesson();
                             <div class="d-flex flex-column mb-7 fv-row">
                                 <!--begin::Label-->
                                 <label class="fs-6 fw-semibold mb-2">
+                                    <span class="required">Öğretmen Tipi</span>
+                                </label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <select id="teacher_role" name="teacher_role" aria-label="Öğretmen Tipi Seçiniz" data-control="select2"
+                                    data-placeholder="Öğretmen Tipi Seçiniz..." data-dropdown-parent="#kt_modal_add_customer"
+                                    class="form-select form-select-solid fw-bold">
+                                    <option value="">Öğretmen Tipi Seçin</option>
+                                    <option value="4">Öğretmen</option>
+                                    <option value="9">Mentör Öğretmen</option>
+                                    <option value="10">Koç Öğretmen</option>
+                                </select>
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="d-flex flex-column mb-7 fv-row">
+                                <!--begin::Label-->
+                                <label class="fs-6 fw-semibold mb-2">
                                     <span class="required">Cinsiyet</span>
                                 </label>
                                 <!--end::Label-->
@@ -151,7 +170,7 @@ $chooseLesson = new ShowLesson();
                                     class="form-select form-select-solid fw-bold">
                                     <option value="">Cinsiyet Seçin</option>
                                     <option value="Erkek">Erkek</option>
-                                    <option value="Kız">Kız</option>
+                                    <option value="Kız">Kadın</option>
                                 </select>
                                 <!--end::Input-->
                             </div>

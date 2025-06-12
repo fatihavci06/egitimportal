@@ -57,6 +57,13 @@ var KTModalCustomersAdd = function () {
 							}
 						}
 					},
+					'teacher_role': {
+						validators: {
+							notEmpty: {
+								message: 'Öğretmen Rolü zorunlu'
+							}
+						}
+					},
 					'gender': {
 						validators: {
 							notEmpty: {

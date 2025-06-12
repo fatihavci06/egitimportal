@@ -861,10 +861,6 @@ switch ($service) {
 
 
     case 'filter-main-school-content':
-        $lesson_id = isset($_POST['lesson_id']) ? $_POST['lesson_id'] : null;
-        $unit_id = isset($_POST['unit_id']) ? $_POST['unit_id'] : null;
-        $topic_id = isset($_POST['topic_id']) ? $_POST['topic_id'] : null; 
-       
         $month = isset($_POST['month']) ? $_POST['month'] : null;
         $week = isset($_POST['week']) ? $_POST['week'] : null;
         $activity_title = isset($_POST['activity_title']) ? $_POST['activity_title'] : null;
@@ -878,21 +874,6 @@ switch ($service) {
         $params = [];
 
         // Dinamik filtreleri ekle
-         if ($lesson_id !== null && $lesson_id !== '') {
-            
-            $whereClauses[] = 'lesson_id = :lesson_id';
-            $params[':lesson_id'] = $lesson_id;
-        }
-         if ($unit_id !== null && $unit_id !== '') {
-            
-            $whereClauses[] = 'unit_id = :unit_id';
-            $params[':unit_id'] = $unit_id;
-        }
-         if ($month !== null && $month !== '') {
-            $whereClauses[] = 'month = :month';
-            $params[':month'] = $month;
-        }
-
         if ($month !== null && $month !== '') {
             $whereClauses[] = 'month = :month';
             $params[':month'] = $month;
@@ -1402,26 +1383,50 @@ switch ($service) {
                 $filePath = 'uploads/test/' . $newFileName;
             }
 
-            // Veritabanı bağlantısı
-            $stmt = $pdo->prepare("
+            if ($_SESSION['role'] == 1) {
+                // Veritabanı bağlantısı
+                $stmt = $pdo->prepare("
             INSERT INTO tests_lnp 
             (status,class_id, lesson_id, unit_id, topic_id, subtopic_id, test_title, start_date, end_date, cover_img)
             VALUES
             (:status,:class_id, :lesson_id, :unit_id, :topic_id, :subtopic_id, :title, :start_date, :end_date, :file_path)
         ");
 
-            $stmt->execute([
-                ':status'       => $status,
-                ':class_id'     => $classId,
-                ':lesson_id'    => $lessonId,
-                ':unit_id'      => $unitId,
-                ':topic_id'     => $topicId,
-                ':subtopic_id'  => $subtopicId,
-                ':title'        => $title,
-                ':start_date'   => $startDate,
-                ':end_date'     => $endDate,
-                ':file_path'    => $filePath
-            ]);
+                $stmt->execute([
+                    ':status'       => $status,
+                    ':class_id'     => $classId,
+                    ':lesson_id'    => $lessonId,
+                    ':unit_id'      => $unitId,
+                    ':topic_id'     => $topicId,
+                    ':subtopic_id'  => $subtopicId,
+                    ':title'        => $title,
+                    ':start_date'   => $startDate,
+                    ':end_date'     => $endDate,
+                    ':file_path'    => $filePath
+                ]);
+            } elseif ($_SESSION['role'] == 4) {
+                $stmt = $pdo->prepare("
+            INSERT INTO tests_lnp 
+            (status,class_id, lesson_id, unit_id, topic_id, subtopic_id, test_title, start_date, end_date, cover_img, school_id, teacher_id)
+            VALUES
+            (:status,:class_id, :lesson_id, :unit_id, :topic_id, :subtopic_id, :title, :start_date, :end_date, :file_path, :school_id, :teacher_id)
+        ");
+
+                $stmt->execute([
+                    ':status'       => $status,
+                    ':class_id'     => $classId,
+                    ':lesson_id'    => $lessonId,
+                    ':unit_id'      => $unitId,
+                    ':topic_id'     => $topicId,
+                    ':subtopic_id'  => $subtopicId,
+                    ':title'        => $title,
+                    ':start_date'   => $startDate,
+                    ':end_date'     => $endDate,
+                    ':file_path'    => $filePath,
+                    ':school_id'    => $_SESSION['school_id'],
+                    ':teacher_id'   => $_SESSION['id']
+                ]);
+            }
 
             $testId = $pdo->lastInsertId();
 
@@ -2113,10 +2118,10 @@ WHERE t.id = :id";
             $stmt = $pdo->prepare($sql);
             $stmt->execute(['user_id' => $userId, 'test_id' => $testId]);
             $grade = $stmt->fetch(PDO::FETCH_ASSOC);
-            // if ($stmt->rowCount() === 0) {
-            //     echo json_encode(['status' => 'error', 'message' => 'Test bulunamadı.']);
-            //     exit;
-            // }
+            if ($stmt->rowCount() === 0) {
+                echo json_encode(['status' => 'error', 'message' => 'Test bulunamadı.']);
+                exit;
+            }
             if (isset($grade['fail_count']) && $grade['fail_count'] >= 3) {
                 echo json_encode(['status' => 'error', 'message' => 'Bu teste 3 kez başarısız oldunuz, tekrar giremezsiniz.']);
                 exit;
@@ -2180,7 +2185,6 @@ WHERE t.id = :id";
             $stmt->execute($params);
 
             if ($stmt->rowCount() === 0) {
-                
                 echo json_encode(['status' => 'error', 'message' => 'Test bulunamadı.']);
                 exit;
             }
@@ -2448,477 +2452,8 @@ WHERE t.id = :id";
             ]);
         }
         break;
-    case 'mainSchoolLessonAdd':
-        $classIdArray = $_POST['class_id'] ?? [];
-        $lessonName = $_POST['lesson_name'] ?? null;
 
-        if (empty($classIdArray) || !$lessonName) {
-            echo json_encode(['status' => 'error', 'message' => 'Yaş grubu ve ders adı gereklidir.']);
-            exit;
-        }
 
-        try {
-            if (!is_array($classIdArray)) {
-                $classIdArray = [$classIdArray];
-            }
-
-            $pdo->beginTransaction();
-
-            // 1. Ders tablosuna ekle
-            $stmt = $pdo->prepare("INSERT INTO main_school_lessons_lnp (name) VALUES (:name)");
-            $stmt->execute([':name' => $lessonName]);
-
-            $lessonId = $pdo->lastInsertId();
-
-            // 2. İlişkisel tabloya her class_id için kayıt ekle
-            $stmtLink = $pdo->prepare("INSERT INTO mainschool_lesson_class_id_lnp (lesson_id, class_id) VALUES (:lesson_id, :class_id)");
-            foreach ($classIdArray as $classId) {
-                $stmtLink->execute([
-                    ':lesson_id' => $lessonId,
-                    ':class_id' => $classId
-                ]);
-            }
-
-            $pdo->commit();
-
-            echo json_encode(['status' => 'success', 'message' => 'Ders başarıyla kaydedildi.']);
-        } catch (Exception $e) {
-            $pdo->rollBack();
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Bir hata oluştu: ' . $e->getMessage()
-            ]);
-        }
-        break;
-
-    case 'deleteMainSchoolLesson':
-        $lessonId = $_POST['id'] ?? null;
-        if (!$lessonId || !is_numeric($lessonId)) {
-            echo json_encode(['status' => 'error', 'message' => 'Geçersiz ders ID']);
-            exit;
-        }
-        $pdo->beginTransaction();
-        try {
-            // Dersin varlığını kontrol et
-            $stmt = $pdo->prepare("SELECT * FROM main_school_lessons_lnp WHERE id = :lesson_id");
-            $stmt->execute([':lesson_id' => $lessonId]);
-            if ($stmt->rowCount() === 0) {
-                echo json_encode(['status' => 'error', 'message' => 'Ders bulunamadı.']);
-                exit;
-            }
-
-
-            $stmt = $pdo->prepare("DELETE FROM mainschool_lesson_class_id_lnp WHERE lesson_id = :lesson_id");
-            $stmt->execute([':lesson_id' => $lessonId]);
-
-            // Dersin kendisini sil
-            $stmt = $pdo->prepare("DELETE FROM main_school_lessons_lnp WHERE id = :lesson_id");
-            $stmt->execute([':lesson_id' => $lessonId]);
-
-            $pdo->commit();
-            echo json_encode(['status' => 'success', 'message' => 'Ders başarıyla silindi.']);
-        } catch (Exception $e) {
-            $pdo->rollBack();
-            http_response_code(422); // Veya uygun bir HTTP kodu
-            echo json_encode([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ]);
-            exit();
-        }
-        break;
-    case 'mainSchoolGetLessons':
-        $classId = $_POST['class_id'] ?? null;
-        if (!$classId || !is_numeric($classId)) {
-            echo json_encode(['status' => 'error', 'message' => 'Sınıf ID gerekli']);
-            exit;
-        }
-        try {
-            $stmt = $pdo->prepare("
-            SELECT 
-                ml.id,
-                ml.name,
-                mlc.class_id
-            FROM main_school_lessons_lnp ml
-            INNER JOIN mainschool_lesson_class_id_lnp mlc ON mlc.lesson_id = ml.id
-            WHERE mlc.class_id = :class_id  
-        ");
-            $stmt->execute([':class_id' => $classId]);
-            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            if (empty($results)) {
-                echo json_encode(['status' => 'error', 'message' => 'Ders bulunamadı']);
-                exit;
-            }
-
-            $response = [];
-            foreach ($results as $row) {
-                $response[] = [
-                    'id' => (int)$row['id'],
-                    'name' => $row['name'],
-                    'class_id' => (int)$row['class_id']
-                ];
-            }
-
-            echo json_encode(['status' => 'success', 'data' => $response]);
-        } catch (Exception $e) {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Hata oluştu: ' . $e->getMessage()
-            ]);
-        }
-        break;
-    case 'mainSchoolGetLesson':
-        $lessonId = $_GET['id'] ?? null;
-
-        if (!$lessonId) {
-            echo json_encode(['status' => 'error', 'message' => 'Ders ID gerekli']);
-            exit;
-        }
-
-        try {
-            $stmt = $pdo->prepare("
-            SELECT 
-                ml.id,
-                ml.name,
-                mlc.class_id
-            FROM main_school_lessons_lnp ml
-            INNER JOIN mainschool_lesson_class_id_lnp mlc ON mlc.lesson_id = ml.id
-            WHERE ml.id = :lesson_id
-        ");
-            $stmt->execute([':lesson_id' => $lessonId]);
-            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            if (empty($results)) {
-                echo json_encode(['status' => 'error', 'message' => 'Ders bulunamadı']);
-                exit;
-            }
-
-            // İlk satırdan ana bilgileri al
-            $response = [
-                'id' => $results[0]['id'],
-                'name' => $results[0]['name'],
-                'classes' => []
-            ];
-
-            foreach ($results as $row) {
-                $response['classes'][] = [
-                    'id' => (int)$row['class_id']
-                ];
-            }
-
-            echo json_encode(['status' => 'success', 'data' => $response]);
-        } catch (Exception $e) {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Hata oluştu: ' . $e->getMessage()
-            ]);
-        }
-        break;
-    case 'mainSchoolLessonUpdate':
-        $lessonId = $_POST['lesson_id'] ?? null;
-        $classIds = $_POST['class_ids'] ?? [];
-        $lessonName = $_POST['lesson_name'] ?? null;
-
-        if (!$lessonId || !is_numeric($lessonId) || empty($classIds) || !$lessonName) {
-            echo json_encode(['status' => 'error', 'message' => 'Geçersiz ders ID veya eksik bilgiler']);
-            exit;
-        }
-
-        try {
-            $pdo->beginTransaction();
-
-            // Dersi güncelle
-            $stmt = $pdo->prepare("UPDATE main_school_lessons_lnp SET name = :name WHERE id = :id");
-            $stmt->execute([
-                ':name' => $lessonName,
-                ':id' => $lessonId
-            ]);
-
-            // Eski sınıf ilişkilerini sil
-            $deleteStmt = $pdo->prepare("DELETE FROM mainschool_lesson_class_id_lnp WHERE lesson_id = :lesson_id");
-            $deleteStmt->execute([':lesson_id' => $lessonId]);
-
-            // Yeni sınıf ilişkilerini ekle
-            $insertStmt = $pdo->prepare("INSERT INTO mainschool_lesson_class_id_lnp (lesson_id, class_id) VALUES (:lesson_id, :class_id)");
-            foreach ($classIds as $classId) {
-                if (is_numeric($classId)) {
-                    $insertStmt->execute([
-                        ':lesson_id' => $lessonId,
-                        ':class_id' => $classId
-                    ]);
-                }
-            }
-
-            $pdo->commit();
-
-            echo json_encode(['status' => 'success', 'message' => 'Ders başarıyla güncellendi.']);
-        } catch (Exception $e) {
-            $pdo->rollBack();
-            http_response_code(422);
-            echo json_encode(['status' => 'error', 'message' => 'Bir hata oluştu: ' . $e->getMessage()]);
-            exit;
-        }
-
-        break;
-    case 'mainSchoolUnitAdd':
-        $lessonId = $_POST['lesson_id'] ?? null;
-        $unitName = $_POST['unit_name'] ?? null;
-        $classId = $_POST['class_id'] ?? null;
-        if (!$lessonId || !$unitName || !$classId) {
-            echo json_encode(['status' => 'error', 'message' => 'Ders ID, birim adı ve sınıf ID gereklidir.']);
-            exit;
-        }
-
-        try {
-            $pdo->beginTransaction();
-
-            // 1. Birim tablosuna ekle
-            $stmt = $pdo->prepare("INSERT INTO main_school_units_lnp (lesson_id, name) VALUES (:lesson_id, :name)");
-            $stmt->execute([':lesson_id' => $lessonId, ':name' => $unitName]);
-
-            $pdo->commit();
-
-            echo json_encode(['status' => 'success', 'message' => 'Ünite başarıyla kaydedildi.']);
-        } catch (Exception $e) {
-            $pdo->rollBack();
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Bir hata oluştu: ' . $e->getMessage()
-            ]);
-        }
-
-        break;
-    case "deleteMainSchoolUnit":
-        $id = $_POST['id'] ?? null;
-
-
-        if (!$id || !is_numeric($id)) {
-            echo json_encode(['status' => 'error', 'message' => 'Geçersiz ID']);
-            exit;
-        }
-
-        try {
-            // Silme işlemi
-            $stmt = $pdo->prepare("DELETE FROM main_school_units_lnp WHERE id = ?");
-            $stmt->execute([$id]);
-
-            if ($stmt->rowCount()) {
-                echo json_encode(['status' => 'success', 'message' => 'Başarıyla silindi.']);
-            } else {
-                echo json_encode(['status' => 'error', 'message' => 'Kayıt bulunamadı veya silinemedi.']);
-            }
-        } catch (PDOException $e) {
-            echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası: ' . $e->getMessage()]);
-        }
-        break;
-    case 'mainSchoolGetUnit':
-        $unitId = $_GET['id'] ?? null;
-        if (!$unitId || !is_numeric($unitId)) {
-            echo json_encode(['status' => 'error', 'message' => 'Geçersiz birim ID']);
-            exit;
-        }
-        try {
-            $stmt = $pdo->prepare("SELECT u.id as id,l.id lesson_id,u.name as unit_name ,l.class_id as class_id FROM main_school_units_lnp u INNER JOIN mainschool_lesson_class_id_lnp l  on u.lesson_id=l.id WHERE u.id = :id");
-            $stmt->execute([':id' => $unitId]);
-            $unit = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if (!$unit) {
-                echo json_encode(['status' => 'error', 'message' => 'Ünite bulunamadı']);
-                exit;
-            }
-
-            echo json_encode(['status' => 'success', 'data' => $unit]);
-        } catch (PDOException $e) {
-            echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası: ' . $e->getMessage()]);
-        }
-        break;
-    case 'mainSchoolUnitUpdate':
-        $unitId = $_POST['unit_id'] ?? null;
-        $unitName = $_POST['unit_name'] ?? null;
-        $lessonId = $_POST['lesson_id'] ?? null;
-        $classId = $_POST['class_id'] ?? null;
-
-        if (!$unitId || !$unitName || !$lessonId || !$classId) {
-            echo json_encode(['status' => 'error', 'message' => 'Ünite ID, birim adı, ders ID ve sınıf ID gereklidir.']);
-            exit;
-        }
-
-        try {
-            $pdo->beginTransaction();
-
-            // 1. Birimi güncelle
-            $stmt = $pdo->prepare("UPDATE main_school_units_lnp SET name = :name, lesson_id = :lesson_id WHERE id = :id");
-            $stmt->execute([':name' => $unitName, ':lesson_id' => $lessonId, ':id' => $unitId]);
-
-
-
-            $pdo->commit();
-
-            echo json_encode(['status' => 'success', 'message' => 'Ünite başarıyla güncellendi.']);
-        } catch (Exception $e) {
-            $pdo->rollBack();
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Bir hata oluştu: ' . $e->getMessage()
-            ]);
-        }
-        break;
-    case 'mainSchoolGetUnits':
-        $lessonId = $_POST['lesson_id'] ?? null;
-
-        if (!$lessonId) {
-            echo json_encode(['status' => 'error', 'message' => 'Ders ID ve sınıf ID gereklidir.']);
-            exit;
-        }
-
-
-        try {
-            $stmt = $pdo->prepare("
-        SELECT u.id, u.name
-        FROM main_school_units_lnp u
-        WHERE u.lesson_id = :lesson_id
-    ");
-            $stmt->execute([':lesson_id' => $lessonId]);
-            $units = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            if (empty($units)) {
-                echo json_encode(['status' => 'error', 'message' => 'Birim bulunamadı']);
-                exit;
-            }
-
-            echo json_encode(['status' => 'success', 'data' => $units]);
-        } catch (Exception $e) {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Hata oluştu: ' . $e->getMessage()
-            ]);
-        }
-        break;
-    case 'mainSchoolTopicAdd':
-        $unitId = $_POST['unit_id'] ?? null;
-        $topicName = $_POST['topic_name'] ?? null;
-
-        if (!$unitId || !$topicName) {
-            echo json_encode(['status' => 'error', 'message' => 'Ünite ID ve konu adı gereklidir.']);
-            exit;
-        }
-        try {
-            $pdo->beginTransaction();
-
-            // 1. Konu tablosuna ekle
-            $stmt = $pdo->prepare("INSERT INTO main_school_topics_lnp (unit_id, name) VALUES (:unit_id, :name)");
-            $stmt->execute([':unit_id' => $unitId, ':name' => $topicName]);
-
-            $pdo->commit();
-
-            echo json_encode(['status' => 'success', 'message' => 'Konu başarıyla kaydedildi.']);
-        } catch (Exception $e) {
-            $pdo->rollBack();
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Bir hata oluştu: ' . $e->getMessage()
-            ]);
-        }
-
-        break;
-    case 'deleteMainSchoolTopic':
-        $id = $_POST['id'] ?? null;
-        if (!$id || !is_numeric($id)) {
-            echo json_encode(['status' => 'error', 'message' => 'Geçersiz ID']);
-            exit;
-        }
-        try {
-            $stmt = $pdo->prepare("DELETE FROM main_school_topics_lnp WHERE id = ?");
-            $stmt->execute([$id]);
-
-            if ($stmt->rowCount()) {
-                echo json_encode(['status' => 'success', 'message' => 'Başarıyla silindi.']);
-            } else {
-                echo json_encode(['status' => 'error', 'message' => 'Kayıt bulunamadı veya silinemedi.']);
-            }
-        } catch (PDOException $e) {
-            echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası: ' . $e->getMessage()]);
-        }
-        break;
-    case 'mainSchoolGetTopic':
-        $topicId = $_GET['id'] ?? null;
-      
-        if (!$topicId || !is_numeric($topicId)) {
-            echo json_encode(['status' => 'error', 'message' => 'Geçersiz konu ID']);
-            exit;
-        }
-        try {
-            $stmt = $pdo->prepare("SELECT t.id as id,u.id as unit_id,t.name as topic_name ,u.lesson_id as lesson_id,mlsc.class_id FROM main_school_topics_lnp t INNER JOIN main_school_units_lnp u ON t.unit_id=u.id INNER JOIN main_school_lessons_lnp l on l.id=u.lesson_id INNER JOIN mainschool_lesson_class_id_lnp as mlsc on mlsc.lesson_id=l.id  WHERE t.id = :id");
-            $stmt->execute([':id' => $topicId]);
-            $topic = $stmt->fetch(PDO::FETCH_ASSOC);
-          
-            if (!$topic) {
-                echo json_encode(['status' => 'error', 'message' => 'Konu bulunamadı']);
-                exit;
-            }
-
-            echo json_encode(['status' => 'success', 'data' => $topic]);
-        } catch (PDOException $e) {
-            echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası: ' . $e->getMessage()]);
-        }
-        break;
-    case 'mainSchoolTopicUpdate':
-        $topicId = $_POST['topic_id'] ?? null;
-        $topicName = $_POST['topic_name'] ?? null;
-        $unitId = $_POST['unit_id'] ?? null;
-
-        if (!$topicId || !$topicName || !$unitId) {
-            echo json_encode(['status' => 'error', 'message' => 'Konu ID, konu adı ve ünite ID gereklidir.']);
-            exit;
-        }
-        try {
-            $pdo->beginTransaction();
-
-            // 1. Konuyu güncelle
-            $stmt = $pdo->prepare("UPDATE main_school_topics_lnp SET name = :name, unit_id = :unit_id WHERE id = :id");
-            $stmt->execute([':name' => $topicName, ':unit_id' => $unitId, ':id' => $topicId]);
-
-            $pdo->commit();
-
-            echo json_encode(['status' => 'success', 'message' => 'Konu başarıyla güncellendi.']);
-        } catch (Exception $e) {
-            $pdo->rollBack();
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Bir hata oluştu: ' . $e->getMessage()
-            ]);
-        }
-        break;
-    case 'mainSchoolGetTopics':
-        $unitId = $_POST['unit_id'] ?? null;
-
-        if (!$unitId) {
-            echo json_encode(['status' => 'error', 'message' => 'Ünite ID gereklidir.']);
-            exit;
-        }
-
-        try {
-            $stmt = $pdo->prepare("
-        SELECT t.id, t.name
-        FROM main_school_topics_lnp t
-        WHERE t.unit_id = :unit_id");
-            $stmt->execute([':unit_id' => $unitId]);
-            $topics = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            if (empty($topics)) {
-                echo json_encode(['status' => 'error', 'message' => 'Konu bulunamadı']);
-                exit;
-            }
-
-            echo json_encode(['status' => 'success', 'data' => $topics]);
-        } catch (Exception $e) {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Hata oluştu: ' . $e->getMessage()
-            ]);
-        }
-        break;
     default:
         echo json_encode(['status' => 'error', 'message' => 'Geçersiz servis']);
         break;

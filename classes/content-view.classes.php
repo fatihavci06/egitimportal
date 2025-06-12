@@ -100,7 +100,7 @@ class ShowContents extends GetContent
 
         $dateFormat = new DateFormat();
 
-        if (count($contentInfo) == 0) {
+        if (empty($contentInfo)) {
             $contentList = header("Location: http://localhost/lineup_campus/404.php"); // 404 sayfasına yönlendir
             echo $contentList;
             return;
