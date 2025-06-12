@@ -62,6 +62,29 @@ class ShowWeekly extends Weeklies
             echo $lessonList;
         }
     }
+//     public function getWeeklyList2() {
+
+//         $weeklyInfo = $this->getWeekliesList2();
+
+//         $dateFormat = new DateFormat();
+
+//         foreach ($weeklyInfo as $key => $value) {
+
+//             $lessonList = '
+//             <h5>' . '</h5>
+//                             ' . $dateFormat->changeDate($value['start_date']) . ' - ' . $dateFormat->changeDate($value['end_date']) . '
+
+//                             ' . $value['className'] . '
+
+//                             ' . $value['lessonName'] . '
+
+//                             ' . $value['unitName'] . '
+// ' . $value['unitSlug'] . '
+//                 ';
+//             echo $lessonList;
+//         }
+//     }
+
 
     // Get Lesson Id
 

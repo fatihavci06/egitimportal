@@ -65,6 +65,30 @@ class Units extends Dbh
 		$stmt = null;
 	}
 
+	protected function getUnitSelectLists()
+	{
+
+		$class = $_SESSION['class_id'];
+		$lesson = $POST['lesson_id'];
+
+		$stmt = $this->connect()->prepare('SELECT units_lnp.id AS unitID,
+	      units_lnp.name AS unitName
+	      FROM units_lnp
+	      WHERE units_lnp.lesson_id = ? 
+	      AND units_lnp.class_id = ?');
+
+		if (!$stmt->execute([$lesson, $class])) {
+			$stmt = null;
+			exit();
+		}
+
+		$unitData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $unitData;
+
+		$stmt = null;
+	}
+
 	protected function getLessonId($active_slug)
 	{
 		$stmt = $this->connect()->prepare('SELECT id FROM lessons_lnp WHERE slug = ?');
@@ -124,7 +148,7 @@ class Units extends Dbh
 				$stmt = null;
 				exit();
 			}
-		} elseif ($_SESSION['role'] == 3 OR $_SESSION['role'] == 8) {
+		} elseif ($_SESSION['role'] == 3 or $_SESSION['role'] == 8) {
 			$school = $_SESSION['school_id'];
 			$stmt = $this->connect()->prepare('SELECT units_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, lessons_lnp.id AS lessonId FROM units_lnp INNER JOIN classes_lnp ON units_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON units_lnp.lesson_id = lessons_lnp.id WHERE units_lnp.slug = ? AND units_lnp.school_id = ?');
 

@@ -48,6 +48,42 @@ class Weeklies extends Dbh
 		$stmt = null;
 	}
 
+	protected function getWeekliesList2(
+		$class_id,
+		$lesson_id,
+		$unit_id,
+		$topic_id,
+		$subtopic_id
+	) {
+		$stmt = $this->connect()->prepare("SELECT 
+                weekly_duty_lnp.id AS unitID, 
+                weekly_duty_lnp.name AS weeklyName, 
+                weekly_duty_lnp.start_date AS start_date, 
+                weekly_duty_lnp.end_date AS end_date, 
+                weekly_duty_lnp.slug AS unitSlug, 
+                classes_lnp.name AS className, 
+                lessons_lnp.name AS lessonName, 
+                units_lnp.name AS unitName 
+            FROM weekly_duty_lnp 
+            INNER JOIN classes_lnp ON weekly_duty_lnp.class_id = classes_lnp.id 
+            INNER JOIN lessons_lnp ON weekly_duty_lnp.lesson_id = lessons_lnp.id 
+            INNER JOIN units_lnp ON weekly_duty_lnp.unit_id = units_lnp.id 
+			WHERE weekly_duty_lnp.class_id = :class_id 
+			AND weekly_duty_lnp.lesson_id = :lesson_id 
+			AND weekly_duty_lnp.unit_id = :unit_id");
+			
+		if (!$stmt->execute([
+			':class_id' => $class_id,
+			':lesson_id' => $lesson_id,
+			':unit_id' => $unit_id
+		])) {
+			$stmt = null;
+			exit();
+		}
+
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
+
 	protected function getUnitsOneLesson()
 	{
 
@@ -188,5 +224,4 @@ class Weeklies extends Dbh
 		$stmt = null;
 		$stmt2 = null;
 	}
-
 }
