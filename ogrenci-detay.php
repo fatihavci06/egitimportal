@@ -9,6 +9,15 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 	include "classes/student-view.classes.php";
 	include "classes/school.classes.php";
 	include "classes/timespend.classes.php";
+
+	include_once "classes/classes.classes.php";
+	include_once "classes/classes-view.classes.php";
+	include_once "classes/lessons.classes.php";
+	include_once "classes/lessons-view.classes.php";
+
+
+
+
 	$studentId = new Student();
 	$student = new ShowStudent();
 	$timeSpend = new timeSpend();
@@ -295,6 +304,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 													<a class="nav-link text-active-primary ms-0 me-10 py-5"
 														data-bs-toggle="pill" href="#dersler">Dersler</a>
 												</li>
+												<li class="nav-item mt-2">
+													<a class="nav-link text-active-primary ms-0 me-10 py-5"
+														data-bs-toggle="pill" href="#uniteler">İlerleme</a>
+												</li>
 												<!--end::Nav item-->
 												<!--begin::Nav item-->
 												<li class="nav-item mt-2">
@@ -350,7 +363,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 														<!--end::Header-->
 														<!--begin::Body-->
 														<div class="card-body pt-6">
-															<?php $student->showLessonsListForStudentDetails($studentInfo['id'],$studentInfo['class_id'], $studentInfo['school_id']); ?>
+															<?php $student->showLessonsListForStudentDetails($studentInfo['id'], $studentInfo['class_id'], $studentInfo['school_id']); ?>
 															<!--begin::Item-->
 														</div>
 														<!--end::Body-->
@@ -1739,6 +1752,104 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 												<?php $student->showLessonsListForStudentDetailsPage($getStudentId, $studentInfo['class_id'], $studentInfo['school_id']); ?>
 											</div>
 										</div>
+
+										<div class="tab-pane fade" id="uniteler">
+											<div class="row g-5 g-xxl-8">
+												<div class="col-xl-6">
+													<div class="card mb-5 mb-xl-8">
+														<div class="card-header border-0 pt-5">
+															<h3 class="card-title align-items-start flex-column">
+																<span class="card-label fw-bold text-gray-900">
+																	İlerleme</span>
+															</h3>
+														</div>
+
+														<div class="card-body pt-6">
+															<form class="form" action="#" id="kt_form_student_progress">
+																<input type="hidden" id="classes" name="classes"
+																	value="<?= $studentInfo['class_id'] ?>">
+																<input type="hidden" id="student_id" name="student_id"
+																	value="<?= $studentInfo['id'] ?>">
+																<input type="hidden" id="school_id" name="school_id"
+																	value="<?= $studentInfo['school_id'] ?>">
+																<div class="row mt-4">
+
+																	<div class="col-lg-10">
+
+																		<label class="fs-6 fw-semibold mb-2" for="ders">Ders
+																		</label>
+																		<select id="lessons" name="lessons"
+																			aria-label="Ders Seçiniz" class="form-select"
+																			required>
+																			<option value="">Seçiniz</option>
+																			<?php
+																			$chooseLesson = new ShowLesson();
+
+																			$lessons = $chooseLesson->getLessonByClassId($studentInfo['class_id']);
+																			foreach ($lessons as $lessonOption) {
+																				echo '<option value="' . $lessonOption["id"] . '">' . $lessonOption["text"] . '</option>';
+																			}
+																			?>
+
+																		</select>
+																	</div>
+																</div>
+																<div class="row mt-4">
+
+																	<div class="col-lg-10">
+																		<label class="fs-6 fw-semibold mb-2"
+																			for="units">Ünite
+																		</label>
+																		<select class="form-select" id="units" name="units"
+																			aria-label="Ünite Seçiniz">
+																			<option value="">Seçiniz</option>
+																		</select>
+																	</div>
+																</div>
+																<div class="row mt-4">
+
+																	<div class="col-lg-10">
+																		<label class="fs-6 fw-semibold mb-2"
+																			for="topics">Konu
+																		</label>
+																		<select class="form-select" id="topics"
+																			name="topics" aria-label="Konu Seçiniz">
+																			<option value="">Seçiniz</option>
+																		</select>
+																	</div>
+																</div>
+																<div class="row mt-4">
+
+																	<div class="col-lg-10">
+																		<label class="fs-6 fw-semibold mb-2"
+																			for="subtopics">Altkonu
+																		</label>
+																		<select class="form-select" id="subtopics"
+																			name="subtopics" aria-label="Altkonu Seçiniz">
+																			<option value="">Seçiniz</option>
+																		</select>
+																	</div>
+																</div>
+																<div class=" mt-4">
+
+																	<button type="submit"
+																		id="kt_form_student_progress_submit"
+																		class="btn btn-primary btn-sm">
+																		<span class="indicator-label">Göster</span>
+																	</button>
+																</div>
+
+															</form>
+														</div>
+													</div>
+												</div>
+
+
+											</div>
+											<div class="row g-5 g-xxl-8" id="html_response">
+											</div>
+										</div>
+
 										<!--end::Row-->
 										<!--begin::Row-->
 										<div class="tab-pane fade" id="ozel_dersler">
@@ -6799,6 +6910,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 		<script src="assets/js/custom/utilities/modals/offer-a-deal/complete.js"></script>
 		<script src="assets/js/custom/utilities/modals/offer-a-deal/main.js"></script>
 		<script src="assets/js/custom/utilities/modals/users-search.js"></script>
+
+
+		<script src="assets/js/custom/apps/profile/trackprogress.js"></script>
 		<!--end::Custom Javascript-->
 		<!--end::Javascript-->
 	</body>

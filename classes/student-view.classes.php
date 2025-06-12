@@ -1093,7 +1093,7 @@ class ShowStudent extends Student
 
         }
     }
-
+   
     // List of Logins Student Details Page
 
     public function showLoginDetailsListForStudentDetails($id)

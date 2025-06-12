@@ -581,7 +581,7 @@ class ShowLesson extends Lessons
 
 
 
-            $lessonList .=  $classForms;
+            $lessonList .= $classForms;
         }
 
 
@@ -608,8 +608,27 @@ class ShowLesson extends Lessons
             }
         }
 
-
-
         echo json_encode($units);
+    }
+
+    public function getLessonByClassId($classId)
+    {
+
+        $unitInfo = $this->getLessonForUnitList();
+
+        $units = array();
+
+        foreach ($unitInfo as $unit) {
+
+            $classList = explode(";", $unit['class_id']);
+
+            foreach ($classList as $class_id) {
+                if ($classId == $class_id) {
+                    $units[] = array("id" => $unit["id"], "text" => $unit["name"]);
+                }
+            }
+        }
+
+        return $units;
     }
 }
