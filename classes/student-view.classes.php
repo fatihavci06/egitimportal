@@ -1025,8 +1025,6 @@ class ShowStudent extends Student
 
             if (in_array($class_id, $pieces)) {
 
-                $class_id = $class_id;
-                $school_id = $school_id;
                 $lesson_id = $value['id'];
 
                 $unitData = $this->getUnits($lesson_id, $class_id, $school_id);
@@ -1044,7 +1042,7 @@ class ShowStudent extends Student
                     $resultW = ($result == null) ? 0 : $result;
                     $resultT = ($result == null) ? '-' : $result;
 
-                    $score = $gradeObj->getGradeByLessonId($getStudentId, $lesson_id);
+                    $score = $gradeObj->getGradeByUnitId($getStudentId, $unit['id']);
                     $scoreW = ($score == null) ? 0 : $score;
                     $scoreT = ($score == null) ? '-' : $score;
                     $units .= '

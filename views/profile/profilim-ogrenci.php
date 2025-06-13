@@ -150,7 +150,7 @@ if (!isset($userInfo)) {
                                                             </div> -->
                                                 </div>
                                                 <div class="card-body pt-6">
-                                                    <?php $student->showLessonsListForStudentDetails($userInfo['class_id'], $userInfo['school_id']); ?>
+                                                    <?php $student->showLessonsListForStudentDetails($userInfo['id'], $userInfo['class_id'], $userInfo['school_id']); ?>
                                                 </div>
                                             </div>
                                             <div class="card card-flush mb-5 mb-xl-8">
@@ -1146,7 +1146,7 @@ if (!isset($userInfo)) {
                                 </div>
                                 <div class="tab-pane fade" id="dersler">
                                     <div class="row g-5 g-xxl-8">
-                                        <?php //$student->showLessonsListForStudentDetailsPage($userInfo['class_id'], $userInfo['school_id']); ?>
+                                        <?php $student->showLessonsListForStudentDetailsPage($userInfo['id'], $userInfo['class_id'], $userInfo['school_id']); ?>
                                     </div>
                                 </div>
                                 <div class="tab-pane fade" id="ozel_dersler">
