@@ -1,51 +1,67 @@
 <?php
 header('Content-Type: application/json');
 
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
+
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     require_once '../classes/dbh.classes.php';
 
-    $class_id = (int) $_POST['classes'];
-    $lesson_id = (int) $_POST['lessons'];
-    $unit_id = (int) $_POST['units'];
-    $topic_id = (int) $_POST['topics'];
-    $subtopic_id = (int) $_POST['subtopics'];
 
-    $student_id = (int) $_POST['student_id'];
-    $school_id = (int) $_POST['school_id'];
+    $classId = (int) $_POST['classes'];
+    $lessonId = (int) $_POST['lessons'];
+    $unitId = (int) $_POST['units'];
+    $topicId = (int) $_POST['topics'];
+    $subtopicId = (int) $_POST['subtopics'];
+    $studentId = (int) $_POST['student_id'];
+    $schoolId = (int) $_POST['school_id'];
 
 
-    if ($subtopic_id != null) {
-        $result = doSubtopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $subtopic_id, $student_id);
-        // $result = getSubtopicById($subtopic_id);
-        echo json_encode(['status' => 'success', 'html' => $result]);
-        exit;
+    // var_dump($subtopicId); 
+    // exit();
+    // return $subtopicId;
+    function respondWithHtml($html)
+    {
+        echo json_encode(['status' => 'success', 'html' => $html]);
+        die();
     }
-    if ($topic_id != null) {
-        $result = doTopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $student_id);
-        echo json_encode(['status' => 'success', 'html' => $result]);
-        exit;
+    function checkIfNotZeroOrNull(...$args)
+    {
+        foreach ($args as $arg) {
+            if (is_null($arg) || $arg == 0) {
+                return false;
+            }
+        }
+        return true;
     }
-    if ($unit_id != null) {
-        $result = doUnits($school_id, $class_id, $lesson_id, $unit_id, $student_id);
-        echo json_encode(['status' => 'success', 'html' => $result]);
-        exit;
+    if (checkIfNotZeroOrNull($classId, $lessonId, $unitId, $topicId, $subtopicId)) {
+        respondWithHtml(doSubtopics($schoolId, $classId, $lessonId, $unitId, $topicId, $subtopicId, $studentId));
     }
-    if ($lesson_id != null) {
-        $result = doLessons($school_id, $class_id, $lesson_id, $student_id);
-        echo json_encode(['status' => 'success', 'html' => $result]);
-        exit;
+
+    if (checkIfNotZeroOrNull($classId, $lessonId, $unitId, $topicId)) {
+        respondWithHtml(doTopics($schoolId, $classId, $lessonId, $unitId, $topicId, $subtopicId, $studentId));
     }
+
+    if (checkIfNotZeroOrNull($classId, $lessonId, $unitId)) {
+        respondWithHtml(doUnits($schoolId, $classId, $lessonId, $unitId, $topicId, $studentId));
+    }
+
+    if (checkIfNotZeroOrNull($classId, $lessonId)) {
+        respondWithHtml(doLessons($schoolId, $classId, $lessonId, $unitId, $studentId));
+    }
+
 
     echo json_encode(['status' => 'fail', 'message' => 'Invalid request method']);
     exit;
 
 }
 
-function doLessons($school_id, $class_id, $lesson_id, $student_id)
+function doLessons($school_id, $class_id, $lesson_id, $unit_id, $student_id)
 {
     $itemModel = getLessonById($lesson_id);
     $items = getUnitsByLessonId($school_id, $class_id, $lesson_id);
-    $itemsCount = count($items);
+    $itemsCount = count($items) ?? 0;
 
     $styles = ["danger", "success", "primary", "warning", "info", "secondary", "light", "dark"];
     $styleIndex = 0;
@@ -73,7 +89,7 @@ function doLessons($school_id, $class_id, $lesson_id, $student_id)
         $percentageW = ($percentage == null) ? 0 : $percentage;
         $percentageT = ($percentage == null) ? '-' : $percentage;
 
-        $score = $gradeObj->getGradeByLessonId($studentId, $lesson_id);
+        $score = $gradeObj->getGradeByLessonId($student_id, $lesson_id);
         $scoreW = ($score == null) ? 0 : $score;
         $scoreT = ($score == null) ? '-' : $score;
 
@@ -133,11 +149,11 @@ function doLessons($school_id, $class_id, $lesson_id, $student_id)
 
 }
 
-function doUnits($school_id, $class_id, $lesson_id, $unit_id, $student_id)
+function doUnits($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $student_id)
 {
     $itemModel = getUnitById($unit_id);
     $items = getTopicsByUnitId($school_id, $class_id, $lesson_id, $unit_id);
-    $itemsCount = count($items);
+    $itemsCount = count($items) ?? 0;
 
     $styles = ["danger", "success", "primary", "warning", "info", "secondary", "light", "dark"];
     $styleIndex = 0;
@@ -162,7 +178,7 @@ function doUnits($school_id, $class_id, $lesson_id, $unit_id, $student_id)
         $percentageW = ($percentage == null) ? 0 : $percentage;
         $percentageT = ($percentage == null) ? '-' : $percentage;
 
-        $score = $gradeObj->getGradeByLessonId($studentId, $lesson_id);
+        $score = $gradeObj->getGradeByLessonId($student_id, $lesson_id);
         $scoreW = ($score == null) ? 0 : $score;
         $scoreT = ($score == null) ? '-' : $score;
 
@@ -222,11 +238,11 @@ function doUnits($school_id, $class_id, $lesson_id, $unit_id, $student_id)
 
 }
 
-function doTopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $student_id)
+function doTopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $subtopic_id, $student_id)
 {
     $itemModel = getTopicById($topic_id);
     $items = getSubtopicsByTopicId($school_id, $class_id, $lesson_id, $unit_id, $topic_id);
-    $itemsCount = count($items);
+    $itemsCount = count($items) ?? 0;
 
     $styles = ["danger", "success", "primary", "warning", "info", "secondary", "light", "dark"];
     $styleIndex = 0;
@@ -251,7 +267,7 @@ function doTopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $stude
         $percentageW = ($percentage == null) ? 0 : $percentage;
         $percentageT = ($percentage == null) ? '-' : $percentage;
 
-        $score = $gradeObj->getGradeByLessonId($studentId, $lesson_id);
+        $score = $gradeObj->getGradeByLessonId($student_id, $lesson_id);
         $scoreW = ($score == null) ? 0 : $score;
         $scoreT = ($score == null) ? '-' : $score;
 
@@ -309,8 +325,9 @@ function doTopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $stude
 function doSubtopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $subtopic_id, $student_id)
 {
     $itemModel = getSubtopicById($subtopic_id);
+
     // $items = getSubtopicsByTopicId($school_id, $class_id, $lesson_id, $unit_id, $topic_id);
-    // $itemsCount = count($items);
+    // $itemsCount = count($items)??0;
 
     $styles = ["danger", "success", "primary", "warning", "info", "secondary", "light", "dark"];
     $styleIndex = 0;
@@ -322,15 +339,17 @@ function doSubtopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $su
     $contentObj = new ContentTracker();
     $gradeObj = new GradeResult();
 
-    $itemModel = $itemModel[0];
+    // $itemModel = $itemModel[0];
 
     $style = $styles[$styleIndex % count($styles)];
 
-    $percentage = $contentObj->getSchoolContentAnalyticsBySubtopicId($student_id, $itemModel['id']);
+    // foreach ($items as $item) {
+
+    $percentage = $contentObj->getSchoolContentAnalyticsBySubtopicId($student_id, $topic_id);
     $percentageW = ($percentage == null) ? 0 : $percentage;
     $percentageT = ($percentage == null) ? '-' : $percentage;
 
-    $score = $gradeObj->getGradeByLessonId($studentId, $lesson_id);
+    $score = $gradeObj->getGradeByLessonId($student_id, $lesson_id);
     $scoreW = ($score == null) ? 0 : $score;
     $scoreT = ($score == null) ? '-' : $score;
 
@@ -369,9 +388,7 @@ function doSubtopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $su
                         <div class="card mb-5 mb-xl-8">
                             <div class="card-header border-0 pt-5">
                                 <h3 class="card-title align-items-start flex-column">
-                                    <span class="card-label fw-bold text-gray-900">' . $itemModel['name'] . '</span>
-                                    
-                                    <span class="text-muted fw-semibold d-block fs-7">' . $itemsCount . ' Ünite</span>
+                                    <span class="card-label fw-bold text-gray-900">' . $itemModel['name'] . '</span>                                    
                                 </h3>
                             </div>
                             <div class="card-body pt-6">
@@ -385,8 +402,6 @@ function doSubtopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $su
     return $FinalView;
 }
 
-
-
 function getLessonById($id)
 {
     $db = (new dbh())->connect();
@@ -395,11 +410,10 @@ function getLessonById($id)
     try {
         $stmt = $db->prepare($sql);
         $stmt->execute([$id]);
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $result;
+        return $stmt->fetch(PDO::FETCH_ASSOC);
 
     } catch (PDOException $e) {
-        return [];
+        return false;
     }
 
 
@@ -412,11 +426,10 @@ function getUnitById($id)
     try {
         $stmt = $db->prepare($sql);
         $stmt->execute([$id]);
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $result;
+        return $stmt->fetch(PDO::FETCH_ASSOC);
 
     } catch (PDOException $e) {
-        return [];
+        return false;
     }
 }
 function getTopicById($id)
@@ -427,11 +440,10 @@ function getTopicById($id)
     try {
         $stmt = $db->prepare($sql);
         $stmt->execute([$id]);
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $result;
+        return $stmt->fetch(PDO::FETCH_ASSOC);
 
     } catch (PDOException $e) {
-        return [];
+        return false;
     }
 }
 function getSubtopicById($id)
@@ -442,11 +454,10 @@ function getSubtopicById($id)
     try {
         $stmt = $db->prepare($sql);
         $stmt->execute([$id]);
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $result;
+        return $stmt->fetch(PDO::FETCH_ASSOC);
 
     } catch (PDOException $e) {
-        return [];
+        return false;
     }
 }
 // _______
@@ -463,7 +474,7 @@ function getUnitsByLessonId($school_id, $class_id, $lesson_id)
         return $result;
 
     } catch (PDOException $e) {
-        return [];
+        return false;
     }
 }
 function getTopicsByUnitId($school_id, $class_id, $lesson_id, $unit_id)
@@ -476,9 +487,8 @@ function getTopicsByUnitId($school_id, $class_id, $lesson_id, $unit_id)
         $stmt->execute([$school_id, $class_id, $lesson_id, $unit_id]);
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $result;
-
     } catch (PDOException $e) {
-        return [];
+        return false;
     }
 }
 function getSubtopicsByTopicId($school_id, $class_id, $lesson_id, $unit_id, $topic_id)
@@ -493,6 +503,6 @@ function getSubtopicsByTopicId($school_id, $class_id, $lesson_id, $unit_id, $top
         return $result;
 
     } catch (PDOException $e) {
-        return [];
+        return false;
     }
 }

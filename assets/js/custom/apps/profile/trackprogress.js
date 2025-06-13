@@ -12,7 +12,13 @@ var KTStudentProgress = function () {
             setTimeout(function () {
                 const form = document.getElementById('kt_form_student_progress');
                 var formData = new FormData(form);
-
+                const selectFields = ['classes', 'lessons', 'units', 'topics', 'subtopics'];
+                selectFields.forEach(field => {
+                    if (!formData.has(field)) {
+                        const element = document.querySelector(`[name="${field}"]`);
+                        formData.append(field, element ? element.value || '' : '');
+                    }
+                });
                 $.ajax({
                     type: "POST",
                     url: "includes/complete_percentage.inc.php",
@@ -45,7 +51,7 @@ var KTStudentProgress = function () {
                     placeholder: emptyText
                 });
 
-                $element.val('0').trigger('change');
+                $element.val(null).trigger('change');
             } else {
                 $element.html(`<option value="">${emptyText}</option>`);
                 $element.select2({ placeholder: emptyText });

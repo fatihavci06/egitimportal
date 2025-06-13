@@ -2,6 +2,10 @@
 include_once "dateformat.classes.php";
 
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 class ShowStudent extends Student
 {
 
@@ -743,7 +747,7 @@ class ShowStudent extends Student
                 $score = $gradeObj->getGradeByLessonId($studentId, $lesson_id);
                 $scoreW = ($score == null) ? 0 : $score;
                 $scoreT = ($score == null) ? '-' : $score;
-                
+
                 $lessonList .= '
                 <!--begin::Item-->
                     <div class="d-flex flex-stack">
@@ -1040,7 +1044,9 @@ class ShowStudent extends Student
                     $resultW = ($result == null) ? 0 : $result;
                     $resultT = ($result == null) ? '-' : $result;
 
- 
+                    $score = $gradeObj->getGradeByLessonId($getStudentId, $lesson_id);
+                    $scoreW = ($score == null) ? 0 : $score;
+                    $scoreT = ($score == null) ? '-' : $score;
                     $units .= '
                             <!--begin::Item-->
                                 <div class="d-flex flex-stack">
