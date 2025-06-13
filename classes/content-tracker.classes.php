@@ -3,7 +3,6 @@ class ContentTracker
 {
 
     private $db;
-    private $table = 'content_visits';
     public function __construct()
     {
         require_once 'dbh.classes.php';

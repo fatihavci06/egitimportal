@@ -712,8 +712,10 @@ class ShowStudent extends Student
         $styleIndex = 0;
 
         require_once "content-tracker.classes.php";
+        require_once "grade-result.classes.php";
 
         $contentObj = new ContentTracker();
+        $gradeObj = new GradeResult();
 
         foreach ($lessonsInfo as $value) {
 
@@ -735,7 +737,12 @@ class ShowStudent extends Student
                 $unitCount = count($unitData);
 
                 $result = $contentObj->getSchoolContentAnalyticsByLessonId($studentId, $lesson_id);
+                $resultW = ($result == null) ? 0 : $result;
+                $resultT = ($result == null) ? '-' : $result;
 
+                $score = $gradeObj->getGradeByLessonId($studentId, $lesson_id);
+                $scoreW = ($score == null) ? 0 : $score;
+                $scoreT = ($score == null) ? '-' : $score;
                 $lessonList .= '
                 <!--begin::Item-->
                     <div class="d-flex flex-stack">
@@ -755,12 +762,20 @@ class ShowStudent extends Student
                             <div class="d-flex align-items-center w-100px w-sm-200px flex-column mt-3">
                                 <div class="d-flex justify-content-between w-100 mt-auto mb-2">
                                     <span class="fw-semibold fs-6 text-gray-500">Tamamlama Oranı</span>
-                                    <span class="fw-bold fs-6">' . $result . '%</span>
+                                    <span class="fw-bold fs-6">' . $resultT . '%</span>
                                 </div>
                                 <div class="h-5px mx-3 w-100 bg-light mb-3">
-                                    <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $result . '%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                    <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $resultW . '%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
-                            </div>
+                                <div class="d-flex justify-content-between w-100 mt-auto mb-2">
+                                    <span class="fw-semibold fs-6 text-gray-500">Başarı Oranı</span>
+                                    <span class="fw-bold fs-6">' . $scoreT . '%</span>
+                                </div>
+                                <div class="h-5px mx-3 w-100 bg-light mb-3">
+                                    <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $scoreW . '%;" aria-valuenow="25"
+                                        aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                </div>
                             <!--end::Progress-->
                         </div>
                         <!--end::Section-->
@@ -988,8 +1003,10 @@ class ShowStudent extends Student
         $styleIndex = 0;
 
         require_once "content-tracker.classes.php";
+        require_once "grade-result.classes.php";
 
         $contentObj = new ContentTracker();
+        $gradeObj = new GradeResult();
 
         foreach ($lessonsInfo as $value) {
 
@@ -1019,7 +1036,12 @@ class ShowStudent extends Student
                     $topicCount = count($topicData);
 
                     $result = $contentObj->getSchoolContentAnalyticsByUnitId($getStudentId, $unit['id']);
+                    $resultW = ($result == null) ? 0 : $result;
+                    $resultT = ($result == null) ? '-' : $result;
 
+                    $score = $gradeObj->getGradeByUnitId($getStudentId, $unit['id']);
+                    $scoreW = ($score == null) ? 0 : $score;
+                    $scoreT = ($score == null) ? '-' : $score;
                     $units .= '
                             <!--begin::Item-->
                                 <div class="d-flex flex-stack">
@@ -1040,13 +1062,26 @@ class ShowStudent extends Student
                                         <div class="d-flex align-items-center w-100px w-sm-200px flex-column mt-3">
                                             <div class="d-flex justify-content-between w-100 mt-auto mb-2">
                                                 <span class="fw-semibold fs-6 text-gray-500">Tamamlama Oranı</span>
-                                                <span class="fw-bold fs-6">' . $result . '%</span>
+                                                <span class="fw-bold fs-6">' . $resultT . '%</span>
+                                                
                                             </div>
                                             <div class="h-5px mx-3 w-100 bg-light mb-3">
-                                                <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $result . '%;" aria-valuenow="25"
+                                                <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $resultW . '%;" aria-valuenow="25"
+                                                    aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <div class="d-flex justify-content-between w-100 mt-auto mb-2">
+                                                <span class="fw-semibold fs-6 text-gray-500">Başarı Oranı</span>
+                                                <span class="fw-bold fs-6">' . $scoreT . '%</span>
+                                                
+                                            </div>
+                                            <div class="h-5px mx-3 w-100 bg-light mb-3">
+                                                <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $scoreW . '%;" aria-valuenow="25"
                                                     aria-valuemin="0" aria-valuemax="100"></div>
                                             </div>
                                         </div>
+                                        
+
+                                        
                                         <!--end::Progress-->
                                     </div>
                                     <!--end::Section-->
@@ -1093,7 +1128,7 @@ class ShowStudent extends Student
 
         }
     }
-   
+
     // List of Logins Student Details Page
 
     public function showLoginDetailsListForStudentDetails($id)

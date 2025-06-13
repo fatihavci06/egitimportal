@@ -1755,6 +1755,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 										<div class="tab-pane fade" id="uniteler">
 											<div class="row g-5 g-xxl-8">
+
+
 												<div class="col-xl-6">
 													<div class="card mb-5 mb-xl-8">
 														<div class="card-header border-0 pt-5">
@@ -1843,10 +1845,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 														</div>
 													</div>
 												</div>
+												<div class="col-xl-6" id="html_response">
+		
+												</div>
 
 
-											</div>
-											<div class="row g-5 g-xxl-8" id="html_response">
 											</div>
 										</div>
 
