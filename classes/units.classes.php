@@ -65,7 +65,28 @@ class Units extends Dbh
 		$stmt = null;
 	}
 
+	protected function getUnitSelectLists()
+	{
 
+		$class = $_SESSION['class_id'];
+		$lesson = $_POST['lesson_id'];
+		$stmt = $this->connect()->prepare('SELECT units_lnp.id AS unitID,
+	      units_lnp.name AS unitName
+	      FROM units_lnp
+	      WHERE units_lnp.lesson_id = ? 
+	      AND units_lnp.class_id = ?');
+
+		if (!$stmt->execute([$lesson, $class])) {
+			$stmt = null;
+			exit();
+		}
+
+		$unitData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $unitData;
+
+		$stmt = null;
+	}
 	protected function getLessonId($active_slug)
 	{
 		$stmt = $this->connect()->prepare('SELECT id FROM lessons_lnp WHERE slug = ?');

@@ -283,7 +283,19 @@ class ShowTopic extends Topics
         }
     }
 
+     public function getTopicListForFilter()
+    {
 
+        $topicInfo = $this->getTopicsList();
+
+         foreach ($topicInfo as $key => $value) {
+
+            $topicList = '
+                    <option value="' . $value['id'] . '">' . $value['name'] . '</option>Add commentMore actions
+                    ';
+            echo $topicList;
+        }
+    }
     // Get Topics Student
 
     public function getTopicsListStudent()

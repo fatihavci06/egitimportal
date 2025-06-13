@@ -27,9 +27,9 @@ class ShowUnit extends Units
 
             $alter_button = $value['unitActive'] ? "Pasif Yap" : "Aktif Yap";
 
-            if($_SESSION['role'] == 4) {
+            if ($_SESSION['role'] == 4) {
                 $passiveButton = '';
-            }else{
+            } else {
                 $passiveButton = '
                                 <!--begin::Menu item-->
                                 <div class="menu-item px-3">
@@ -45,7 +45,7 @@ class ShowUnit extends Units
                                 <input class="form-check-input" type="checkbox" value="1" />
                             </div>
                         </td>
-                        <td data-file-id="'. $value['unitID'] .'">
+                        <td data-file-id="' . $value['unitID'] . '">
                             <a href="./unite-detay/' . $value['unitSlug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['unitName'] . '</a>
                         </td>
                         <td>
@@ -312,7 +312,7 @@ class ShowUnit extends Units
     public function getUnitSelectList()
     {
 
-        $unitInfo = $this->getUnitsList();
+        $unitInfo = $this->getUnitSelectLists();
 
         $dateFormat = new DateFormat();
 
@@ -324,7 +324,7 @@ class ShowUnit extends Units
                     <option value="' . $value['unitID'] . '">' . $value['unitName'] . '</option>
                 ';
         }
-            return $unitList;
+        return $unitList;
     }
 
     // Show Unit
@@ -677,7 +677,7 @@ class ShowUnit extends Units
 
 
 
-            $lessonList .=  $classForms;
+            $lessonList .= $classForms;
         }
 
 
