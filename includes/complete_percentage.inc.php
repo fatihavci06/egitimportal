@@ -92,7 +92,7 @@ function doLessons($school_id, $class_id, $lesson_id, $student_id)
                         <div class="separator separator-dashed my-4"></div>';
     }
 
-    $FinalView = '<div class="col-xl-6">
+    $FinalView = '
                         <div class="card mb-5 mb-xl-8">
                             <div class="card-header border-0 pt-5">
                                 <h3 class="card-title align-items-start flex-column">
@@ -105,7 +105,7 @@ function doLessons($school_id, $class_id, $lesson_id, $student_id)
                                 ' . $view . '
                             </div>
                         </div>
-                    </div>';
+              ';
 
 
     $styleIndex++;
@@ -164,7 +164,7 @@ function doUnits($school_id, $class_id, $lesson_id, $unit_id, $student_id)
                         <div class="separator separator-dashed my-4"></div>';
     }
 
-    $FinalView = '<div class="col-xl-6">
+    $FinalView = '
                         <div class="card mb-5 mb-xl-8">
                             <div class="card-header border-0 pt-5">
                                 <h3 class="card-title align-items-start flex-column">
@@ -177,7 +177,7 @@ function doUnits($school_id, $class_id, $lesson_id, $unit_id, $student_id)
                                 ' . $view . '
                             </div>
                         </div>
-                    </div>';
+             ';
 
 
     $styleIndex++;
@@ -235,7 +235,7 @@ function doTopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $stude
                         <div class="separator separator-dashed my-4"></div>';
     }
 
-    $FinalView = '<div class="col-xl-6">
+    $FinalView = '
                         <div class="card mb-5 mb-xl-8">
                             <div class="card-header border-0 pt-5">
                                 <h3 class="card-title align-items-start flex-column">
@@ -247,8 +247,8 @@ function doTopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $stude
                             <div class="card-body pt-6">
                                 ' . $view . '
                             </div>
-                        </div>
-                    </div>';
+
+                    ';
 
     $styleIndex++;
 
@@ -295,7 +295,7 @@ function doSubtopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $su
                         <div class="separator separator-dashed my-4"></div>';
     // }
 
-    $FinalView = '<div class="col-xl-6">
+    $FinalView = '
                         <div class="card mb-5 mb-xl-8">
                             <div class="card-header border-0 pt-5">
                                 <h3 class="card-title align-items-start flex-column">

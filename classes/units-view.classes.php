@@ -369,7 +369,7 @@ class ShowUnit extends Units
     public function getUnitSelectList()
     {
 
-        $unitInfo = $this->getUnitsList();
+        $unitInfo = $this->getUnitSelectLists();
 
         $dateFormat = new DateFormat();
 
@@ -734,7 +734,7 @@ class ShowUnit extends Units
 
 
 
-            $lessonList .=  $classForms;
+            $lessonList .= $classForms;
         }
 
 

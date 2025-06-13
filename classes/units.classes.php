@@ -65,6 +65,7 @@ class Units extends Dbh
 		$stmt = null;
 	}
 
+
 	protected function getLessonId($active_slug)
 	{
 		$stmt = $this->connect()->prepare('SELECT id FROM lessons_lnp WHERE slug = ?');
