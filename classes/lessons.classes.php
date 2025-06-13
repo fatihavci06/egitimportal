@@ -16,6 +16,20 @@ class Lessons extends Dbh {
         return $lessonData;
 		
 	}
+	protected function getLessonsListForWeeklylists(){
+
+		$stmt = $this->connect()->prepare('SELECT id, name, slug, class_id FROM lessons_lnp');
+
+		if(!$stmt->execute(array())){
+			$stmt = null;
+			exit();
+		}
+
+        $lessonData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $lessonData;
+		
+	}
 
 	public function getOneLesson($slug){
 

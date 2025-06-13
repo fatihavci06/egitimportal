@@ -1,5 +1,6 @@
 <?php
 
+session_start();
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $classId = $_POST['class_id'];
@@ -10,8 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
     // Grabbing the data
     include_once "../classes/dbh.classes.php";
-    // include_once "../classes/weekly.classes.php";
-    // include_once "../classes/weekly-contr.classes.php";
     include_once "../classes/classes.classes.php";
     include_once "../classes/lessons.classes.php";
     include_once "../classes/units.classes.php";
@@ -22,20 +21,21 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $events = [];
 
     try {
-        if (!empty($lessonId)) {
-            $stmt = $pdo->prepare('SELECT id AS unitId, 
-            name AS unitName, 
-            start_date AS unitStartDate, 
-            end_date AS unitEndDate
-            FROM units_lnp
-            WHERE class_id = ? AND lesson_id = ?');
-            if (!$stmt->execute([$classId, $lessonId])) {
-                $stmt = null;
-                error_log("Failed to fetch units for lesson ID: $lessonId");
-                echo json_encode(['status' => 'error', 'message' => 'Veri alınamadı.']);
-                exit();
-            }
-        }
+        // if (!empty($lessonId)) {
+        //     $stmt = $pdo->prepare('SELECT unit.id AS unitId, 
+        //     unit.name AS unitName, 
+        //     unit.start_date AS unitStartDate, 
+        //     unit.end_date AS unitEndDate
+        //     FROM units_lnp
+        //     WHERE class_id = ? 
+        //     AND lesson_id = ?');
+        //     if (!$stmt->execute([$classId, $lessonId])) {
+        //         $stmt = null;
+        //         error_log("Failed to fetch units for lesson ID: $lessonId");
+        //         echo json_encode(['status' => 'error', 'message' => 'Veri alınamadı.']);
+        //         exit();
+        //     }
+        // }
         if (!empty($unitId)) {
             $stmt = $pdo->prepare('SELECT id AS topicId, 
             name AS topicName, 
@@ -54,7 +54,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             }
         }
         if (!empty($topicId)) {
-            $stmt = $pdo->prepare('SELECT id, name, start_date, end_date FROM subtopics_lnp WHERE class_id = ? AND lesson_id = ? AND unit_id = ? AND topic_id = ?');
+            $stmt = $pdo->prepare('SELECT id, name AS subTopicName,
+            start_date AS subTopicStartDate, 
+            end_date AS subTopicEndDate
+            FROM subtopics_lnp WHERE class_id = ? AND lesson_id = ? AND unit_id = ? AND topic_id = ?');
             if (!$stmt->execute([$classId, $lessonId, $unitId, $topicId])) {
                 $stmt = null;
                 error_log("Failed to fetch subtopics for topic ID: $topicId");
@@ -90,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
         foreach ($tests as $key => $value) {
             $events[] = [
-                'name' =>$value['unitName']?? $value['topicName'] ??$value['subTopicName'],
+                'name' => $value['unitName'] ?? $value['topicName'] ?? $value['subTopicName'],
                 'start' => $value['subTopicStartDate'] ?? $value['topicStartDate'] ??  $value['unitStartDate'] ?? null,
                 'end' => $value['subTopicEndDate'] ?? $value['topicStartDate'] ??  $value['unitEndDate'] ?? null,
                 'allDay' => true,

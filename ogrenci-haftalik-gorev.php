@@ -3,12 +3,16 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] == 3 or  $_SESSION['role'] == 4)) {
-    include_once "classes/dbh.classes.php";
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] == 2 or  $_SESSION['role'] == 10002)) {
+    include "classes/dbh.classes.php";
     include "classes/classes.classes.php";
+    include "classes/classes-view.classes.php";
+    include "classes/lessons.classes.php";
+    include "classes/lessons-view.classes.php";
     include "classes/weekly.classes.php";
     include "classes/weekly-view.classes.php";
     $weekly = new ShowWeekly();
+    $chooseLesson = new ShowLesson();
     include_once "views/pages-head.php";
 ?>
     <!--end::Head-->
@@ -58,24 +62,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <div class="row">
-
                                         <div class="col-lg-4">
-                                            <label class="required fs-6 fw-semibold mb-2" for="class_id">Sınıf Seçimi </label>
-                                            <?php
-                                            $class = new Classes();
-                                            $classList = $class->getClassesList();
-                                            ?>
-                                            <select class="form-select" id="class_id" required aria-label="Default select example">
-                                                <option value="">Seçiniz</option>
-                                                <?php foreach ($classList as $c) { ?>
-                                                    <option value="<?= $c['id'] ?>"><?= $c['name'] ?></option>
-                                                <?php } ?>
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-4">
+                                            <input type="hidden" name="classId" id="classId" value="<?= $_SESSION['class_id'] ?>">
                                             <label class="required fs-6 fw-semibold mb-2" for="lesson_id">Dersler</label>
                                             <select class="form-select" id="lesson_id" required>
                                                 <option value="">Ders seçiniz</option>
+                                                <?= $chooseLesson->getLessonSelectListForweeklyList($_SESSION['class_id']); ?>
                                             </select>
                                         </div>
 
@@ -85,9 +77,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                                                 <option value="">Ünite seçiniz</option>
                                             </select>
                                         </div>
-                                    </div>
-                                    <div class="row mt-3">
-                                        <div class="col-lg-4 mt-4">
+                                        <div class="col-lg-4">
                                             <label class="fs-6 fw-semibold mb-2" for="topic_id">Konu Seçimi</label>
                                             <select class="form-select" id="topic_id" required>
                                                 <option value="">Seçiniz</option>
@@ -103,7 +93,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
 
                                     <div class="row mt-5 mb-5">
                                         <div class="col-lg-3">
-                                            <button type="button" id="filterButton2" class="btn btn-success btn-sm w-100">Filtrele</button>
+                                            <button type="button" id="filterButton" class="btn btn-success btn-sm w-100">Filtrele</button>
                                         </div>
                                         <div class="col-lg-2">
                                             <button type="button" id="clearFiltersButton" class="btn btn-secondary btn-sm w-100">Temizle</button>
@@ -299,51 +289,51 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
         <script>
             // --- Ders, Ünite, Konu, Alt Konu Seçim Mantığı ---
 
-            // Sınıf seçimi değiştiğinde dersleri getir
-            $('#class_id').on('change', function() {
-                var classId = $(this).val();
-                fetchLessonsForClass(classId);
-            });
+            // Sınıf seçimi değiştiğinde dersleri getir 
+            var classId = $("#classId").val();
+            // if (classId) {
+            //     fetchLessonsForClass(classId);
+            // };
 
-            function fetchLessonsForClass(classId) {
-                if (classId !== '') {
-                    $.ajax({
-                        url: 'includes/ajax_yazgul.php?service=getLessonList',
-                        type: 'POST',
-                        data: {
-                            class_id: classId
-                        },
-                        dataType: 'json',
-                        success: function(response) {
-                            var $lessonSelect = $('#lesson_id');
-                            $('#option_count').val(response.data.optionCount); // Bu kısım ilgili inputunuz varsa
-                            $lessonSelect.empty();
-                            $lessonSelect.append('<option value="">Ders seçiniz</option>');
-                            $.each(response.data.lessons, function(index, lesson) {
-                                $lessonSelect.append('<option value="' + lesson.id + '">' + lesson.name + '</option>');
-                            });
-                            // Diğer bağımlı selectbox'ları temizle
-                            $('#unit_id').html('<option value="">Ünite seçiniz</option>');
-                            $('#topic_id').html('<option value="">Seçiniz</option>');
-                            $('#subtopic_id').html('<option value="">Alt Konu seçiniz</option>');
-                        },
-                        error: function(xhr) {
-                            handleAjaxError(xhr);
-                        }
-                    });
-                } else {
-                    // Sınıf seçimi boşsa tüm bağımlı selectbox'ları temizle
-                    $('#lesson_id').html('<option value="">Ders seçiniz</option>');
-                    $('#unit_id').html('<option value="">Ünite seçiniz</option>');
-                    $('#topic_id').html('<option value="">Seçiniz</option>');
-                    $('#subtopic_id').html('<option value="">Alt Konu seçiniz</option>');
-                }
-            }
+            // function fetchLessonsForClass(classId) {
+            //     if (classId !== '') {
+            //         $.ajax({
+            //             url: 'includes/ajax_yazgul.php?service=getLessonListForStudent',
+            //             type: 'POST',
+            //             data: {
+            //                 class_id: classId
+            //             },
+            //             dataType: 'json',
+            //             success: function(response) {
+            //                 var $lessonSelect = $('#lesson_id');
+            //                 $('#option_count').val(response.data.optionCount); // Bu kısım ilgili inputunuz varsa
+            //                 $lessonSelect.empty();
+            //                 $lessonSelect.append('<option value="">Ders seçiniz</option>');
+            //                 $.each(response.data.lessons, function(index, lesson) {
+            //                     $lessonSelect.append('<option value="' + lesson.id + '">' + lesson.name + '</option>');
+            //                 });
+            //                 // Diğer bağımlı selectbox'ları temizle
+            //                 $('#unit_id').html('<option value="">Ünite seçiniz</option>');
+            //                 $('#topic_id').html('<option value="">Seçiniz</option>');
+            //                 $('#subtopic_id').html('<option value="">Alt Konu seçiniz</option>');
+            //             },
+            //             error: function(xhr) {
+            //                 handleAjaxError(xhr);
+            //             }
+            //         });
+            //     } else {
+            //         // Sınıf seçimi boşsa tüm bağımlı selectbox'ları temizle
+            //         $('#lesson_id').html('<option value="">Ders seçiniz</option>');
+            //         $('#unit_id').html('<option value="">Ünite seçiniz</option>');
+            //         $('#topic_id').html('<option value="">Seçiniz</option>');
+            //         $('#subtopic_id').html('<option value="">Alt Konu seçiniz</option>');
+            //     }
+            // }
 
             // Ders seçimi değiştiğinde üniteleri getir
             $('#lesson_id').on('change', function() {
                 var lessonId = $(this).val();
-                var classId = $('#class_id').val(); // Sınıf ID'sini de gönderiyoruz
+                var classId = $('#classId').val(); // Sınıf ID'sini de gönderiyoruz
                 var $unitSelect = $('#unit_id');
                 $unitSelect.empty().append('<option value="">Ünite seçiniz</option>');
                 $('#topic_id').html('<option value="">Seçiniz</option>');
@@ -351,7 +341,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
 
                 if (lessonId !== '') {
                     $.ajax({
-                        url: 'includes/ajax_yazgul.php?service=getUnitList',
+                        url: 'includes/ajax_yazgul.php?service=getUnitListForStudent',
                         type: 'POST',
                         dataType: 'json',
                         data: {
@@ -379,7 +369,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
 
             // Ünite seçimi değiştiğinde konuları getir
             $('#unit_id').on('change', function() {
-                var classId = $('#class_id').val();
+                var classId = $('#classId').val();
                 var lessonId = $('#lesson_id').val();
                 var unitId = $(this).val();
                 var $topicSelect = $('#topic_id');
@@ -389,7 +379,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
 
                 if (unitId !== '') {
                     $.ajax({
-                        url: 'includes/ajax_yazgul.php?service=getTopicList',
+                        url: 'includes/ajax_yazgul.php?service=getTopicListForStudent',
                         type: 'POST',
                         dataType: 'json',
                         data: {
@@ -418,7 +408,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
 
             // Konu seçimi değiştiğinde alt konuları getir
             $('#topic_id').on('change', function() {
-                var classId = $('#class_id').val();
+                var classId = $('#classId').val();
                 var lessonId = $('#lesson_id').val();
                 var unitId = $('#unit_id').val();
                 var topicId = $(this).val();
@@ -428,7 +418,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
 
                 if (topicId !== '') {
                     $.ajax({
-                        url: 'includes/ajax.php?service=getSubtopicList',
+                        url: 'includes/ajax.php?service=getSubtopicListForStudent',
                         type: 'POST',
                         dataType: 'json',
                         data: {
@@ -458,7 +448,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
 
             // // Alt konular değiştiğinde seçimi değiştiğinde içerikleri getir
             // $('#subtopic_id').on('change', function() {
-            //     var classId = $('#class_id').val();
+            //     var classId = $('#classId').val();
             //     var lessonId = $('#lesson_id').val();
             //     var unitId = $('#unit_id').val();
             //     var topicId = $('#topic_id').val();
@@ -496,24 +486,24 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
             // });
 
             // Filtreleme butonu tıklaması
-            $('#filterButton2').on('click', function() {
-                var classId = $('#class_id').val();
-                var lessonId = $('#lesson_id').val();
+            $('#filterButton').on('click', function() {
+                // var classId = $('#classId').val();
+                // var lessonId = $('#lesson_id').val();
 
-                // Sınıf ve Ders seçimi zorunlu kontrolü
-                if (!classId || classId === '') {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Uyarı',
-                        text: 'Lütfen bir sınıf seçiniz.',
-                        confirmButtonText: 'Tamam'
-                    });
-                    $('#class_id').addClass('is-invalid'); // Bootstrap ile görsel uyarı
-                    return; // Filtreleme işlemini durdur
-                } else {
-                    $('#class_id').removeClass('is-invalid');
-                }
-                var classId = $('#class_id').val();
+                // // Sınıf ve Ders seçimi zorunlu kontrolü
+                // if (!classId || classId === '') {
+                //     Swal.fire({
+                //         icon: 'warning',
+                //         title: 'Uyarı',
+                //         text: 'Lütfen bir sınıf seçiniz.',
+                //         confirmButtonText: 'Tamam'
+                //     });
+                //     $('#class_id').addClass('is-invalid'); // Bootstrap ile görsel uyarı
+                //     return; // Filtreleme işlemini durdur
+                // } else {
+                //     $('#class_id').removeClass('is-invalid');
+                // }
+                var classId = $('#classId').val();
                 var lessonId = $('#lesson_id').val();
                 var unitId = $('#unit_id').val();
                 var topicId = $('#topic_id').val();
@@ -530,7 +520,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
 
                 // Send AJAX POST request
                 $.ajax({
-                    url: 'includes/getweeklylist.inc.php', // Replace with the actual path to your PHP script
+                    url: 'includes/getweeklylistforsudent.inc.php', // Replace with the actual path to your PHP script
                     type: 'POST',
                     data: postData,
                     dataType: 'json', // Expecting JSON response from the PHP script
