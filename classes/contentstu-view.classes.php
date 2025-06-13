@@ -1,5 +1,7 @@
 <?php
 
+include_once 'classes/topics.classes.php';
+
 class ShowContents extends GetContent
 {
 
@@ -453,7 +455,14 @@ class ShowContents extends GetContent
 
     public function getContentListForStudent()
     {
+
+        $testResults = new TestsResult();
+
+        $subtopics = new SubTopics();
+
         $dateFormat = new DateFormat();
+
+        $today = date('Y-m-d');
 
         $link = "$_SERVER[REQUEST_URI]";
 
@@ -463,6 +472,32 @@ class ShowContents extends GetContent
 
         $subTopicInfo = $subtopic->getSubTopicIdBySlug($active_slug);
         $subTopicId = $subTopicInfo['id'];
+        $getLessonId = $subTopicInfo['lesson_id'];
+        $getClassId = $subTopicInfo['class_id'];
+        $getUnitId = $subTopicInfo['unit_id'];
+        $getTopicId = $subTopicInfo['topic_id'];
+        $getOrderNo = $subTopicInfo['order_no'];
+
+        if ($getOrderNo == 1) {
+            $testQuery = 80 >= 80;
+        } else {
+            $getPreviousSubTopicId = $subtopics->getPrevSubTopicId($getOrderNo - 1, $getClassId, $getLessonId, $getUnitId, $getTopicId, $_SESSION['school_id']);
+            $prevSubTopicId = $getPreviousSubTopicId['id'];
+            $getTestResult = $testResults->getSubTopicTestResults($getUnitId, $getClassId, $getTopicId, $prevSubTopicId, $_SESSION['id']);
+            $result = $getTestResult['score'] ?? 0;
+            $testQuery = $result >= 80; // If the previous unit's test is not passed, the current unit cannot be accessed.
+        }
+
+        if ($today >= $subTopicInfo['start_date'] or $testQuery) {
+        } else {
+            header("Location: ../404.php"); // 404 sayfasına yönlendir
+            exit();
+        }
+
+        if (empty($subTopicInfo)) {
+            header("Location: ../404.php"); // 404 sayfasına yönlendir
+            exit();
+        }
 
         $contentInfo = $this->getContentInfoByIdUnderSubTopic($subTopicId);
 
@@ -521,7 +556,6 @@ class ShowContents extends GetContent
                 echo $contentList;
             }
         }
-
     }
 
 
@@ -557,14 +591,13 @@ class ShowContents extends GetContent
                         <!--begin::Heading-->
                         <div class="position-absolute text-white mb-8 ms-10 bottom-0">
                             <!--begin::Title-->
-                            <h3 class="text-white fs-2qx fw-bold mb-3 m">' . $contentInfo['summary'] . '</h3>
+                            <h3 class="text-white fs-2qx fw-bold mb-3 m">' . $contentInfo['title'] . '</h3>
+                            <h3 class="text-white fs-1qx fw-bold mb-3 m">' . $contentInfo['summary'] . '</h3>
                             <!--end::Title-->
                         </div>
                         <!--end::Heading-->
                     </div>
                 ';
         echo $contentList;
-
     }
-
 }

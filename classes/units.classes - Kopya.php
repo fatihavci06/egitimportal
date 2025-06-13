@@ -140,7 +140,7 @@ class Units extends Dbh
 				$stmt = null;
 				exit();
 			}
-		} elseif ($_SESSION['role'] == 3 or $_SESSION['role'] == 8) {
+		} elseif ($_SESSION['role'] == 3 OR $_SESSION['role'] == 8) {
 			$school = $_SESSION['school_id'];
 			$stmt = $this->connect()->prepare('SELECT units_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, lessons_lnp.id AS lessonId FROM units_lnp INNER JOIN classes_lnp ON units_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON units_lnp.lesson_id = lessons_lnp.id WHERE units_lnp.slug = ? AND units_lnp.school_id = ?');
 

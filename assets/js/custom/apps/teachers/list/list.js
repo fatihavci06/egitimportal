@@ -102,9 +102,9 @@ var KTCustomersList = function () {
 
                 // Get customer name
                 const customerName = parent.querySelectorAll('td')[2].innerText;
-                const email = parent.querySelectorAll('td')[3].innerText;
+                const email = parent.querySelectorAll('td')[4].innerText;
 
-                var activeStatus = parent.querySelectorAll('td')[8].innerText;
+                var activeStatus = parent.querySelectorAll('td')[9].innerText;
 
                 if (activeStatus === "Aktif") {
                     var activeStatus = "pasif";

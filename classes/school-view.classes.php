@@ -113,6 +113,39 @@ class ShowSchool extends School
         }
     }
 
+    // Get School List Select One
+
+    public function getSchoolSelectOneList($school_id)
+    {
+
+        $schoolInfo = $this->getOneSchoolById($school_id);
+
+
+            $schoolList = '
+                    <option value="' . $schoolInfo['id'] . '">' . $schoolInfo['name'] . '</option>
+                ';
+            echo $schoolList;
+            
+       
+    }
+
+    // Get School List Select json
+
+    public function getSchoolSelectListJson()
+    {
+
+        $schoolInfo = $this->getSchoolsList();
+
+        $json = [];
+        foreach ($schoolInfo as $key => $value) {
+            $json[] = [
+                'id' => $value['id'],
+                'text' => $value['name']
+            ];
+        }
+        echo json_encode($json);
+    }
+
     // Show School
 
     public function showOneSchool($slug)

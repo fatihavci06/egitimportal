@@ -7,17 +7,17 @@ class Teacher extends Dbh
 	{
 
 		if ($_SESSION['role'] == 1) {
-			$stmt = $this->connect()->prepare('SELECT users_lnp.id, users_lnp.name, users_lnp.surname, users_lnp.username, users_lnp.created_at, users_lnp.email, users_lnp.telephone, users_lnp.photo, users_lnp.active, classes_lnp.name AS className, classes_lnp.slug AS classSlug, schools_lnp.name AS schoolName, lessons_lnp.name AS lessonName FROM users_lnp INNER JOIN schools_lnp ON users_lnp.school_id = schools_lnp.id INNER JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON users_lnp.lesson_id = lessons_lnp.id WHERE (users_lnp.active = ? OR users_lnp.active = ?) AND users_lnp.role = ?');
+			$stmt = $this->connect()->prepare('SELECT users_lnp.id, users_lnp.name, users_lnp.surname, users_lnp.username, users_lnp.created_at, users_lnp.email, users_lnp.telephone, users_lnp.photo, users_lnp.active, users_lnp.role, classes_lnp.name AS className, classes_lnp.slug AS classSlug, schools_lnp.name AS schoolName, lessons_lnp.name AS lessonName FROM users_lnp INNER JOIN schools_lnp ON users_lnp.school_id = schools_lnp.id INNER JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON users_lnp.lesson_id = lessons_lnp.id WHERE (users_lnp.active = ? OR users_lnp.active = ?) AND (users_lnp.role = ? OR users_lnp.role = ? OR users_lnp.role = ?)');
 
-			if (!$stmt->execute(array("1", "0", "4"))) {
+			if (!$stmt->execute(array("1", "0", "4", "9", "10"))) {
 				$stmt = null;
 				exit();
 			}
-		} elseif ($_SESSION['role'] == 3) {
+		} elseif ($_SESSION['role'] == 3 OR $_SESSION['role'] == 8) {
 			$school = $_SESSION['school_id'];
-			$stmt = $this->connect()->prepare('SELECT users_lnp.id, users_lnp.name, users_lnp.surname, users_lnp.username, users_lnp.created_at, users_lnp.email, users_lnp.telephone, users_lnp.photo, users_lnp.active, classes_lnp.name AS className, classes_lnp.slug AS classSlug, schools_lnp.name AS schoolName, lessons_lnp.name AS lessonName FROM users_lnp INNER JOIN schools_lnp ON users_lnp.school_id = schools_lnp.id INNER JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON users_lnp.lesson_id = lessons_lnp.id WHERE (users_lnp.active = ? OR users_lnp.active = ?) AND users_lnp.role = ? AND users_lnp.school_id = ?');
+			$stmt = $this->connect()->prepare('SELECT users_lnp.id, users_lnp.name, users_lnp.surname, users_lnp.username, users_lnp.created_at, users_lnp.email, users_lnp.telephone, users_lnp.photo, users_lnp.active, users_lnp.role, classes_lnp.name AS className, classes_lnp.slug AS classSlug, schools_lnp.name AS schoolName, lessons_lnp.name AS lessonName FROM users_lnp INNER JOIN schools_lnp ON users_lnp.school_id = schools_lnp.id INNER JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON users_lnp.lesson_id = lessons_lnp.id WHERE (users_lnp.active = ? OR users_lnp.active = ?) AND (users_lnp.role = ? OR users_lnp.role = ? OR users_lnp.role = ?) AND users_lnp.school_id = ?');
 
-			if (!$stmt->execute(array("1", "0", "4", $school))) {
+			if (!$stmt->execute(array("1", "0", "4", "9", "10", $school))) {
 				$stmt = null;
 				exit();
 			}

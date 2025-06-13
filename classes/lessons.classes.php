@@ -56,11 +56,11 @@ class Lessons extends Dbh {
 				$stmt = null;
 				exit();
 			}
-		} elseif ($_SESSION['role'] == 3) {
+		} elseif ($_SESSION['role'] == 3 OR $_SESSION['role'] == 8) {
 			$school = $_SESSION['school_id'];
-			$stmt = $this->connect()->prepare('SELECT id, name, class_id FROM lessons_lnp WHERE school_id=?');
+			$stmt = $this->connect()->prepare('SELECT id, name, class_id FROM lessons_lnp WHERE (school_id=? OR school_id=?)');
 
-			if (!$stmt->execute(array($school))) {
+			if (!$stmt->execute(array($school, "1"))) {
 				$stmt = null;
 				exit();
 			}

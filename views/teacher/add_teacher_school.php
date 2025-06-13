@@ -151,7 +151,7 @@ $chooseLesson = new ShowLesson();
                                     class="form-select form-select-solid fw-bold">
                                     <option value="">Cinsiyet Seçin</option>
                                     <option value="Erkek">Erkek</option>
-                                    <option value="Kız">Kız</option>
+                                    <option value="Kız">Kadın</option>
                                 </select>
                                 <!--end::Input-->
                             </div>
@@ -201,7 +201,7 @@ $chooseLesson = new ShowLesson();
                                 <select id="school" name="school" aria-label="Okul Seçiniz" data-control="select2"
                                     data-placeholder="Okul Seçiniz..." data-dropdown-parent="#kt_modal_add_customer"
                                     class="form-select form-select-solid fw-bold">
-                                    <option value="<?php echo $_SESSION['school_id']; ?>">Okulunuz</option>
+                                    <?php $chooseSchool->getSchoolSelectOneList($_SESSION['school_id']); ?>
                                 </select>
                                 <!--end::Input-->
                             </div>
@@ -237,16 +237,6 @@ $chooseLesson = new ShowLesson();
                                     <option value="">Ders Seçin</option>
                                     <?php $chooseLesson->getLessonSelectList(); ?>
                                 </select>
-                                <!--end::Input-->
-                            </div>
-                            <!--end::Input group-->
-                            <!--begin::Input group-->
-                            <div class="d-flex flex-column mb-7 fv-row">
-                                <!--begin::Label-->
-                                <label class="required fs-6 fw-semibold mb-2">Parola</label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <input class="form-control form-control-solid" name="password" id="password" placeholder="Parola" />
                                 <!--end::Input-->
                             </div>
                             <!--end::Input group-->

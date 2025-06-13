@@ -16,7 +16,18 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 	$school = trim($_POST["school"]);
 	$classes = trim($_POST["classAdd"]);
 	$lesson = trim($_POST["lessonAdd"]);
-	$teacher_role = trim($_POST["teacher_role"]);
+	if (isset($_POST["teacher_role"])) {
+		$teacher_role = $_POST["teacher_role"];
+	} else {
+		$teacher_role = "4";
+	}
+	
+	// If teacher role is not set, default to empty string
+	// This is to avoid undefined index notice
+	/* if (!isset($_POST["teacher_role"])) {
+		$_POST["teacher_role"] = "";
+	}
+	$teacher_role = trim($_POST["teacher_role"]); */
     /*$fileTempPath = $_FILES['image']['tmp_name'];
     $fileName = $_FILES['image']['name'];
     $fileSize = $_FILES['image']['size'];*/
