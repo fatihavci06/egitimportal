@@ -51,9 +51,12 @@ function doLessons($school_id, $class_id, $lesson_id, $student_id)
     $styleIndex = 0;
     $view = '';
 
+
     require_once "../classes/content-tracker.classes.php";
+    require_once "../classes/grade-result.classes.php";
 
     $contentObj = new ContentTracker();
+    $gradeObj = new GradeResult();
 
 
     $style = $styles[$styleIndex % count($styles)];
@@ -67,6 +70,12 @@ function doLessons($school_id, $class_id, $lesson_id, $student_id)
         $subItemsCount = 0;
         $subItemsCount = count($subItems);
         $percentage = $contentObj->getSchoolContentAnalyticsByUnitId($student_id, $item['id']);
+        $percentageW = ($percentage == null) ? 0 : $percentage;
+        $percentageT = ($percentage == null) ? '-' : $percentage;
+
+        $score = $gradeObj->getGradeByLessonId($studentId, $lesson_id);
+        $scoreW = ($score == null) ? 0 : $score;
+        $scoreT = ($score == null) ? '-' : $score;
 
         $view .= '<div class="d-flex flex-stack">
                             <div class="symbol symbol-40px me-4">
@@ -80,10 +89,18 @@ function doLessons($school_id, $class_id, $lesson_id, $student_id)
                                 <div class="d-flex align-items-center w-100px w-sm-200px flex-column mt-3">
                                     <div class="d-flex justify-content-between w-100 mt-auto mb-2">
                                         <span class="fw-semibold fs-6 text-gray-500">Tamamlama Oranı</span>
-                                        <span class="fw-bold fs-6">' . $percentage . '%</span>
+                                        <span class="fw-bold fs-6">' . $percentageT . '%</span>
                                     </div>
                                     <div class="h-5px mx-3 w-100 bg-light mb-3">  
-                                        <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $percentage . '%;" aria-valuenow="25"
+                                        <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $percentageW . '%;" aria-valuenow="25"
+                                            aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <div class="d-flex justify-content-between w-100 mt-auto mb-2">
+                                        <span class="fw-semibold fs-6 text-gray-500">Başarı Oranı</span>
+                                        <span class="fw-bold fs-6">' . $scoreT . '%</span>
+                                    </div>
+                                    <div class="h-5px mx-3 w-100 bg-light mb-3">  
+                                        <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $scoreW . '%;" aria-valuenow="25"
                                             aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
                                 </div>
@@ -126,9 +143,12 @@ function doUnits($school_id, $class_id, $lesson_id, $unit_id, $student_id)
     $styleIndex = 0;
     $view = '';
 
+
     require_once "../classes/content-tracker.classes.php";
+    require_once "../classes/grade-result.classes.php";
 
     $contentObj = new ContentTracker();
+    $gradeObj = new GradeResult();
 
     $style = $styles[$styleIndex % count($styles)];
 
@@ -139,6 +159,12 @@ function doUnits($school_id, $class_id, $lesson_id, $unit_id, $student_id)
         $subItemsCount = 0;
         $subItemsCount = count($subItems);
         $percentage = $contentObj->getSchoolContentAnalyticsByTopicId($student_id, $item['id']);
+        $percentageW = ($percentage == null) ? 0 : $percentage;
+        $percentageT = ($percentage == null) ? '-' : $percentage;
+
+        $score = $gradeObj->getGradeByLessonId($studentId, $lesson_id);
+        $scoreW = ($score == null) ? 0 : $score;
+        $scoreT = ($score == null) ? '-' : $score;
 
         $view .= '<div class="d-flex flex-stack">
                             <div class="symbol symbol-40px me-4">
@@ -152,10 +178,18 @@ function doUnits($school_id, $class_id, $lesson_id, $unit_id, $student_id)
                                 <div class="d-flex align-items-center w-100px w-sm-200px flex-column mt-3">
                                     <div class="d-flex justify-content-between w-100 mt-auto mb-2">
                                         <span class="fw-semibold fs-6 text-gray-500">Tamamlama Oranı</span>
-                                        <span class="fw-bold fs-6">' . $percentage . '%</span>
+                                        <span class="fw-bold fs-6">' . $percentageT . '%</span>
                                     </div>
                                     <div class="h-5px mx-3 w-100 bg-light mb-3">  
-                                        <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $percentage . '%;" aria-valuenow="25"
+                                        <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $percentageW . '%;" aria-valuenow="25"
+                                            aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <div class="d-flex justify-content-between w-100 mt-auto mb-2">
+                                        <span class="fw-semibold fs-6 text-gray-500">Başarı Oranı</span>
+                                        <span class="fw-bold fs-6">' . $scoreT . '%</span>
+                                    </div>
+                                    <div class="h-5px mx-3 w-100 bg-light mb-3">  
+                                        <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $scoreW . '%;" aria-valuenow="25"
                                             aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
                                 </div>
@@ -198,9 +232,12 @@ function doTopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $stude
     $styleIndex = 0;
     $view = '';
 
+
     require_once "../classes/content-tracker.classes.php";
+    require_once "../classes/grade-result.classes.php";
 
     $contentObj = new ContentTracker();
+    $gradeObj = new GradeResult();
 
     $style = $styles[$styleIndex % count($styles)];
 
@@ -211,6 +248,13 @@ function doTopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $stude
         // $subItemsCount = 0;
         // $subItemsCount = count($subItems);
         $percentage = $contentObj->getSchoolContentAnalyticsByTopicId($student_id, $item['id']);
+        $percentageW = ($percentage == null) ? 0 : $percentage;
+        $percentageT = ($percentage == null) ? '-' : $percentage;
+
+        $score = $gradeObj->getGradeByLessonId($studentId, $lesson_id);
+        $scoreW = ($score == null) ? 0 : $score;
+        $scoreT = ($score == null) ? '-' : $score;
+
         $view .= '<div class="d-flex flex-stack">
                             <div class="symbol symbol-40px me-4">
                                 <div class="symbol-label fs-2 fw-semibold bg-' . $style . ' text-inverse-' . $style . '">' . mb_substr($item['name'], 0, 1, 'UTF-8') . '</div>
@@ -223,10 +267,18 @@ function doTopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $stude
                                 <div class="d-flex align-items-center w-100px w-sm-200px flex-column mt-3">
                                     <div class="d-flex justify-content-between w-100 mt-auto mb-2">
                                         <span class="fw-semibold fs-6 text-gray-500">Tamamlama Oranı</span>
-                                        <span class="fw-bold fs-6">' . $percentage . '%</span>
+                                        <span class="fw-bold fs-6">' . $percentageT . '%</span>
                                     </div>
                                     <div class="h-5px mx-3 w-100 bg-light mb-3">  
-                                        <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $percentage . '%;" aria-valuenow="25"
+                                        <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $percentageW . '%;" aria-valuenow="25"
+                                            aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <div class="d-flex justify-content-between w-100 mt-auto mb-2">
+                                        <span class="fw-semibold fs-6 text-gray-500">Başarı Oranı</span>
+                                        <span class="fw-bold fs-6">' . $scoreT . '%</span>
+                                    </div>
+                                    <div class="h-5px mx-3 w-100 bg-light mb-3">  
+                                        <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $scoreW . '%;" aria-valuenow="25"
                                             aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
                                 </div>
@@ -265,13 +317,23 @@ function doSubtopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $su
     $view = '';
 
     require_once "../classes/content-tracker.classes.php";
+    require_once "../classes/grade-result.classes.php";
 
     $contentObj = new ContentTracker();
+    $gradeObj = new GradeResult();
+
     $itemModel = $itemModel[0];
 
     $style = $styles[$styleIndex % count($styles)];
 
     $percentage = $contentObj->getSchoolContentAnalyticsBySubtopicId($student_id, $itemModel['id']);
+    $percentageW = ($percentage == null) ? 0 : $percentage;
+    $percentageT = ($percentage == null) ? '-' : $percentage;
+
+    $score = $gradeObj->getGradeByLessonId($studentId, $lesson_id);
+    $scoreW = ($score == null) ? 0 : $score;
+    $scoreT = ($score == null) ? '-' : $score;
+
     $view .= '<div class="d-flex flex-stack">
                             <div class="symbol symbol-40px me-4">
                                 <div class="symbol-label fs-2 fw-semibold bg-' . $style . ' text-inverse-' . $style . '">' . mb_substr($itemModel['name'], 0, 1, 'UTF-8') . '</div>
@@ -283,10 +345,18 @@ function doSubtopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $su
                                 <div class="d-flex align-items-center w-100px w-sm-200px flex-column mt-3">
                                     <div class="d-flex justify-content-between w-100 mt-auto mb-2">
                                         <span class="fw-semibold fs-6 text-gray-500">Tamamlama Oranı</span>
-                                        <span class="fw-bold fs-6">' . $percentage . '%</span>
+                                        <span class="fw-bold fs-6">' . $percentageT . '%</span>
                                     </div>
                                     <div class="h-5px mx-3 w-100 bg-light mb-3">  
-                                        <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $percentage . '%;" aria-valuenow="25"
+                                        <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $percentageW . '%;" aria-valuenow="25"
+                                            aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <div class="d-flex justify-content-between w-100 mt-auto mb-2">
+                                        <span class="fw-semibold fs-6 text-gray-500">Başarı Oranı</span>
+                                        <span class="fw-bold fs-6">' . $scoreT . '%</span>
+                                    </div>
+                                    <div class="h-5px mx-3 w-100 bg-light mb-3">  
+                                        <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $scoreW . '%;" aria-valuenow="25"
                                             aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
                                 </div>

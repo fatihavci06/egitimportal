@@ -306,7 +306,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 												</li>
 												<li class="nav-item mt-2">
 													<a class="nav-link text-active-primary ms-0 me-10 py-5"
-														data-bs-toggle="pill" href="#uniteler">İlerleme</a>
+														data-bs-toggle="pill" href="#uniteler">İlerleme ve Performans</a>
 												</li>
 												<!--end::Nav item-->
 												<!--begin::Nav item-->
@@ -1762,7 +1762,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 														<div class="card-header border-0 pt-5">
 															<h3 class="card-title align-items-start flex-column">
 																<span class="card-label fw-bold text-gray-900">
-																	İlerleme</span>
+																	İlerleme ve Performans</span>
 															</h3>
 														</div>
 

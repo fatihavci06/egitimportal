@@ -34,7 +34,6 @@ var KTStudentProgress = function () {
             }, 2000);
         });
 
-
         function updateSelectWhenChange(selector, data, emptyText) {
             const $element = $(selector);
 

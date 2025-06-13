@@ -743,6 +743,7 @@ class ShowStudent extends Student
                 $score = $gradeObj->getGradeByLessonId($studentId, $lesson_id);
                 $scoreW = ($score == null) ? 0 : $score;
                 $scoreT = ($score == null) ? '-' : $score;
+                
                 $lessonList .= '
                 <!--begin::Item-->
                     <div class="d-flex flex-stack">
@@ -1039,9 +1040,7 @@ class ShowStudent extends Student
                     $resultW = ($result == null) ? 0 : $result;
                     $resultT = ($result == null) ? '-' : $result;
 
-                    $score = $gradeObj->getGradeByUnitId($getStudentId, $unit['id']);
-                    $scoreW = ($score == null) ? 0 : $score;
-                    $scoreT = ($score == null) ? '-' : $score;
+ 
                     $units .= '
                             <!--begin::Item-->
                                 <div class="d-flex flex-stack">
