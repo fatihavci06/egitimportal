@@ -185,12 +185,12 @@ class Units extends Dbh
 		$stmt = null;
 	}
 
-	public function getUnitForTopicList($class, $lessons)
+	public function getUnitForTopicList($class, $lesson)
 	{
 		if ($_SESSION['role'] == 1) {
 			$stmt = $this->connect()->prepare('SELECT id, name FROM units_lnp WHERE class_id = ? AND lesson_id=?');
 
-			if (!$stmt->execute(array($class, $lessons))) {
+			if (!$stmt->execute(array($class, $lesson))) {
 				$stmt = null;
 				exit();
 			}
@@ -198,7 +198,16 @@ class Units extends Dbh
 			$school = $_SESSION['school_id'];
 			$stmt = $this->connect()->prepare('SELECT id, name FROM units_lnp WHERE class_id = ? AND lesson_id=? AND school_id=?');
 
-			if (!$stmt->execute(array($class, $lessons, $school))) {
+			if (!$stmt->execute(array($class, $lesson, $school))) {
+				$stmt = null;
+				exit();
+			}
+		} elseif ($_SESSION['role'] == 2) {
+			// $school = $_SESSION['school_id'];
+
+			$stmt = $this->connect()->prepare('SELECT id, name FROM units_lnp WHERE class_id = ? AND lesson_id=?');
+
+			if (!$stmt->execute(array($class, $lesson))) {
 				$stmt = null;
 				exit();
 			}

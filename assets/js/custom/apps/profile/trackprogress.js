@@ -84,17 +84,17 @@ var KTStudentProgress = function () {
             });
         }
 
-        $(form.querySelector('[name="classes"]')).on('change', function () {
+        // $(form.querySelector('[name="classes"]')).on('change', function () {
 
-            const classVal = $("#classes").val();
+        //     const classVal = $("#classes").val();
 
-            sendAjaxRequest("includes/select_for_lesson.inc.php", { class: classVal }, function (data) {
-                updateSelectWhenChange('#lessons', data, 'Ders Yok');
-                updateSelectWhenChange('#units', [], 'Ünite Yok');
-                updateSelectWhenChange('#topics', [], 'Konu Yok');
-                updateSelectWhenChange('#subtopics', [], 'Altkonu Yok');
-            });
-        });
+        //     sendAjaxRequest("includes/select_for_lesson.inc.php", { class: classVal }, function (data) {
+        //         updateSelectWhenChange('#lessons', data, 'Ders Yok');
+        //         updateSelectWhenChange('#units', [], 'Ünite Yok');
+        //         // updateSelectWhenChange('#topics', [], 'Konu Yok');
+        //         // updateSelectWhenChange('#subtopics', [], 'Altkonu Yok');
+        //     });
+        // });
 
         $(form.querySelector('[name="lessons"]')).on('change', function () {
             const requestData = {
@@ -102,11 +102,15 @@ var KTStudentProgress = function () {
                 lesson: $("#lessons").val()
             };
 
-            sendAjaxRequest("includes/select_for_unit.inc.php", requestData, function (data) {
-                updateSelectWhenChange('#units', data, 'Ünite Yok');
-                updateSelectWhenChange('#topics', [], 'Konu Yok');
-                updateSelectWhenChange('#subtopics', [], 'Altkonu Yok');
-            });
+            if ($("#lessons").val()) {
+                sendAjaxRequest("includes/select_for_unit.inc.php", requestData, function (data) {
+                    updateSelectWhenChange('#units', data, 'Ünite Yok');
+                    // updateSelectWhenChange('#topics', [], 'Konu Yok');
+                    // updateSelectWhenChange('#subtopics', [], 'Altkonu Yok');
+                });
+            }
+
+
         });
 
         $(form.querySelector('[name="units"]')).on('change', function () {
@@ -116,11 +120,13 @@ var KTStudentProgress = function () {
                 lesson: $("#lessons").val(),
                 unit: $("#units").val()
             };
+            if ($("#units").val()) {
 
-            sendAjaxRequest("includes/select_for_topic.inc.php", requestData, function (data) {
-                updateSelectWhenChange('#topics', data, 'Konu Yok');
-                updateSelectWhenChange('#subtopics', [], 'Altkonu Yok');
-            });
+                sendAjaxRequest("includes/select_for_topic.inc.php", requestData, function (data) {
+                    updateSelectWhenChange('#topics', data, 'Konu Yok');
+                    // updateSelectWhenChange('#subtopics', [], 'Altkonu Yok');
+                });
+            }
         });
 
         $(form.querySelector('[name="topics"]')).on('change', function () {
@@ -131,10 +137,12 @@ var KTStudentProgress = function () {
                 unit: $("#units").val(),
                 topics: $("#topics").val()
             };
+            if ($("#topics").val()) {
 
-            sendAjaxRequest("includes/select_for_subtopic.inc.php", requestData, function (data) {
-                updateSelectWhenChange('#subtopics', data, 'Altkonu Yok');
-            });
+                sendAjaxRequest("includes/select_for_subtopic.inc.php", requestData, function (data) {
+                    updateSelectWhenChange('#subtopics', data, 'Altkonu Yok');
+                });
+            }
         });
 
 

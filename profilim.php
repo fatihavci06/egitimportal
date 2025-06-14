@@ -57,9 +57,14 @@ $timeSpendInfo = $timeSpend->getTimeSpend($userInfo["id"]);
         // admin profilim sayfasi
     
     } elseif ($_SESSION["role"] == 2) {
-        include_once "classes/student.classes.php";
-        include_once "classes/student-view.classes.php";
-        include_once "classes/school.classes.php";
+        require_once "classes/student.classes.php";
+        require_once "classes/student-view.classes.php";
+        require_once "classes/school.classes.php";
+        require_once "classes/classes.classes.php";
+        require_once "classes/classes-view.classes.php";
+        require_once "classes/lessons.classes.php";
+        require_once "classes/lessons-view.classes.php";
+
         $student = new ShowStudent();
         $school = new School();
 
@@ -72,7 +77,7 @@ $timeSpendInfo = $timeSpend->getTimeSpend($userInfo["id"]);
         $studentClassName = $student->getStudentClass($userInfo['class_id']);
         require_once "views/profile/profilim-ogrenci.php";
 
-    } elseif ($_SESSION["role"] == 4 || $_SESSION["role"] == 10001 ||$_SESSION["role"] == 9 ||$_SESSION["role"] == 10)  {
+    } elseif ($_SESSION["role"] == 4 || $_SESSION["role"] == 10001 || $_SESSION["role"] == 9 || $_SESSION["role"] == 10) {
         include_once "classes/school.classes.php";
 
         $school = new School();
@@ -125,6 +130,9 @@ $timeSpendInfo = $timeSpend->getTimeSpend($userInfo["id"]);
     <script src="assets/js/custom/utilities/modals/offer-a-deal/complete.js"></script>
     <script src="assets/js/custom/utilities/modals/offer-a-deal/main.js"></script>
     <script src="assets/js/custom/utilities/modals/users-search.js"></script>
+
+    <script src="assets/js/custom/apps/profile/trackprogress.js"></script>
+
 </body>
 
 </html>

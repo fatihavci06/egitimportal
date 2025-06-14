@@ -21,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     // var_dump($subtopicId); 
     // exit();
     // return $subtopicId;
+
     function respondWithHtml($html)
     {
         echo json_encode(['status' => 'success', 'html' => $html]);
@@ -89,7 +90,7 @@ function doLessons($school_id, $class_id, $lesson_id, $unit_id, $student_id)
         $percentageW = ($percentage == null) ? 0 : $percentage;
         $percentageT = ($percentage == null) ? '-' : $percentage;
 
-        $score = $gradeObj->getGradeByLessonId($student_id, $lesson_id);
+        $score = $gradeObj->getGradeByUnitId($student_id, $item['id']);
         $scoreW = ($score == null) ? 0 : $score;
         $scoreT = ($score == null) ? '-' : $score;
 
@@ -178,7 +179,7 @@ function doUnits($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $studen
         $percentageW = ($percentage == null) ? 0 : $percentage;
         $percentageT = ($percentage == null) ? '-' : $percentage;
 
-        $score = $gradeObj->getGradeByLessonId($student_id, $lesson_id);
+        $score = $gradeObj->getGradeByTopicId($student_id, $item['id']);
         $scoreW = ($score == null) ? 0 : $score;
         $scoreT = ($score == null) ? '-' : $score;
 
@@ -263,11 +264,11 @@ function doTopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $subto
         // $subItems = getSubtopicsByTopicId($school_id, $class_id, $lesson_id, $unit_id, $topic_id);
         // $subItemsCount = 0;
         // $subItemsCount = count($subItems);
-        $percentage = $contentObj->getSchoolContentAnalyticsByTopicId($student_id, $item['id']);
+        $percentage = $contentObj->getSchoolContentAnalyticsBySubtopicId($student_id, $item['id']);
         $percentageW = ($percentage == null) ? 0 : $percentage;
         $percentageT = ($percentage == null) ? '-' : $percentage;
 
-        $score = $gradeObj->getGradeByLessonId($student_id, $lesson_id);
+        $score = $gradeObj->getGradeBySubtopicId($student_id, $item['id']);
         $scoreW = ($score == null) ? 0 : $score;
         $scoreT = ($score == null) ? '-' : $score;
 
@@ -349,7 +350,7 @@ function doSubtopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $su
     $percentageW = ($percentage == null) ? 0 : $percentage;
     $percentageT = ($percentage == null) ? '-' : $percentage;
 
-    $score = $gradeObj->getGradeByLessonId($student_id, $lesson_id);
+    $score = $gradeObj->getGradeBySubtopicId($student_id, $item['id']);
     $scoreW = ($score == null) ? 0 : $score;
     $scoreT = ($score == null) ? '-' : $score;
 
