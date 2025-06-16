@@ -2113,10 +2113,7 @@ WHERE t.id = :id";
             $stmt = $pdo->prepare($sql);
             $stmt->execute(['user_id' => $userId, 'test_id' => $testId]);
             $grade = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($stmt->rowCount() === 0) {
-                echo json_encode(['status' => 'error', 'message' => 'Test bulunamadı.']);
-                exit;
-            }
+            
             if (isset($grade['fail_count']) && $grade['fail_count'] >= 3) {
                 echo json_encode(['status' => 'error', 'message' => 'Bu teste 3 kez başarısız oldunuz, tekrar giremezsiniz.']);
                 exit;
