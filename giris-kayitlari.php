@@ -70,52 +70,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             <div class="card-toolbar">
                                                 <!--begin::Toolbar-->
                                                 <div class="d-flex justify-content-end" data-kt-logs-table-toolbar="base">
-                                                    <!--begin::Filter-->
-                                                    <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                                                        <i class="ki-duotone ki-filter fs-2">
-                                                            <span class="path1"></span>
-                                                            <span class="path2"></span>
-                                                        </i>Filter</button>
-                                                    <!--begin::Menu 1-->
-                                                    <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true" id="kt-toolbar-filter">
-                                                        <!--begin::Header-->
-                                                        <div class="px-7 py-5">
-                                                            <div class="fs-4 text-gray-900 fw-bold">Filter Options</div>
-                                                        </div>
-                                                        <!--end::Header-->
-                                                        <!--begin::Separator-->
-                                                        <div class="separator border-gray-200"></div>
-                                                        <!--end::Separator-->
-                                                        <!--begin::Content-->
-                                                        <div class="px-7 py-5">
-                                                            <!--begin::Input group-->
-                                                            <div class="mb-10">
-                                                                <!--begin::Label-->
-                                                                <label class="form-label fs-5 fw-semibold mb-3">Month:</label>
-                                                                <!--end::Label-->
-                                                                <!--begin::Input-->
-                                                                <select class="form-select form-select-solid fw-bold" data-kt-select2="true" data-placeholder="Select option" data-allow-clear="true" data-kt-coupon-table-filter="month" data-dropdown-parent="#kt-toolbar-filter">
-                                                                    <option></option>
-                                                                    <option value="aug">August</option>
-                                                                    <option value="sep">September</option>
-                                                                    <option value="oct">October</option>
-                                                                    <option value="nov">November</option>
-                                                                    <option value="dec">December</option>
-                                                                </select>
-                                                                <!--end::Input-->
-                                                            </div>
-                                                            <!--end::Input group-->
-                                                            <!--begin::Actions-->
-                                                            <div class="d-flex justify-content-end">
-                                                                <button type="reset" class="btn btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true" data-kt-logs-table-filter="reset">Reset</button>
-                                                                <button type="submit" class="btn btn-primary" data-kt-menu-dismiss="true" data-kt-logs-table-filter="filter">Apply</button>
-                                                            </div>
-                                                            <!--end::Actions-->
-                                                        </div>
-                                                        <!--end::Content-->
-                                                    </div>
-                                                    <!--end::Menu 1-->
-                                                    <!--end::Filter-->
                                                 </div>
                                                 <!--end::Toolbar-->
                                                 <!--begin::Group actions-->

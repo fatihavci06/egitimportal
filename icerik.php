@@ -9,11 +9,28 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
     include_once "classes/contentstu-view.classes.php";
     $contents = new ShowContents();
     include_once "views/pages-head.php";
-?>
+    include_once "classes/content-tracker.classes.php";
+    $contentTrackerObj = new ContentTracker();
+
+    $link = "$_SERVER[REQUEST_URI]";
+
+    $active_slug = htmlspecialchars(basename($link, ".php"));
+
+    $contentInfo = $contents->getContentIdBySlug($active_slug);
+    $userId = $_SESSION['id'];
+    $contentId = $contentInfo['id'];
+
+    $contentTrackerObj->createContentVisit($userId, $contentId);
+
+    ?>
     <!--end::Head-->
     <!--begin::Body-->
 
-    <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
+    <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true"
+        data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true"
+        data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true"
+        data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true"
+        data-kt-app-aside-push-footer="true" class="app-default">
         <!--begin::Theme mode setup on page load-->
         <script>
             var defaultThemeMode = "light";
@@ -116,6 +133,11 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
         <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
         <!--end::Vendors Javascript-->
         <!--begin::Custom Javascript(used for this page only)-->
+
+        <script src="https://player.vimeo.com/api/player.js"></script>
+        <script src="assets/js/custom/trackTimeOnVimeo.js"></script>
+        <script src="assets/js/custom/contentTracker.js"></script>
+
         <script src="assets/js/custom/apps/topicStu/list/export.js"></script>
         <script src="assets/js/custom/apps/topicStu/list/list.js"></script>
         <script src="assets/js/custom/apps/topicStu/add.js"></script>
@@ -127,47 +149,47 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
         <script src="assets/js/custom/utilities/modals/create-app.js"></script>
         <script src="assets/js/custom/utilities/modals/users-search.js"></script>
         <script>
-        /*    document.addEventListener('DOMContentLoaded', function() {
-                const videoPlayer = document.getElementById('my-video');
-                const videoSource = videoPlayer.querySelector('source');
-                const videoToLoad = 'DSC_1781as.mp4'; // Çekmek istediğiniz video dosya adı
+            /*    document.addEventListener('DOMContentLoaded', function() {
+                    const videoPlayer = document.getElementById('my-video');
+                    const videoSource = videoPlayer.querySelector('source');
+                    const videoToLoad = 'DSC_1781as.mp4'; // Çekmek istediğiniz video dosya adı
 
-                fetch('https://oznarmaden.com/lineup/api/video/get.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded', // Form verisi göndermek için
-                        // İsteğe bağlı: 'Content-Type': 'application/json' eğer JSON gönderiyorsanız
-                    },
-                    body: new URLSearchParams({
-                        'video': videoToLoad,
-                    }),
-                    mode: 'no-cors'
-                })
-                /*.then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data && data.url) {
-                        videoSource.src = data.url;
-                        videoPlayer.load(); // Video kaynağını yükle
-                    } else {
-                        console.error('Beklenen URL bilgisi alınamadı.', data);
-                    }
-                })
-                .catch(error => {
-                    console.error('Video çekme hatası:', error);
-                });*/
-           /* });*/
+                    fetch('https://oznarmaden.com/lineup/api/video/get.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded', // Form verisi göndermek için
+                            // İsteğe bağlı: 'Content-Type': 'application/json' eğer JSON gönderiyorsanız
+                        },
+                        body: new URLSearchParams({
+                            'video': videoToLoad,
+                        }),
+                        mode: 'no-cors'
+                    })
+                    /*.then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data && data.url) {
+                            videoSource.src = data.url;
+                            videoPlayer.load(); // Video kaynağını yükle
+                        } else {
+                            console.error('Beklenen URL bilgisi alınamadı.', data);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Video çekme hatası:', error);
+                    });*/
+            /* });*/
         </script>
         <!--end::Custom Javascript-->
         <!--end::Javascript-->
     </body>
     <!--end::Body-->
 
-</html>
+    </html>
 <?php } else {
     header("location: ../index");
 }

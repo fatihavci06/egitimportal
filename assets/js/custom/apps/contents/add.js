@@ -476,7 +476,7 @@ var KTModalCustomersAdd = function () {
 									if (response.status === "success") {
 
 										Swal.fire({
-											text: response.message + " Alt Konu eklenmiştir!",
+											text: response.message + " içerik eklenmiştir!",
 											icon: "success",
 											buttonsStyling: false,
 											confirmButtonText: "Tamam, anladım!",

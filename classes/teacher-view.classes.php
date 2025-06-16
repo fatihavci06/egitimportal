@@ -25,6 +25,14 @@ class ShowTeacher extends Teacher
                 $aktifYazi = '<span class="badge badge-light-danger">Pasif</span>';
             }
 
+            if ($value['role'] == 4) {
+                $rolu = "Öğretmen";
+            } elseif ($value['role'] == 9) {
+                $rolu = "Mentör Öğretmen";
+            } elseif ($value['role'] == 10) {
+                $rolu = "Koç Öğretmen";
+            }
+
             $alter_button = $value['active'] ? "Pasif Yap" : "Aktif Yap";
 
             $studentList = '
@@ -40,6 +48,7 @@ class ShowTeacher extends Teacher
                         <td>
                             <a href="./ogretmen-detay/' . $value['username'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['name'] . ' ' . $value['surname']  . '</a>
                         </td>
+                        <td>' . $rolu . '</td>
                         <td>
                             <a href="mailto:' . $value['email'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['email'] . '</a>
                         </td>

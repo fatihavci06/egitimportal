@@ -20,8 +20,9 @@ class AddTeacherContr extends AddTeacher
 	private $school;
 	private $classes;
 	private $lesson;
+	private $teacher_role;
 
-	public function __construct($photoSize, $photoName, $fileTmpName, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $lesson)
+	public function __construct($photoSize, $photoName, $fileTmpName, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $lesson, $teacher_role)
 	{
 		$this->photoSize = $photoSize;
 		$this->photoName = $photoName;
@@ -36,6 +37,7 @@ class AddTeacherContr extends AddTeacher
 		$this->school = $school;
 		$this->classes = $classes;
 		$this->lesson = $lesson;
+		$this->teacher_role = $teacher_role;
 	}
 
 	public function addTeacherDb()
@@ -92,7 +94,7 @@ class AddTeacherContr extends AddTeacher
 		$teacherPassword = $createPassword->gucluSifreUret(15);
 		$teacherPasswordHash = password_hash($teacherPassword, PASSWORD_DEFAULT);
 
-		$this->setTeacher($imgName, $this->name, $this->surname, $this->username, $this->gender, $this->birthdate, $this->email, $this->telephone, $this->school, $this->classes, $this->lesson, $teacherPasswordHash);
+		$this->setTeacher($imgName, $this->name, $this->surname, $this->username, $this->gender, $this->birthdate, $this->email, $this->telephone, $this->school, $this->classes, $this->lesson, $teacherPasswordHash, $this->teacher_role);
 
 		$getSchool = new School();
 		$schoolData = $getSchool->getOneSchoolById($this->school);

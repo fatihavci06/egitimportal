@@ -5944,5 +5944,5 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 </html>
 <?php } else {
-	header("location: index");
+	header("location: ../index");
 }

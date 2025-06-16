@@ -3,7 +3,7 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 4)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 4 or $_SESSION['role'] == 10001)) {
     include_once "classes/dbh.classes.php";
     include "classes/topics.classes.php";
     include "classes/topics-view.classes.php";
@@ -59,7 +59,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <!--begin::Card-->
-                                    <?php include_once "views/contents/add_content.php"; ?>
+                                    <?php include_once "views/homeworks/add-homework.php"; ?>
                                     <!--end::Card-->
                                 </div>
                                 <!--end::Content container-->
@@ -103,10 +103,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <!--begin::Custom Javascript(used for this page only)-->
         <script src="assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
         <script src="assets/js/custom/apps/contents/list/export.js"></script>
-        <script src="assets/js/custom/apps/contents/list/list.js"></script>
+        <script src="assets/js/custom/apps/homeworks/list/list.js"></script>
         <script src="assets/js/custom/apps/contents/list/topicadd.js"></script>
-        <script src="assets/js/custom/apps/contents/add.js"></script>
-        <script src="assets/js/custom/apps/contents/create.js"></script>
+        <script src="assets/js/custom/apps/homeworks/add.js"></script>
+        <!-- <script src="assets/js/custom/apps/contents/create.js"></script> -->
         <script src="assets/js/widgets.bundle.js"></script>
         <script src="assets/js/custom/widgets.js"></script>
         <script src="assets/js/custom/apps/chat/chat.js"></script>

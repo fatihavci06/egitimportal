@@ -3,7 +3,7 @@
 <!--begin::Head-->
 <?php
 session_start();
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 2 or $_SESSION['role'] == 3 or $_SESSION['role'] == 4 or $_SESSION['role'] == 5 or $_SESSION['role'] == 8 or $_SESSION['role'] == 10001 or $_SESSION['role'] == 10002 )) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 2 or $_SESSION['role'] == 3 or $_SESSION['role'] == 4 or $_SESSION['role'] == 5 or $_SESSION['role'] == 8 or $_SESSION['role'] == 9 or $_SESSION['role'] == 10 or $_SESSION['role'] == 10001 or $_SESSION['role'] == 10002 )) {
 	define('GUARD', true);
 	include_once "views/pages-head.php";
 ?>

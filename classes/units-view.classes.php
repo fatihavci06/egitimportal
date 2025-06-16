@@ -1,5 +1,6 @@
 <?php
 include_once "dateformat.classes.php";
+include_once "gettestresults.classes.php";
 
 class ShowUnit extends Units
 {
@@ -27,9 +28,9 @@ class ShowUnit extends Units
 
             $alter_button = $value['unitActive'] ? "Pasif Yap" : "Aktif Yap";
 
-            if($_SESSION['role'] == 4) {
+            if ($_SESSION['role'] == 4) {
                 $passiveButton = '';
-            }else{
+            } else {
                 $passiveButton = '
                                 <!--begin::Menu item-->
                                 <div class="menu-item px-3">
@@ -45,7 +46,7 @@ class ShowUnit extends Units
                                 <input class="form-check-input" type="checkbox" value="1" />
                             </div>
                         </td>
-                        <td data-file-id="'. $value['unitID'] .'">
+                        <td data-file-id="' . $value['unitID'] . '">
                             <a href="./unite-detay/' . $value['unitSlug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['unitName'] . '</a>
                         </td>
                         <td>
@@ -103,9 +104,13 @@ class ShowUnit extends Units
     public function getUnitsListStudent()
     {
 
+        $testResults = new TestsResult();
+
         $lessonId = $this->getID();
 
         $unitInfo = $this->getUnitsListStu($lessonId, $_SESSION['class_id'], $_SESSION['school_id']);
+
+        $today = date('Y-m-d');
 
         if ($unitInfo == NULL) {
 
@@ -127,13 +132,37 @@ class ShowUnit extends Units
 
             foreach ($unitInfo as $key => $value) {
 
+                $getLessonId = $value['lesson_id'];
+                $getClassId = $value['class_id'];
+                $getOrderNo = $value['order_no'];
+
+                if ($getOrderNo == 1) {
+                    $testQuery = 80 >= 80;
+                } else {
+                    $getPreviousUnitId = $this->getPrevUnitId($getOrderNo - 1, $getClassId, $getLessonId, $_SESSION['school_id']);
+                    $prevUnitId = $getPreviousUnitId['id'];
+                    $getTestResult = $testResults->getUnitTestResults($prevUnitId, $getClassId, $_SESSION['id']);
+                    $result = $getTestResult['score'] ?? 0;
+                    $testQuery = $result >= 80; // If the previous unit's test is not passed, the current unit cannot be accessed.
+                }
+
+                if ($today >= $value['start_date'] or $testQuery) {
+                    $link = "unite/{$value['slug']}";
+                    $class = "";
+                    $notification = '';
+                } else {
+                    $link = "#";
+                    $class = "pe-none";
+                    $notification = '<div class="fw-semibold fs-5 text-danger mt-3 mb-5">Bu ünitenin tarihi gelmemiş veya bir önceki ünitenin sınavı başarı ile tamamlanmamıştır.</div>';
+                }
+
                 $lessonList = '
                             <!--begin::Col-->
                             <div class="col-md-4">
                                 <!--begin::Publications post-->
                                 <div class="card-xl-stretch me-md-6">
                                     <!--begin::Overlay-->
-                                    <a class="d-block overlay mb-4" href="unite/' . $value['slug'] . '">
+                                    <a class="d-block overlay mb-4 ' . $class . '" href="' . $link . '">
                                         <!--begin::Image-->
                                         <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-175px" style="background-image:url(\'assets/media/units/' . $value['photo'] . '\')"></div>
                                         <!--end::Image-->
@@ -147,10 +176,11 @@ class ShowUnit extends Units
                                     <!--begin::Body-->
                                     <div class="m-0">
                                         <!--begin::Title-->
-                                        <a href="unite/' . $value['slug'] . '" class="fs-4 text-gray-900 fw-bold text-hover-primary text-gray-900 lh-base">' . $value['name'] . '</a>
+                                        <a href="' . $link . '" class="fs-4 text-gray-900 fw-bold text-hover-primary text-gray-900 lh-base ' . $class . '">' . $value['name'] . '</a>
                                         <!--end::Title-->
                                         <!--begin::Text-->
                                         <div class="fw-semibold fs-5 text-gray-600 text-gray-900 mt-3 mb-5">' . $value['short_desc'] . '</div>
+                                        ' . $notification . '
                                         <!--end::Text-->
                                     </div>
                                     <!--end::Body-->
@@ -191,7 +221,8 @@ class ShowUnit extends Units
                         <!--begin::Heading-->
                         <div class="position-absolute text-white mb-8 ms-10 bottom-0">
                             <!--begin::Title-->
-                            <h3 class="text-white fs-2qx fw-bold mb-3 m">' . $value['short_desc'] . '</h3>
+                            <h3 class="text-white fs-2qx fw-bold mb-3 m">' . $value['name'] . '</h3>
+                            <h3 class="text-white fs-1qx fw-bold mb-3 m">' . $value['short_desc'] . '</h3>
                             <!--end::Title-->
                             <!--begin::Text-->
                             <!--<div class="fs-5 fw-semibold">You sit down. You stare at your screen. The cursor blinks.</div>-->
@@ -208,9 +239,13 @@ class ShowUnit extends Units
 
     public function getSidebarTopicsStu()
     {
+        $testResults = new TestsResult();
+
         $link = "$_SERVER[REQUEST_URI]";
 
         $active_slug = htmlspecialchars(basename($link, ".php"));
+
+        $today = date('Y-m-d');
 
         $unitInfo = $this->getSameUnits($active_slug);
 
@@ -226,6 +261,28 @@ class ShowUnit extends Units
 
         foreach ($unitInfo as $key => $value) {
 
+            $getLessonId = $value['lesson_id'];
+            $getClassId = $value['class_id'];
+            $getOrderNo = $value['order_no'];
+
+            if ($getOrderNo == 1) {
+                $testQuery = 80 >= 80;
+            } else {
+                $getPreviousUnitId = $this->getPrevUnitId($getOrderNo - 1, $getClassId, $getLessonId, $_SESSION['school_id']);
+                $prevUnitId = $getPreviousUnitId['id'];
+                $getTestResult = $testResults->getUnitTestResults($prevUnitId, $getClassId, $_SESSION['id']);
+                $result = $getTestResult['score'] ?? 0;
+                $testQuery = $result >= 80; // If the previous unit's test is not passed, the current unit cannot be accessed.
+            }
+
+            if ($today >= $value['start_date'] or $testQuery) {
+                $link = "unite/{$value['unitSlug']}";
+                $class = "";
+            } else {
+                $link = "#";
+                $class = "pe-none";
+            }
+
             $lessonList .= '
                             <!--begin::Section-->
                             <div class="my-2">
@@ -235,7 +292,7 @@ class ShowUnit extends Units
                                     <span class="bullet me-3"></span>
                                     <!--end::Bullet-->
                                     <!--begin::Label-->
-                                    <div class="text-gray-600 fw-semibold fs-6"><a href="unite/' . $value['unitSlug'] . '">' . $value['unitName'] . '</a></div>
+                                    <div class="text-gray-600 fw-semibold fs-6 ' . $class . '"><a href="' . $link . '">' . $value['unitName'] . '</a></div>
                                     <!--end::Label-->
                                 </div>
                             <!--end::Row-->
@@ -324,7 +381,7 @@ class ShowUnit extends Units
                     <option value="' . $value['unitID'] . '">' . $value['unitName'] . '</option>
                 ';
         }
-            return $unitList;
+        return $unitList;
     }
 
     // Show Unit
@@ -677,7 +734,7 @@ class ShowUnit extends Units
 
 
 
-            $lessonList .=  $classForms;
+            $lessonList .= $classForms;
         }
 
 

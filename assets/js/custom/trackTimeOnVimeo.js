@@ -44,14 +44,13 @@ function monitorVimeoPlayer() {
                 const currentSecond = Math.floor(currentTime);
 
                 if (currentSecond !== lastLoggedSecond) {
-                    console.log(`Vimeo video timestamp: ${currentSecond} seconds`);
                     lastLoggedSecond = currentSecond;
                 }
             } catch (error) {
                 console.error('Error getting current time:', error);
             }
         };
-        intervalId = setInterval(logCurrentTime, 2000);
+        intervalId = setInterval(logCurrentTime, 1000);
 
         player.on('pause', async () => {
             if (intervalId) {
@@ -74,12 +73,6 @@ function monitorVimeoPlayer() {
             console.log('Video paused - stopped monitoring');
         });
 
-        player.on('play', () => {
-            if (!intervalId) {
-                intervalId = setInterval(logCurrentTime, 2000);
-                console.log('Video resumed - started monitoring');
-            }
-        });
 
         window.addEventListener('beforeunload', async () => {
             if (intervalId && videoId) {

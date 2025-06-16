@@ -37,6 +37,10 @@ RewriteRule ^icerik-detay/([A-Za-z0-9_-]+)    ./icerik-detay.php?q=$1     [L,QSA
 RewriteRule ^icerik-guncelle/([A-Za-z0-9_-]+)    ./icerik-guncelle.php?q=$1     [L,QSA]
 RewriteRule ^icerik/([A-Za-z0-9_-]+)    ./icerik.php?q=$1     [L,QSA]
 RewriteRule ^mesaj/([A-Za-z0-9_-]+)    ./mesaj.php?q=$1     [L,QSA]
+RewriteRule ^odev-detay/([A-Za-z0-9_-]+)    ./odev-detay.php?q=$1     [L,QSA]
+RewriteRule ^odev-guncelle/([A-Za-z0-9_-]+)    ./odev-guncelle.php?q=$1     [L,QSA]
+RewriteRule ^ogrenci-odev-detay/([A-Za-z0-9_-]+)    ./ogrenci-odev-detay.php?q=$1     [L,QSA]
+
 
 ErrorDocument 404 http://localhost/lineup_campus/404
 ErrorDocument 500 http://localhost/lineup_campus/500

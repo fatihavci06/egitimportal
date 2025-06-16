@@ -73,9 +73,16 @@ $user_id = $_SESSION["id"];
                                                 </i>
                                                 <input type="text" data-kt-customer-table-filter="search"
                                                     class="form-control form-control-solid w-250px ps-12"
-                                                    placeholder="Bildirim Ara" />
+                                                    placeholder="Mesaj Ara" />
                                             </div>
                                         </div>
+                                        
+                                            <!--begin::Toolbar-->
+                                            <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
+                                                <!--begin::Add school-->
+                                                <a href="mesaj-gonder"><button type="button" class="btn btn-primary btn-sm">Mesaj Gönder</button></a>
+                                                <!--end::Add school-->
+                                            </div>
 
                                     </div>
                                     <div class="card-body pt-0">

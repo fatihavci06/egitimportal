@@ -3,7 +3,7 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 OR $_SESSION['role'] == 8 OR $_SESSION['role'] == 3 OR $_SESSION['role'] == 4)) {
 	include_once "classes/dbh.classes.php";
 	include_once "classes/addcontent.classes.php";
 	include_once "classes/content-view.classes.php";

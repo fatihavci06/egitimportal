@@ -1,5 +1,4 @@
 "use strict";
-
 // Class definition
 var KTCustomersList = function () {
     // Define shared variables
@@ -47,39 +46,72 @@ var KTCustomersList = function () {
             datatable.search(e.target.value).draw();
         });
     }
+  
+    // Filter button click handler (moved here from calendar config)
+    // var handleFilterButton = function () {
+    //     $('#filterButton2').on('click', function () {
+    //           alert(222);
+    //         console.log('çalıştı')
+    //         // Get selected values
+    //         var classId = $('#class_id').val();
+    //         var lessonId = $('#lesson_id').val();
+    //         var unitId = $('#unit_id').val();
+    //         var topicId = $('#topic_id').val();
+    //         var subtopicId = $('#subtopic_id').val();
 
-    // Filter Datatable
-    /* var handleFilterDatatable = () => {
-         // Select filter options
-         filterMonth = $('[data-kt-customer-table-filter="month"]');
-         filterPayment = document.querySelectorAll('[data-kt-customer-table-filter="payment_type"] [name="payment_type"]');
-         const filterButton = document.querySelector('[data-kt-customer-table-filter="filter"]');
- 
-         // Filter datatable on submit
-         filterButton.addEventListener('click', function () {
-             // Get filter values
-             const monthValue = filterMonth.val();
-             let paymentValue = '';
- 
-             // Get payment value
-             filterPayment.forEach(r => {
-                 if (r.checked) {
-                     paymentValue = r.value;
-                 }
- 
-                 // Reset payment value if "All" is selected
-                 if (paymentValue === 'all') {
-                     paymentValue = '';
-                 }
-             });
- 
-             // Build filter string from filter options
-             const filterString = monthValue + ' ' + paymentValue;
- 
-             // Filter datatable --- official docs reference: https://datatables.net/reference/api/search()
-             datatable.search(filterString).draw();
-         });
-     }*/
+    //         // Prepare data to be sent
+    //         var postData = {
+    //             class_id: classId,
+    //             lesson_id: lessonId,
+    //             unit_id: unitId,
+    //             topic_id: topicId,
+    //             subtopic_id: subtopicId
+    //         };
+
+    //         // Send AJAX POST request
+    //         $.ajax({
+    //             url: 'includes/getweeklylist.inc.php', // Replace with the actual path to your PHP script
+    //             type: 'POST',
+    //             data: postData,
+    //             dataType: 'json', // Expecting JSON response from the PHP script
+    //             success: function (response) {
+    //                 // Handle success response from PHP
+    //                 if (response.status === 'success') {
+    //                     var eventList = response.data;
+    //                     console.log('Events:', eventList);
+
+    //                     let html = '';
+
+    //                     eventList.forEach(function (event) {
+    //                         html += `
+    //                          <div class="event-list">
+    //                             <h5 class="text-center event-month">Haziran 2025</h5>
+    //                             <div class="event-body my-4">
+    //                                 <div class="event-date">
+    //                                     ${event.start} - ${event.end}
+    //                                 </div>
+    //                                 <div class="event-title">
+    //                                     ${event.title} 
+    //                                 </div>
+    //                             </div>
+    //                         </div>
+    //             `;
+    //                     });
+
+    //                     $('#eventResults').html(html);
+
+    //                 } else {
+    //                     alert('Filtreleme başarısız: ' + response.message);
+    //                 }
+    //             },
+    //             error: function (xhr, status, error) {
+    //                 // Handle error
+    //                 console.error('AJAX Error:', status, error);
+    //                 alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+    //             }
+    //         });
+    //     });
+    // }
 
     // Delete customer
     var handleDeleteRows = () => {
@@ -203,23 +235,6 @@ var KTCustomersList = function () {
         });
     }
 
-    // Reset Filter
-    /*var handleResetForm = () => {
-        // Select reset button
-        const resetButton = document.querySelector('[data-kt-customer-table-filter="reset"]');
-
-        // Reset datatable
-        resetButton.addEventListener('click', function () {
-            // Reset month
-            filterMonth.val(null).trigger('change');
-
-            // Reset payment type
-            filterPayment[0].checked = true;
-
-            // Reset datatable --- official docs reference: https://datatables.net/reference/api/search()
-            datatable.search('').draw();
-        });
-    }*/
 
     // Init toggle toolbar
     var initToggleToolbar = () => {
@@ -336,6 +351,7 @@ var KTCustomersList = function () {
             initCustomerList();
             initToggleToolbar();
             handleSearchDatatable();
+            handleFilterButton();
             /*handleFilterDatatable();*/
             handleDeleteRows();
             /*handleResetForm();*/

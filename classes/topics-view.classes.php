@@ -1,6 +1,7 @@
 <?php
 include_once "dateformat.classes.php";
 //include_once "api/video/get.php";
+include_once "gettestresults.classes.php";
 
 class ShowTopic extends Topics
 {
@@ -221,9 +222,9 @@ class ShowTopic extends Topics
 
             $alter_button = $value['topicActive'] ? "Pasif Yap" : "Aktif Yap";
 
-            if($_SESSION['role'] == 4) {
+            if ($_SESSION['role'] == 4) {
                 $passiveButton = '';
-            }else{
+            } else {
                 $passiveButton = '
                                 <!--begin::Menu item-->
                                 <div class="menu-item px-3">
@@ -239,7 +240,7 @@ class ShowTopic extends Topics
                                 <input class="form-check-input" type="checkbox" value="1" />
                             </div>
                         </td>
-                        <td data-file-id="'. $value['topicID'] .'">
+                        <td data-file-id="' . $value['topicID'] . '">
                             <a href="./konu-detay/' . $value['topicSlug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['topicName'] . '</a>
                         </td>
                         <td>
@@ -283,17 +284,52 @@ class ShowTopic extends Topics
         }
     }
 
+
     // Get Topics Student
 
     public function getTopicsListStudent()
     {
+
+        $getUnit = new Units();
+
+        $testResults = new TestsResult();
+
         $dateFormat = new DateFormat();
 
         $link = "$_SERVER[REQUEST_URI]";
 
+        $today = date('Y-m-d');
+
         $active_slug = htmlspecialchars(basename($link, ".php"));
 
         $unitInfo = $this->showTopicsStudent($active_slug);
+
+        $unitData = $this->getUnitDatas($active_slug);
+
+        $getLessonId = $unitData['lesson_id'];
+        $getClassId = $unitData['class_id'];
+        $getOrderNo = $unitData['order_no'];
+
+        if ($getOrderNo == 1) {
+            $testQuery = 80 >= 80;
+        } else {
+            $getPreviousUnitId = $getUnit->getPrevUnitId($getOrderNo - 1, $getClassId, $getLessonId, $_SESSION['school_id']);
+            $prevUnitId = $getPreviousUnitId['id'];
+            $getTestResult = $testResults->getUnitTestResults($prevUnitId, $getClassId, $_SESSION['id']);
+            $result = $getTestResult['score'] ?? 0;
+            $testQuery = $result >= 80; // If the previous unit's test is not passed, the current unit cannot be accessed.
+        }
+
+        if ($today >= $unitData['start_date'] or $testQuery) {
+        } else {
+            header("Location: ../404.php"); // 404 sayfasına yönlendir
+            exit();
+        }
+
+        if (empty($unitData)) {
+            header("Location: ../404.php"); // 404 sayfasına yönlendir
+            exit();
+        }
 
         if ($unitInfo == NULL) {
 
@@ -314,6 +350,33 @@ class ShowTopic extends Topics
         } else {
 
             foreach ($unitInfo as $key => $value) {
+
+                $getLessonId = $value['lesson_id'];
+                $getClassId = $value['class_id'];
+                $getUnitId = $value['unit_id'];
+                $getOrderNo = $value['order_no'];
+                $getTopicId = $value['topicID'];
+
+                if ($getOrderNo == 1) {
+                    $testQuery = 80 >= 80;
+                } else {
+                    $getPreviousTopicId = $this->getPrevTopicId($getOrderNo - 1, $getClassId, $getLessonId, $getUnitId, $_SESSION['school_id']);
+                    $prevTopicId = $getPreviousTopicId['id'];
+                    $getTestResult = $testResults->getTopicTestResults($getUnitId, $getClassId, $prevTopicId, $_SESSION['id']);
+                    $result = $getTestResult['score'] ?? 0;
+                    $testQuery = $result >= 80; // If the previous unit's test is not passed, the current unit cannot be accessed.
+                }
+
+                if ($today >= $value['start_date'] or $testQuery) {
+                    $link = "konu/{$value['topicSlug']}";
+                    $class = "";
+                    $notification = '';
+                } else {
+                    $link = "#";
+                    $class = "pe-none";
+                    $notification = '<div class="fw-semibold fs-5 text-danger mt-3 mb-5">Bu konunun tarihi gelmemiş veya bir önceki konunun sınavı başarı ile tamamlanmamıştır.</div>';
+                }
+
                 $testText = "";
                 $unclickable = "";
                 if ($value['is_test'] == 1) {
@@ -337,7 +400,7 @@ class ShowTopic extends Topics
                                 <!--begin::Publications post-->
                                 <div class="card-xl-stretch me-md-6">
                                     <!--begin::Overlay-->
-                                    <a class="d-block ' . $unclickable . ' overlay mb-4" href="konu/' . $value['topicSlug'] . '">
+                                    <a class="d-block ' . $class . ' overlay mb-4" href="' . $link . '">
                                         <!--begin::Image-->
                                         <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-175px" style="background-image:url(\'assets/media/topics/' . $value['topicImage'] . '\')"></div>
                                         <!--end::Image-->
@@ -351,12 +414,13 @@ class ShowTopic extends Topics
                                     <!--begin::Body-->
                                     <div class="m-0">
                                         <!--begin::Title-->
-                                        <a href="konu/' . $value['topicSlug'] . '" class="fs-4 text-gray-900 fw-bold text-hover-primary text-gray-900 ' . $unclickable . ' lh-base">' . $value['topicName'] . '</a>
+                                        <a href="' . $link . '" class="fs-4 text-gray-900 fw-bold text-hover-primary text-gray-900 ' . $class . ' lh-base">' . $value['topicName'] . '</a>
                                         <!--end::Title-->
                                         <!--begin::Text-->
                                         <div class="fw-semibold fs-5 text-gray-600 text-gray-900 mt-3 mb-5">' . $value['topicShortDesc'] . '<br>' . $testText . '</div>
                                         <!--end::Text-->
                                     </div>
+                                    ' . $notification . '
                                     <!--end::Body-->
                                 </div>
                                 <!--end::Publications post-->
@@ -395,7 +459,8 @@ class ShowTopic extends Topics
                         <!--begin::Heading-->
                         <div class="position-absolute text-white mb-8 ms-10 bottom-0">
                             <!--begin::Title-->
-                            <h3 class="text-white fs-2qx fw-bold mb-3 m">' . $value['short_desc'] . '</h3>
+                            <h3 class="text-white fs-2qx fw-bold mb-3 m">' . $value['name'] . '</h3>
+                            <h3 class="text-white fs-1qx fw-bold mb-3 m">' . $value['short_desc'] . '</h3>
                             <!--end::Title-->
                             <!--begin::Text-->
                             <!--<div class="fs-5 fw-semibold">You sit down. You stare at your screen. The cursor blinks.</div>-->
@@ -482,7 +547,12 @@ class ShowTopic extends Topics
 
     public function getSidebarTopicsStu()
     {
+
+        $testResults = new TestsResult();
+
         $link = "$_SERVER[REQUEST_URI]";
+
+        $today = date('Y-m-d');
 
         $active_slug = htmlspecialchars(basename($link, ".php"));
 
@@ -500,6 +570,30 @@ class ShowTopic extends Topics
 
         foreach ($unitInfo as $key => $value) {
 
+            $getLessonId = $value['lesson_id'];
+            $getClassId = $value['class_id'];
+            $getUnitId = $value['unit_id'];
+            $getOrderNo = $value['order_no'];
+            $getTopicId = $value['topicID'];
+
+            if ($getOrderNo == 1) {
+                $testQuery = 80 >= 80;
+            } else {
+                $getPreviousTopicId = $this->getPrevTopicId($getOrderNo - 1, $getClassId, $getLessonId, $getUnitId, $_SESSION['school_id']);
+                $prevTopicId = $getPreviousTopicId['id'];
+                $getTestResult = $testResults->getTopicTestResults($getUnitId, $getClassId, $prevTopicId, $_SESSION['id']);
+                $result = $getTestResult['score'] ?? 0;
+                $testQuery = $result >= 80; // If the previous unit's test is not passed, the current unit cannot be accessed.
+            }
+
+            if ($today >= $value['start_date'] or $testQuery) {
+                $link = "konu/{$value['topicSlug']}";
+                $class = "";
+            } else {
+                $link = "#";
+                $class = "pe-none";
+            }
+
             $lessonList .= '
                             <!--begin::Section-->
                             <div class="my-2">
@@ -509,7 +603,7 @@ class ShowTopic extends Topics
                                     <span class="bullet me-3"></span>
                                     <!--end::Bullet-->
                                     <!--begin::Label-->
-                                    <div class="text-gray-600 fw-semibold fs-6"><a href="konu/' . $value['topicSlug'] . '">' . $value['topicName'] . '</a></div>
+                                    <div class="text-gray-600 fw-semibold fs-6 ' . $class . '"><a href="' . $link . '">' . $value['topicName'] . '</a></div>
                                     <!--end::Label-->
                                 </div>
                             <!--end::Row-->
@@ -552,6 +646,10 @@ class ShowTopic extends Topics
 
             if ($contentNumber != 0) {
                 $tabText = "İçerik";
+            }
+
+            if ($topicNumber == 0 and $contentNumber == 0) {
+                $tabText = "Alt Konu / İçerik Yok!";
             }
         }
 
@@ -605,6 +703,11 @@ class ShowTopic extends Topics
             if ($contentNumber != 0) {
                 $statNumber = $contentNumber; // Son eleman hariç say
                 $statText = "İçerik";
+            }
+
+            if ($topicNumber == 0 and $contentNumber == 0) {
+                $statNumber = 0; // Son eleman hariç say
+                $statText = "İçerik / Alt Konu";
             }
 
             $topicList = '
@@ -1031,9 +1134,9 @@ class ShowSubTopic extends SubTopics
 
             $alter_button = $value['subTopicActive'] ? "Pasif Yap" : "Aktif Yap";
 
-            if($_SESSION['role'] == 4) {
+            if ($_SESSION['role'] == 4) {
                 $passiveButton = '';
-            }else{
+            } else {
                 $passiveButton = '
                                 <!--begin::Menu item-->
                                 <div class="menu-item px-3">
@@ -1049,7 +1152,7 @@ class ShowSubTopic extends SubTopics
                                 <input class="form-check-input" type="checkbox" value="1" />
                             </div>
                         </td>
-                        <td data-file-id="'. $value['subTopicID'] .'">
+                        <td data-file-id="' . $value['subTopicID'] . '">
                             <a href="./alt-konu-detay/' . $value['subTopicSlug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['subTopicName'] . '</a>
                         </td>
                         <td>
@@ -1100,14 +1203,47 @@ class ShowSubTopic extends SubTopics
 
     public function getSubTopicsListStudent()
     {
+
+        $testResults = new TestsResult();
+
+        $getTopics = new Topics();
+
         $dateFormat = new DateFormat();
 
         $link = "$_SERVER[REQUEST_URI]";
+
+        $today = date('Y-m-d');
 
         $active_slug = htmlspecialchars(basename($link, ".php"));
 
         $topicInfo = $this->getTopicIdBySlug($active_slug);
         $topicId = $topicInfo['id'];
+
+        $getLessonId = $topicInfo['lesson_id'];
+        $getClassId = $topicInfo['class_id'];
+        $getUnitId = $topicInfo['unit_id'];
+        $getOrderNo = $topicInfo['order_no'];
+
+        if ($getOrderNo == 1) {
+            $testQuery = 80 >= 80;
+        } else {
+            $getPreviousTopicId = $getTopics->getPrevTopicId($getOrderNo - 1, $getClassId, $getLessonId, $getUnitId, $_SESSION['school_id']);
+            $prevTopicId = $getPreviousTopicId['id'];
+            $getTestResult = $testResults->getTopicTestResults($getUnitId, $getClassId, $prevTopicId, $_SESSION['id']);
+            $result = $getTestResult['score'] ?? 0;
+            $testQuery = $result >= 80; // If the previous unit's test is not passed, the current unit cannot be accessed.
+        }
+
+        if ($today >= $topicInfo['start_date'] or $testQuery) {
+        } else {
+            header("Location: ../404.php"); // 404 sayfasına yönlendir
+            exit();
+        }
+
+        if (empty($topicInfo)) {
+            header("Location: ../404.php"); // 404 sayfasına yönlendir
+            exit();
+        }
 
         $controlSubTopic = $this->controlIsThereSubTopic($topicId, $_SESSION['class_id']);
 
@@ -1133,6 +1269,34 @@ class ShowSubTopic extends SubTopics
             } else {
 
                 foreach ($unitInfo as $key => $value) {
+
+                    $getLessonId = $value['lesson_id'];
+                    $getClassId = $value['class_id'];
+                    $getUnitId = $value['unit_id'];
+                    $getTopicId = $value['topic_id'];
+                    $getOrderNo = $value['order_no'];
+
+                    if ($getOrderNo == 1) {
+                        $testQuery = 80 >= 80;
+                    } else {
+                        $getPreviousSubTopicId = $this->getPrevSubTopicId($getOrderNo - 1, $getClassId, $getLessonId, $getUnitId, $getTopicId, $_SESSION['school_id']);
+                        $prevSubTopicId = $getPreviousSubTopicId['id'];
+                        $getTestResult = $testResults->getSubTopicTestResults($getUnitId, $getClassId, $getTopicId, $prevSubTopicId, $_SESSION['id']);
+                        $result = $getTestResult['score'] ?? 0;
+                        $testQuery = $result >= 80; // If the previous unit's test is not passed, the current unit cannot be accessed.
+                    }
+
+                    if ($today >= $value['start_date'] or $testQuery) {
+                        $link = "alt-konu/{$value['topicSlug']}";
+                        $class = "";
+                        $notification = '';
+                    } else {
+                        $link = "#";
+                        $class = "pe-none";
+                        $notification = '<div class="fw-semibold fs-5 text-danger mt-3 mb-5">Bu alt konunun tarihi gelmemiş veya bir önceki alt konunun sınavı başarı ile tamamlanmamıştır.</div>';
+                    }
+
+
                     $testText = "";
                     $unclickable = "";
                     if ($value['is_test'] == 1) {
@@ -1156,7 +1320,7 @@ class ShowSubTopic extends SubTopics
                                 <!--begin::Publications post-->
                                 <div class="card-xl-stretch me-md-6">
                                     <!--begin::Overlay-->
-                                    <a class="d-block ' . $unclickable . ' overlay mb-4" href="alt-konu/' . $value['topicSlug'] . '">
+                                    <a class="d-block ' . $class . ' overlay mb-4" href="' . $link . '">
                                         <!--begin::Image-->
                                         <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-175px" style="background-image:url(\'assets/media/topics/' . $value['topicImage'] . '\')"></div>
                                         <!--end::Image-->
@@ -1170,11 +1334,12 @@ class ShowSubTopic extends SubTopics
                                     <!--begin::Body-->
                                     <div class="m-0">
                                         <!--begin::Title-->
-                                        <a href="alt-konu/' . $value['topicSlug'] . '" class="fs-4 text-gray-900 fw-bold text-hover-primary text-gray-900 ' . $unclickable . ' lh-base">' . $value['topicName'] . '</a>
+                                        <a href="' . $link . '" class="fs-4 text-gray-900 fw-bold text-hover-primary text-gray-900 ' . $class . ' lh-base">' . $value['topicName'] . '</a>
                                         <!--end::Title-->
                                         <!--begin::Text-->
                                         <div class="fw-semibold fs-5 text-gray-600 text-gray-900 mt-3 mb-5">' . $value['topicShortDesc'] . '<br>' . $testText . '</div>
                                         <!--end::Text-->
+                                    ' . $notification . '
                                     </div>
                                     <!--end::Body-->
                                 </div>
@@ -1201,7 +1366,7 @@ class ShowSubTopic extends SubTopics
 
             if ($contentInfo == NULL) {
 
-            $contentList = '
+                $contentList = '
                         <!--begin::Col-->
                             <div class="col-md-12 d-flex flex-center">
                                 <i class="fa-regular fa-face-frown-open text-danger fs-4x"></i>
@@ -1214,12 +1379,12 @@ class ShowSubTopic extends SubTopics
 
                         <!--end::Col-->
                         ';
-            echo $contentList;
-        } else {
+                echo $contentList;
+            } else {
 
-            foreach ($contentInfo as $key => $value) {
+                foreach ($contentInfo as $key => $value) {
 
-                $contentList = '
+                    $contentList = '
                             <!--begin::Col-->
                             <div class="col-md-6 col-lg-6 col-xl-6">
                                 <!--begin::Publications post-->
@@ -1251,9 +1416,9 @@ class ShowSubTopic extends SubTopics
                             </div>
                             <!--end::Col-->
                     ';
-                echo $contentList;
+                    echo $contentList;
+                }
             }
-        }
         }
     }
 
@@ -1284,7 +1449,8 @@ class ShowSubTopic extends SubTopics
                         <!--begin::Heading-->
                         <div class="position-absolute text-white mb-8 ms-10 bottom-0">
                             <!--begin::Title-->
-                            <h3 class="text-white fs-2qx fw-bold mb-3 m">' . $value['short_desc'] . '</h3>
+                            <h3 class="text-white fs-2qx fw-bold mb-3 m">' . $value['name'] . '</h3>
+                            <h3 class="text-white fs-1qx fw-bold mb-3 m">' . $value['short_desc'] . '</h3>
                             <!--end::Title-->
                             <!--begin::Text-->
                             <!--<div class="fs-5 fw-semibold">You sit down. You stare at your screen. The cursor blinks.</div>-->
@@ -1520,7 +1686,12 @@ class ShowSubTopic extends SubTopics
 
     public function getSidebarSubTopicsStu()
     {
+
+        $testResults = new TestsResult();
+
         $link = "$_SERVER[REQUEST_URI]";
+
+        $today = date('Y-m-d');
 
         $active_slug = htmlspecialchars(basename($link, ".php"));
 
@@ -1538,6 +1709,30 @@ class ShowSubTopic extends SubTopics
 
         foreach ($unitInfo as $key => $value) {
 
+            $getLessonId = $value['lesson_id'];
+            $getClassId = $value['class_id'];
+            $getUnitId = $value['unit_id'];
+            $getTopicId = $value['topic_id'];
+            $getOrderNo = $value['order_no'];
+
+            if ($getOrderNo == 1) {
+                $testQuery = 80 >= 80;
+            } else {
+                $getPreviousSubTopicId = $this->getPrevSubTopicId($getOrderNo - 1, $getClassId, $getLessonId, $getUnitId, $getTopicId, $_SESSION['school_id']);
+                $prevSubTopicId = $getPreviousSubTopicId['id'];
+                $getTestResult = $testResults->getSubTopicTestResults($getUnitId, $getClassId, $getTopicId, $prevSubTopicId, $_SESSION['id']);
+                $result = $getTestResult['score'] ?? 0;
+                $testQuery = $result >= 80; // If the previous unit's test is not passed, the current unit cannot be accessed.
+            }
+
+            if ($today >= $value['start_date'] or $testQuery) {
+                $link = "alt-konu/{$value['topicSlug']}";
+                $class = "";
+            } else {
+                $link = "#";
+                $class = "pe-none";
+            }
+
             $lessonList .= '
                             <!--begin::Section-->
                             <div class="my-2">
@@ -1547,7 +1742,7 @@ class ShowSubTopic extends SubTopics
                                     <span class="bullet me-3"></span>
                                     <!--end::Bullet-->
                                     <!--begin::Label-->
-                                    <div class="text-gray-600 fw-semibold fs-6"><a href="konu/' . $value['topicSlug'] . '">' . $value['topicName'] . '</a></div>
+                                    <div class="text-gray-600 ' . $class . ' fw-semibold fs-6"><a href="' . $link . '">' . $value['topicName'] . '</a></div>
                                     <!--end::Label-->
                                 </div>
                             <!--end::Row-->
@@ -1927,7 +2122,7 @@ class ShowSubTopic extends SubTopics
 
         echo json_encode($units);
     }
-    
+
     public function showSubtopicForTopic($class, $lessons, $units, $topic)
     {
 

@@ -57,6 +57,13 @@ var KTModalCustomersAdd = function () {
 							}
 						}
 					},
+					'teacher_role': {
+						validators: {
+							notEmpty: {
+								message: 'Öğretmen Rolü zorunlu'
+							}
+						}
+					},
 					'gender': {
 						validators: {
 							notEmpty: {
@@ -129,6 +136,108 @@ var KTModalCustomersAdd = function () {
 				}
 			}
 		);
+		
+		$(form.querySelector('[name="classAdd"]')).on('change', function () {
+			$('#lessonAdd').select2('destroy');
+      		$('#lessonAdd').html('<option value="">Ders Yok</option>');
+			// Revalidate the field when an option is chosen
+			validator.revalidateField('classAdd');
+			
+			var classChoose = $("#classAdd").val();
+			
+
+			  // AJAX isteği gönder
+			  $.ajax({
+				allowClear: true,
+				type: "POST",
+				url: "includes/select_for_lesson.inc.php",
+				data: { class: classChoose
+				 },
+				dataType: "json",
+				success: function(data) {
+				  // İkinci Select2'nin içeriğini güncelle
+
+				  if (data.length > 0) {
+					$('#lessonAdd').select2({ data: data });
+				  } else {
+					$('#lessonAdd').select2('destroy');
+					$('#lessonAdd').html('<option value="">Ders Yok</option>');
+				  }
+
+				},error: function(xhr, status, error, response) {
+					Swal.fire({
+						text: error.responseText + ' ' + xhr.responseText,
+						icon: "error",
+						buttonsStyling: false,
+						confirmButtonText: "Tamam, anladım!",
+						customClass: {
+							confirmButton: "btn btn-primary"
+						}
+					}).then(function (result) {
+						if (result.isConfirmed) {
+
+							// Enable submit button after loading
+							submitButton.disabled = false;
+						}
+					});
+					//alert(status + "0");
+
+				}
+			  });
+		});
+		
+		$(form.querySelector('[name="teacher_role"]')).on('change', function () {
+			/* $('#school').select2('destroy');
+      		$('#school').html('<option value="">Okul Yok</option>'); */
+			// Revalidate the field when an option is chosen
+			validator.revalidateField('teacher_role');
+			
+			var roleChoose = $("#teacher_role").val();
+			
+			if (roleChoose === "9" || roleChoose === "10") {
+				$('#school').select2('destroy');
+      			$('#school').html('<option value="1">Lineup Campus</option>');
+			}else{
+
+			  // AJAX isteği gönder
+			  $.ajax({
+				allowClear: true,
+				type: "POST",
+				url: "includes/select_for_schools.inc.php",
+				/* data: { class: roleChoose
+				 }, */
+				dataType: "json",
+				success: function(data) {
+				  // İkinci Select2'nin içeriğini güncelle
+
+				  if (data.length > 0) {
+					$('#school').select2({ data: data });
+				  } else {
+					$('#school').select2('destroy');
+					$('#school').html('<option value="">Okul Yok</option>');
+				  }
+
+				},error: function(xhr, status, error, response) {
+					Swal.fire({
+						text: error.responseText + ' ' + xhr.responseText,
+						icon: "error",
+						buttonsStyling: false,
+						confirmButtonText: "Tamam, anladım!",
+						customClass: {
+							confirmButton: "btn btn-primary"
+						}
+					}).then(function (result) {
+						if (result.isConfirmed) {
+
+							// Enable submit button after loading
+							submitButton.disabled = false;
+						}
+					});
+					//alert(status + "0");
+
+				}
+			  });}
+		});
 
 		// Revalidate country field. For more info, plase visit the official plugin site: https://select2.org/
 		//$(form.querySelector('[name="country"]')).on('change', function () {

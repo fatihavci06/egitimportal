@@ -6,8 +6,12 @@ define('GUARD', true);
 if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 4)) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
+    include_once "classes/units.classes.php";
+    include_once "classes/units-view.classes.php";
 
     include_once "views/pages-head.php";
+
+    $chooseUnit = new ShowUnit();
 ?>
     <!--end::Head-->
     <!--begin::Body-->
@@ -54,102 +58,194 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             <?php include_once "views/toolbar.php"; ?>
                             <!--end::Toolbar-->
                             <!--begin::Content-->
-                            <div id="kt_app_content" class="app-content flex-column-fluid">
-                                <!--begin::Content container-->
-                                <div id="kt_app_content_container" class="app-container container-fluid">
-                                    <!--begin::Card-->
-                                    <div class="row">
-                                        <div class="col-lg-4">
-                                            <label class="required fs-6 fw-semibold mb-2" for="cover_img">Görsel</label>
-                                            <input type="file" id="cover_img" class="form-control " id="cover_img" accept=".png, .jpg, .jpeg, .PNG, .JPG, .JPEG" />
+                            <?php if ($_SESSION['role'] == 1) { ?>
+                                <div id="kt_app_content" class="app-content flex-column-fluid">
+                                    <!--begin::Content container-->
+                                    <div id="kt_app_content_container" class="app-container container-fluid">
+                                        <!--begin::Card-->
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <label class="required fs-6 fw-semibold mb-2" for="cover_img">Görsel</label>
+                                                <input type="file" id="cover_img" class="form-control " id="cover_img" accept=".png, .jpg, .jpeg, .PNG, .JPG, .JPEG" />
+
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <label class="required fs-6 fw-semibold mb-2" for="title">Başlık</label>
+                                                <input type="text" class="form-control " placeholder="Test Başlığı" id="title">
+                                            </div>
+
+                                            <div class="col-lg-4">
+                                                <label class="required fs-6 fw-semibold mb-2" for="week">Sınıf Seçimi </label>
+                                                <?php
+                                                $class = new Classes();
+                                                $classList = $class->getClassesList();
+                                                ?>
+                                                <select class="form-select" id="class_id" required aria-label="Default select example">
+                                                    <option value="">Seçiniz</option>
+                                                    <?php foreach ($classList as $c) { ?>
+                                                        <option value="<?= $c['id'] ?>"><?= $c['name'] ?></option>
+                                                    <?php } ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-lg-4 mt-3">
+                                                <label class="required fs-6 fw-semibold mb-2" for="lesson_id">Dersler</label>
+                                                <select class="form-select" id="lesson_id" required>
+                                                    <option value="">Ders seçiniz</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-4 mt-4">
+                                                <label class="fs-6 fw-semibold mb-2" for="unit_id">Ünite Seçimi</label>
+                                                <select class="form-select" id="unit_id" required>
+                                                    <option value="">Ünite seçiniz</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-4 mt-4">
+                                                <label class="fs-6 fw-semibold mb-2" for="topic_id">Konu Seçimi</label>
+                                                <select class="form-select" id="topic_id" required>
+                                                    <option value="">Seçiniz</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-lg-4">
+                                                <label class="fs-6 fw-semibold mb-2" for="subtopic_id">Alt Konu Seçimi</label>
+                                                <select class="form-select" id="subtopic_id" required>
+                                                    <option value="">Alt Konu seçiniz</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <label class="required fs-6 fw-semibold mb-2" for="start_date">Başlangıç Tarihi</label>
+
+                                                <input type="datetime-local" class="form-control" id="start_date" name="start_date">
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <label class="required fs-6 fw-semibold mb-2" for="end_date">Bitiş Tarihi</label>
+                                                <input type="datetime-local" class="form-control" id="end_date" name="end_date">
+                                            </div>
+
+                                            <input type="hidden" id="option_count" value="0">
 
                                         </div>
-                                        <div class="col-lg-4">
-                                            <label class="required fs-6 fw-semibold mb-2" for="title">Başlık</label>
-                                            <input type="text" class="form-control " placeholder="Test Başlığı" id="title">
-                                        </div>
+                                        <div class="row mt-5 ">
+                                            <div class="col-lg-4">
+                                                <label class="fs-6 fw-semibold mb-2" for="option_count">Durum</label>
+                                                <select class="form-select" id="status">
+                                                    <option value="1" selected>Aktif</option>
+                                                    <option value="0">Pasif</option>
+                                                </select>
+                                            </div>
 
-                                        <div class="col-lg-4">
-                                            <label class="required fs-6 fw-semibold mb-2" for="week">Sınıf Seçimi </label>
-                                            <?php
-                                            $class = new Classes();
-                                            $classList = $class->getClassesList();
-                                            ?>
-                                            <select class="form-select" id="class_id" required aria-label="Default select example">
-                                                <option value="">Seçiniz</option>
-                                                <?php foreach ($classList as $c) { ?>
-                                                    <option value="<?= $c['id'] ?>"><?= $c['name'] ?></option>
-                                                <?php } ?>
-                                            </select>
                                         </div>
+                                        <div class="row mt-5 mb-5">
+                                            <div class="col-lg-4"></div>
+                                            <div class="col-lg-3">
+                                                <button type="button" id="addQuestion" class="btn btn-primary btn-sm w-100">Soru ekle</button>
+                                            </div>
+                                            <div class="col-lg-5">
+                                                <button type="button" id="submitForm" class="btn btn-success btn-sm w-100">Kaydet</button>
+                                            </div>
+                                        </div>
+                                        <div id="questions_container"></div>
+
+
+
+                                        <!--end::Card-->
                                     </div>
-                                    <div class="row mt-3">
-                                        <div class="col-lg-4 mt-3">
-                                            <label class="required fs-6 fw-semibold mb-2" for="lesson_id">Dersler</label>
-                                            <select class="form-select" id="lesson_id" required>
-                                                <option value="">Ders seçiniz</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-4 mt-4">
-                                            <label class="fs-6 fw-semibold mb-2" for="unit_id">Ünite Seçimi</label>
-                                            <select class="form-select" id="unit_id" required>
-                                                <option value="">Ünite seçiniz</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-4 mt-4">
-                                            <label class="fs-6 fw-semibold mb-2" for="topic_id">Konu Seçimi</label>
-                                            <select class="form-select" id="topic_id" required>
-                                                <option value="">Seçiniz</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="row mt-3">
-                                        <div class="col-lg-4">
-                                            <label class="fs-6 fw-semibold mb-2" for="subtopic_id">Alt Konu Seçimi</label>
-                                            <select class="form-select" id="subtopic_id" required>
-                                                <option value="">Alt Konu seçiniz</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <label class="required fs-6 fw-semibold mb-2" for="start_date">Başlangıç Tarihi</label>
+                                    <!--end::Content container-->
+                                </div>
+                            <?php } elseif ($_SESSION['role'] == 4) {
+                                $class_id = $_SESSION['class_id'];
+                                $lesson_id = $_SESSION['lesson_id']; ?>
+                                <div id="kt_app_content" class="app-content flex-column-fluid">
+                                    <!--begin::Content container-->
+                                    <div id="kt_app_content_container" class="app-container container-fluid">
+                                        <!--begin::Card-->
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <label class="required fs-6 fw-semibold mb-2" for="cover_img">Görsel</label>
+                                                <input type="file" id="cover_img" class="form-control " id="cover_img" accept=".png, .jpg, .jpeg, .PNG, .JPG, .JPEG" />
 
-                                            <input type="datetime-local" class="form-control" id="start_date" name="start_date">
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <label class="required fs-6 fw-semibold mb-2" for="end_date">Bitiş Tarihi</label>
-                                            <input type="datetime-local" class="form-control" id="end_date" name="end_date">
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <label class="required fs-6 fw-semibold mb-2" for="title">Başlık</label>
+                                                <input type="text" class="form-control " placeholder="Test Başlığı" id="title">
+                                            </div>
+
+                                            <div class="col-lg-4">
+                                                <label class="fs-6 fw-semibold mb-2" for="unit_id">Ünite Seçimi</label>
+                                                <select class="form-select" id="unit_id" required>
+                                                    <option value="">Ünite seçiniz</option>
+                                                    <?php echo $chooseUnit->getUnitSelectList(); ?>
+                                                </select>
+                                            </div>
                                         </div>
 
-                                        <input type="hidden" id="option_count" value="0">
 
-                                    </div>
-                                    <div class="row mt-5 ">
-                                        <div class="col-lg-4">
-                                            <label class="fs-6 fw-semibold mb-2" for="option_count">Durum</label>
-                                            <select class="form-select" id="status">
-                                                <option value="1" selected >Aktif</option>
-                                                <option value="0" >Pasif</option>
-                                            </select>
+                                        <div class="fv-row">
+                                            <input class="form-select form-select-solid fw-bold" type="hidden" name="class_id" id="class_id" value="<?php echo $class_id; ?>">
+                                        </div>
+                                        <div class="fv-row">
+                                            <input class="form-select form-select-solid fw-bold" type="hidden" name="lesson_id" id="lesson_id" value="<?php echo $lesson_id; ?>">
+                                        </div>
+
+                                        <div class="row mt-3">
+                                            <div class="col-lg-4 mt-4">
+                                                <label class="fs-6 fw-semibold mb-2" for="topic_id">Konu Seçimi</label>
+                                                <select class="form-select" id="topic_id" required>
+                                                    <option value="">Seçiniz</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-4 mt-4">
+                                                <label class="fs-6 fw-semibold mb-2" for="subtopic_id">Alt Konu Seçimi</label>
+                                                <select class="form-select" id="subtopic_id" required>
+                                                    <option value="">Alt Konu seçiniz</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-4 mt-4">
+                                                <label class="required fs-6 fw-semibold mb-2" for="start_date">Başlangıç Tarihi</label>
+
+                                                <input type="datetime-local" class="form-control" id="start_date" name="start_date">
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-lg-4 mt-4">
+                                                <label class="required fs-6 fw-semibold mb-2" for="end_date">Bitiş Tarihi</label>
+                                                <input type="datetime-local" class="form-control" id="end_date" name="end_date">
+                                            </div>
+
+                                            <input type="hidden" id="option_count" value="0">
+
+                                            <div class="col-lg-4 mt-4">
+                                                <label class="fs-6 fw-semibold mb-2" for="option_count">Durum</label>
+                                                <select class="form-select" id="status">
+                                                    <option value="1" selected>Aktif</option>
+                                                    <option value="0">Pasif</option>
+                                                </select>
+                                            </div>
+
                                         </div>
                                         
-                                    </div>
-                                    <div class="row mt-5 mb-5">
-                                        <div class="col-lg-4"></div>
-                                        <div class="col-lg-3">
-                                            <button type="button" id="addQuestion" class="btn btn-primary btn-sm w-100">Soru ekle</button>
+                                        <div class="row mt-5 mb-5">
+                                            <div class="col-lg-4"></div>
+                                            <div class="col-lg-3">
+                                                <button type="button" id="addQuestion" class="btn btn-primary btn-sm w-100">Soru ekle</button>
+                                            </div>
+                                            <div class="col-lg-5">
+                                                <button type="button" id="submitForm" class="btn btn-success btn-sm w-100">Kaydet</button>
+                                            </div>
                                         </div>
-                                        <div class="col-lg-5">
-                                            <button type="button" id="submitForm" class="btn btn-success btn-sm w-100">Kaydet</button>
-                                        </div>
+                                        <div id="questions_container"></div>
+
+
+
+                                        <!--end::Card-->
                                     </div>
-                                    <div id="questions_container"></div>
-
-
-
-                                    <!--end::Card-->
+                                    <!--end::Content container-->
                                 </div>
-                                <!--end::Content container-->
-                            </div>
+
+                            <?php } ?>
                             <!--end::Content-->
                         </div>
                         <!--end::Content wrapper-->
@@ -613,7 +709,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 const startDate = document.getElementById('start_date').value;
                 const endDate = document.getElementById('end_date').value;
                 const status = document.getElementById('status').value;
-                 formData.append('status', status);
+                formData.append('status', status);
                 if (title === "") {
                     Swal.fire('Uyarı', 'Lütfen test başlığını giriniz.', 'warning');
                     formGeneralValid = false;

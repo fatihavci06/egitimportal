@@ -6,12 +6,15 @@ if (!defined('GUARD')) {
 include_once "classes/dbh.classes.php";
 include_once "classes/classes.classes.php";
 include_once "classes/classes-view.classes.php";
+include_once "classes/units.classes.php";
+include_once "classes/units-view.classes.php";
 
 $chooseClass = new ShowClass();
+$chooseUnit = new ShowUnit();
 
 ?>
 <!--begin::Form-->
-<form class="form" action="#" id="kt_modal_add_customer_form" data-kt-redirect="alt-konular">
+<form class="form" action="#" id="kt_modal_add_customer_form" data-kt-redirect="icerikler">
     <div class="card-body pt-5">
         <!--begin::Input group-->
         <div class="mb-7">
@@ -101,46 +104,83 @@ $chooseClass = new ShowClass();
         </div>
         <!--end::Input group-->
 
-        <!--begin::Input group-->
-        <div class="fv-row mb-7 mt-7">
-            <!--begin::Label-->
-            <label class="required fs-6 fw-semibold mb-2">Sınıf</label>
-            <!--end::Label-->
-            <!--begin::Input-->
-            <select id="classes" name="classes" aria-label="Sehir Seçiniz" data-control="select2" data-placeholder="Sınıf Seçiniz..." class="form-select form-select-solid fw-bold">
-                <option value="">Sınıf Seçin</option>
-                <?php echo $chooseClass->getClassSelectList(); ?>
-            </select>
-            <!--end::Input-->
-        </div>
-        <!--end::Input group-->
+        <?php
+        if ($_SESSION['role'] != 4) {
+        ?>
 
-        <!--begin::Input group-->
-        <div class="fv-row mb-7">
-            <!--begin::Label-->
-            <label class="required fs-6 fw-semibold mb-2">Ders</label>
-            <!--end::Label-->
-            <!--begin::Input-->
-            <select id="lessons" name="lessons" aria-label="Ders Seçiniz" data-control="select2" data-placeholder="Ders Seçiniz..." class="form-select form-select-solid fw-bold">
-                <option value="">Ders Seçiniz...</option>
-            </select>
-            </select>
-            <!--end::Input-->
-        </div>
-        <!--end::Input group-->
+            <!--begin::Input group-->
+            <div class="fv-row mb-7 mt-7">
+                <!--begin::Label-->
+                <label class="required fs-6 fw-semibold mb-2">Sınıf</label>
+                <!--end::Label-->
+                <!--begin::Input-->
+                <select id="classes" name="classes" aria-label="Sehir Seçiniz" data-control="select2" data-placeholder="Sınıf Seçiniz..." class="form-select form-select-solid fw-bold">
+                    <option value="">Sınıf Seçin</option>
+                    <?php echo $chooseClass->getClassSelectList(); ?>
+                </select>
+                <!--end::Input-->
+            </div>
+            <!--end::Input group-->
 
-        <!--begin::Input group-->
-        <div class="fv-row mb-7">
-            <!--begin::Label-->
-            <label class="required fs-6 fw-semibold mb-2">Ünite</label>
-            <!--end::Label-->
-            <!--begin::Input-->
-            <select id="units" name="units" aria-label="Ünite Seçiniz" data-control="select2" data-placeholder="Ünite Seçiniz..." class="form-select form-select-solid fw-bold">
-                <option value="">Ünite Seçiniz...</option>
-            </select>
-            <!--end::Input-->
-        </div>
-        <!--end::Input group-->
+            <!--begin::Input group-->
+            <div class="fv-row mb-7">
+                <!--begin::Label-->
+                <label class="required fs-6 fw-semibold mb-2">Ders</label>
+                <!--end::Label-->
+                <!--begin::Input-->
+                <select id="lessons" name="lessons" aria-label="Ders Seçiniz" data-control="select2" data-placeholder="Ders Seçiniz..." class="form-select form-select-solid fw-bold">
+                    <option value="">Ders Seçiniz...</option>
+                </select>
+                </select>
+                <!--end::Input-->
+            </div>
+            <!--end::Input group-->
+
+            <!--begin::Input group-->
+            <div class="fv-row mb-7">
+                <!--begin::Label-->
+                <label class="required fs-6 fw-semibold mb-2">Ünite</label>
+                <!--end::Label-->
+                <!--begin::Input-->
+                <select id="units" name="units" aria-label="Ünite Seçiniz" data-control="select2" data-placeholder="Ünite Seçiniz..." class="form-select form-select-solid fw-bold">
+                    <option value="">Ünite Seçiniz...</option>
+                </select>
+                <!--end::Input-->
+            </div>
+            <!--end::Input group-->
+
+        <?php
+        } else {
+            $class_id = $_SESSION['class_id'];
+            $lesson_id = $_SESSION['lesson_id'];
+        ?>
+
+            <div class="fv-row">
+                <input class="form-select form-select-solid fw-bold" type="hidden" name="classes" id="classes" value="<?php echo $class_id; ?>">
+            </div>
+            <div class="fv-row">
+                <input class="form-select form-select-solid fw-bold" type="hidden" name="lessons" id="lessons" value="<?php echo $lesson_id; ?>">
+            </div>
+
+            <!--begin::Input group-->
+            <div class="fv-row mb-7">
+                <!--begin::Label-->
+                <label class="required fs-6 fw-semibold mb-2">Ünite</label>
+                <!--end::Label-->
+                <!--begin::Input-->
+                <select id="units" name="units" aria-label="Ünite Seçiniz" data-control="select2" data-placeholder="Ünite Seçiniz..." class="form-select form-select-solid fw-bold">
+                    <option value="">Ünite Seçin</option>
+                    <?php echo $chooseUnit->getUnitSelectList(); ?>
+                </select>
+                <!--end::Input-->
+            </div>
+            <!--end::Input group-->
+
+
+
+        <?php
+        }
+        ?>
 
         <!--begin::Input group-->
         <div class="fv-row mb-7">

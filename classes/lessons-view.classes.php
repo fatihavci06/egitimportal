@@ -1,5 +1,7 @@
 <?php
+
 include_once "dateformat.classes.php";
+
 
 class ShowLesson extends Lessons
 {
@@ -83,6 +85,28 @@ class ShowLesson extends Lessons
                     <option value="' . $value['id'] . '">' . $value['name'] . '</option>
                     ';
             echo $lessonList;
+        }
+    }
+
+    public function getLessonSelectListForweeklyList($classId)
+    {
+
+        $lessonsInfo = $this->getLessonsListForWeeklylists();
+
+        $dateFormat = new DateFormat();
+
+        foreach ($lessonsInfo as $key => $value) {
+            $class_id = $value['class_id'];
+
+            $pieces = explode(";", $class_id);
+
+            if (in_array($_SESSION['class_id'], $pieces)) {
+                $lessonList = '
+                    <option value="' . $value['id'] . '">' . $value['name'] . '</option>
+                    ';
+
+                echo $lessonList;
+            }
         }
     }
 
@@ -581,7 +605,7 @@ class ShowLesson extends Lessons
 
 
 
-            $lessonList .=  $classForms;
+            $lessonList .= $classForms;
         }
 
 
@@ -608,8 +632,27 @@ class ShowLesson extends Lessons
             }
         }
 
-
-
         echo json_encode($units);
+    }
+
+    public function getLessonByClassId($classId)
+    {
+
+        $unitInfo = $this->getLessonForUnitList();
+
+        $units = array();
+
+        foreach ($unitInfo as $unit) {
+
+            $classList = explode(";", $unit['class_id']);
+
+            foreach ($classList as $class_id) {
+                if ($classId == $class_id) {
+                    $units[] = array("id" => $unit["id"], "text" => $unit["name"]);
+                }
+            }
+        }
+
+        return $units;
     }
 }

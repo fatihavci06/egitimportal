@@ -2,6 +2,7 @@
 if (!isset($userInfo)) {
     throw new Exception("userInfo not provided");
 }
+
 ?>
 
 <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
@@ -115,6 +116,10 @@ if (!isset($userInfo)) {
                                         </li>
                                         <li class="nav-item mt-2">
                                             <a class="nav-link text-active-primary ms-0 me-10 py-5"
+                                                data-bs-toggle="pill" href="#ilerleme">İlerleme Ve Performans</a>
+                                        </li>
+                                        <li class="nav-item mt-2">
+                                            <a class="nav-link text-active-primary ms-0 me-10 py-5"
                                                 data-bs-toggle="pill" href="#ozel_dersler">Özel
                                                 Dersler</a>
                                         </li>
@@ -150,7 +155,7 @@ if (!isset($userInfo)) {
                                                             </div> -->
                                                 </div>
                                                 <div class="card-body pt-6">
-                                                    <?php $student->showLessonsListForStudentDetails($userInfo['class_id'], $userInfo['school_id']); ?>
+                                                    <?php $student->showLessonsListForStudentDetails($userInfo['id'], $userInfo['class_id'], $userInfo['school_id']); ?>
                                                 </div>
                                             </div>
                                             <div class="card card-flush mb-5 mb-xl-8">
@@ -1146,7 +1151,103 @@ if (!isset($userInfo)) {
                                 </div>
                                 <div class="tab-pane fade" id="dersler">
                                     <div class="row g-5 g-xxl-8">
-                                        <?php //$student->showLessonsListForStudentDetailsPage($userInfo['class_id'], $userInfo['school_id']); ?>
+                                        <?php $student->showLessonsListForStudentDetailsPage($userInfo['id'], $userInfo['class_id'], $userInfo['school_id']); ?>
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane fade" id="ilerleme">
+                                    <div class="row g-5 g-xxl-8">
+
+
+                                        <div class="col-xl-6">
+                                            <div class="card mb-5 mb-xl-8">
+                                                <div class="card-header border-0 pt-5">
+                                                    <h3 class="card-title align-items-start flex-column">
+                                                        <span class="card-label fw-bold text-gray-900">
+                                                            İlerleme ve Performans</span>
+                                                    </h3>
+                                                </div>
+
+                                                <div class="card-body pt-6">
+                                                    <form class="form" action="#" id="kt_form_student_progress">
+                                                        <input type="hidden" id="classes" name="classes"
+                                                            value="<?= $userInfo['class_id'] ?>">
+                                                        <input type="hidden" id="student_id" name="student_id"
+                                                            value="<?= $userInfo['id'] ?>">
+                                                        <input type="hidden" id="school_id" name="school_id"
+                                                            value="<?= $userInfo['school_id'] ?>">
+                                                        <div class="row mt-4">
+
+                                                            <div class="col-lg-10">
+
+                                                                <label class="fs-6 fw-semibold mb-2" for="ders">Ders
+                                                                </label>
+                                                                <select id="lessons" name="lessons"
+                                                                    aria-label="Ders Seçiniz" class="form-select"
+                                                                    required>
+                                                                    <option value="">Seçiniz</option>
+                                                                    <?php
+                                                                    $chooseLesson = new ShowLesson();
+                                                                    $lessons = $chooseLesson->getLessonByClassId($userInfo['class_id']);
+                                                                    foreach ($lessons as $lessonOption) {
+                                                                        echo '<option value="' . $lessonOption["id"] . '">' . $lessonOption["text"] . '</option>';
+                                                                    }
+                                                                    ?>
+
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row mt-4">
+
+                                                            <div class="col-lg-10">
+                                                                <label class="fs-6 fw-semibold mb-2" for="units">Ünite
+                                                                </label>
+                                                                <select class="form-select" id="units" name="units"
+                                                                    aria-label="Ünite Seçiniz">
+                                                                    <option value="">Seçiniz</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row mt-4">
+
+                                                            <div class="col-lg-10">
+                                                                <label class="fs-6 fw-semibold mb-2" for="topics">Konu
+                                                                </label>
+                                                                <select class="form-select" id="topics" name="topics"
+                                                                    aria-label="Konu Seçiniz">
+                                                                    <option value="">Seçiniz</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row mt-4">
+
+                                                            <div class="col-lg-10">
+                                                                <label class="fs-6 fw-semibold mb-2"
+                                                                    for="subtopics">Altkonu
+                                                                </label>
+                                                                <select class="form-select" id="subtopics"
+                                                                    name="subtopics" aria-label="Altkonu Seçiniz">
+                                                                    <option value="">Seçiniz</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class=" mt-4">
+
+                                                            <button type="submit" id="kt_form_student_progress_submit"
+                                                                class="btn btn-primary btn-sm">
+                                                                <span class="indicator-label">Göster</span>
+                                                            </button>
+                                                        </div>
+
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-6" id="html_response">
+
+                                        </div>
+
+
                                     </div>
                                 </div>
                                 <div class="tab-pane fade" id="ozel_dersler">
