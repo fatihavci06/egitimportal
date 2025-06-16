@@ -547,7 +547,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                                     year: 'numeric',
                                     month: 'long'
                                 };
-                                return date.toLocaleDateString('tr-TR', options);
+                                const str = date.toLocaleDateString('tr-TR', options);
+                                return str.normalize('NFKD').replace(/\s+/g, ' ').trim().toLowerCase();
                             }
 
                             function formatDate(dateString) {
@@ -559,23 +560,39 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                                 return date.toLocaleDateString('tr-TR', options);
                             }
 
+                            function capitalize(str) {
+                                return str.charAt(0).toUpperCase() + str.slice(1);
+                            }
+
+                            eventList.sort((a, b) => new Date(a.start) - new Date(b.start));
+
+                            const grouped = {};
                             let html = '';
 
-                            eventList.forEach(function(event) {
-                                html += `
-                             <div class="event-list">
-                                <h5 class="text-center event-month">${getMonthYear(event.start)}</h5>
-                                <div class="event-body my-4">
-                                    <div class="event-date">
-                                        ${formatDate(event.start)} - ${formatDate(event.end)}
-                                    </div>
-                                    <div class="event-unit-name">
-                                        ${event.name} 
-                                    </div>
-                                </div>
-                            </div>
-                `;
+                            eventList.forEach(event => {
+                                const key = getMonthYear(event.start);
+                                if (!grouped[key]) grouped[key] = [];
+                                grouped[key].push(event);
                             });
+
+                            for (const key in grouped) {
+                                html += `<h5 class="text-center event-month">${capitalize(key)}</h5>`;
+
+                                grouped[key].forEach(event => {
+                                    html += `
+                                        <div class="event-list">
+                                            <div class="event-body my-4">
+                                                <div class="event-date">
+                                                    ${formatDate(event.start)} - ${formatDate(event.end)}
+                                                </div>
+                                                <div class="event-unit-name">
+                                                    ${event.name}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        `;
+                                });
+                            }
 
                             $('#eventResults').html(html);
 

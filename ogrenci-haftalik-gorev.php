@@ -83,6 +83,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                                                 <option value="">Seçiniz</option>
                                             </select>
                                         </div>
+                                        <!-- <input type="hidden" name="subtopic_id" id="subtopic_id"> -->
                                         <!-- <div class="col-lg-4 mt-4">
                                             <label class="fs-6 fw-semibold mb-2" for="subtopic_id">Alt Konu Seçimi</label>
                                             <select class="form-select" id="subtopic_id" required>
@@ -408,17 +409,18 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
 
             // Konu seçimi değiştiğinde alt konuları getir
             $('#topic_id').on('change', function() {
+                var subtopicId = $('#subtopic_id').val('');
                 var classId = $('#classId').val();
                 var lessonId = $('#lesson_id').val();
                 var unitId = $('#unit_id').val();
                 var topicId = $(this).val();
-                var $subtopicSelect = $('#subtopic_id');
+                // var $subtopicSelect = $('#subtopic_id');
 
-                $subtopicSelect.empty().append('<option value="">Alt Konu seçiniz</option>');
+                // $subtopicSelect.empty().append('<option value="">Alt Konu seçiniz</option>');
 
                 if (topicId !== '') {
                     $.ajax({
-                        url: 'includes/ajax.php?service=getSubtopicListForStudent',
+                        url: 'includes/ajax_yazgul.php?service=getSubtopicListForStudent',
                         type: 'POST',
                         dataType: 'json',
                         data: {
@@ -430,10 +432,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                         success: function(response) {
                             if (response.status === 'success' && response.data.length > 0) {
                                 $.each(response.data, function(index, subtopic) {
-                                    $subtopicSelect.append($('<option>', {
-                                        value: subtopic.id,
-                                        text: subtopic.name
-                                    }));
+                                    
                                 });
                             } else {
                                 $subtopicSelect.append('<option disabled>Alt konu bulunamadı</option>');
@@ -446,13 +445,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                 }
             });
 
-            // // Alt konular değiştiğinde seçimi değiştiğinde içerikleri getir
+            // Alt konular değiştiğinde seçimi değiştiğinde içerikleri getir
             // $('#subtopic_id').on('change', function() {
             //     var classId = $('#classId').val();
             //     var lessonId = $('#lesson_id').val();
             //     var unitId = $('#unit_id').val();
             //     var topicId = $('#topic_id').val();
-            //     var subtopicId = $(this).val();;
+            //     var subtopicId = $(this).val();
 
             //     if (lessonId !== '') {
             //         $.ajax({
@@ -487,22 +486,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
 
             // Filtreleme butonu tıklaması
             $('#filterButton').on('click', function() {
-                // var classId = $('#classId').val();
-                // var lessonId = $('#lesson_id').val();
-
-                // // Sınıf ve Ders seçimi zorunlu kontrolü
-                // if (!classId || classId === '') {
-                //     Swal.fire({
-                //         icon: 'warning',
-                //         title: 'Uyarı',
-                //         text: 'Lütfen bir sınıf seçiniz.',
-                //         confirmButtonText: 'Tamam'
-                //     });
-                //     $('#class_id').addClass('is-invalid'); // Bootstrap ile görsel uyarı
-                //     return; // Filtreleme işlemini durdur
-                // } else {
-                //     $('#class_id').removeClass('is-invalid');
-                // }
+            
                 var classId = $('#classId').val();
                 var lessonId = $('#lesson_id').val();
                 var unitId = $('#unit_id').val();
@@ -526,7 +510,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                     dataType: 'json', // Expecting JSON response from the PHP script
                     success: function(response) {
                         // Handle success response from PHP
-                        console.log('çalıştı')
                         if (response.status === 'success') {
                             var eventList = response.data;
                             console.log('Events:', eventList);
@@ -537,7 +520,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                                     year: 'numeric',
                                     month: 'long'
                                 };
-                                return date.toLocaleDateString('tr-TR', options);
+                                const str = date.toLocaleDateString('tr-TR', options);
+                                return str.normalize('NFKD').replace(/\s+/g, ' ').trim().toLowerCase();
                             }
 
                             function formatDate(dateString) {
@@ -549,23 +533,62 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                                 return date.toLocaleDateString('tr-TR', options);
                             }
 
+                            function capitalize(str) {
+                                return str.charAt(0).toUpperCase() + str.slice(1);
+                            }
+
+                            eventList.sort((a, b) => new Date(a.start) - new Date(b.start));
+
+                            const grouped = {};
                             let html = '';
 
-                            eventList.forEach(function(event) {
-                                html += `
-                             <div class="event-list">
-                                <h5 class="text-center event-month">${getMonthYear(event.start)}</h5>
-                                <div class="event-body my-4">
-                                    <div class="event-date">
-                                        ${formatDate(event.start)} - ${formatDate(event.end)}
-                                    </div>
-                                    <div class="event-unit-name">
-                                        ${event.name} 
-                                    </div>
-                                </div>
-                            </div>
-                `;
+                            eventList.forEach(event => {
+
+                                const key = getMonthYear(event.start);
+                                if (!grouped[key]) grouped[key] = [];
+                                grouped[key].push(event);
                             });
+
+                            for (const key in grouped) {
+                                html += `<h5 class="text-center event-month">${capitalize(key)}</h5>`;
+
+                                grouped[key].forEach(event => {
+                                    let eventName = '';
+                                    if (lessonId !== '') {
+                                        eventName += `<div class="event-name">
+                                                   <a href="unite/${event.slug}">
+                                                       ${event.name}
+                                                    </a>
+                                                </div>`
+                                    }
+                                    else if (unitId !== '') {
+                                        eventName += `<div class="event-name">
+                                                   <a href="konu/${event.slug}">
+                                                       ${event.name}
+                                                    </a>
+                                                </div>`
+                                    } else if (topicId !== '') {
+                                        eventName += `<div class="event-name">
+                                                   <a href="alt-konu/${event.slug}">
+                                                       ${event.name}
+                                                    </a>
+                                                </div>`
+                                    } else {
+                                        eventName += `<div class = "event-name" >${event.name}</div>`
+                                    }
+                                    html += `
+                                        <div class="event-list">
+                                            <div class="event-body my-4">
+                                                <div class="event-date">
+                                                    ${formatDate(event.start)} - ${formatDate(event.end)}
+                                                </div>
+                                                    ${eventName}
+                                            </div>
+                                        </div>
+                                        `;
+                                });
+                            }
+
 
                             $('#eventResults').html(html);
 

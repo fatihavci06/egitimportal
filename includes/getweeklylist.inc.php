@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             start_date AS unitStartDate, 
             end_date AS unitEndDate
             FROM units_lnp
-            WHERE class_id = ? AND lesson_id = ?');
+            WHERE class_id = ? AND lesson_id = ?  ORDER BY start_date ASC');
             if (!$stmt->execute([$classId, $lessonId])) {
                 $stmt = null;
                 error_log("Failed to fetch units for lesson ID: $lessonId");
@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             }
         }
         if (!empty($topicId)) {
-            $stmt = $pdo->prepare('SELECT id, name, start_date, end_date FROM subtopics_lnp WHERE class_id = ? AND lesson_id = ? AND unit_id = ? AND topic_id = ?');
+            $stmt = $pdo->prepare('SELECT id, name, start_date, end_date FROM subtopics_lnp WHERE class_id = ? AND lesson_id = ? AND unit_id = ? AND topic_id = ? ORDER BY start_date ASC');
             if (!$stmt->execute([$classId, $lessonId, $unitId, $topicId])) {
                 $stmt = null;
                 error_log("Failed to fetch subtopics for topic ID: $topicId");
@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             WHERE subtopics.class_id = ? 
             AND subtopics.lesson_id = ? 
             AND subtopics.unit_id = ? 
-            AND subtopics.topic_id = ?');
+            AND subtopics.topic_id = ? ORDER BY start_date ASC');
             if (!$stmt->execute([$classId, $lessonId, $unitId, $topicId])) {
                 $stmt = null;
                 error_log("Failed to fetch subtopics for topic ID: $subtopicId");
