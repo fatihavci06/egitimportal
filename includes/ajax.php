@@ -863,8 +863,8 @@ switch ($service) {
     case 'filter-main-school-content':
         $lesson_id = isset($_POST['lesson_id']) ? $_POST['lesson_id'] : null;
         $unit_id = isset($_POST['unit_id']) ? $_POST['unit_id'] : null;
-        $topic_id = isset($_POST['topic_id']) ? $_POST['topic_id'] : null; 
-       
+        $topic_id = isset($_POST['topic_id']) ? $_POST['topic_id'] : null;
+
         $month = isset($_POST['month']) ? $_POST['month'] : null;
         $week = isset($_POST['week']) ? $_POST['week'] : null;
         $activity_title = isset($_POST['activity_title']) ? $_POST['activity_title'] : null;
@@ -878,17 +878,17 @@ switch ($service) {
         $params = [];
 
         // Dinamik filtreleri ekle
-         if ($lesson_id !== null && $lesson_id !== '') {
-            
+        if ($lesson_id !== null && $lesson_id !== '') {
+
             $whereClauses[] = 'lesson_id = :lesson_id';
             $params[':lesson_id'] = $lesson_id;
         }
-         if ($unit_id !== null && $unit_id !== '') {
-            
+        if ($unit_id !== null && $unit_id !== '') {
+
             $whereClauses[] = 'unit_id = :unit_id';
             $params[':unit_id'] = $unit_id;
         }
-         if ($month !== null && $month !== '') {
+        if ($month !== null && $month !== '') {
             $whereClauses[] = 'month = :month';
             $params[':month'] = $month;
         }
@@ -2114,7 +2114,7 @@ WHERE t.id = :id";
             $stmt->execute(['user_id' => $userId, 'test_id' => $testId]);
             $grade = $stmt->fetch(PDO::FETCH_ASSOC);
 
-           
+
 
             if (isset($grade['fail_count']) && $grade['fail_count'] >= 3) {
                 echo json_encode(['status' => 'error', 'message' => 'Bu teste 3 kez başarısız oldunuz, tekrar giremezsiniz.']);
@@ -2179,7 +2179,7 @@ WHERE t.id = :id";
             $stmt->execute($params);
 
             if ($stmt->rowCount() === 0) {
-                
+
                 echo json_encode(['status' => 'error', 'message' => 'Test bulunamadı.']);
                 exit;
             }
@@ -2842,7 +2842,7 @@ WHERE t.id = :id";
         break;
     case 'mainSchoolGetTopic':
         $topicId = $_GET['id'] ?? null;
-      
+
         if (!$topicId || !is_numeric($topicId)) {
             echo json_encode(['status' => 'error', 'message' => 'Geçersiz konu ID']);
             exit;
@@ -2851,7 +2851,7 @@ WHERE t.id = :id";
             $stmt = $pdo->prepare("SELECT t.id as id,u.id as unit_id,t.name as topic_name ,u.lesson_id as lesson_id,mlsc.class_id FROM main_school_topics_lnp t INNER JOIN main_school_units_lnp u ON t.unit_id=u.id INNER JOIN main_school_lessons_lnp l on l.id=u.lesson_id INNER JOIN mainschool_lesson_class_id_lnp as mlsc on mlsc.lesson_id=l.id  WHERE t.id = :id");
             $stmt->execute([':id' => $topicId]);
             $topic = $stmt->fetch(PDO::FETCH_ASSOC);
-          
+
             if (!$topic) {
                 echo json_encode(['status' => 'error', 'message' => 'Konu bulunamadı']);
                 exit;
@@ -2918,6 +2918,81 @@ WHERE t.id = :id";
             ]);
         }
         break;
+    case 'addExtraPackage':
+        try {
+            $name = trim($_POST['addPackageName'] ?? '');
+            $type = $_POST['addPackageType'] ?? '';
+            $price = $_POST['addPackagePrice'] ?? '';
+            $addMonths = $_POST['addMonths'] ?? '';
+            if(empty($addMonths))
+            {
+                $limit_count=$_POST['addCount'] ?? '';
+            }
+            else{
+                $limit_count=$_POST['addMonths'] ?? '';
+            }
+
+            if ($name === '' ) {
+                throw new Exception('Geçersiz veya eksik parametreler.');
+            }
+
+            $stmt = $pdo->prepare("INSERT INTO extra_packages_lnp (name, type, limit_count,price) VALUES (?, ?, ?,?)");
+            $stmt->execute([$name, $type, $limit_count,$price]);
+
+            echo json_encode(['status' => 'success', 'message' => 'Paket başarıyla eklendi.']);
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        break;
+
+    case 'updateExtraPackage':
+        try {
+            $id = intval($_POST['updatePackageId'] ?? 0);
+             $name = trim($_POST['updatePackageName'] ?? '');
+            $type = $_POST['updatePackageType'] ?? '';
+            $price = $_POST['updatePackagePrice'] ?? '';
+            $addMonths = $_POST['updateMonths'] ?? '';
+           
+            if(empty($addMonths))
+            {
+                $limit_count=$_POST['updateCount'] ?? '';
+            }
+            else{
+                $limit_count=$_POST['updateMonths'] ?? '';
+            }
+
+          
+            if ($id <= 0 || $name === '' ) {
+                throw new Exception('Geçersiz veya eksik parametreler.');
+            }
+
+            $stmt = $pdo->prepare("UPDATE extra_packages_lnp SET name = ?, type = ?, limit_count = ?,price=? WHERE id = ?");
+            $stmt->execute([$name, $type,$limit_count, $price, $id]);
+
+            echo json_encode(['status' => 'success', 'message' => 'Paket başarıyla güncellendi.']);
+            
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        break;
+
+    case 'deleteExtraPackage':
+        try {
+            $id = intval($_POST['id'] ?? 0);
+
+            if ($id <= 0) {
+                throw new Exception('Geçersiz ID.');
+            }
+
+            $stmt = $pdo->prepare("DELETE FROM extra_packages_lnp WHERE id = ?");
+            $stmt->execute([$id]);
+
+            echo json_encode(['status' => 'success', 'message' => 'Paket başarıyla silindi.']);
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        break;
+
     default:
         echo json_encode(['status' => 'error', 'message' => 'Geçersiz servis']);
         break;
