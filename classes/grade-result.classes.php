@@ -9,6 +9,25 @@ class GradeResult
 
         $this->db = (new dbh())->connect();
     }
+        public function getGradeOverall($userId)
+    {
+        try {
+            $sql = "SELECT AVG(score) as average_score 
+                FROM user_grades_lnp 
+                WHERE user_id = :user_id";
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            return $result['average_score'] !== null ? (float) $result['average_score'] : null;
+
+        } catch (PDOException $e) {
+            return null;
+        }
+    }
     public function getGradeByLessonId($userId, $lessonId)
     {
         try {

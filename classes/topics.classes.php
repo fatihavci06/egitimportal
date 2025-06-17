@@ -153,7 +153,8 @@ class Topics extends Dbh
 		$stmt = null;
 	}
 
-	public function getUnitDatas($slug){
+	public function getUnitDatas($slug)
+	{
 
 		$stmt = $this->connect()->prepare('SELECT * FROM units_lnp WHERE slug = ?');
 
@@ -391,7 +392,7 @@ class SubTopics extends Dbh
 				$stmt = null;
 				exit();
 			}
-		} elseif ($_SESSION['role'] == 3 OR $_SESSION['role'] == 8) {
+		} elseif ($_SESSION['role'] == 3 or $_SESSION['role'] == 8) {
 			$school = $_SESSION['school_id'];
 			$stmt = $this->connect()->prepare('SELECT subtopics_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName FROM subtopics_lnp INNER JOIN topics_lnp ON subtopics_lnp.topic_id = topics_lnp.id INNER JOIN classes_lnp ON topics_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON topics_lnp.lesson_id = lessons_lnp.id INNER JOIN units_lnp ON topics_lnp.unit_id = units_lnp.id WHERE subtopics_lnp.slug = ? AND subtopics_lnp.school_id = ?');
 
@@ -571,6 +572,14 @@ class SubTopics extends Dbh
 				$stmt = null;
 				exit();
 			}
+		} elseif ($_SESSION['role'] == 2) {
+			$school = $_SESSION['school_id'];
+			$stmt = $this->connect()->prepare('SELECT id, name FROM topics_lnp WHERE class_id = ? AND lesson_id=? AND unit_id = ? AND school_id=?');
+
+			if (!$stmt->execute(array($class, $lessons, $units, $school))) {
+				$stmt = null;
+				exit();
+			}
 		} elseif ($_SESSION['role'] == 3) {
 			$school = $_SESSION['school_id'];
 			$stmt = $this->connect()->prepare('SELECT id, name FROM topics_lnp WHERE class_id = ? AND lesson_id=? AND unit_id = ? AND school_id=?');
@@ -619,6 +628,14 @@ class SubTopics extends Dbh
 			$stmt = $this->connect()->prepare('SELECT id, name FROM subtopics_lnp WHERE class_id = ? AND lesson_id = ? AND unit_id = ? AND topic_id = ?');
 
 			if (!$stmt->execute(array($class, $lessons, $units, $topics))) {
+				$stmt = null;
+				exit();
+			}
+		} elseif ($_SESSION['role'] == 2) {
+			$school = $_SESSION['school_id'];
+			$stmt = $this->connect()->prepare('SELECT id, name FROM subtopics_lnp WHERE class_id = ? AND lesson_id=? AND unit_id = ? AND topic_id = ? AND school_id=?');
+
+			if (!$stmt->execute(array($class, $lessons, $units, $topics, $school))) {
 				$stmt = null;
 				exit();
 			}
@@ -761,7 +778,7 @@ class SubTopics extends Dbh
 
 	/*public function isSolved($id)
 	{
-		
+
 		$stmt = $this->connect()->prepare('SELECT solvedtest_lnp.created_at AS created_at FROM solvedtest_lnp INNER JOIN tests_lnp ON tests_lnp.id = solvedtest_lnp.test_id WHERE tests_lnp.subtopic_id = ?');
 
 		if (!$stmt->execute(array($id))) {
@@ -815,7 +832,7 @@ class SubTopics extends Dbh
 
 	/*public function isSolvedQuestion($id)
 	{
-		
+
 		$stmt = $this->connect()->prepare('SELECT solved_s_questions_lnp.created_at AS created_at FROM solved_s_questions_lnp INNER JOIN s_questions_lnp ON s_questions_lnp.id = solved_s_questions_lnp.test_id WHERE s_questions_lnp.topic_id = ?');
 
 		if (!$stmt->execute(array($id))) {
@@ -1048,7 +1065,7 @@ class Tests extends Dbh
 
 	/*public function isSolved($id)
 	{
-		
+
 		$stmt = $this->connect()->prepare('SELECT solvedtest_lnp.created_at AS created_at FROM solvedtest_lnp INNER JOIN tests_lnp ON tests_lnp.id = solvedtest_lnp.test_id WHERE tests_lnp.subtopic_id = ?');
 
 		if (!$stmt->execute(array($id))) {
@@ -1265,7 +1282,7 @@ class TestsforStudents extends Dbh
 
 	/*public function isSolved($id)
 	{
-		
+
 		$stmt = $this->connect()->prepare('SELECT solvedtest_lnp.created_at AS created_at FROM solvedtest_lnp INNER JOIN tests_lnp ON tests_lnp.id = solvedtest_lnp.test_id WHERE tests_lnp.subtopic_id = ?');
 
 		if (!$stmt->execute(array($id))) {
