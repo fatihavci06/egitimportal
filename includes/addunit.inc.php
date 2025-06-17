@@ -1,8 +1,8 @@
 <?php
 
 if (session_status() === PHP_SESSION_NONE) {
-    // Oturum henüz başlatılmamışsa başlat
-    session_start();
+	// Oturum henüz başlatılmamışsa başlat
+	session_start();
 }
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
@@ -13,14 +13,19 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 	if ($service == 'create') {
 		// Grabbing the data
 		$name = trim($_POST["name"]);
-		if(!isset($_POST["classes"]) || !isset($_POST["lessons"])) {
-			$classes = $_SESSION['class_id'];
+		
+		if (!isset($_POST["lessons"])) {
 			$lessons = $_SESSION['lesson_id'];
 		}else{
-			// If classes and lessons are not set, use session values
-			$classes = trim($_POST["classes"]);
 			$lessons = trim($_POST["lessons"]);
 		}
+
+		if (!isset($_POST["classes"])) {
+			$classes = $_SESSION['class_id'];
+		}else {
+			$classes = trim($_POST["classes"]);
+		}
+
 		$short_desc = trim($_POST["short_desc"]);
 		$photoSize = $_FILES['photo']['size'];
 		$photoName = $_FILES['photo']['name'];

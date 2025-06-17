@@ -50,7 +50,7 @@ class Lessons extends Dbh {
 
 		$stmt = $this->connect()->prepare('SELECT * FROM lessons_lnp');
 
-		if(!$stmt->execute(array(0))){
+		if(!$stmt->execute(array())){
 			$stmt = null;
 			exit();
 		}

@@ -68,6 +68,7 @@ if (isset($_SESSION['role'])) {
                                                         placeholder="Bildirim Ara" />
                                                 </div>
                                             </div>
+                                            <?php if ($_SESSION['role'] == 1 or $_SESSION['id'] == 3) { ?>
                                             <div class="card-toolbar">
                                                 <div class="d-flex justify-content-end"
                                                     data-kt-customer-table-toolbar="base">
@@ -85,6 +86,7 @@ if (isset($_SESSION['role'])) {
                                                         Yap</button>
                                                 </div>
                                             </div>
+                                            <?php } ?>
                                         </div>
                                         <div class="card-body pt-0">
                                             <table class="table align-middle table-row-dashed fs-6 gy-5"
@@ -132,6 +134,8 @@ if (isset($_SESSION['role'])) {
                                                     } elseif ($_SESSION['role'] == 2) {
 
                                                         $notificationShow->getNotificationForStudentList($_SESSION['role'], $_SESSION['class_id']);
+                                                    } elseif ($_SESSION['role'] == 3) {
+                                                        $notificationShow->getNotificationForCoordinatorsList($_SESSION['role']);
                                                     }
                                                     ?>
                                                 </tbody>

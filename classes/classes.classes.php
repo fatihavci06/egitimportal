@@ -151,7 +151,7 @@ class Classes extends Dbh
 	public function getTestListByStudent($classId = 0)
 	{
 		$role = $_SESSION['role'];
-		if ($role == 1 or $role == 3 or $role == 4) {
+		if ($role == 1 or $role == 3) {
 
 			// Öğretmen veya yönetici için tüm sınıflar
 			$stmt = $this->connect()->prepare('SELECT id,test_title,end_date FROM tests_lnp ORDER BY id DESC');
@@ -159,6 +159,13 @@ class Classes extends Dbh
 				$stmt = null;
 				exit();
 			}
+		}elseif($role == 4){
+			$stmt = $this->connect()->prepare('SELECT id,test_title,end_date FROM tests_lnp WHERE teacher_id = ? ORDER BY id DESC');
+			if (!$stmt->execute([$_SESSION['id']])) {
+				$stmt = null;
+				exit();
+			}
+
 		} else {
 
 			$userId = $_SESSION['id']; // Session'dan user_id'yi al

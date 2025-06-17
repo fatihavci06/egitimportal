@@ -90,6 +90,17 @@ class ShowStudent extends Student
 
             $alter_button = $value['active'] ? "Pasif Yap" : "Aktif Yap";
 
+            $passiveButton = "";
+
+            if($_SESSION['role'] != 4){
+                $passiveButton = '
+                                <!--begin::Menu item-->
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">' . $alter_button . '</a>
+                                </div>
+                                <!--end::Menu item-->';
+            }
+
             $studentList .= '
                     <tr>
                         <td>
@@ -126,11 +137,7 @@ class ShowStudent extends Student
                                     <a href="./ogrenci-detay/' . $value['username'] . '" class="menu-link px-3">Görüntüle</a>
                                 </div>
                                 <!--end::Menu item-->
-                                <!--begin::Menu item-->
-                                <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">' . $alter_button . '</a>
-                                </div>
-                                <!--end::Menu item-->
+                                ' . $passiveButton . '
                             </div>
                             <!--end::Menu-->
                         </td>

@@ -16,9 +16,21 @@ class AddContent extends Dbh
 
 		try {
 
-			$stmt = $pdo->prepare('INSERT INTO school_content_lnp SET slug=?, title=?, summary=?, class_id=?, lesson_id=?, unit_id=?, topic_id=?, subtopic_id=?, cover_img=?, text_content=?');
+			$stmt = $pdo->prepare('INSERT INTO school_content_lnp SET slug=?, title=?, summary=?, class_id=?, lesson_id=?, unit_id=?, topic_id=?, subtopic_id=?, school_id=?, teacher_id=?, cover_img=?, text_content=?');
 
-			if (!$stmt->execute([$slug, $name, $short_desc, $classes, $lessons, $units, $topics, $sub_topics, $imgName, $content])) {
+			if ($_SESSION['role'] == 3 or $_SESSION['role'] == 4 or $_SESSION['role'] == 8) {
+				$school = $_SESSION['school_id'];
+			} else {
+				$school = 1;
+			}
+
+			if ($_SESSION['role'] == 4) {
+				$teacher = $_SESSION['id'];
+			} else {
+				$teacher = NULL;
+			}
+
+			if (!$stmt->execute([$slug, $name, $short_desc, $classes, $lessons, $units, $topics, $sub_topics, $school, $teacher, $imgName, $content])) {
 				$stmt = null;
 				//header("location: ../admin.php?error=stmtfailed");
 				exit();

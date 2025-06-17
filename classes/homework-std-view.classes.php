@@ -62,7 +62,10 @@ class ShowHomeworkContents extends GetStudentHomework
                         <td>
                             ' . $value['className'] . '
                         </td>
-                       
+                        <td>
+                            ' . $dateFormat->changeDate($value['end_date']) . '
+                        </td>
+
                         <td class="text-end">
                             <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler

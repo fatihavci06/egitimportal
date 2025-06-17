@@ -31,6 +31,7 @@ if ($coupon) {
 	$discount_type = $coupon['discount_type'];
 }
 foreach ($packInfo as $key => $value) {
+	$packageName = $value['name'];
 	$price = $value['monthly_fee'] * $value['subscription_period'];
 	if ($discount_type === 'amount') {
 		$price -= $discount_value;

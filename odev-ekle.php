@@ -7,6 +7,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     include_once "classes/dbh.classes.php";
     include "classes/topics.classes.php";
     include "classes/topics-view.classes.php";
+    include_once "classes/units.classes.php";
     $topics = new ShowTopic();
     include_once "views/pages-head.php";
 ?>

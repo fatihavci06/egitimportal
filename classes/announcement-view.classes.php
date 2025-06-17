@@ -115,6 +115,47 @@ class ShowAnnouncement extends AnnouncementManager
         }
     }
 
+    public function getAnnouncementForCoordinatorsList($role)
+    {
+
+        $announcementInfo = $this->getAnnouncementsWithViewStatusCoord($_SESSION['id'], $role);
+
+        $dateFormat = new DateFormat();
+
+        foreach ($announcementInfo as $key => $value) {
+            $view = "Görüntülenmedi";
+            $style = "text-gray-700";
+            if ($value['target_type'] == "all") {
+                $toWhom = "Herkese";
+            } elseif ($value['target_type'] == "roles") {
+                $toWhom = "Okul Koordinatörlerine";
+            }
+            if ($value["is_viewed"] == 1) {
+                $view = "Görüntülendi";
+                $style = "text-gray-500";
+
+            }
+            $announcementList = '
+                    <tr class="' . $style . '">
+                        <td>
+                            <a href="./duyuru/' . $value['slug'] . '" class=" ' . $style . ' text-hover-primary mb-1">' . $value['title'] . '</a>
+                        </td>
+                        <td>
+                        ' . (strlen($value['content']) > 40 ? substr($value['content'], 0, 40) . '...' : $value['content']) . '
+                        </td>
+                        <td>
+                            ' . $toWhom . '
+                        </td>
+                        <td>' . $dateFormat->changeDate($value['start_date']) . '</td>
+                        <td>
+                            ' . $view . '
+                        </td>
+                    </tr>
+                ';
+            echo $announcementList;
+        }
+    }
+
     public function getAnnouncementStats($announcementId)
     {
 

@@ -811,7 +811,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 }
 
                 $.ajax({
-                    url: 'includes/ajax.php?service=testAdd',
+                    url: 'includes/ajax-ayd.php?service=testAdd',
                     type: 'POST',
                     dataType: 'json',
                     data: formData,

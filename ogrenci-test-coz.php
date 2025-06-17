@@ -344,7 +344,7 @@
             }
 
             $.ajax({
-                url: 'includes/ajax.php?service=getTestByStudent&test_id=' + testId,
+                url: 'includes/ajax-ayd.php?service=getTestByStudent&test_id=' + testId,
                 method: 'GET',
                 dataType: 'json',
                 success: function (response) {

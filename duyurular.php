@@ -157,6 +157,8 @@ if (isset($_SESSION['role'])) {
                                                 
                                                     } elseif ($_SESSION['role'] == 2) {
                                                         $announce->getAnnouncementForStudentList($_SESSION['role'], $_SESSION['class_id']);
+                                                    } elseif ($_SESSION['role'] == 3) {
+                                                        $announce->getAnnouncementForCoordinatorsList($_SESSION['role']);
                                                     }
                                                     ?>
                                                 </tbody>

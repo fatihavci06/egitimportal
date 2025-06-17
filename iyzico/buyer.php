@@ -3,7 +3,7 @@
 require_once('config.php');
 
 
-
+$ip = $_SERVER['REMOTE_ADDR'];
 
 # create request class
 $request = new \Iyzipay\Request\CreateCheckoutFormInitializeRequest();
@@ -22,13 +22,13 @@ $buyer = new \Iyzipay\Model\Buyer();
 $buyer->setId("1");
 $buyer->setName("$kullanici_ad");
 $buyer->setSurname("$kullanici_soyad");
-$buyer->setGsmNumber("05422918575");
+$buyer->setGsmNumber($kullanici_gsm);
 $buyer->setEmail("$kullanici_mail");
 $buyer->setIdentityNumber("$kullanici_tckn");
 $buyer->setLastLoginDate("$kullanici_zaman");
 $buyer->setRegistrationDate("$kullanici_zaman");
 $buyer->setRegistrationAddress("$district/$kullanici_il");
-$buyer->setIp("85.34.78.112");
+$buyer->setIp($ip);
 $buyer->setCity("$kullanici_il");
 $buyer->setCountry("Turkey");
 $buyer->setZipCode("$postcode");
@@ -47,15 +47,15 @@ $billingAddress->setContactName("$kullanici_ad");
 $billingAddress->setCity("$kullanici_il");
 $billingAddress->setCountry("Turkey");
 $billingAddress->setAddress("$kullanici_adresiyaz");
-$billingAddress->setZipCode("34742");
+$billingAddress->setZipCode($postcode);
 $request->setBillingAddress($billingAddress);
 
 $basketItems = array();
 $firstBasketItem = new \Iyzipay\Model\BasketItem();
 $firstBasketItem->setId("$siparis_no");
-$firstBasketItem->setName("Binocular");
-$firstBasketItem->setCategory1("Collectibles");
-$firstBasketItem->setItemType(\Iyzipay\Model\BasketItemType::PHYSICAL);
+$firstBasketItem->setName($packageName);
+$firstBasketItem->setCategory1("Eğitim Paketi");
+$firstBasketItem->setItemType(\Iyzipay\Model\BasketItemType::VIRTUAL);
 $firstBasketItem->setPrice($sepettoplam);
 $basketItems[0] = $firstBasketItem;
 $request->setBasketItems($basketItems);

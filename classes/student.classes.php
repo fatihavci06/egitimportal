@@ -134,11 +134,33 @@ class Student extends Dbh
 		$stmt = null;
 	}
 
-	protected function getStudentsList()
+	public function getActiveStudents(){
+		$stmt = $this->connect()->prepare('SELECT * FROM users_lnp WHERE active = ? AND (role = ? OR role = ?)');
+		if (!$stmt->execute(array(1, 2, 10002))) {
+			$stmt = null;
+			exit();
+		}
+		$getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		return $getData;
+		$stmt = null;
+	}
+
+	public function getPassiveStudents(){
+		$stmt = $this->connect()->prepare('SELECT * FROM users_lnp WHERE active = ? AND (role = ? OR role = ?)');
+		if (!$stmt->execute(array(0, 2, 10002))) {
+			$stmt = null;
+			exit();
+		}
+		$getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		return $getData;
+		$stmt = null;
+	}
+
+	public function getStudentsList()
 	{
 
 		if ($_SESSION['role'] == 1) {
-			$stmt = $this->connect()->prepare('SELECT users_lnp.*, classes_lnp.name AS className, classes_lnp.slug AS classSlug, users_lnp.active AS userActive, schools_lnp.name AS schoolName FROM users_lnp INNER JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id INNER JOIN schools_lnp ON users_lnp.school_id = schools_lnp.id WHERE (users_lnp.active = ? OR users_lnp.active = ?) AND (users_lnp.role = ? OR users_lnp.role = ?)');
+			$stmt = $this->connect()->prepare('SELECT users_lnp.*, classes_lnp.name AS className, classes_lnp.slug AS classSlug, users_lnp.active AS userActive, schools_lnp.name AS schoolName FROM users_lnp INNER JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id INNER JOIN schools_lnp ON users_lnp.school_id = schools_lnp.id WHERE (users_lnp.active = ? OR users_lnp.active = ?) AND (users_lnp.role = ? OR users_lnp.role = ?) ORDER BY users_lnp.id DESC');
 
 			if (!$stmt->execute(array("1", "0", "2", "10002"))) {
 				$stmt = null;
@@ -188,6 +210,19 @@ class Student extends Dbh
 		$stmt = $this->connect()->prepare('SELECT * FROM users_lnp WHERE username = ? AND school_id = ? AND class_id = ?');
 
 		if (!$stmt->execute(array($slug, $school_id, $class_id))) {
+			$stmt = null;
+			exit();
+		}
+
+		$studentId = $stmt->fetch(PDO::FETCH_ASSOC);
+		return $studentId['id'];
+		$stmt = null;
+	}
+
+	public function getStudentIdForCoordinator($slug, $school_id){
+		$stmt = $this->connect()->prepare('SELECT * FROM users_lnp WHERE username = ? AND school_id = ?');
+
+		if (!$stmt->execute(array($slug, $school_id))) {
 			$stmt = null;
 			exit();
 		}
