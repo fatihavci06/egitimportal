@@ -2,10 +2,6 @@
 include_once "dateformat.classes.php";
 
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 class ShowStudent extends Student
 {
 
@@ -90,6 +86,17 @@ class ShowStudent extends Student
 
             $alter_button = $value['active'] ? "Pasif Yap" : "Aktif Yap";
 
+            $passiveButton = "";
+
+            if($_SESSION['role'] != 4){
+                $passiveButton = '
+                                <!--begin::Menu item-->
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">' . $alter_button . '</a>
+                                </div>
+                                <!--end::Menu item-->';
+            }
+
             $studentList .= '
                     <tr>
                         <td>
@@ -126,14 +133,78 @@ class ShowStudent extends Student
                                     <a href="./ogrenci-detay/' . $value['username'] . '" class="menu-link px-3">Görüntüle</a>
                                 </div>
                                 <!--end::Menu item-->
-                                <!--begin::Menu item-->
-                                <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">' . $alter_button . '</a>
-                                </div>
-                                <!--end::Menu item-->
+                                ' . $passiveButton . '
                             </div>
                             <!--end::Menu-->
                         </td>
+                    </tr>
+                ';
+
+        }
+        echo $studentList;
+    }
+    public function getStudentProgressList()
+    {
+
+        $schoolInfo = $this->getStudentsList();
+
+
+        $dateFormat = new DateFormat();
+        $studentList = '';
+        require_once "content-tracker.classes.php";
+        require_once "grade-result.classes.php";
+
+        $contentObj = new ContentTracker();
+        $gradeObj = new GradeResult();
+
+
+        foreach ($schoolInfo as $key => $value) {
+
+            $sinifArama = 'data-filter="' . $value['classSlug'] . '"';
+
+            if ($value['userActive'] == 1) {
+                $aktifArama = 'data-filter="Aktif"';
+                $aktifYazi = '<span class="badge badge-light-success">Aktif</span>';
+            } else {
+                $aktifArama = 'data-filter="Passive"';
+                $aktifYazi = '<span class="badge badge-light-danger">Pasif</span>';
+            }
+
+            $alter_button = $value['active'] ? "Pasif Yap" : "Aktif Yap";
+
+            $percentage = $contentObj->getSchoolContentAnalyticsOverall($value['id']);
+            $percentageW = ($percentage == null) ? 0 : $percentage;
+            $percentageT = ($percentage == null) ? '-' : $percentage;
+
+            $score = $gradeObj->getGradeOverall($value['id'], );
+            $scoreW = ($score == null) ? 0 : $score;
+            $scoreT = ($score == null) ? '-' : $score;
+
+            $studentList .= '
+                    <tr>
+                        <td ' . $aktifArama . '>
+                            <div class="cursor-pointer symbol symbol-90px symbol-lg-90px"><img src="assets/media/profile/' . $value['photo'] . '"></div>
+                        </td>
+                        <td>
+                            <a href="./ogrenci-detay/' . $value['username'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['name'] . ' ' . $value['surname'] . '</a>
+                        </td>
+                        <td>
+                            <a href="mailto:' . $value['email'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['email'] . '</a>
+                        </td>
+                        <td ' . $sinifArama . '>
+                            ' . $value['className'] . '
+                        </td>
+                        <td data-filter="' . $value['schoolName'] . '">
+                            ' . $value['schoolName'] . '
+                        </td>
+                        <td  data-order="' . $dateFormat->forDB($value['subscribed_end']) . '">' . $dateFormat->changeDate($value['subscribed_end']) . '</td>
+                        <td>
+                            <span class="fw-bold fs-6">' . $percentageT . '%</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold fs-6">' . $scoreT . '%</span>
+                        </td>
+
                     </tr>
                 ';
 

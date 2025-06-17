@@ -26,7 +26,7 @@ class Packages extends Dbh
 
 	public function getPackagePrice($id)
 	{
-		$stmt = $this->connect()->prepare('SELECT monthly_fee, subscription_period, discount, max_installment FROM packages_lnp WHERE id = ? AND status = ?');
+		$stmt = $this->connect()->prepare('SELECT name, monthly_fee, subscription_period, discount, max_installment FROM packages_lnp WHERE id = ? AND status = ?');
 
 		if (!$stmt->execute(array($id, 1))) {
 			$stmt = null;
@@ -156,6 +156,21 @@ class PackagesForAdmin extends Dbh {
 		$stmt = $this->connect()->prepare('SELECT monthly_fee, subscription_period FROM packages_lnp WHERE id = ? ');
 
 			if (!$stmt->execute(array($id))) {
+				$stmt = null;
+				exit();
+			}
+
+		$getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $getData;
+
+		$stmt = null;
+	}
+
+	public function getMostUsedPackage(){
+		$stmt = $this->connect()->prepare('SELECT packages_lnp.id, packages_lnp.name, COUNT(package_payments_lnp.pack_id) AS user_count, classes_lnp.name AS className FROM packages_lnp LEFT JOIN package_payments_lnp ON packages_lnp.id = package_payments_lnp.pack_id LEFT JOIN classes_lnp ON packages_lnp.class_id = classes_lnp.id GROUP BY packages_lnp.id ORDER BY user_count DESC LIMIT 5');
+
+			if (!$stmt->execute(array())) {
 				$stmt = null;
 				exit();
 			}

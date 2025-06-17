@@ -11,7 +11,11 @@ class AddHomework extends Dbh
     protected function setHomeworkContent($imgName, $slug, $name, $classes, $lessons, $units, $short_desc, $topics, $sub_topics, $text_content, $video_url, $file_urls, $imageFiles, $descriptions, $titles, $urls, $start_date, $end_date)
     {
         $school_id = $_SESSION['school_id'];
-        $teacher_id = $_SESSION['teacher_id'];
+        if ($_SESSION['role'] != 4) {
+            $teacher_id = NULL; // Eğer öğretmen değilse NULL olarak ayarla
+        } else {
+            $teacher_id = $_SESSION['id'];
+        }
 
         $pdo = $this->connect();
 
@@ -194,7 +198,7 @@ class GetHomework extends Dbh
             $school = $_SESSION['school_id'];
             $class_id = $_SESSION['class_id'];
             $lesson_id = $_SESSION['lesson_id'];
-            $teacher_id = $_SESSION['teacher_id'];
+            $teacher_id = $_SESSION['id'];
             $stmt = $this->connect()->prepare('SELECT homework_content_lnp.*, 
             classes_lnp.name AS className, 
             lessons_lnp.name AS lessonName, 

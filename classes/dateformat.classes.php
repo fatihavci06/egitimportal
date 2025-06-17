@@ -6,7 +6,7 @@ class DateFormat
     public function changeDate($date)
     {
         $sqlDate = $date;
-        $dateChange = strtotime($sqlDate);
+        $dateChange = strtotime($sqlDate ?? "");
         $result = date("d.m.Y", $dateChange);
         return $result;
     }
@@ -29,7 +29,7 @@ class DateFormat
 
     public function forDB($date)
     {
-        $dateChange = strtotime(str_replace('.', '-', $date));
+        $dateChange = strtotime(str_replace('.', '-', $date ?? ""));
         $dbFormat = date('Y-m-d', $dateChange);
         return $dbFormat;
     }

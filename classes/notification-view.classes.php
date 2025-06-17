@@ -32,7 +32,7 @@ class ShowNotification extends NotificationManager
             } elseif ($value['target_type'] == "topics") {
                 $toWhom = "Konu - " . $this->getnotificationsTopic($value['targets'][0]['value']);
             } elseif ($value['target_type'] == "subtopics") {
-                $toWhom = "Altkonu - " . $this->getnotificationsSubtopic($value['targets'][0]['value']);
+                @$toWhom = "Altkonu - " . $this->getnotificationsSubtopic($value['targets'][0]['value']);
             }
 
             $active_status = '<span class="badge badge-light-success">Aktif</span>';
@@ -140,6 +140,62 @@ class ShowNotification extends NotificationManager
             echo $notificationList;
         }
     }
+
+    public function getNotificationForCoordinatorsList($role)
+    {
+
+        $notificationInfo = $this->getNotificationsWithViewStatusCoord($_SESSION['id'], $role);
+
+        $dateFormat = new DateFormat();
+
+        foreach ($notificationInfo as $key => $value) {
+            $view = "Görüntülenmedi";
+            $style = "text-gray-700";
+
+
+            $toWhom = "-";
+            if ($value['target_type'] == "all") {
+                $toWhom = "Herkese";
+            } elseif ($value['target_type'] == "roles") {
+                $toWhom = "Tüm Öğrencilere";
+            } elseif ($value['target_type'] == "classes") {
+                $toWhom = "Sınıfıma";
+            } elseif ($value['target_type'] == "lessons") {
+                $toWhom = "Ders";
+            } elseif ($value['target_type'] == "units") {
+                $toWhom = "Ünite";
+            } elseif ($value['target_type'] == "topics") {
+                $toWhom = "Konu";
+            } elseif ($value['target_type'] == "subtopics") {
+                $toWhom = "Altkonu";
+            }
+
+
+            if ($value["is_viewed"] == 1) {
+                $view = "Görüntülendi";
+                $style = "text-gray-500";
+            }
+            $notificationList = '
+                    <tr class="' . $style . '">
+                        <td>
+                            <a href="./bildirim/' . $value['slug'] . '" class=" ' . $style . ' text-hover-primary mb-1">' . $value['title'] . '</a>
+                        </td>
+                        <td>
+                        ' . (strlen($value['content']) > 40 ? substr($value['content'], 0, 40) . '...' : $value['content']) . '
+                        </td>
+                        <td>
+                            ' . $toWhom . '
+                        </td>
+                        <td>' . $dateFormat->changeDate($value['start_date']) . '</td>
+                        <td>
+                            ' . $view . '
+                        </td>
+                    </tr>
+                ';
+            echo $notificationList;
+        }
+    }
+
     public function getNotificaionStats($id)
     {
 

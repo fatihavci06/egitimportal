@@ -430,6 +430,42 @@ class AnnouncementManager extends Dbh
 
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
+
+	public function getAnnouncementsWithViewStatusCoord($user_id, $role_id)
+	{
+		$currentDate = date('Y-m-d H:i:s');
+		$query = "
+			SELECT 
+				a.*,
+				IF(av.id IS NULL, 0, 1) AS is_viewed,
+				av.viewed_at
+			FROM announcements_lnp a
+			LEFT JOIN announcement_targets_lnp at ON a.id = at.announcement_id
+			LEFT JOIN announcement_views_lnp av ON a.id = av.announcement_id AND av.user_id = :user_id
+			WHERE 
+				a.is_active = 1
+				AND a.start_date <= :current_date
+				AND a.expire_date >= :current_date
+				AND (
+					a.target_type = 'all'
+					OR (a.target_type = 'roles' AND EXISTS (
+						SELECT 1 FROM announcement_targets_lnp at1 
+						WHERE at1.announcement_id = a.id AND at1.target_type = 'roles' AND at1.target_value = :role_id
+					))
+				)
+			GROUP BY a.id
+			ORDER BY a.start_date DESC
+		";
+
+		$stmt = $this->connect()->prepare($query);
+		$stmt->execute([
+			':user_id' => $user_id,
+			':current_date' => $currentDate,
+			':role_id' => $role_id
+		]);
+
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
 }
 
 // /**

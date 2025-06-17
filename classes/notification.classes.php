@@ -238,6 +238,7 @@ class NotificationManager extends Dbh
 			':user_id' => $userId
 		]);
 	}
+
 	public function getNotificationsWithViewStatus($user_id, $role_id, $class_id)
 	{
 		$currentDate = date('Y-m-d H:i:s');
@@ -318,6 +319,79 @@ class NotificationManager extends Dbh
 			':current_date' => $currentDate,
 			':role_id' => $role_id,
 			':class_id' => $class_id
+		]);
+
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
+
+	public function getNotificationsWithViewStatusCoord($user_id, $role_id)
+	{
+		$currentDate = date('Y-m-d H:i:s');
+
+		$query = "
+        SELECT 
+            n.*,
+            IF(nv.id IS NULL, 0, 1) AS is_viewed,
+            nv.viewed_at
+        FROM notifications_lnp n
+        LEFT JOIN notification_views_lnp nv ON n.id = nv.notification_id AND nv.user_id = :user_id
+        WHERE 
+            n.is_active = 1
+            AND n.start_date <= :current_date
+            AND (n.expire_date IS NULL OR n.expire_date >= :current_date)
+            AND (
+                n.target_type = 'all'
+                
+                OR (n.target_type = 'roles' AND EXISTS (
+                    SELECT 1 FROM notification_targets_lnp nt1
+                    WHERE nt1.notification_id = n.id 
+                    AND nt1.target_type = 'roles' 
+                    AND nt1.target_value = :role_id
+                ))
+                
+                OR (n.target_type = 'lessons' AND EXISTS (
+                    SELECT 1 FROM notification_targets_lnp nt3
+                    JOIN lessons_lnp l ON nt3.target_value = l.id
+                    WHERE nt3.notification_id = n.id 
+                    AND nt3.target_type = 'lessons'
+                ))
+                
+                OR (n.target_type = 'units' AND EXISTS (
+                    SELECT 1 FROM notification_targets_lnp nt4
+                    JOIN units_lnp u ON nt4.target_value = u.id
+                    WHERE nt4.notification_id = n.id 
+                    AND nt4.target_type = 'units'
+                ))
+                
+                OR (n.target_type = 'topics' AND EXISTS (
+                    SELECT 1 FROM notification_targets_lnp nt5
+                    JOIN topics_lnp t ON nt5.target_value = t.id
+                    WHERE nt5.notification_id = n.id 
+                    AND nt5.target_type = 'topics'
+                ))
+                
+                OR (n.target_type = 'subtopics' AND EXISTS (
+                    SELECT 1 FROM notification_targets_lnp nt6
+                    JOIN subtopics_lnp st ON nt6.target_value = st.id
+                    WHERE nt6.notification_id = n.id 
+                    AND nt6.target_type = 'subtopics'
+                ))
+                
+                OR (n.target_type = 'assignments' AND EXISTS (
+                    SELECT 1 FROM notification_targets_lnp nt7
+                    -- JOIN assignments_lnp a ON nt7.target_value = a.id
+                    WHERE nt7.notification_id = n.id 
+                    AND nt7.target_type = 'assignments'
+                ))
+            )
+        ORDER BY n.start_date DESC
+    ";
+
+		$stmt = $this->connect()->prepare($query);
+		$stmt->execute([
+			':user_id' => $user_id,
+			':current_date' => $currentDate,
+			':role_id' => $role_id
 		]);
 
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -454,6 +528,7 @@ class NotificationManager extends Dbh
 		return $data['name'];
 
 	}
+	
 	public function getNotificationsRole($userRole_id)
 	{
 

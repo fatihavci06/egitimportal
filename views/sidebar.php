@@ -258,10 +258,7 @@ $menu1 = new ShowMenu();
                     </div>'; */
             }
             elseif ($_SESSION['role'] == 3) {
-                $menu1->showMenuSchoolAdminList();
-            }
-            elseif ($_SESSION['role'] == 3) {
-                $menu1->showMenuSchoolAdminList();
+                $menu1->showMenuSuperAdminList();
             }
             elseif ($_SESSION['role'] == 4){
                 $menu1->showMenuSuperAdminList();

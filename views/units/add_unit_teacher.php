@@ -12,7 +12,7 @@ include_once "classes/lessons-view.classes.php";
 $chooseClass = new ShowClass();
 $chooseLesson = new ShowLesson();
 
-?>	
+?>
 <div class="modal fade" id="kt_modal_add_customer" tabindex="-1" aria-hidden="true">
     <!--begin::Modal dialog-->
     <div class="modal-dialog modal-dialog-centered mw-650px">
@@ -128,6 +128,33 @@ $chooseLesson = new ShowLesson();
                             <!--end::Input-->
                         </div>
                         <!--end::Input group-->
+                        <?php if ($_SESSION['role'] == 3 or $_SESSION['role'] == 8) { ?>
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="required fs-6 fw-semibold mb-2">Sınıf</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <select id="classes" name="classes" aria-label="Sınıf Seçiniz" data-control="select2" data-placeholder="Sınıf Seçiniz..." class="form-select form-select-solid fw-bold">
+                                    <option value="">Sınıf Seçin</option>
+                                    <?php echo $chooseClass->getClassSelectList(); ?>
+                                </select>
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="required fs-6 fw-semibold mb-2">Ders</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <select id="lessons" name="lessons" aria-label="Ders Seçiniz" data-control="select2" data-placeholder="Ders Seçiniz..." class="form-select form-select-solid fw-bold">
+
+                                </select>
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                        <?php } ?>
 
                         <!--begin::Input group-->
                         <div class="fv-row mb-7">

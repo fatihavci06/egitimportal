@@ -27,6 +27,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 	if ($_SESSION['role'] == 1) {
 		$getStudentId = $studentId->getStudentId($slug);
+	} elseif ($_SESSION['role'] == 3) {
+		$getStudentId = $studentId->getStudentIdForCoordinator($slug, $_SESSION['school_id']);
 	} elseif ($_SESSION['role'] == 4) {
 		$getStudentId = $studentId->getStudentIdForTeacher($slug, $_SESSION['school_id'], $_SESSION['class_id']);
 	}
