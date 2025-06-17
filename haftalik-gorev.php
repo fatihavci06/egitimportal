@@ -576,6 +576,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                             });
 
                             for (const key in grouped) {
+
+                                // if(topicId !== ''){
+                                //     html += `<div>${topicId} konusunun alt konusu yok!</div>`
+                                // }
+
                                 html += `<h5 class="text-center event-month">${capitalize(key)}</h5>`;
 
                                 grouped[key].forEach(event => {

@@ -227,10 +227,10 @@ switch ($service) {
             $stmt = $pdo->prepare("SELECT * FROM `topics_lnp` where lesson_id=? and class_id=? and unit_id=? ORDER BY name ASC");
             $stmt->execute([$lessonId, $classId, $unitId]);
 
-            $lessons = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $topics = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            if ($lessons) {
-                echo json_encode(['status' => 'success', 'data' => $lessons]);
+            if ($topics) {
+                echo json_encode(['status' => 'success', 'data' => $topics]);
             } else {
                 echo json_encode(['status' => 'error', 'message' => 'Ders bulunamadı.']);
             }
@@ -253,10 +253,10 @@ switch ($service) {
             $stmt = $pdo->prepare("SELECT * FROM `subtopics_lnp` where lesson_id=? and class_id=? and unit_id=? and topic_id=? ORDER BY name ASC");
             $stmt->execute([$lessonId, $classId, $unitId, $topicId]);
 
-            $lessons = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $subTopics = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            if ($lessons) {
-                echo json_encode(['status' => 'success', 'data' => $lessons]);
+            if ($subTopics) {
+                echo json_encode(['status' => 'success', 'data' => $subTopics]);
             } else {
                 echo json_encode(['status' => 'error', 'message' => 'Ders bulunamadı.']);
             }

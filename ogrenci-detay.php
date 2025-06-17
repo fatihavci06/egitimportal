@@ -15,9 +15,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 	include_once "classes/lessons.classes.php";
 	include_once "classes/lessons-view.classes.php";
 
-
-
-
 	$studentId = new Student();
 	$student = new ShowStudent();
 	$timeSpend = new timeSpend();
@@ -37,7 +34,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 		header("location: ../404.php");
 		exit();
 	}
-
 
 	$studentInfo = $student->getOneStudent($getStudentId);
 
@@ -271,21 +267,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 															<!--end::Stats-->
 														</div>
 														<!--end::Wrapper-->
-														<!--begin::Progress-->
-														<div
-															class="d-flex align-items-center w-200px w-sm-300px flex-column mt-3">
-															<div class="d-flex justify-content-between w-100 mt-auto mb-2">
-																<span class="fw-semibold fs-6 text-gray-500">Profile
-																	Compleation</span>
-																<span class="fw-bold fs-6">50%</span>
-															</div>
-															<div class="h-5px mx-3 w-100 bg-light mb-3">
-																<div class="bg-success rounded h-5px" role="progressbar"
-																	style="width: 50%;" aria-valuenow="50" aria-valuemin="0"
-																	aria-valuemax="100"></div>
-															</div>
-														</div>
-														<!--end::Progress-->
+				
 													</div>
 													<!--end::Stats-->
 												</div>
@@ -1848,7 +1830,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 													</div>
 												</div>
 												<div class="col-xl-6" id="html_response">
-		
+
 												</div>
 
 

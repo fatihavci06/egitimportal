@@ -89,7 +89,7 @@ class Support extends Dbh
 			users_lnp u ON dt.writer = u.id
 			INNER JOIN
 			support_center_subjects_lnp scs ON scs.id = dt.subject
-			 WHERE dt.openedBy =? AND dt.completed =?');
+			 WHERE dt.openedBy =? AND dt.completed =? ORDER BY dt.created_at DESC');
 
 		if (!$stmt->execute([$userID, 0])) {
 			$stmt = null;
@@ -131,7 +131,7 @@ class Support extends Dbh
 			users_lnp u ON dt.writer = u.id 
 			INNER JOIN
 			support_center_subjects_lnp scs ON dt.subject = scs.id 
-			WHERE dt.completed =?');
+			WHERE dt.completed =? ORDER BY dt.created_at DESC');
 
 		if (!$stmt->execute([0])) {
 			$stmt = null;
@@ -160,7 +160,7 @@ class Support extends Dbh
 		    dt.openedBy, 
 		    dt.completed, 
 		    dt.created_at AS created_at, 
-		    dt.updated_at AS updated_at, ,
+		    dt.updated_at AS updated_at, 
 			u.name AS userName,
 			u.surname AS userSurname,
 			scs.name AS subjectName,
@@ -174,7 +174,7 @@ class Support extends Dbh
 			users_lnp u ON dt.writer = u.id 
 			INNER JOIN
 			support_center_subjects_lnp scs ON scs.id = dt.subject
-			WHERE dt.openedBy =? AND dt.completed =?');
+			WHERE dt.openedBy =? AND dt.completed =? ORDER BY dt.created_at DESC');
 
 		if (!$stmt->execute([$userID, 1])) {
 			$stmt = null;

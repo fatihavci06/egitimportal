@@ -82,35 +82,55 @@ class Chat
     /**
      * Get user's conversations list
      */
-    public function getUserConversations($user_id)
+    public function getUserConversations($user_id): array
     {
-        $stmt = $this->pdo->prepare("
-            SELECT 
-                c.id,
-                c.updated_at,
-                CASE 
-                    WHEN c.user1_id = ? THEN u2.username 
-                    ELSE u1.username 
-                END as other_user_name,
-                CASE 
-                    WHEN c.user1_id = ? THEN c.user2_id 
-                    ELSE c.user1_id 
-                END as other_user_id,
-                u1.name,
-                u2.name,
-                u1.surname,
-                u2.surname,
-                u1.photo,
-                u2.photo,
-                (SELECT message FROM messages WHERE conversation_id = c.id ORDER BY created_at DESC LIMIT 1) as last_message,
-                (SELECT COUNT(*) FROM messages WHERE conversation_id = c.id AND sender_id != ? AND is_read = FALSE) as unread_count
-            FROM conversations c
-            JOIN users_lnp u1 ON c.user1_id = u1.id
-            JOIN users_lnp u2 ON c.user2_id = u2.id
-            WHERE c.user1_id = ? OR c.user2_id = ?
-            ORDER BY c.updated_at DESC
-        ");
-        $stmt->execute([$user_id, $user_id, $user_id, $user_id, $user_id]);
+        $sql = "
+        SELECT 
+            c.id,
+            c.updated_at,
+            CASE 
+                WHEN c.user1_id = :user_id THEN u2.username 
+                ELSE u1.username 
+            END AS other_username,
+            CASE 
+                WHEN c.user1_id = :user_id THEN c.user2_id 
+                ELSE c.user1_id 
+            END AS other_user_id,
+            CASE 
+                WHEN c.user1_id = :user_id THEN u2.name 
+                ELSE u1.name 
+            END AS other_name,
+            CASE 
+                WHEN c.user1_id = :user_id THEN u2.surname 
+                ELSE u1.surname 
+            END AS other_surname,
+            CASE 
+                WHEN c.user1_id = :user_id THEN u2.photo 
+                ELSE u1.photo 
+            END AS other_photo,
+            (
+                SELECT message 
+                FROM messages 
+                WHERE conversation_id = c.id 
+                ORDER BY created_at DESC 
+                LIMIT 1
+            ) AS last_message,
+            (
+                SELECT COUNT(*) 
+                FROM messages 
+                WHERE conversation_id = c.id 
+                AND sender_id != :user_id 
+                AND is_read = FALSE
+            ) AS unread_count
+        FROM conversations c
+        JOIN users_lnp u1 ON c.user1_id = u1.id
+        JOIN users_lnp u2 ON c.user2_id = u2.id
+        WHERE c.user1_id = :user_id OR c.user2_id = :user_id
+        ORDER BY c.updated_at DESC
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['user_id' => $user_id]);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

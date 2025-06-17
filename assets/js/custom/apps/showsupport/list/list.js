@@ -23,7 +23,6 @@ var KTCustomersList = function () {
         datatable = $(table).DataTable({
             "info": false,
             'order': [
-                [3, 'DESC']
             ],
             'columnDefs': [
                 { orderable: false, targets: 4 }
