@@ -2992,6 +2992,170 @@ WHERE t.id = :id";
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
         break;
+    case 'teacherTimeSettings':
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $input = file_get_contents('php://input');
+            $lessonData = json_decode($input, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                http_response_code(400); // Bad Request
+                echo json_encode(['status' => 'error', 'message' => 'Geçersiz JSON verisi.']);
+                exit();
+            }
+
+            if (!is_array($lessonData) || empty($lessonData)) {
+                http_response_code(400);
+                echo json_encode(['status' => 'error', 'message' => 'Ders verisi boş veya geçersiz.']);
+                exit();
+            }
+
+            $successCount = 0;
+            $errorMessages = [];
+            
+            try {
+                // Veritabanı bağlantısını al
+                $pdo->beginTransaction(); // İşlemi başlat (birden fazla insert olacağı için)
+
+                foreach ($lessonData as $lesson) {
+                    $date = $lesson['date'] ?? null;
+                    $startTime = $lesson['start_time'] ?? null;
+                    $endTime = $lesson['end_time'] ?? null;
+                    $teacherId=$_GET['id'];
+
+                    if (!$date || !$startTime || !$endTime) {
+                        $errorMessages[] = 'Tarih veya zaman eksik: ' . json_encode($lesson);
+                        continue;
+                    }
+
+                    $dateObj = DateTime::createFromFormat('d.m.Y', $date);
+                    if (!$dateObj) {
+                        $errorMessages[] = 'Geçersiz tarih formatı: ' . $date;
+                        continue;
+                    }
+                    $formattedDate = $dateObj->format('Y-m-d');
+
+                    // Dersin zaten var olup olmadığını kontrol et
+                    $checkStmt = $pdo->prepare("SELECT COUNT(*) FROM teacher_available_times_lnp WHERE teacher_id = ? AND available_date = ? AND start_time = ? AND end_time = ?");
+                    $checkStmt->execute([$teacherId, $formattedDate, $startTime, $endTime]);
+                    if ($checkStmt->fetchColumn() > 0) {
+                        $errorMessages[] = "Ders zaten mevcut: Tarih: {$date}, Başlangıç: {$startTime}, Bitiş: {$endTime}";
+                        continue; // Mevcut dersi eklemeyi atla
+                    }
+
+                    // Veritabanına kaydetme işlemi
+                    $insertStmt = $pdo->prepare("INSERT INTO teacher_available_times_lnp (teacher_id, available_date, start_time, end_time) VALUES (?, ?, ?, ?)");
+                    if ($insertStmt->execute([$teacherId, $formattedDate, $startTime, $endTime])) {
+                        $successCount++;
+                    } else {
+                        $errorMessages[] = "Ders kaydedilirken hata oluştu: Tarih: {$date}, Başlangıç: {$startTime}, Bitiş: {$endTime}";
+                    }
+                }
+                $pdo->commit(); // İşlemi onayla
+
+                if ($successCount > 0) {
+                    echo json_encode([
+                        'status' => 'success',
+                        'message' => $successCount . ' adet ders başarıyla kaydedildi.',
+                        'errors' => $errorMessages
+                    ]);
+                } else {
+                    http_response_code(500);
+                    echo json_encode([
+                        'status' => 'error',
+                        'message' => 'Hiçbir ders kaydedilemedi.',
+                        'errors' => $errorMessages
+                    ]);
+                }
+
+            } catch (PDOException $e) {
+                if ($pdo->inTransaction()) {
+                    $pdo->rollBack(); // Hata oluşursa işlemi geri al
+                }
+                error_log("Ders kaydetme toplu işlemi hatası: " . $e->getMessage());
+                http_response_code(500);
+                echo json_encode(['status' => 'error', 'message' => 'Dersler kaydedilirken genel bir veritabanı hatası oluştu.']);
+            }
+            exit();
+
+        } else {
+            http_response_code(405);
+            echo json_encode(['status' => 'error', 'message' => 'Sadece POST istekleri kabul edilir.']);
+            exit();
+        }
+        break;
+
+    case 'getTeacherTimeSettings':
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        try {
+            $stmt = $pdo->prepare("
+                SELECT 
+                    id, 
+                    DATE_FORMAT(available_date, '%d.%m.%Y') AS date, 
+                    start_time, 
+                    end_time 
+                FROM teacher_available_times_lnp 
+                WHERE teacher_id = ?
+                    AND TIMESTAMP(available_date, start_time) >= NOW()
+                ORDER BY available_date, start_time 
+                LIMIT 100
+            ");
+            $stmt->execute([$_GET['id']]);
+            $lessons = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            echo json_encode(['status' => 'success', 'data' => $lessons]);
+
+        } catch (PDOException $e) {
+            error_log("Öğretmen derslerini çekme hatası: " . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Dersler getirilirken bir hata oluştu.']);
+        }
+        exit();
+    } else {
+        http_response_code(405);
+        echo json_encode(['status' => 'error', 'message' => 'Sadece GET istekleri kabul edilir.']);
+        exit();
+    }
+    break;
+
+
+    case 'deleteTeacherTimeSetting':
+            $lessonId = $_GET['id'] ?? null;
+            $teacherId=$_GET['teacher_id'];
+
+            if (!$lessonId) {
+                http_response_code(400);
+                echo json_encode(['status' => 'error', 'message' => 'Ders ID\'si eksik.']);
+                exit();
+            }
+
+            try {
+                
+                
+                // Güvenlik: Sadece kendi dersini silebildiğinden emin ol
+                $checkOwnerStmt = $pdo->prepare("SELECT COUNT(*) FROM teacher_available_times_lnp WHERE id = ? AND teacher_id = ?");
+                $checkOwnerStmt->execute([$lessonId, $teacherId]);
+                if ($checkOwnerStmt->fetchColumn() === 0) {
+                    http_response_code(403);
+                    echo json_encode(['status' => 'error', 'message' => 'Bu dersi silmeye yetkiniz yok veya ders bulunamadı.']);
+                    exit();
+                }
+
+                $deleteStmt = $pdo->prepare("DELETE FROM teacher_available_times_lnp WHERE id = ?");
+                if ($deleteStmt->execute([$lessonId])) {
+                    echo json_encode(['status' => 'success', 'message' => 'Ders başarıyla silindi.']);
+                } else {
+                    http_response_code(500);
+                    echo json_encode(['status' => 'error', 'message' => 'Ders silinirken bir hata oluştu.']);
+                }
+            } catch (PDOException $e) {
+                error_log("Ders silme hatası: " . $e->getMessage());
+                http_response_code(500);
+                echo json_encode(['status' => 'error', 'message' => 'Ders silinirken genel bir veritabanı hatası oluştu.']);
+            }
+            exit();
+        
+        break;
 
     default:
         echo json_encode(['status' => 'error', 'message' => 'Geçersiz servis']);

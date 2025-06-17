@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
-    
+
 <?php
 
 session_start();
@@ -8,17 +8,17 @@ define('GUARD', true);
 
 
 if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001 or $_SESSION['role'] == 10002)) {
-  
+
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
-   
+
     include_once "views/pages-head.php";
-    
+
     $data = new Classes();
     if ($_SESSION['role'] == 10002) {
-       
+
         $contentId = $_GET['id'];
-        $exists = $data->permissionControl($contentId,  $_SESSION['id']);
+        $exists = $data->permissionControl($contentId, $_SESSION['id']);
         if (!$exists) {
             // Kullanıcının yetkisi yoksa login sayfasına yönlendir
             header("Location: ana-okulu-icerikler");
@@ -30,12 +30,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 <?php
 
 ?>
-    <!--end::Head-->
-    <!--begin::Body--> 
-
     <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
-        <!--begin::Theme mode setup on page load-->
-        
         <script>
             var defaultThemeMode = "light";
             var themeMode;
@@ -55,68 +50,60 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 document.documentElement.setAttribute("data-bs-theme", themeMode);
             }
         </script>
-        <!--end::Theme mode setup on page load-->
-        <!--begin::App-->
         <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
-            <!--begin::Page-->
             <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
-                <!--begin::Header-->
-               
-        
                 <?php include_once "views/header.php"; ?>
-                
-               
-                <!--end::Header-->
-                <!--begin::Wrapper-->
+
+
                 <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrappera">
-                    <!--begin::Sidebar-->
                     <?php include_once "views/sidebar.php"; ?>
-                    
-                    <!--end::Sidebar-->
-                    <!--begin::Main-->
+
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
-                        <!--begin::Content wrapper-->
                         <div class="d-flex flex-column flex-column-fluid">
-                            <!--begin::Toolbar-->
                             <?php include_once "views/toolbar.php"; ?>
                             <?php
-                            
+
                             $data = $data->getMainSchoolContentById($_GET['id']);
-                            function convertYoutubeToEmbed($url)
+
+                            /**
+                             * Converts YouTube and Vimeo URLs to embeddable formats.
+                             *
+                             * @param string $url The URL of the video.
+                             * @return string|null The embed URL or null if not a valid YouTube/Vimeo link.
+                             */
+                            function convertToEmbedUrl($url)
                             {
-                                if (preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/', $url, $matches)) {
+                                // YouTube URL'sini işleme
+                                if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/', $url, $matches)) {
                                     return 'https://www.youtube.com/embed/' . $matches[1];
                                 }
-                                return null; // Geçerli bir YouTube linki değilse null döndür
+                                // Vimeo URL'sini işleme
+                                if (preg_match('/(?:www\.|player\.)?vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/\d+\/video\/|video\/|)(\d+)(?:[?&]t=\d+)?/', $url, $matches)) {
+                                    return 'https://player.vimeo.com/video/' . $matches[2];
+                                }
+                                return null; // Geçerli bir YouTube veya Vimeo linki değilse null döndür
                             }
                             ?>
 
-                            <!--end::Toolbar-->
-                            <!--begin::Content-->
                             <div id="kt_app_content" class="app-content flex-column-fluid">
 
-                                <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
-                                    <!--begin::Card-->
                                     <div class="card-body col-10 container pt-5">
                                         <h1><?= $data['subject']; ?></h1>
                                         <div class="row">
                                             <p><?= $data['content_description']; ?></p>
                                         </div>
                                         <div class="tab-content mt-4" id="myTabContent">
-                                            <!-- Video Tab -->
                                             <div class="tab-pane fade show active" id="video" role="tabpanel" aria-labelledby="video-tab">
                                                 <div class="row">
                                                     <?php
 
                                                     if (isset($data['images']) && count($data['images']) > 0) {
-                                                        foreach ($data['images'] as $img): ?>
+                                                        foreach ($data['images'] as $img) : ?>
                                                             <div class="col-md-12 mb-4">
                                                                 <div class="card shadow-sm">
                                                                     <div class="card-body p-0" style="height: 700px;">
-                                                                        <img src="<?= $img['file_path'] ?>" alt="Yüklenen Görsel"
-                                                                            class="w-100 h-100 rounded shadow"
-                                                                            style="object-fit: cover;">
+                                                                        <img src="<?= $img['file_path'] ?>" alt="Yüklenen Görsel" class="w-100 h-100 rounded shadow" style="object-fit: cover;">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -125,19 +112,22 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 </div>
                                                 <div class="row mt-4" id="videoContent">
                                                     <?php
-                                                    $embedUrl = convertYoutubeToEmbed($data['video_url']);
+                                                    $videoUrl = $data['video_url'] ?? ''; // video_url'nin tanımlı olduğundan emin olun
+                                                    $embedUrl = convertToEmbedUrl($videoUrl);
 
-                                                    if ($embedUrl): ?>
-                                                        <iframe width="400" height="400"
-                                                            src="<?= htmlspecialchars($embedUrl, ENT_QUOTES, 'UTF-8') ?>"
-                                                            title="YouTube video player"
-                                                            frameborder="0"
-                                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                                            referrerpolicy="strict-origin-when-cross-origin"
-                                                            allowfullscreen>
+                                                    if ($embedUrl) :
+                                                        // YouTube veya Vimeo iframe özelliklerini ayarla
+                                                        $iframeProperties = 'width="100%" height="400" frameborder="0" allowfullscreen';
+                                                        if (strpos($embedUrl, 'youtube.com') !== false) { // YouTube'a özgü izinler
+                                                            $iframeProperties .= ' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"';
+                                                        } elseif (strpos($embedUrl, 'vimeo.com') !== false) { // Vimeo'ya özgü izinler
+                                                            $iframeProperties .= ' allow="autoplay; fullscreen; picture-in-picture"';
+                                                        }
+                                                    ?>
+                                                        <iframe src="<?= htmlspecialchars($embedUrl, ENT_QUOTES, 'UTF-8') ?>" title="Video player" <?= $iframeProperties ?>>
                                                         </iframe>
-                                                    <?php else: ?>
-                                                        <p>Geçersiz YouTube linki.</p>
+                                                    <?php else : ?>
+                                                        <p>Video bulunamadı veya geçersiz bir video linki.</p>
                                                     <?php endif; ?>
 
                                                 </div>
@@ -145,12 +135,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <?php
 
                                                     if (isset($data['wordwalls']) && count($data['wordwalls']) > 0) {
-                                                        foreach ($data['wordwalls'] as $wordWall): ?>
+                                                        foreach ($data['wordwalls'] as $wordWall) : ?>
                                                             <div class="col-md-12 mb-4">
                                                                 <div class="card shadow-sm">
-                                                                    <h3 class="card-title mt-4 mb-4"><?=$wordWall['wordwall_title'];?></h3>
+                                                                    <h3 class="card-title mt-4 mb-4"><?= $wordWall['wordwall_title']; ?></h3>
                                                                     <div class="card-body p-0" style="height: 400px;">
-                                                                        <iframe style="max-width:100%" src="<?=$wordWall['wordwall_url']?>" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+                                                                        <iframe style="max-width:100%" src="<?= $wordWall['wordwall_url'] ?>" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -171,25 +161,20 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <div class="row" id="files" role="tabpanel" aria-labelledby="files-tab">
                                                     <?php
                                                     if (isset($data['files'])) {
-                                                    ?> <h1 style="margin-top:50px;margin-bottom:30px">Dosyalar</h1>
-                                                        <?php foreach ($data['files'] as $file): ?>
+                                                    ?>
+                                                        <h1 style="margin-top:50px;margin-bottom:30px">Dosyalar</h1>
+                                                        <?php foreach ($data['files'] as $file) : ?>
                                                             <div class="col-md-12 mb-4" style="font-size: 20px;">
                                                                 <div class="card shadow-sm">
                                                                     <div class="card-body">
-                                                                        <!-- Dosya Başlığı ve Bağlantısı -->
                                                                         <h5 class="card-title">
                                                                             <a href="<?= $file['file_path'] ?>" target="_blank" class="text-decoration-none text-primary">
                                                                                 <i class="bi bi-file-earmark"></i> <?= basename($file['file_path']) ?>
                                                                             </a>
                                                                         </h5>
 
-                                                                        <!-- Dosya Açıklaması -->
                                                                         <p><strong>Açıklama:</strong> <?= htmlspecialchars($file['description'] ?? 'Açıklama mevcut değil.') ?></p>
 
-                                                                        <!-- Dosya Yükleme veya Düzenleme Bölümü -->
-
-
-                                                                        <!-- Dosya İndirme Butonu -->
                                                                         <div class="d-flex justify-content-between">
                                                                             <a href="<?= $file['file_path'] ?>" class="btn btn-primary btn-sm" target="_blank">
                                                                                 <i class="bi bi-download"></i> Dosyayı Görüntüle
@@ -199,7 +184,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        <?php endforeach; ?>
+                                                    <?php endforeach; ?>
                                                     <?php
                                                     }
                                                     ?>
@@ -207,60 +192,34 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                             </div>
 
-                                            <!-- İçerik Tab -->
-
-
-                                            <!-- Dosyalar Tab -->
-
-
-                                        </div>
+                                            </div>
                                     </div>
 
 
 
 
                                 </div>
-                                <!--end::Card-->
+                                </div>
                             </div>
-                            <!--end::Content container-->
                         </div>
-                        <!--end::Content-->
-                    </div>
-                    <!--end::Content wrapper-->
-                    <!--begin::Footer-->
                     <?php include_once "views/footer.php"; ?>
-                    <!--end::Footer-->
-                </div>
-                <!--end:::Main-->
-                <!--begin::aside-->
+                    </div>
                 <?php include_once "views/aside.php"; ?>
-                <!--end::aside-->
+                </div>
             </div>
-            <!--end::Wrapper-->
         </div>
-        <!--end::Page-->
-        </div>
-        <!--end::App-->
-        <!--begin::Scrolltop-->
         <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
             <i class="ki-duotone ki-arrow-up">
                 <span class="path1"></span>
                 <span class="path2"></span>
             </i>
         </div>
-        <!--end::Scrolltop-->
-        <!--begin::Javascript-->
         <script>
             var hostUrl = "assets/";
         </script>
-        <!--begin::Global Javascript Bundle(mandatory for all pages)-->
         <script src="assets/plugins/global/plugins.bundle.js"></script>
         <script src="assets/js/scripts.bundle.js"></script>
-        <!--end::Global Javascript Bundle-->
-        <!--begin::Vendors Javascript(used for this page only)-->
         <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
-        <!--end::Vendors Javascript-->
-        <!--begin::Custom Javascript(used for this page only)-->
         <script src="assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
         <script src="assets/js/custom/apps/subtopics/list/export.js"></script>
         <script src="assets/js/custom/apps/subtopics/list/list.js"></script>
@@ -276,12 +235,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/js/custom/utilities/modals/users-search.js"></script>
 
 
-        <!--end::Custom Javascript-->
-        <!--end::Javascript-->
-    </body>
-    <!--end::Body-->
-
-</html>
+        </body>
+    </html>
 <?php } else {
     header("location: index");
 }

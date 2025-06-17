@@ -2,6 +2,20 @@
 
 class Classes extends Dbh
 {
+	public function getTeacherList()
+	{
+		$stmt = $this->connect()->prepare('SELECT u.id as id, u.name as name,u.surname as surname,c.name as class_name ,l.name as lesson_name FROM `users_lnp` u left join classes_lnp c on u.class_id=c.id left JOIN lessons_lnp l on u.lesson_id=l.id where role in(4,9,10)
+ ORDER BY id desc');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $data;
+	}
 	public function getExtraPackageList()
 	{
 		$stmt = $this->connect()->prepare('SELECT *FROM extra_packages_lnp where school_id=1 ORDER BY id desc');

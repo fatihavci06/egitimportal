@@ -231,7 +231,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                                 <!-- Video URL input -->
                                                 <div id="videoInput" class="mb-4" style="display:none;">
-                                                    <label for="video_url">Video Link(Youtube):</label>
+                                                    <label for="video_url">Video Link(Youtube,Vimeo):</label>
                                                     <input type="text" class="form-control" name="video_url" id="video_url">
                                                 </div>
                                                 <div id="primary_image" class="mb-4" style="display:none;">
