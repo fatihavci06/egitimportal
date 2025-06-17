@@ -263,6 +263,9 @@ $menu1 = new ShowMenu();
             elseif ($_SESSION['role'] == 4){
                 $menu1->showMenuSuperAdminList();
             }
+            elseif ($_SESSION['role'] == 5){
+                $menu1->showMenuSuperAdminList();
+            }
             elseif ($_SESSION['role'] == 10001){
                
                 $menu1->showMenuSuperAdminList();

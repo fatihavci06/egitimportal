@@ -95,12 +95,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             <!--begin::Toolbar-->
                                             <div class="d-flex justify-content-end"
                                                 data-kt-customer-table-toolbar="base">
-                                                <!--begin::Add school-->
-                                                <?php if (!empty($waitingStudents->getWaitingMoneyTransfers()) and $_SESSION['role'] == 1) { ?><a
-                                                        href="havale-beklenenler"><button type="button"
-                                                            class="btn btn-primary me-3" data-bs-toggle="modal">Havalesi
-                                                            Beklenen Öğrenciler</button></a><?php } ?>
-                                                <!--end::Add school-->
                                                 <!--begin::Filter-->
                                                 <?php if ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 8) { ?>
                                                     <button type="button" class="btn btn-light-primary me-3"
