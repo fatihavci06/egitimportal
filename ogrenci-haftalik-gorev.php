@@ -432,7 +432,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                         success: function(response) {
                             if (response.status === 'success' && response.data.length > 0) {
                                 $.each(response.data, function(index, subtopic) {
-                                    
+
                                 });
                             } else {
                                 $subtopicSelect.append('<option disabled>Alt konu bulunamadı</option>');
@@ -486,7 +486,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
 
             // Filtreleme butonu tıklaması
             $('#filterButton').on('click', function() {
-            
+
                 var classId = $('#classId').val();
                 var lessonId = $('#lesson_id').val();
                 var unitId = $('#unit_id').val();
@@ -554,22 +554,21 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
 
                                 grouped[key].forEach(event => {
                                     let eventName = '';
-                                    if (lessonId !== '') {
+                                    if (topicId !== '') {
                                         eventName += `<div class="event-name">
-                                                   <a href="unite/${event.slug}">
+                                                   <a href="alt-konu/${event.slug}">
                                                        ${event.name}
                                                     </a>
                                                 </div>`
-                                    }
-                                    else if (unitId !== '') {
+                                    } else if (unitId !== '') {
                                         eventName += `<div class="event-name">
                                                    <a href="konu/${event.slug}">
                                                        ${event.name}
                                                     </a>
                                                 </div>`
-                                    } else if (topicId !== '') {
+                                    } else if (lessonId !== '') {
                                         eventName += `<div class="event-name">
-                                                   <a href="alt-konu/${event.slug}">
+                                                   <a href="unite/${event.slug}">
                                                        ${event.name}
                                                     </a>
                                                 </div>`
