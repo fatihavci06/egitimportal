@@ -3,6 +3,13 @@ if (!isset($userInfo)) {
     throw new Exception("userInfo not provided");
 }
 
+require_once "classes/grade-result.classes.php";
+
+$gradeObj = new GradeResult();
+
+$resultProfile = $gradeObj->getGradeOverall($userInfo['id']);
+$resultProfileW = ($resultProfile == null) ? 0 : $resultProfile;
+$resultProfileT = ($resultProfile == null) ? '-' : $resultProfile;
 ?>
 
 <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
@@ -92,13 +99,12 @@ if (!isset($userInfo)) {
                                         </div>
                                         <div class="d-flex align-items-center w-200px w-sm-300px flex-column mt-3">
                                             <div class="d-flex justify-content-between w-100 mt-auto mb-2">
-                                                <span class="fw-semibold fs-6 text-gray-500">Profile
-                                                    Compleation</span>
-                                                <span class="fw-bold fs-6">50%</span>
+                                                <span class="fw-semibold fs-6 text-gray-500">Başarı Oranı</span>
+                                                <span class="fw-bold fs-6"><?= $resultProfileT ?>%</span>
                                             </div>
                                             <div class="h-5px mx-3 w-100 bg-light mb-3">
                                                 <div class="bg-success rounded h-5px" role="progressbar"
-                                                    style="width: 50%;" aria-valuenow="50" aria-valuemin="0"
+                                                    style="width: <?= $resultProfileW ?>%;" aria-valuenow="50" aria-valuemin="0"
                                                     aria-valuemax="100"></div>
                                             </div>
                                         </div>
