@@ -16,6 +16,100 @@ class Classes extends Dbh
 
 		return $data;
 	}
+	public function getPrivateLessonRequestList(): array
+	{
+		$sql = 'SELECT
+        pr.id,
+        COALESCE(c.name, \'-\') AS class_name,
+        COALESCE(l.name, \'-\') AS lesson_name,
+        COALESCE(u.name, \'-\') AS unit_name,
+        COALESCE(t.name, \'-\') AS topic_name,
+        COALESCE(s.name, \'-\') AS subtopic_name,
+        COALESCE(CONCAT(student.name, " ", student.surname), \'-\') AS student_full_name,
+        COALESCE(CONCAT(teacher.name, " ", teacher.surname), \'-\') AS teacher_full_name,
+        CASE
+            WHEN pr.request_status = 0 THEN "Atama Bekliyor"
+            WHEN pr.request_status = 1 THEN "Atandı"
+            ELSE \'-\'
+        END AS request_status_text
+    FROM
+        private_lesson_requests_lnp pr
+    LEFT JOIN classes_lnp c ON c.id = pr.class_id
+    LEFT JOIN lessons_lnp l ON l.id = pr.lesson_id
+    LEFT JOIN units_lnp u ON u.id = pr.unit_id 
+    LEFT JOIN topics_lnp t ON t.id = pr.topic_id
+    LEFT JOIN subtopics_lnp s ON s.id = pr.subtopic_id
+    LEFT JOIN users_lnp student ON student.id = pr.student_user_id
+    LEFT JOIN users_lnp teacher ON teacher.id = pr.assigned_teacher_id
+    ORDER BY pr.created_at DESC
+    LIMIT 1000';
+
+		$stmt = $this->connect()->prepare($sql);
+
+		if (!$stmt->execute()) {
+			error_log('Error executing private lesson request query.');
+			$stmt = null;
+			return [];
+		}
+
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
+	public function getPrivateLessonRequestById($id)
+	{
+		$sql = 'SELECT
+        pr.id,
+		pr.time_slot,
+		pr.meet_date,
+		pr.assigned_teacher_id,
+        COALESCE(c.name, \'-\') AS class_name,
+        COALESCE(l.name, \'-\') AS lesson_name,
+        COALESCE(u.name, \'-\') AS unit_name,
+        COALESCE(t.name, \'-\') AS topic_name,
+        COALESCE(s.name, \'-\') AS subtopic_name,
+        COALESCE(CONCAT(student.name, " ", student.surname), \'-\') AS student_full_name,
+        COALESCE(CONCAT(teacher.name, " ", teacher.surname), \'-\') AS teacher_full_name,
+        CASE
+            WHEN pr.request_status = 0 THEN "Atama Bekliyor"
+            WHEN pr.request_status = 1 THEN "Atandı"
+            ELSE \'-\'
+        END AS request_status_text
+    FROM
+        private_lesson_requests_lnp pr
+    LEFT JOIN classes_lnp c ON c.id = pr.class_id
+    LEFT JOIN lessons_lnp l ON l.id = pr.lesson_id
+    LEFT JOIN units_lnp u ON u.id = pr.unit_id 
+    LEFT JOIN topics_lnp t ON t.id = pr.topic_id
+    LEFT JOIN subtopics_lnp s ON s.id = pr.subtopic_id
+    LEFT JOIN users_lnp student ON student.id = pr.student_user_id
+    LEFT JOIN users_lnp teacher ON teacher.id = pr.assigned_teacher_id
+    WHERE pr.id = ?';
+
+		$stmt = $this->connect()->prepare($sql);
+
+		if (!$stmt->execute([$id])) {
+			error_log('Error executing private lesson request by ID query.');
+			$stmt = null;
+			return [];
+		}
+
+		return $stmt->fetch(PDO::FETCH_ASSOC); // tek kayıt
+	}
+	public function getTeachers()
+	{
+		$stmt = $this->connect()->prepare('SELECT * FROM users_lnp WHERE school_id = 1 AND role IN (4, 9, 10) ORDER BY id DESC');
+
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $data;
+	}
+
+
 	public function getExtraPackageList()
 	{
 		$stmt = $this->connect()->prepare('SELECT *FROM extra_packages_lnp where school_id=1 ORDER BY id desc');
@@ -186,13 +280,12 @@ class Classes extends Dbh
 				$stmt = null;
 				exit();
 			}
-		}elseif($role == 4){
+		} elseif ($role == 4) {
 			$stmt = $this->connect()->prepare('SELECT id,test_title,end_date FROM tests_lnp WHERE teacher_id = ? ORDER BY id DESC');
 			if (!$stmt->execute([$_SESSION['id']])) {
 				$stmt = null;
 				exit();
 			}
-
 		} else {
 
 			$userId = $_SESSION['id']; // Session'dan user_id'yi al

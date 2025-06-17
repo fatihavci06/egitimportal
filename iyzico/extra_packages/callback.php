@@ -8,8 +8,10 @@ define('GUARD', true);
 } */
 
 require_once '../../classes/dbh.classes.php';
+require_once '../../classes/Mailer.php';
 require_once '../config.php';
 $config = new Config();
+$mailer = new Mailer();
 $options = $config::options();
 $db = new Dbh();
 $pdo = $db->connect();
@@ -83,8 +85,17 @@ if ($response->getStatus() === 'success' && $response->getPaymentStatus() === 'S
     ]);
 
     $_SESSION['payment_success'] = true;
-}
- else {
+    $to_email = $_SESSION['email'];
+    $subject = 'Paket Bilgilendirmesi';
+    $body = 'Paketiniz kapsamında gerekli atama işlemi yapılacak olup tarafınıza bilgilendirme emaili gönderilecektir.';
+
+    if ($mailer->send($to_email, $subject, $body)) {
+        echo "Metin e-postası başarıyla gönderildi.\n";
+    } else {
+        echo "Metin e-postası gönderilemedi. Hata: " . $mailer->getErrorInfo() . "\n";
+    }
+   
+} else {
     $_SESSION['payment_success'] = false;
     $_SESSION['payment_error'] = $response->getErrorMessage();
 }

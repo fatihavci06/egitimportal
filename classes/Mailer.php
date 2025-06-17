@@ -54,7 +54,7 @@ class Mailer
         $this->mail->Encoding = 'base64';
 
         // Set default timeout
-        $this->mail->Timeout = 30;
+        $this->mail->Timeout = 25;
     }
 
     /**

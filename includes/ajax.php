@@ -1,6 +1,8 @@
 <?php
 // includes/ajax.php
 include_once '../classes/dbh.classes.php';
+include_once '../classes/Mailer.php';
+$mailer = new Mailer();
 header('Content-Type: application/json');
 session_start();
 // Sadece POST isteğini kabul et
@@ -1146,6 +1148,153 @@ switch ($service) {
             ]);
         } catch (Exception $e) {
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        break;
+    case 'getClasses':
+        try {
+            // Bu sorgu için ek bir filtreye gerek yok, tüm ana sınıfları getiriyor
+            $stmt = $pdo->prepare("SELECT id, name FROM `classes_lnp` WHERE class_type = 0 ORDER BY name ASC");
+            $stmt->execute();
+
+            $classes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if ($classes) {
+                echo json_encode(['status' => 'success', 'data' => $classes]);
+            } else {
+                // Hata yerine bilgi mesajı dönüyoruz çünkü veri olmaması bir hata değil
+                echo json_encode(['status' => 'success', 'data' => [], 'message' => 'Sınıf bulunamadı.']);
+            }
+        } catch (Exception $e) {
+            http_response_code(500); // Internal Server Error
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Sınıflar yüklenirken hata oluştu: ' . $e->getMessage()
+            ]);
+            exit();
+        }
+        break;
+
+    case 'getLessonList':
+        $classId = $_GET['class_id'] ?? null; // class_id parametresini alıyoruz
+
+        if (is_null($classId)) {
+            http_response_code(400); // Bad Request
+            echo json_encode(['status' => 'error', 'message' => 'Dersleri listelemek için sınıf ID\'si gereklidir.']);
+            exit();
+        }
+
+        try {
+            // class_id'ye göre dersleri getiriyoruz
+            $stmt = $pdo->prepare("SELECT id, name FROM `lessons_lnp` WHERE class_id = :class_id ORDER BY name ASC");
+            $stmt->bindParam(':class_id', $classId, PDO::PARAM_INT);
+            $stmt->execute();
+            $lessons = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if ($lessons) {
+                echo json_encode(['status' => 'success', 'data' => $lessons]);
+            } else {
+                echo json_encode(['status' => 'success', 'data' => [], 'message' => 'Bu sınıfa ait ders bulunamadı.']);
+            }
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Dersler yüklenirken hata oluştu: ' . $e->getMessage()]);
+            exit();
+        }
+        break;
+
+    case 'getUnits':
+        $classId = $_GET['class_id'] ?? null; // class_id'yi de alıyoruz
+        $lessonId = $_GET['lesson_id'] ?? null;
+
+        if (is_null($classId) || is_null($lessonId)) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Üniteleri listelemek için sınıf ve ders ID\'leri gereklidir.']);
+            exit();
+        }
+
+        try {
+            // class_id ve lesson_id'ye göre üniteleri getiriyoruz
+            $stmt = $pdo->prepare("SELECT id, name FROM `units_lnp` WHERE class_id = :class_id AND lesson_id = :lesson_id ORDER BY name ASC");
+            $stmt->bindParam(':class_id', $classId, PDO::PARAM_INT);
+            $stmt->bindParam(':lesson_id', $lessonId, PDO::PARAM_INT);
+            $stmt->execute();
+            $units = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if ($units) {
+                echo json_encode(['status' => 'success', 'data' => $units]);
+            } else {
+                echo json_encode(['status' => 'success', 'data' => [], 'message' => 'Bu derse ait ünite bulunamadı.']);
+            }
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Üniteler yüklenirken hata oluştu: ' . $e->getMessage()]);
+            exit();
+        }
+        break;
+
+    case 'getTopics':
+        $classId = $_GET['class_id'] ?? null;
+        $lessonId = $_GET['lesson_id'] ?? null;
+        $unitId = $_GET['unit_id'] ?? null;
+
+        if (is_null($classId) || is_null($lessonId) || is_null($unitId)) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Konuları listelemek için sınıf, ders ve ünite ID\'leri gereklidir.']);
+            exit();
+        }
+
+        try {
+            // class_id, lesson_id ve unit_id'ye göre konuları getiriyoruz
+            $stmt = $pdo->prepare("SELECT id, name FROM `topics_lnp` WHERE class_id = :class_id AND lesson_id = :lesson_id AND unit_id = :unit_id ORDER BY name ASC");
+            $stmt->bindParam(':class_id', $classId, PDO::PARAM_INT);
+            $stmt->bindParam(':lesson_id', $lessonId, PDO::PARAM_INT);
+            $stmt->bindParam(':unit_id', $unitId, PDO::PARAM_INT);
+            $stmt->execute();
+            $topics = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if ($topics) {
+                echo json_encode(['status' => 'success', 'data' => $topics]);
+            } else {
+                echo json_encode(['status' => 'success', 'data' => [], 'message' => 'Bu üniteye ait konu bulunamadı.']);
+            }
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Konular yüklenirken hata oluştu: ' . $e->getMessage()]);
+            exit();
+        }
+        break;
+
+    case 'getSubtopics':
+        $classId = $_GET['class_id'] ?? null;
+        $lessonId = $_GET['lesson_id'] ?? null;
+        $unitId = $_GET['unit_id'] ?? null;
+        $topicId = $_GET['topic_id'] ?? null;
+
+        if (is_null($classId) || is_null($lessonId) || is_null($unitId) || is_null($topicId)) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Alt konuları listelemek için sınıf, ders, ünite ve konu ID\'leri gereklidir.']);
+            exit();
+        }
+
+        try {
+            // class_id, lesson_id, unit_id ve topic_id'ye göre alt konuları getiriyoruz
+            $stmt = $pdo->prepare("SELECT id, name FROM `subtopics_lnp` WHERE class_id = :class_id AND lesson_id = :lesson_id AND unit_id = :unit_id AND topic_id = :topic_id ORDER BY name ASC");
+            $stmt->bindParam(':class_id', $classId, PDO::PARAM_INT);
+            $stmt->bindParam(':lesson_id', $lessonId, PDO::PARAM_INT);
+            $stmt->bindParam(':unit_id', $unitId, PDO::PARAM_INT);
+            $stmt->bindParam(':topic_id', $topicId, PDO::PARAM_INT);
+            $stmt->execute();
+            $subtopics = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if ($subtopics) {
+                echo json_encode(['status' => 'success', 'data' => $subtopics]);
+            } else {
+                echo json_encode(['status' => 'success', 'data' => [], 'message' => 'Bu konuya ait alt konu bulunamadı.']);
+            }
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Alt konular yüklenirken hata oluştu: ' . $e->getMessage()]);
+            exit();
         }
         break;
     case 'getLessonList':
@@ -2924,20 +3073,18 @@ WHERE t.id = :id";
             $type = $_POST['addPackageType'] ?? '';
             $price = $_POST['addPackagePrice'] ?? '';
             $addMonths = $_POST['addMonths'] ?? '';
-            if(empty($addMonths))
-            {
-                $limit_count=$_POST['addCount'] ?? '';
-            }
-            else{
-                $limit_count=$_POST['addMonths'] ?? '';
+            if (empty($addMonths)) {
+                $limit_count = $_POST['addCount'] ?? '';
+            } else {
+                $limit_count = $_POST['addMonths'] ?? '';
             }
 
-            if ($name === '' ) {
+            if ($name === '') {
                 throw new Exception('Geçersiz veya eksik parametreler.');
             }
 
             $stmt = $pdo->prepare("INSERT INTO extra_packages_lnp (name, type, limit_count,price) VALUES (?, ?, ?,?)");
-            $stmt->execute([$name, $type, $limit_count,$price]);
+            $stmt->execute([$name, $type, $limit_count, $price]);
 
             echo json_encode(['status' => 'success', 'message' => 'Paket başarıyla eklendi.']);
         } catch (Exception $e) {
@@ -2948,29 +3095,26 @@ WHERE t.id = :id";
     case 'updateExtraPackage':
         try {
             $id = intval($_POST['updatePackageId'] ?? 0);
-             $name = trim($_POST['updatePackageName'] ?? '');
+            $name = trim($_POST['updatePackageName'] ?? '');
             $type = $_POST['updatePackageType'] ?? '';
             $price = $_POST['updatePackagePrice'] ?? '';
             $addMonths = $_POST['updateMonths'] ?? '';
-           
-            if(empty($addMonths))
-            {
-                $limit_count=$_POST['updateCount'] ?? '';
-            }
-            else{
-                $limit_count=$_POST['updateMonths'] ?? '';
+
+            if (empty($addMonths)) {
+                $limit_count = $_POST['updateCount'] ?? '';
+            } else {
+                $limit_count = $_POST['updateMonths'] ?? '';
             }
 
-          
-            if ($id <= 0 || $name === '' ) {
+
+            if ($id <= 0 || $name === '') {
                 throw new Exception('Geçersiz veya eksik parametreler.');
             }
 
             $stmt = $pdo->prepare("UPDATE extra_packages_lnp SET name = ?, type = ?, limit_count = ?,price=? WHERE id = ?");
-            $stmt->execute([$name, $type,$limit_count, $price, $id]);
+            $stmt->execute([$name, $type, $limit_count, $price, $id]);
 
             echo json_encode(['status' => 'success', 'message' => 'Paket başarıyla güncellendi.']);
-            
         } catch (Exception $e) {
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
@@ -2993,7 +3137,7 @@ WHERE t.id = :id";
         }
         break;
     case 'teacherTimeSettings':
-        
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = file_get_contents('php://input');
             $lessonData = json_decode($input, true);
@@ -3012,7 +3156,7 @@ WHERE t.id = :id";
 
             $successCount = 0;
             $errorMessages = [];
-            
+
             try {
                 // Veritabanı bağlantısını al
                 $pdo->beginTransaction(); // İşlemi başlat (birden fazla insert olacağı için)
@@ -3021,7 +3165,7 @@ WHERE t.id = :id";
                     $date = $lesson['date'] ?? null;
                     $startTime = $lesson['start_time'] ?? null;
                     $endTime = $lesson['end_time'] ?? null;
-                    $teacherId=$_GET['id'];
+                    $teacherId = $_GET['id'];
 
                     if (!$date || !$startTime || !$endTime) {
                         $errorMessages[] = 'Tarih veya zaman eksik: ' . json_encode($lesson);
@@ -3067,7 +3211,6 @@ WHERE t.id = :id";
                         'errors' => $errorMessages
                     ]);
                 }
-
             } catch (PDOException $e) {
                 if ($pdo->inTransaction()) {
                     $pdo->rollBack(); // Hata oluşursa işlemi geri al
@@ -3077,7 +3220,6 @@ WHERE t.id = :id";
                 echo json_encode(['status' => 'error', 'message' => 'Dersler kaydedilirken genel bir veritabanı hatası oluştu.']);
             }
             exit();
-
         } else {
             http_response_code(405);
             echo json_encode(['status' => 'error', 'message' => 'Sadece POST istekleri kabul edilir.']);
@@ -3086,9 +3228,9 @@ WHERE t.id = :id";
         break;
 
     case 'getTeacherTimeSettings':
-    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        try {
-            $stmt = $pdo->prepare("
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            try {
+                $stmt = $pdo->prepare("
                 SELECT 
                     id, 
                     DATE_FORMAT(available_date, '%d.%m.%Y') AS date, 
@@ -3100,61 +3242,217 @@ WHERE t.id = :id";
                 ORDER BY available_date, start_time 
                 LIMIT 100
             ");
-            $stmt->execute([$_GET['id']]);
-            $lessons = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $stmt->execute([$_GET['id']]);
+                $lessons = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            echo json_encode(['status' => 'success', 'data' => $lessons]);
-
-        } catch (PDOException $e) {
-            error_log("Öğretmen derslerini çekme hatası: " . $e->getMessage());
-            http_response_code(500);
-            echo json_encode(['status' => 'error', 'message' => 'Dersler getirilirken bir hata oluştu.']);
+                echo json_encode(['status' => 'success', 'data' => $lessons]);
+            } catch (PDOException $e) {
+                error_log("Öğretmen derslerini çekme hatası: " . $e->getMessage());
+                http_response_code(500);
+                echo json_encode(['status' => 'error', 'message' => 'Dersler getirilirken bir hata oluştu.']);
+            }
+            exit();
+        } else {
+            http_response_code(405);
+            echo json_encode(['status' => 'error', 'message' => 'Sadece GET istekleri kabul edilir.']);
+            exit();
         }
-        exit();
-    } else {
-        http_response_code(405);
-        echo json_encode(['status' => 'error', 'message' => 'Sadece GET istekleri kabul edilir.']);
-        exit();
-    }
-    break;
+        break;
 
 
     case 'deleteTeacherTimeSetting':
-            $lessonId = $_GET['id'] ?? null;
-            $teacherId=$_GET['teacher_id'];
+        $lessonId = $_GET['id'] ?? null;
+        $teacherId = $_GET['teacher_id'];
 
-            if (!$lessonId) {
-                http_response_code(400);
-                echo json_encode(['status' => 'error', 'message' => 'Ders ID\'si eksik.']);
+        if (!$lessonId) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Ders ID\'si eksik.']);
+            exit();
+        }
+
+        try {
+
+
+            // Güvenlik: Sadece kendi dersini silebildiğinden emin ol
+            $checkOwnerStmt = $pdo->prepare("SELECT COUNT(*) FROM teacher_available_times_lnp WHERE id = ? AND teacher_id = ?");
+            $checkOwnerStmt->execute([$lessonId, $teacherId]);
+            if ($checkOwnerStmt->fetchColumn() === 0) {
+                http_response_code(403);
+                echo json_encode(['status' => 'error', 'message' => 'Bu dersi silmeye yetkiniz yok veya ders bulunamadı.']);
                 exit();
             }
 
-            try {
-                
-                
-                // Güvenlik: Sadece kendi dersini silebildiğinden emin ol
-                $checkOwnerStmt = $pdo->prepare("SELECT COUNT(*) FROM teacher_available_times_lnp WHERE id = ? AND teacher_id = ?");
-                $checkOwnerStmt->execute([$lessonId, $teacherId]);
-                if ($checkOwnerStmt->fetchColumn() === 0) {
-                    http_response_code(403);
-                    echo json_encode(['status' => 'error', 'message' => 'Bu dersi silmeye yetkiniz yok veya ders bulunamadı.']);
+            $deleteStmt = $pdo->prepare("DELETE FROM teacher_available_times_lnp WHERE id = ?");
+            if ($deleteStmt->execute([$lessonId])) {
+                echo json_encode(['status' => 'success', 'message' => 'Ders başarıyla silindi.']);
+            } else {
+                http_response_code(500);
+                echo json_encode(['status' => 'error', 'message' => 'Ders silinirken bir hata oluştu.']);
+            }
+        } catch (PDOException $e) {
+            error_log("Ders silme hatası: " . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Ders silinirken genel bir veritabanı hatası oluştu.']);
+        }
+        exit();
+
+        break;
+    case 'submitPrivateLessonRequest':
+        if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+            $response = ['status' => 'error', 'message' => 'Bu servis için POST isteği gereklidir.'];
+            break;
+        }
+
+        $student_user_id = $_SESSION['id'];
+
+        // $_POST ile yakalama ve manuel temizleme/doğrulama
+        $class_id = isset($_POST['class_id']) && $_POST['class_id'] !== '' ? (int)$_POST['class_id'] : null;
+        $lesson_id = isset($_POST['lesson_id']) && $_POST['lesson_id'] !== '' ? (int)$_POST['lesson_id'] : null;
+        $unit_id = isset($_POST['unit_id']) && $_POST['unit_id'] !== '' ? (int)$_POST['unit_id'] : null;
+        $topic_id = isset($_POST['topic_id']) && $_POST['topic_id'] !== '' ? (int)$_POST['topic_id'] : null;
+        $subtopic_id = isset($_POST['subtopic_id']) && $_POST['subtopic_id'] !== '' ? (int)$_POST['subtopic_id'] : null;
+        $time_slot = isset($_POST['time_slot']) ? htmlspecialchars(trim($_POST['time_slot']), ENT_QUOTES, 'UTF-8') : '';
+
+        // **Debug amaçlı kontrol:** Gelen POST verilerini kontrol edin
+        // error_log("submitPrivateLessonRequest - POST verileri: " . var_export($_POST, true));
+
+
+        if ($lesson_id === null || $lesson_id <= 0 || empty($time_slot)) {
+            $response = ['status' => 'error', 'message' => 'Ders seçimi ve uygun zaman aralığı zorunludur.'];
+            break;
+        }
+
+        try {
+            $sql = "INSERT INTO private_lesson_requests_lnp (
+                        student_user_id,
+                        class_id,
+                        lesson_id,
+                        unit_id,
+                        topic_id,
+                        subtopic_id,
+                        time_slot
+                    ) VALUES (
+                        :student_user_id,
+                        :class_id,
+                        :lesson_id,
+                        :unit_id,
+                        :topic_id,
+                        :subtopic_id,
+                        :time_slot
+                    )";
+
+            $stmt = $pdo->prepare($sql);
+
+            $stmt->bindValue(':student_user_id', $student_user_id, PDO::PARAM_INT);
+            $stmt->bindValue(':class_id', $class_id, $class_id === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
+            $stmt->bindValue(':lesson_id', $lesson_id, PDO::PARAM_INT);
+            $stmt->bindValue(':unit_id', $unit_id, $unit_id === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
+            $stmt->bindValue(':topic_id', $topic_id, $topic_id === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
+            $stmt->bindValue(':subtopic_id', $subtopic_id, $subtopic_id === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
+            $stmt->bindValue(':time_slot', $time_slot, PDO::PARAM_STR);
+
+            if ($stmt->execute()) {
+                echo json_encode(['status' => 'success', 'message' => 'Ders talebiniz başarıyla gönderildi!']);
+            } else {
+                echo json_encode(['status' => 'success', 'message' => 'Ders talebi gönderilirken bir hata oluştu. Lütfen tekrar deneyin.']);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Geçersiz servis']);
+        }
+        break;
+    case 'privateLessonRequest':
+        $id = $_POST['request_id'] ?? null;
+        $assigned_teacher_id = $_POST['assigned_teacher_id'] ?? null;
+        $desired_date = $_POST['desired_date'] ?? null;
+
+        if (!$id || !$assigned_teacher_id || !$desired_date) {
+            echo json_encode(['success' => false, 'message' => 'Eksik bilgi gönderildi.']);
+            exit();
+        }
+
+        try {
+
+            $stmt = $pdo->prepare("UPDATE private_lesson_requests_lnp 
+                               SET assigned_teacher_id = ?, meet_date = ? ,request_status=?
+                               WHERE id = ?");
+            $result = $stmt->execute([$assigned_teacher_id, $desired_date, 1, $id]);
+
+            if ($result) {
+                $_SESSION['payment_success'] = true;
+
+                // 🔍 1. Öğrenci, öğretmen, sınıf ve ders bilgilerini al
+                $infoStmt = $pdo->prepare("
+        SELECT 
+            pr.student_user_id, 
+            pr.assigned_teacher_id, 
+            c.name AS class_name,
+            l.name AS lesson_name
+        FROM private_lesson_requests_lnp pr
+        LEFT JOIN classes_lnp c ON c.id = pr.class_id
+        LEFT JOIN lessons_lnp l ON l.id = pr.lesson_id
+        WHERE pr.id = ?
+    ");
+                $infoStmt->execute([$id]);
+                $info = $infoStmt->fetch(PDO::FETCH_ASSOC);
+
+                if (!$info) {
+                    echo json_encode(['success' => false, 'message' => 'Bilgiler alınamadı.']);
                     exit();
                 }
 
-                $deleteStmt = $pdo->prepare("DELETE FROM teacher_available_times_lnp WHERE id = ?");
-                if ($deleteStmt->execute([$lessonId])) {
-                    echo json_encode(['status' => 'success', 'message' => 'Ders başarıyla silindi.']);
-                } else {
-                    http_response_code(500);
-                    echo json_encode(['status' => 'error', 'message' => 'Ders silinirken bir hata oluştu.']);
+                $student_id = $info['student_user_id'];
+                $teacher_id = $info['assigned_teacher_id'];
+                $class_name = $info['class_name'] ?? '-';
+                $lesson_name = $info['lesson_name'] ?? '-';
+
+                // 🔍 2. Öğrenci bilgileri
+                $studentStmt = $pdo->prepare("SELECT name, surname, email FROM users_lnp WHERE id = ?");
+                $studentStmt->execute([$student_id]);
+                $student = $studentStmt->fetch(PDO::FETCH_ASSOC);
+
+                // 🔍 3. Öğretmen bilgileri
+                $teacherStmt = $pdo->prepare("SELECT name, surname, email FROM users_lnp WHERE id = ?");
+                $teacherStmt->execute([$teacher_id]);
+                $teacher = $teacherStmt->fetch(PDO::FETCH_ASSOC);
+
+                $student_full_name = $student ? $student['name'] . ' ' . $student['surname'] : 'Bilinmiyor';
+                $student_email = $student['email'] ?? null;
+
+                $teacher_full_name = $teacher ? $teacher['name'] . ' ' . $teacher['surname'] : 'Bilinmiyor';
+                $teacher_email = $teacher['email'] ?? null;
+
+                // ⏰ Tarih formatla
+                $dt = new DateTime($desired_date);
+                $formattedDate = $dt->format('d.m.Y H:i');
+
+                // 📨 E-posta içeriği
+                $mailText = "Merhaba,\n\n"
+                    . "Özel ders {$formattedDate} tarihinde yapılacaktır.\n"
+                    . "Sınıf: {$class_name}\n"
+                    . "Ders: {$lesson_name}\n"
+                    . "Öğrenci: {$student_full_name}\n"
+                    . "Öğretmen: {$teacher_full_name}\n\n"
+                    . "Lütfen zamanında hazır olunuz.\n\nİyi dersler dileriz.";
+
+                // 📨 Öğrenciye gönder
+                if ($student_email) {
+                    $mailer->send($student_email, 'Özel Ders Bilgilendirmesi', $mailText);
                 }
-            } catch (PDOException $e) {
-                error_log("Ders silme hatası: " . $e->getMessage());
-                http_response_code(500);
-                echo json_encode(['status' => 'error', 'message' => 'Ders silinirken genel bir veritabanı hatası oluştu.']);
+
+                // 📨 Öğretmene gönder
+                if ($teacher_email) {
+                    $mailer->send('66fatihavci@gmail.com', 'Özel Ders Ataması', $mailText);
+                }
+
+                echo json_encode(['success' => true, 'message' => 'Özel ders talebi güncellendi ve bilgilendirme e-postaları gönderildi.']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Güncelleme işlemi başarısız oldu.']);
             }
-            exit();
-        
+        } catch (PDOException $e) {
+            error_log("Veritabanı hatası: " . $e->getMessage());
+            echo json_encode(['success' => false, 'message' => 'Sunucu hatası.']);
+        }
+
         break;
 
     default:
