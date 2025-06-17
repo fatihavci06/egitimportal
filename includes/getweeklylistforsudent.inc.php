@@ -7,7 +7,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $lessonId = $_POST['lesson_id'];
     $unitId = $_POST['unit_id'] ?? null;
     $topicId = $_POST['topic_id'] ?? null;
-    $subtopicId = $_POST['subtopic_id'] ?? null;
 
     // Grabbing the data
     include_once "../classes/dbh.classes.php";
@@ -58,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         }
         if (!empty($topicId)) {
             $stmt = $pdo->prepare('SELECT id, 
-            slug AS subtopicSlug,
+            slug AS subTopicSlug,
             name AS subTopicName,
             start_date AS subTopicStartDate, 
             end_date AS subTopicEndDate
@@ -70,29 +69,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 exit();
             }
         }
-        // if (!empty($topicId)) {
-        //     $stmt = $pdo->prepare('SELECT id,
-        //     subtopics.slug AS subTopicSlug,
-        //     subtopics.name AS subTopicName, 
-        //     subtopics.start_date AS subTopicStartDate, 
-        //     subtopics.end_date AS subTopicEndDate,
-        //     topics.name AS topicName, 
-        //     topics.slug AS topicSlug,
-        //     topics.start_date AS topicStartDate, 
-        //     topics.end_date AS topicEndDate
-        //     FROM subtopics_lnp subtopics
-        //     INNER JOIN topics_lnp topics ON subtopics.topic_id = topics.id
-        //     WHERE subtopics.class_id = ? 
-        //     AND subtopics.lesson_id = ? 
-        //     AND subtopics.unit_id = ? 
-        //     AND subtopics.topic_id = ?');
-        //     if (!$stmt->execute([$classId, $lessonId, $unitId, $topicId])) {
-        //         $stmt = null;
-        //         error_log("Failed to fetch subtopics for topic ID: $subtopicId");
-        //         echo json_encode(['status' => 'error', 'message' => 'Veri alınamadı.']);
-        //         exit();
-        //     }
-        //}
 
         $tests = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $stmt = null;
@@ -100,14 +76,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
         foreach ($tests as $key => $value) {
             $events[] = [
-                'slug' => $value['unitSlug'] ?? $value['topicSlug'] ?? $value['subTopicSlug'],
-                'name' => $value['unitName'] ?? $value['topicName'] ?? $value['subTopicName'],
+                'slug' =>  $value['unitSlug'] ?? $value['topicSlug'] ?? $value['subTopicSlug'],
+                'name' =>  $value['unitName'] ?? $value['topicName'] ?? $value['subTopicName'],
                 'start' =>  $value['unitStartDate'] ?? $value['subTopicStartDate'] ?? $value['topicStartDate'] ?? null,
                 'end' => $value['unitEndDate'] ?? $value['subTopicEndDate'] ?? $value['topicEndDate'] ??  null,
                 'allDay' => true,
-                /* 'description' => $value['description'],
-                'location' => $value['location'],
-                'type' => $value['type'] */ // Bu alanı FullCalendar'da kullanabiliriz
             ];
         }
 

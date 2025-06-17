@@ -54,31 +54,15 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             }
         }
         if (!empty($topicId)) {
-            $stmt = $pdo->prepare('SELECT id, name, start_date, end_date FROM subtopics_lnp WHERE class_id = ? AND lesson_id = ? AND unit_id = ? AND topic_id = ? ORDER BY start_date ASC');
+            $stmt = $pdo->prepare('SELECT 
+            id AS subTopicId, 
+            name AS subTopicName, 
+            start_date AS subTopicStartDate, 
+            end_date AS subTopicEndDate 
+            FROM subtopics_lnp WHERE class_id = ? AND lesson_id = ? AND unit_id = ? AND topic_id = ? ORDER BY start_date ASC');
             if (!$stmt->execute([$classId, $lessonId, $unitId, $topicId])) {
                 $stmt = null;
                 error_log("Failed to fetch subtopics for topic ID: $topicId");
-                echo json_encode(['status' => 'error', 'message' => 'Veri alınamadı.']);
-                exit();
-            }
-        }
-        if (!empty($subtopicId)) {
-            $stmt = $pdo->prepare('SELECT id, 
-            subtopics.name AS subTopicName, 
-            subtopics.start_date AS subTopicStartDate, 
-            subtopics.end_date AS subTopicEndDate,
-            topics.name AS topicName, 
-            topics.start_date AS topicStartDate, 
-            topics.end_date AS topicEndDate
-            FROM subtopics_lnp subtopics
-            INNER JOIN topics_lnp topics ON subtopics.topic_id = topic.id
-            WHERE subtopics.class_id = ? 
-            AND subtopics.lesson_id = ? 
-            AND subtopics.unit_id = ? 
-            AND subtopics.topic_id = ? ORDER BY start_date ASC');
-            if (!$stmt->execute([$classId, $lessonId, $unitId, $topicId])) {
-                $stmt = null;
-                error_log("Failed to fetch subtopics for topic ID: $subtopicId");
                 echo json_encode(['status' => 'error', 'message' => 'Veri alınamadı.']);
                 exit();
             }
@@ -90,13 +74,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
         foreach ($tests as $key => $value) {
             $events[] = [
-                'name' =>$value['unitName']?? $value['topicName'] ??$value['subTopicName'],
+                'name' => $value['unitName'] ?? $value['topicName'] ?? $value['subTopicName'],
                 'start' => $value['subTopicStartDate'] ?? $value['topicStartDate'] ??  $value['unitStartDate'] ?? null,
                 'end' => $value['subTopicEndDate'] ?? $value['topicStartDate'] ??  $value['unitEndDate'] ?? null,
                 'allDay' => true,
-                /* 'description' => $value['description'],
-                'location' => $value['location'],
-                'type' => $value['type'] */ // Bu alanı FullCalendar'da kullanabiliriz
             ];
         }
 

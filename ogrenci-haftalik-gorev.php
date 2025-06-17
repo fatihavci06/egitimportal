@@ -290,47 +290,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
         <script>
             // --- Ders, Ünite, Konu, Alt Konu Seçim Mantığı ---
 
-            // Sınıf seçimi değiştiğinde dersleri getir 
-            var classId = $("#classId").val();
-            // if (classId) {
-            //     fetchLessonsForClass(classId);
-            // };
-
-            // function fetchLessonsForClass(classId) {
-            //     if (classId !== '') {
-            //         $.ajax({
-            //             url: 'includes/ajax_yazgul.php?service=getLessonListForStudent',
-            //             type: 'POST',
-            //             data: {
-            //                 class_id: classId
-            //             },
-            //             dataType: 'json',
-            //             success: function(response) {
-            //                 var $lessonSelect = $('#lesson_id');
-            //                 $('#option_count').val(response.data.optionCount); // Bu kısım ilgili inputunuz varsa
-            //                 $lessonSelect.empty();
-            //                 $lessonSelect.append('<option value="">Ders seçiniz</option>');
-            //                 $.each(response.data.lessons, function(index, lesson) {
-            //                     $lessonSelect.append('<option value="' + lesson.id + '">' + lesson.name + '</option>');
-            //                 });
-            //                 // Diğer bağımlı selectbox'ları temizle
-            //                 $('#unit_id').html('<option value="">Ünite seçiniz</option>');
-            //                 $('#topic_id').html('<option value="">Seçiniz</option>');
-            //                 $('#subtopic_id').html('<option value="">Alt Konu seçiniz</option>');
-            //             },
-            //             error: function(xhr) {
-            //                 handleAjaxError(xhr);
-            //             }
-            //         });
-            //     } else {
-            //         // Sınıf seçimi boşsa tüm bağımlı selectbox'ları temizle
-            //         $('#lesson_id').html('<option value="">Ders seçiniz</option>');
-            //         $('#unit_id').html('<option value="">Ünite seçiniz</option>');
-            //         $('#topic_id').html('<option value="">Seçiniz</option>');
-            //         $('#subtopic_id').html('<option value="">Alt Konu seçiniz</option>');
-            //     }
-            // }
-
             // Ders seçimi değiştiğinde üniteleri getir
             $('#lesson_id').on('change', function() {
                 var lessonId = $(this).val();
@@ -338,7 +297,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                 var $unitSelect = $('#unit_id');
                 $unitSelect.empty().append('<option value="">Ünite seçiniz</option>');
                 $('#topic_id').html('<option value="">Seçiniz</option>');
-                $('#subtopic_id').html('<option value="">Alt Konu seçiniz</option>');
+
 
                 if (lessonId !== '') {
                     $.ajax({
@@ -408,81 +367,42 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
             });
 
             // Konu seçimi değiştiğinde alt konuları getir
-            $('#topic_id').on('change', function() {
-                var subtopicId = $('#subtopic_id').val('');
-                var classId = $('#classId').val();
-                var lessonId = $('#lesson_id').val();
-                var unitId = $('#unit_id').val();
-                var topicId = $(this).val();
-                // var $subtopicSelect = $('#subtopic_id');
-
-                // $subtopicSelect.empty().append('<option value="">Alt Konu seçiniz</option>');
-
-                if (topicId !== '') {
-                    $.ajax({
-                        url: 'includes/ajax_yazgul.php?service=getSubtopicListForStudent',
-                        type: 'POST',
-                        dataType: 'json',
-                        data: {
-                            class_id: classId,
-                            lesson_id: lessonId,
-                            unit_id: unitId,
-                            topic_id: topicId
-                        },
-                        success: function(response) {
-                            if (response.status === 'success' && response.data.length > 0) {
-                                $.each(response.data, function(index, subtopic) {
-
-                                });
-                            } else {
-                                $subtopicSelect.append('<option disabled>Alt konu bulunamadı</option>');
-                            }
-                        },
-                        error: function(xhr) {
-                            handleAjaxError(xhr);
-                        }
-                    });
-                }
-            });
-
-            // Alt konular değiştiğinde seçimi değiştiğinde içerikleri getir
-            // $('#subtopic_id').on('change', function() {
+            // $('#topic_id').on('change', function() {
+            //     var subtopicId = $('#subtopic_id').val('');
             //     var classId = $('#classId').val();
             //     var lessonId = $('#lesson_id').val();
             //     var unitId = $('#unit_id').val();
-            //     var topicId = $('#topic_id').val();
-            //     var subtopicId = $(this).val();
+            //     var topicId = $(this).val();
+            // var $subtopicSelect = $('#subtopic_id');
 
-            //     if (lessonId !== '') {
-            //         $.ajax({
-            //             url: 'includes/ajax_yazgul.php?service=getContentList',
-            //             type: 'POST',
-            //             dataType: 'json',
-            //             data: {
-            //                 lesson_id: lessonId,
-            //                 class_id: classId,
-            //                 unitId: unitId,
-            //                 topicId: topicId,
-            //                 subtopicId: subtopicId,
-            //             },
-            //             success: function(response) {
-            //                 if (response.status === 'success' && response.data.length > 0) {
-            //                     $.each(response.data, function(index, unit) {
-            //                         $unitSelect.append($('<option>', {
-            //                             value: unit.id,
-            //                             text: unit.name
-            //                         }));
-            //                     });
-            //                 } else {
-            //                     // $unitSelect.append('<option disabled>Ünite bulunamadı</option>');
-            //                 }
-            //             },
-            //             error: function(xhr) {
-            //                 handleAjaxError(xhr);
+            // $subtopicSelect.empty().append('<option value="">Alt Konu seçiniz</option>');
+
+            // if (topicId !== '') {
+            //     $.ajax({
+            //         url: 'includes/ajax_yazgul.php?service=getSubtopicListForStudent',
+            //         type: 'POST',
+            //         dataType: 'json',
+            //         data: {
+            //             class_id: classId,
+            //             lesson_id: lessonId,
+            //             unit_id: unitId,
+            //             topic_id: topicId
+            //         },
+            //         success: function(response) {
+            //             if (response.status === 'success' && response.data.length > 0) {
+            //                 $.each(response.data, function(index, subtopic) {
+
+            //                 });
+            //             } else {
+            //                 $subtopicSelect.append('<option disabled>Alt konu bulunamadı</option>');
             //             }
-            //         });
-            //     }
-            // });
+            //         },
+            //         error: function(xhr) {
+            //             handleAjaxError(xhr);
+            //         }
+            //     });
+            // }
+            //});
 
             // Filtreleme butonu tıklaması
             $('#filterButton').on('click', function() {
@@ -491,20 +411,18 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                 var lessonId = $('#lesson_id').val();
                 var unitId = $('#unit_id').val();
                 var topicId = $('#topic_id').val();
-                var subtopicId = $('#subtopic_id').val();
 
                 // Prepare data to be sent
                 var postData = {
                     class_id: classId,
                     lesson_id: lessonId,
                     unit_id: unitId,
-                    topic_id: topicId,
-                    subtopic_id: subtopicId
+                    topic_id: topicId
                 };
 
                 // Send AJAX POST request
                 $.ajax({
-                    url: 'includes/getweeklylistforsudent.inc.php', // Replace with the actual path to your PHP script
+                    url: 'includes/getweeklylistforsudent.inc.php',
                     type: 'POST',
                     data: postData,
                     dataType: 'json', // Expecting JSON response from the PHP script
