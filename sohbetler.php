@@ -83,8 +83,9 @@ include_once "classes/dateformat.classes.php";
                                                                 geçmişiniz</span>
                                                         </h3>
                                                         <div class="card-toolbar">
-                                                            <button type="button" class="btn btn-sm btn-primary" id="openContactsButton" 
-                                                                data-bs-toggle="modal" data-bs-target="#contactsModal">
+                                                            <button type="button" class="btn btn-sm btn-primary"
+                                                                id="openContactsButton" data-bs-toggle="modal"
+                                                                data-bs-target="#contactsModal">
                                                                 <i class="ki-duotone ki-plus fs-2"></i>
                                                                 Yeni Sohbet
                                                             </button>
@@ -138,7 +139,8 @@ include_once "classes/dateformat.classes.php";
                                                         <div class="card-title">
                                                             <div class="d-flex align-items-center">
                                                                 <div class="symbol symbol-45px me-3">
-                                                                    <img src="assets/media/avatars/300-1.jpg" alt=""
+                                                                    <img id="currentChatPhoto"
+                                                                        src="assets/media/avatars/300-1.jpg" alt=""
                                                                         class="rounded-circle">
                                                                 </div>
                                                                 <div class="d-flex flex-column">
@@ -148,7 +150,7 @@ include_once "classes/dateformat.classes.php";
                                                                         Kullanıcı seçin
                                                                     </span>
                                                                     <span class="text-gray-500 fs-6"
-                                                                        id="currentChatStatus">Çevrimiçi</span>
+                                                                        id="currentChatStatus"></span>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -381,7 +383,7 @@ include_once "classes/dateformat.classes.php";
         let currentChatUser = null;
         let conversations = [];
 
-        const openContactsButton = document.getElementById('openContactsButton'); 
+        const openContactsButton = document.getElementById('openContactsButton');
 
         const contactsModal = new bootstrap.Modal(document.getElementById('contactsModal'));
 
@@ -396,12 +398,7 @@ include_once "classes/dateformat.classes.php";
         }
 
         document.getElementById('openContactsButton').addEventListener('click', showContactsModal);
-        document.getElementById('closeModalButton').addEventListener('click', hideContactsModal); 
-
-
-
-
-
+        document.getElementById('closeModalButton').addEventListener('click', hideContactsModal);
         document.addEventListener('DOMContentLoaded', function () {
             loadConversations();
 
@@ -442,14 +439,14 @@ include_once "classes/dateformat.classes.php";
 
             list.innerHTML = conversations.map(conv => `
                 <div class="conversation-item ${currentConversationId == conv.id ? 'active' : ''}" 
-                     onclick="selectConversation(${conv.id}, '${conv.other_user_name}', ${conv.other_user_id})">
+                     onclick="selectConversation(${conv.id}, '${conv.other_name} ${conv.other_surname}', ${conv.other_user_id},'${conv.other_photo}')">
                     <div class="d-flex align-items-center">
                         <div class="symbol symbol-45px me-3">
-                            <img src="assets/media/profile/${conv.photo}" alt="${conv.other_user_name}" class="rounded-circle">
+                            <img src="assets/media/profile/${conv.other_photo}" alt="${conv.other_username}" class="rounded-circle">
                         </div>
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center justify-content-between mb-1">
-                                <span class="text-gray-900 fw-bold fs-6">${conv.other_user_name}</span>
+                                <span class="text-gray-900 fw-bold fs-6">${conv.other_name} ${conv.other_surname} </span>
                                 ${conv.unread_count > 0 ? `<span class="unread-badge">${conv.unread_count}</span>` : ''}
                             </div>
                             <span class="text-gray-500 fw-semibold fs-7 d-block">
@@ -459,15 +456,17 @@ include_once "classes/dateformat.classes.php";
                     </div>
                 </div>
             `).join('');
+
         }
 
-        function selectConversation(conversationId, userName, userId) {
+        function selectConversation(conversationId, userName, userId, photo) {
             currentConversationId = conversationId;
             currentChatUser = userName;
 
             document.getElementById('currentChatName').textContent = userName;
             document.getElementById('chatHeader').style.display = 'block';
             document.getElementById('messageInputArea').style.display = 'block';
+            document.getElementById('currentChatPhoto').src = `assets/media/profile/${photo}`;
 
             document.querySelectorAll('.conversation-item').forEach(item => {
                 item.classList.remove('active');
@@ -554,7 +553,7 @@ include_once "classes/dateformat.classes.php";
                     if (data.success) {
                         input.value = '';
                         loadMessages();
-                        loadConversations(); 
+                        loadConversations();
 
                     }
                 })
@@ -609,18 +608,18 @@ include_once "classes/dateformat.classes.php";
             }
 
             list.innerHTML = users.map(user => `
-                <li class="list-group-item contact-item" onclick="startConversation(${user.id}, '${user.username}')">
+                <li class="list-group-item contact-item" onclick="startConversation(${user.id}, '${user.username}','${user.photo}')">
                     <div class="d-flex align-items-center">
                         <img src="assets/media/profile/${user.photo}" alt="${user.username}" class="rounded-circle me-3" width="40">
                         <div>
-                            <div class="fw-bold">${user.username}</div>
+                            <div class="fw-bold">${user.name} ${user.surname}</div>
                         </div>
                     </div>
                 </li>
             `).join('');
         }
 
-        function startConversation(userId, username) {
+        function startConversation(userId, username,photo) {
             const formData = new FormData();
             formData.append('action', 'start_conversation');
             formData.append('other_user_id', userId);
@@ -638,7 +637,7 @@ include_once "classes/dateformat.classes.php";
 
                         loadConversations();
                         setTimeout(() => {
-                            selectConversation(data.conversation_id, username, userId);
+                            selectConversation(data.conversation_id, username, userId, photo);
                         }, 500);
                     } else {
                         Swal.fire({
