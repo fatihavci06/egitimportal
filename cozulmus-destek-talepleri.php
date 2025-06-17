@@ -77,7 +77,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 </thead>
                                                 <tbody class="fw-semibold text-gray-600">
                                                     <?php 
-														if($_SESSION['role'] == 6 OR $_SESSION['role'] == 7){
+														if($_SESSION['role'] == 2 OR$_SESSION['role'] == 6 OR $_SESSION['role'] == 7){
 															$supportList->getSupportSolvedList($_SESSION['id']);
 														}if($_SESSION['role'] == 1){
 															$supportList->getSupportSolvedAdminList();

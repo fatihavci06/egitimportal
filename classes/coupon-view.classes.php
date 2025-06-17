@@ -27,7 +27,7 @@
                    <td>
                        ' . $value['is_active'] . '
                    </td>
-                   <td>' . $value['coupon_expires'] . '</td>
+                   <td>' . $dateFormat->changeDate($value['coupon_expires']) . '</td>
                    <td>' . $value['coupon_quantity'] . '</td>
                    <td>' . $value['used_coupon_count'] . '</td>
                     <td class="text-end">
