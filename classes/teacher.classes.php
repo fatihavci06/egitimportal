@@ -13,7 +13,7 @@ class Teacher extends Dbh
 				$stmt = null;
 				exit();
 			}
-		} elseif ($_SESSION['role'] == 3 OR $_SESSION['role'] == 8) {
+		} elseif ($_SESSION['role'] == 3 or $_SESSION['role'] == 8) {
 			$school = $_SESSION['school_id'];
 			$stmt = $this->connect()->prepare('SELECT users_lnp.id, users_lnp.name, users_lnp.surname, users_lnp.username, users_lnp.created_at, users_lnp.email, users_lnp.telephone, users_lnp.photo, users_lnp.active, users_lnp.role, classes_lnp.name AS className, classes_lnp.slug AS classSlug, schools_lnp.name AS schoolName, lessons_lnp.name AS lessonName FROM users_lnp INNER JOIN schools_lnp ON users_lnp.school_id = schools_lnp.id INNER JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON users_lnp.lesson_id = lessons_lnp.id WHERE (users_lnp.active = ? OR users_lnp.active = ?) AND (users_lnp.role = ? OR users_lnp.role = ? OR users_lnp.role = ?) AND users_lnp.school_id = ?');
 
@@ -30,7 +30,8 @@ class Teacher extends Dbh
 		$stmt = null;
 	}
 
-	public function getTeacherId($slug){
+	public function getTeacherId($slug)
+	{
 		$stmt = $this->connect()->prepare('SELECT * FROM users_lnp WHERE username = ?');
 
 		if (!$stmt->execute(array($slug))) {
@@ -46,9 +47,24 @@ class Teacher extends Dbh
 	public function getOneTeacher($teacher_id)
 	{
 
-		$stmt = $this->connect()->prepare('SELECT users_lnp.*, schools_lnp.name AS schoolName FROM users_lnp INNER JOIN schools_lnp ON users_lnp.school_id = schools_lnp.id WHERE users_lnp.id = ?');
+		$stmt = $this->connect()->prepare('
+			SELECT 
+				users_lnp.*,
+				schools_lnp.name AS schoolName,
+				classes_lnp.id AS classId,
+				classes_lnp.name AS className,
+				classes_lnp.slug AS classSlug,
+				lessons_lnp.id AS lessonsId,
+				lessons_lnp.name AS lessonName,
+				lessons_lnp.slug AS lessonSlug
+			FROM users_lnp 
+			INNER JOIN schools_lnp ON users_lnp.school_id = schools_lnp.id
+			INNER JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id
+			INNER JOIN lessons_lnp ON users_lnp.lesson_id = lessons_lnp.id
+			WHERE users_lnp.id = ?
+		');
 
-		if (!$stmt->execute(array($teacher_id))) {
+		if (!$stmt->execute([$teacher_id])) {
 			$stmt = null;
 			exit();
 		}
@@ -56,8 +72,6 @@ class Teacher extends Dbh
 		$getData = $stmt->fetch(PDO::FETCH_ASSOC);
 
 		return $getData;
-
-		$stmt = null;
 	}
 
 	/* public function getOneTeacher($slug)
@@ -92,5 +106,24 @@ class Teacher extends Dbh
 		return $schoolData;
 
 		$stmt = null;
+	}
+
+	public function getstudentsByClassId($class_id)
+	{
+		$stmt = $this->connect()->prepare('
+			SELECT 
+			*
+			FROM users_lnp 
+			WHERE users_lnp.class_id = ?
+		');
+
+		if (!$stmt->execute([$class_id])) {
+			$stmt = null;
+			exit();
+		}
+
+		$getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $getData;
 	}
 }

@@ -89,7 +89,44 @@ class ShowHomeworkContents extends GetHomework
             echo $contentList;
         }
     }
+    public function getHomeworksViewByLessonId($schoolId, $classId, $lessonId, $teacherId)
+    {
 
+        $homeworkInfo = $this->getHomeworksByLessonId($schoolId, $classId, $lessonId, $teacherId);
+
+
+        foreach ($homeworkInfo as $key => $value) {
+
+
+            $subTopicName = $value['subTopicName'] ?? '-';
+
+            if ($value['active'] == 1) {
+                $aktifYazi = '<span class="badge badge-light-success">Aktif</span>';
+            } else {
+                $aktifYazi = '<span class="badge badge-light-danger">Pasif</span>';
+            }
+
+            $contentList = '
+                    <tr>
+                        <td data-file-id="' . $value['id'] . '">
+                            <a href="./odev-detay/' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
+                        </td>
+                        <td>
+                           ' . $subTopicName . '
+                        </td>
+                        <td>
+                            ' . $value['topicName'] . '
+                        </td>
+                        <td>
+                            ' . $value['unitName'] . '
+                        </td>
+                        <td>' . $aktifYazi . '</td>
+
+                    </tr>
+                ';
+            echo $contentList;
+        }
+    }
 
     public function getHeaderImageStu()
     {

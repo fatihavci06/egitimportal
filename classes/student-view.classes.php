@@ -88,7 +88,7 @@ class ShowStudent extends Student
 
             $passiveButton = "";
 
-            if($_SESSION['role'] != 4){
+            if ($_SESSION['role'] != 4) {
                 $passiveButton = '
                                 <!--begin::Menu item-->
                                 <div class="menu-item px-3">
