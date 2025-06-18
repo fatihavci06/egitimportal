@@ -8,7 +8,7 @@ $error = $_SESSION['payment_error'] ?? null;
 
 // Oturumu temizle
 unset($_SESSION['payment_success'], $_SESSION['payment_error']);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 2)) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
 

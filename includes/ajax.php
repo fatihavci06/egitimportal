@@ -1175,7 +1175,7 @@ switch ($service) {
         break;
 
     case 'getLessonList':
-        $classId = $_GET['class_id'] ?? null; // class_id parametresini alıyoruz
+        $classId = $_POST['class_id'] ?? null; // class_id parametresini alıyoruz
 
         if (is_null($classId)) {
             http_response_code(400); // Bad Request
@@ -1430,6 +1430,7 @@ switch ($service) {
         $subtopicId = $_POST['subtopic_id'] ?? null;
         $status = $_POST['status'] ?? null;
 
+
         $title = $_POST['title'] ?? null;
         $startDate = $_POST['start_date'] ?? null;
         $endDate = $_POST['end_date'] ?? null;
@@ -1553,23 +1554,24 @@ switch ($service) {
 
             // Veritabanı bağlantısı
             $stmt = $pdo->prepare("
-            INSERT INTO tests_lnp 
-            (status,class_id, lesson_id, unit_id, topic_id, subtopic_id, test_title, start_date, end_date, cover_img)
-            VALUES
-            (:status,:class_id, :lesson_id, :unit_id, :topic_id, :subtopic_id, :title, :start_date, :end_date, :file_path)
-        ");
+    INSERT INTO tests_lnp 
+    (status, class_id, lesson_id, unit_id, topic_id, subtopic_id, test_title, start_date, end_date, cover_img, added_user_id)
+    VALUES
+    (:status, :class_id, :lesson_id, :unit_id, :topic_id, :subtopic_id, :title, :start_date, :end_date, :file_path, :added_user_id)
+");
 
             $stmt->execute([
-                ':status'       => $status,
-                ':class_id'     => $classId,
-                ':lesson_id'    => $lessonId,
-                ':unit_id'      => $unitId,
-                ':topic_id'     => $topicId,
-                ':subtopic_id'  => $subtopicId,
-                ':title'        => $title,
-                ':start_date'   => $startDate,
-                ':end_date'     => $endDate,
-                ':file_path'    => $filePath
+                ':status'         => $status,
+                ':class_id'       => $classId,
+                ':lesson_id'      => $lessonId,
+                ':unit_id'        => $unitId,
+                ':topic_id'       => $topicId,
+                ':subtopic_id'    => $subtopicId,
+                ':title'          => $title,
+                ':start_date'     => $startDate,
+                ':end_date'       => $endDate,
+                ':file_path'      => $filePath,
+                ':added_user_id'  => $addedUserId
             ]);
 
             $testId = $pdo->lastInsertId();
@@ -3370,88 +3372,108 @@ WHERE t.id = :id";
             exit();
         }
 
-        try {
-
-            $stmt = $pdo->prepare("UPDATE private_lesson_requests_lnp 
-                               SET assigned_teacher_id = ?, meet_date = ? ,request_status=?
+        // try {
+        // private_lesson_requests_lnp tablosunu güncelle
+        $stmt = $pdo->prepare("UPDATE private_lesson_requests_lnp 
+                               SET assigned_teacher_id = ?, meet_date = ?, request_status = ?
                                WHERE id = ?");
-            $result = $stmt->execute([$assigned_teacher_id, $desired_date, 1, $id]);
+        $result = $stmt->execute([$assigned_teacher_id, $desired_date, 1, $id]);
 
-            if ($result) {
-                $_SESSION['payment_success'] = true;
+        if ($result) {
+            $_SESSION['payment_success'] = true;
 
-                // 🔍 1. Öğrenci, öğretmen, sınıf ve ders bilgilerini al
-                $infoStmt = $pdo->prepare("
-        SELECT 
-            pr.student_user_id, 
-            pr.assigned_teacher_id, 
-            c.name AS class_name,
-            l.name AS lesson_name
-        FROM private_lesson_requests_lnp pr
-        LEFT JOIN classes_lnp c ON c.id = pr.class_id
-        LEFT JOIN lessons_lnp l ON l.id = pr.lesson_id
-        WHERE pr.id = ?
-    ");
-                $infoStmt->execute([$id]);
-                $info = $infoStmt->fetch(PDO::FETCH_ASSOC);
+            // 🔍 1. Öğrenci, öğretmen, sınıf, ders ve talep açıklama bilgilerini al
+            $infoStmt = $pdo->prepare("
+                SELECT 
+                    pr.student_user_id, 
+                    pr.assigned_teacher_id,  
+                    c.name AS class_name,
+                    l.name AS lesson_name
+                FROM private_lesson_requests_lnp pr
+                LEFT JOIN classes_lnp c ON c.id = pr.class_id
+                LEFT JOIN lessons_lnp l ON l.id = pr.lesson_id
+                WHERE pr.id = ?
+            ");
+            $infoStmt->execute([$id]);
+            $info = $infoStmt->fetch(PDO::FETCH_ASSOC);
 
-                if (!$info) {
-                    echo json_encode(['success' => false, 'message' => 'Bilgiler alınamadı.']);
-                    exit();
-                }
-
-                $student_id = $info['student_user_id'];
-                $teacher_id = $info['assigned_teacher_id'];
-                $class_name = $info['class_name'] ?? '-';
-                $lesson_name = $info['lesson_name'] ?? '-';
-
-                // 🔍 2. Öğrenci bilgileri
-                $studentStmt = $pdo->prepare("SELECT name, surname, email FROM users_lnp WHERE id = ?");
-                $studentStmt->execute([$student_id]);
-                $student = $studentStmt->fetch(PDO::FETCH_ASSOC);
-
-                // 🔍 3. Öğretmen bilgileri
-                $teacherStmt = $pdo->prepare("SELECT name, surname, email FROM users_lnp WHERE id = ?");
-                $teacherStmt->execute([$teacher_id]);
-                $teacher = $teacherStmt->fetch(PDO::FETCH_ASSOC);
-
-                $student_full_name = $student ? $student['name'] . ' ' . $student['surname'] : 'Bilinmiyor';
-                $student_email = $student['email'] ?? null;
-
-                $teacher_full_name = $teacher ? $teacher['name'] . ' ' . $teacher['surname'] : 'Bilinmiyor';
-                $teacher_email = $teacher['email'] ?? null;
-
-                // ⏰ Tarih formatla
-                $dt = new DateTime($desired_date);
-                $formattedDate = $dt->format('d.m.Y H:i');
-
-                // 📨 E-posta içeriği
-                $mailText = "Merhaba,\n\n"
-                    . "Özel ders {$formattedDate} tarihinde yapılacaktır.\n"
-                    . "Sınıf: {$class_name}\n"
-                    . "Ders: {$lesson_name}\n"
-                    . "Öğrenci: {$student_full_name}\n"
-                    . "Öğretmen: {$teacher_full_name}\n\n"
-                    . "Lütfen zamanında hazır olunuz.\n\nİyi dersler dileriz.";
-
-                // 📨 Öğrenciye gönder
-                if ($student_email) {
-                    $mailer->send($student_email, 'Özel Ders Bilgilendirmesi', $mailText);
-                }
-
-                // 📨 Öğretmene gönder
-                if ($teacher_email) {
-                    $mailer->send('66fatihavci@gmail.com', 'Özel Ders Ataması', $mailText);
-                }
-
-                echo json_encode(['success' => true, 'message' => 'Özel ders talebi güncellendi ve bilgilendirme e-postaları gönderildi.']);
-            } else {
-                echo json_encode(['success' => false, 'message' => 'Güncelleme işlemi başarısız oldu.']);
+            if (!$info) {
+                echo json_encode(['success' => false, 'message' => 'Bilgiler alınamadı.']);
+                exit();
             }
-        } catch (PDOException $e) {
-            error_log("Veritabanı hatası: " . $e->getMessage());
-            echo json_encode(['success' => false, 'message' => 'Sunucu hatası.']);
+
+            $student_id = $info['student_user_id'];
+            $teacher_id = $info['assigned_teacher_id'];
+            $class_name = $info['class_name'] ?? '-';
+            $lesson_name = $info['lesson_name'] ?? '-';
+            $request_description = $info['request_description'] ?? null;
+
+            // ✨ YENİ KISIM: meetings_lnp tablosuna kayıt ekle
+            // `description` sütunu için istenen formatı oluştur
+            $meetingDescription = "{$class_name}  Özel Ders";
+
+            $insertMeetingStmt = $pdo->prepare("
+                INSERT INTO meetings_lnp (organizer_id, participant_id, description, meeting_date)
+                VALUES (?, ?, ?, ?) -- description_id yerine description kullanıldı
+            ");
+            $meetingResult = $insertMeetingStmt->execute([
+                $teacher_id,     // organizer_id
+                $student_id,     // participant_id
+                $meetingDescription, // Oluşturulan açıklama metni buraya eklendi
+                $desired_date    // meeting_date
+            ]);
+
+            if (!$meetingResult) {
+                error_log('Error inserting into meetings_lnp table for private lesson request ID: ' . $id);
+            }
+
+            // 🔍 2. Öğrenci bilgileri
+            $studentStmt = $pdo->prepare("SELECT name, surname, email FROM users_lnp WHERE id = ?");
+            $studentStmt->execute([$student_id]);
+            $student = $studentStmt->fetch(PDO::FETCH_ASSOC);
+
+            // 🔍 3. Öğretmen bilgileri
+            $teacherStmt = $pdo->prepare("SELECT name, surname, email FROM users_lnp WHERE id = ?");
+            $teacherStmt->execute([$teacher_id]);
+            $teacher = $teacherStmt->fetch(PDO::FETCH_ASSOC);
+
+            $student_full_name = $student ? $student['name'] . ' ' . $student['surname'] : 'Bilinmiyor';
+            $student_email = $student['email'] ?? null;
+
+            $teacher_full_name = $teacher ? $teacher['name'] . ' ' . $teacher['surname'] : 'Bilinmiyor';
+            $teacher_email = $teacher['email'] ?? null;
+
+            // ⏰ Tarih formatla
+            $dt = new DateTime($desired_date);
+            $formattedDate = $dt->format('d.m.Y H:i');
+
+            // 📨 E-posta içeriği
+            $mailText = "Merhaba,\n\n"
+                . "Özel ders {$formattedDate} tarihinde yapılacaktır.\n"
+                . "Sınıf: {$class_name}\n"
+                . "Ders: {$lesson_name}\n"
+                . "Öğrenci: {$student_full_name}\n"
+                . "Öğretmen: {$teacher_full_name}\n\n"
+                . "Lütfen zamanında hazır olunuz.\n\nİyi dersler dileriz.";
+
+            // 📨 Öğrenciye gönder
+            if ($student_email) {
+                $mailer->send($student_email, 'Özel Ders Bilgilendirmesi', $mailText);
+            }
+
+            // 📨 Öğretmene gönder
+            if ($teacher_email) {
+                $mailer->send($teacher_email, 'Özel Ders Ataması', $mailText);
+            }
+
+            echo json_encode(['success' => true, 'message' => 'Özel ders talebi güncellendi ve bilgilendirme e-postaları gönderildi.']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Güncelleme işlemi başarısız oldu.']);
         }
+        // } catch (PDOException $e) {
+        //     error_log("Veritabanı hatası: " . $e->getMessage());
+        //     echo json_encode(['success' => false, 'message' => 'Sunucu hatası.']);
+        // }
 
         break;
     case 'updateCoachingRequest':
@@ -3616,6 +3638,154 @@ WHERE t.id = :id";
         } catch (PDOException $e) {
             error_log("Koçluk/Rehberlik talebi AJAX hatası: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Sunucu hatası oluştu: ' . $e->getMessage()]); // 'false' anahtarı 'message' olarak değiştirildi
+        }
+        break;
+    case 'extraPackageGraphicReport':
+        try {
+            // Günlük veriler (son 30 gün)
+            $daily = $pdo->query("
+            SELECT DATE_FORMAT(created_at, '%d-%m-%Y') AS day,
+                   SUM(total_amount) AS total_payment,   -- price yerine total_amount kullanıldı
+                   ROUND(SUM(kdv_amount), 0) AS total_tax
+            FROM extra_package_payments_lnp
+            GROUP BY day
+            ORDER BY STR_TO_DATE(day, '%d-%m-%Y') DESC
+            LIMIT 30
+        ")->fetchAll(PDO::FETCH_ASSOC);
+
+            // Haftalık veriler (son 30 hafta)
+            $weekly = $pdo->query("
+            SELECT CONCAT(YEAR(created_at), ' HAFTA ', LPAD(WEEK(created_at, 1), 2, '0')) AS week,
+                   SUM(total_amount) AS total_payment,   -- price yerine total_amount kullanıldı
+                   ROUND(SUM(kdv_amount), 0) AS total_tax
+            FROM extra_package_payments_lnp
+            GROUP BY week
+            ORDER BY YEAR(created_at) DESC, WEEK(created_at, 1) DESC
+            LIMIT 30
+        ")->fetchAll(PDO::FETCH_ASSOC);
+
+            // Aylık veriler (son 30 ay)
+            $monthly = $pdo->query("
+            SELECT DATE_FORMAT(created_at, '%Y-%m') AS period_sort,
+                   DATE_FORMAT(created_at, '%m-%Y') AS period,
+                   SUM(total_amount) AS total_payment,   -- price yerine total_amount kullanıldı
+                   ROUND(SUM(kdv_amount), 0) AS total_tax
+            FROM extra_package_payments_lnp
+            GROUP BY period_sort
+            ORDER BY period_sort DESC
+            LIMIT 30
+        ")->fetchAll(PDO::FETCH_ASSOC);
+
+            // Yıllık veriler (son 30 yıl)
+            $yearly = $pdo->query("
+            SELECT YEAR(created_at) AS year,
+                   SUM(total_amount) AS total_payment,   -- price yerine total_amount kullanıldı
+                   ROUND(SUM(kdv_amount), 0) AS total_tax
+            FROM extra_package_payments_lnp
+            GROUP BY year
+            ORDER BY year DESC
+            LIMIT 30
+        ")->fetchAll(PDO::FETCH_ASSOC);
+
+            // JavaScript tarafına gönderirken verileri tersine çeviriyoruz ki en eski en başta olsun
+            echo json_encode([
+                'daily' => array_reverse($daily),
+                'weekly' => array_reverse($weekly),
+                'monthly' => array_reverse($monthly),
+                'yearly' => array_reverse($yearly)
+            ]);
+        } catch (Exception $e) {
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+        break;
+    case 'getCalendarEvents':
+        $userId = $_SESSION['id'] ?? null; // JavaScript'ten gelen user_id (null ise yönetici)
+
+        $events = [];
+
+        // meetings_lnp tablosundan toplantı verilerini çekiyoruz
+        $sql = "
+        SELECT 
+            m.id, 
+            m.description, 
+            m.meeting_date,
+            u_organizer.name AS organizer_name,
+            u_organizer.surname AS organizer_surname,
+            u_participant.name AS participant_name,
+            u_participant.surname AS participant_surname
+        FROM meetings_lnp m
+        LEFT JOIN users_lnp u_organizer ON m.organizer_id = u_organizer.id
+        LEFT JOIN users_lnp u_participant ON m.participant_id = u_participant.id
+    ";
+
+        $params = [];
+        if ($userId !== null) { // Eğer belirli bir kullanıcı ID'si varsa, o kullanıcıyla ilgili toplantıları filtrele
+            $sql .= " WHERE m.organizer_id = :userId OR m.participant_id = :userId";
+            $params[':userId'] = $userId;
+        }
+
+        try {
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+            foreach ($results as $row) {
+                $events[] = [
+                    'id' => 'meeting_' . $row['id'], // FullCalendar için benzersiz etkinlik ID'si
+                    'title' => $row['description'],  // Toplantının açıklamasını etkinlik başlığı olarak kullan
+                    'start' => $row['meeting_date'], // Toplantı tarihi ve saati
+                    'allDay' => false, // Toplantılar genellikle tüm gün sürmez
+                    'extendedProps' => [ // Etkinlik detayları için ek özellikler
+                        'type' => 'Toplantı', // Etkinlik türü
+                        'description' => $row['description'], // Tam açıklama metni
+                        'organizerName' => $row['organizer_name'] . ' ' . $row['organizer_surname'],
+                        'participantName' => $row['participant_name'] . ' ' . $row['participant_surname'],
+                    ],
+                    'backgroundColor' => '#007bff', // Toplantı etkinlikleri için mavi arka plan rengi
+                    'borderColor' => '#007bff',      // Toplantı etkinlikleri için mavi kenarlık rengi
+                ];
+            }
+
+            echo json_encode($events); // FullCalendar'a JSON formatında etkinlikleri gönder
+
+        } catch (PDOException $e) {
+            error_log("Veritabanı hatası (getCalendarEvents - meetings_lnp): " . $e->getMessage());
+            echo json_encode([]); // Hata durumunda boş bir dizi döndür
+        }
+        break;
+    case 'createMeeting':
+        header('Content-Type: application/json'); // JSON yanıtı gönderileceğini belirt
+
+        $organizerId = $_SESSION['id'] ?? null;
+        $participantId = $_POST['participant_id'] ?? null;
+        $description = $_POST['description'] ?? null;
+        $meetingDate = $_POST['meeting_date'] ?? null;
+
+        // Gerekli alanların kontrolü
+        if (empty($organizerId) || empty($participantId) || empty($description) || empty($meetingDate)) {
+            echo json_encode(['success' => false, 'message' => 'Lütfen tüm alanları doldurun.']);
+            exit();
+        }
+
+        try {
+            // SQL sorgusunu hazırla
+            $stmt = $pdo->prepare("INSERT INTO meetings_lnp (organizer_id, participant_id, description, meeting_date) VALUES (?, ?, ?, ?)");
+
+            // Sorguyu çalıştır
+            $success = $stmt->execute([$organizerId, $participantId, $description, $meetingDate]);
+
+            if ($success) {
+                echo json_encode(['success' => true, 'message' => 'Toplantı başarıyla oluşturuldu!']);
+            } else {
+                // Hata detayını yakalamak için
+                $errorInfo = $stmt->errorInfo();
+                error_log("Toplantı oluşturma hatası: " . $errorInfo[2]); // Hata mesajını logla
+                echo json_encode(['success' => false, 'message' => 'Toplantı oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.']);
+            }
+        } catch (PDOException $e) {
+            error_log("Veritabanı hatası (createMeeting): " . $e->getMessage());
+            echo json_encode(['success' => false, 'message' => 'Sunucu hatası: ' . $e->getMessage()]);
         }
         break;
 

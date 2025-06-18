@@ -2,6 +2,107 @@
 
 class Classes extends Dbh
 {
+	public function getCoachStudents($coach_user_id)
+	{
+		$stmt = $this->connect()->prepare('SELECT u.id, u.name, u.surname FROM coaching_guidance_requests_lnp c INNER JOIN users_lnp u ON u.id = c.user_id WHERE c.teacher_id = ?');
+
+            if (!$stmt->execute([$coach_user_id])) {
+                $stmt = null;
+               
+                return [];
+            }
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+	}
+	public function privateLessonRemainingLimit($user_id)
+	{
+		$sql1 = "
+        SELECT 
+            IFNULL(SUM(ep.limit_count), 0) AS total_limit,
+            (
+                SELECT COUNT(*) 
+                FROM private_lesson_requests_lnp 
+                WHERE student_user_id = :user_id
+            ) AS total_used,
+            IFNULL(SUM(ep.limit_count), 0) - (
+                SELECT COUNT(*) 
+                FROM private_lesson_requests_lnp 
+                WHERE student_user_id = :user_id
+            ) AS remaining
+        FROM extra_package_payments_lnp epp
+        INNER JOIN extra_packages_lnp ep ON ep.id = epp.package_id
+        WHERE epp.user_id = :user_id;
+    ";
+
+		$stmt1 = $this->connect()->prepare($sql1);
+		$stmt1->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+		$stmt1->execute();
+		$result1 = $stmt1->fetch(PDO::FETCH_ASSOC);
+		return $result1['remaining'];
+		
+	}
+	public function getExtraPackageMyList($id)
+	{
+		// 1. Özel Ders Bilgisi
+		$sql1 = "
+        SELECT 
+            IFNULL(SUM(ep.limit_count), 0) AS total_limit,
+            (
+                SELECT COUNT(*) 
+                FROM private_lesson_requests_lnp 
+                WHERE student_user_id = :user_id
+            ) AS total_used,
+            IFNULL(SUM(ep.limit_count), 0) - (
+                SELECT COUNT(*) 
+                FROM private_lesson_requests_lnp 
+                WHERE student_user_id = :user_id
+            ) AS remaining
+        FROM extra_package_payments_lnp epp
+        INNER JOIN extra_packages_lnp ep ON ep.id = epp.package_id
+        WHERE epp.user_id = :user_id;
+    ";
+
+		$stmt1 = $this->connect()->prepare($sql1);
+		$stmt1->bindParam(':user_id', $id, PDO::PARAM_INT);
+		$stmt1->execute();
+		$result1 = $stmt1->fetch(PDO::FETCH_ASSOC);
+
+		$data = [];
+
+		$data[] = [
+			'name' => '-',
+			'type' => 'Özel Ders',
+			'end_date' => $result1['remaining']
+		];
+
+		// 2. Koçluk/Rehberlik Paket Bilgileri
+		$sql2 = "
+        SELECT 
+            ep.name, 
+            ep.type, 
+            IF(cgr.end_date IS NULL, '-', DATE_FORMAT(cgr.end_date, '%d-%m-%Y %H:%i')) AS end_date 
+        FROM extra_package_payments_lnp epp 
+        INNER JOIN extra_packages_lnp ep ON ep.id = epp.package_id 
+        INNER JOIN coaching_guidance_requests_lnp cgr ON cgr.package_id = ep.id 
+        WHERE ep.type IN ('Koçluk', 'Rehberlik') AND epp.user_id = :user_id2;
+    ";
+
+		$stmt2 = $this->connect()->prepare($sql2);
+		$stmt2->bindParam(':user_id2', $id, PDO::PARAM_INT);
+		$stmt2->execute();
+		$result2 = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+
+		foreach ($result2 as $row) {
+			$data[] = [
+				'name' => $row['name'],
+				'type' => $row['type'],
+				'end_date' => $row['end_date']
+			];
+		}
+
+		return $data;
+	}
 	public function getTeacherList()
 	{
 		$stmt = $this->connect()->prepare('SELECT u.id as id, u.name as name,u.surname as surname,c.name as class_name ,l.name as lesson_name FROM `users_lnp` u left join classes_lnp c on u.class_id=c.id left JOIN lessons_lnp l on u.lesson_id=l.id where role in(4,9,10)
@@ -57,9 +158,10 @@ class Classes extends Dbh
 
 		return $result; // Bulunan talep bilgilerini veya bulunamazsa/hata olursa null döndürür.
 	}
-	public function getCoachingRequestList()
-{
-	$sql = "SELECT 
+	public function getCoachingRequestList($user_id = null)
+	{
+
+		$sql = "SELECT 
         cg.*, 
         CONCAT(u.name, ' ', u.surname) AS user_full_name,
         CASE 
@@ -71,26 +173,36 @@ class Classes extends Dbh
             WHEN t.id IS NULL THEN '-'
             ELSE CONCAT(t.name, ' ', t.surname)
         END AS teacher_full_name,
-        ep.name AS package_name
+        ep.name as package_name
     FROM coaching_guidance_requests_lnp AS cg
     LEFT JOIN users_lnp AS u ON u.id = cg.user_id
     LEFT JOIN users_lnp AS t ON t.id = cg.teacher_id
-    LEFT JOIN extra_packages_lnp AS ep ON ep.id = cg.package_id
-    ORDER BY cg.created_at DESC
-    LIMIT 1000"; // <-- EKLENEN KISIM
+    LEFT JOIN extra_packages_lnp AS ep ON ep.id = cg.package_id";
 
-	$stmt = $this->connect()->prepare($sql);
+		// YENİ EKLENEN KISIM: user_id kontrolü ve WHERE koşulu
+		if ($user_id !== null) {
+			$sql .= " WHERE cg.user_id = :user_id";
+		}
 
-	if (!$stmt->execute()) {
-		error_log('Error executing coaching request list query.');
-		$stmt = null;
-		return [];
+		$sql .= " ORDER BY cg.created_at DESC
+              LIMIT 1000";
+
+		$stmt = $this->connect()->prepare($sql);
+
+		// YENİ EKLENEN KISIM: user_id varsa parametreyi bağla
+		if ($user_id !== null) {
+			$stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+		}
+
+		if (!$stmt->execute()) {
+			error_log('Error executing coaching request list query.');
+			$stmt = null;
+			return [];
+		}
+
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
-
-	return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
-	public function getPrivateLessonRequestList(): array
+	public function getPrivateLessonRequestList($user_id = null)
 	{
 		$sql = 'SELECT
         pr.id,
@@ -101,6 +213,8 @@ class Classes extends Dbh
         COALESCE(s.name, \'-\') AS subtopic_name,
         COALESCE(CONCAT(student.name, " ", student.surname), \'-\') AS student_full_name,
         COALESCE(CONCAT(teacher.name, " ", teacher.surname), \'-\') AS teacher_full_name,
+		        COALESCE(DATE_FORMAT(pr.meet_date, \'%d-%m-%Y %H:%i\'), \'-\') AS meet_date, -- GÜNCELLENEN KISIM
+
         CASE
             WHEN pr.request_status = 0 THEN "Atama Bekliyor"
             WHEN pr.request_status = 1 THEN "Atandı"
@@ -114,11 +228,22 @@ class Classes extends Dbh
     LEFT JOIN topics_lnp t ON t.id = pr.topic_id
     LEFT JOIN subtopics_lnp s ON s.id = pr.subtopic_id
     LEFT JOIN users_lnp student ON student.id = pr.student_user_id
-    LEFT JOIN users_lnp teacher ON teacher.id = pr.assigned_teacher_id
-    ORDER BY pr.created_at DESC
-    LIMIT 1000';
+    LEFT JOIN users_lnp teacher ON teacher.id = pr.assigned_teacher_id';
+
+		// YENİ EKLENEN KISIM: user_id kontrolü ve WHERE koşulu
+		if ($user_id !== null) {
+			$sql .= " WHERE pr.student_user_id = :user_id";
+		}
+
+		$sql .= ' ORDER BY pr.created_at DESC
+              LIMIT 1000';
 
 		$stmt = $this->connect()->prepare($sql);
+
+		// YENİ EKLENEN KISIM: user_id varsa parametreyi bağla
+		if ($user_id !== null) {
+			$stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+		}
 
 		if (!$stmt->execute()) {
 			error_log('Error executing private lesson request query.');

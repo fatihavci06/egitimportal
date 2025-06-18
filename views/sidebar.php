@@ -276,6 +276,12 @@ $menu1 = new ShowMenu();
             elseif ($_SESSION['role'] == 8){
                 $menu1->showMenuSuperAdminList();
             }
+             elseif ($_SESSION['role'] == 9){
+                $menu1->showMenuSuperAdminList();
+            }
+             elseif ($_SESSION['role'] == 10){
+                $menu1->showMenuSuperAdminList();
+            }
             ?>
             <!--end:Menu item-->
             <?php if ($_SESSION['role'] == 1) { ?>

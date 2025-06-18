@@ -3,13 +3,14 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 )) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 2)){
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
 
     include_once "views/pages-head.php";
     $class = new Classes();
-    $data = $class->getPrivateLessonRequestList();
+    $data = $class->getCoachingRequestList($_SESSION['id']);
+    
 
 
 ?>
@@ -110,31 +111,26 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 )) {
                                                 <thead>
                                                     <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                                                         <th class="min-w-125px">Öğrenci İsim Soyisim</th>
-                                                        <th class="min-w-125px">Sınıf</th>
-                                                        <th class="min-w-125px">Ders</th>
+                                                        <th class="min-w-125px">Tip</th>
+                                                        <th class="min-w-125px">Paket</th>
                                                         <th class="min-w-125px">Durum</th>
                                                         <th class="min-w-125px">Öğretmen</th>
-                                                        <th class="text-end min-w-90px">İşlemler</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="fw-semibold text-gray-600">
                                                     <?php foreach ($data as $d) { ?>
                                                         <tr data-id="<?= $d['id'] ?>">
-                                                            <td><?= $d['student_full_name'] ?></td>
-                                                            <td><?= $d['class_name'] ?></td>
-                                                            <td><?= $d['lesson_name'] ?></td>
-                                                            <td><?= $d['request_status_text'] ?></td>
-                                                            <td><?= $d['teacher_full_name'] ?></td>
-                                                            <td class="text-end">
-                                                                <a class="btn btn-primary btn-sm me-1 " href="ozel-ders-talep-detay.php?id=<?= $d['id'] ?>" data-id="<?= $d['id'] ?>">
-                                                                    <i class="fas fa-edit"></i>
-                                                                </a>
-                                                                
-                                                            </td>
+                                                            <td><?= htmlspecialchars($d['user_full_name']) ?></td>
+                                                            <td><?= htmlspecialchars($d['request_type']) ?></td>
+                                                            <td><?= htmlspecialchars($d['package_name']) ?></td>
+                                                            <td><?= htmlspecialchars($d['status_text']) ?></td>
+                                                            <td><?= htmlspecialchars($d['teacher_full_name']) ?></td>
+                                                            
                                                         </tr>
                                                     <?php } ?>
                                                 </tbody>
                                             </table>
+
 
 
                                             <!-- Ekleme Modal -->
@@ -182,52 +178,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 )) {
                                                 </div>
                                             </div>
 
-                                            <!-- Güncelleme Modal -->
-                                            <div class="modal fade" id="updatePackageModal" tabindex="-1" aria-labelledby="updatePackageModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog">
-                                                    <form id="updatePackageForm">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title" id="updatePackageModalLabel">Ek Paket Güncelle</h5>
-                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                <input type="hidden" id="updatePackageId" name="updatePackageId" />
-                                                                <div class="mb-3">
-                                                                    <label for="updatePackageName" class="form-label required">Paket Adı</label>
-                                                                    <input type="text" id="updatePackageName" name="updatePackageName" class="form-control" required />
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <label for="updatePackagePrice" class="form-label">Fiyat</label>
-                                                                    <input type="number" step="0.01" id="updatePackagePrice" name="updatePackagePrice" class="form-control" required />
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <label for="updatePackageType" class="form-label required">Tip</label>
-                                                                    <select id="updatePackageType" name="updatePackageType" class="form-select" required>
-                                                                        <option value="">Seçiniz</option>
-                                                                        <option value="Koçluk">Koçluk</option>
-                                                                        <option value="Rehberlik">Rehberlik</option>
-                                                                        <option value="Özel Ders">Özel Ders</option>
-                                                                    </select>
-                                                                </div>
-                                                                <div class="mb-3" id="updateMonthsWrapper" style="display:none;">
-                                                                    <label for="updateMonths" class="form-label required">Kaç Aylık</label>
-                                                                    <input type="number" id="updateMonths" name="updateMonths" min="1" class="form-control" />
-                                                                </div>
-                                                                <div class="mb-3" id="updateCountWrapper" style="display:none;">
-                                                                    <label for="updateCount" class="form-label required">Adet</label>
-                                                                    <input type="number" id="updateCount" name="updateCount" min="1" class="form-control" />
-                                                                </div>
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
-                                                                <button type="submit" class="btn btn-primary">Güncelle</button>
-                                                            </div>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-
+                                          
 
                                             <!--end::Table-->
                                         </div>
@@ -289,12 +240,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 )) {
                 });
 
                 // Add Modal: Tip seçimine göre alanları göster/gizle
-               
+
 
 
                 // Güncelleme butonuna tıklanınca modalı aç ve verileri doldur
-                
-                
+
+
 
             });
         </script>

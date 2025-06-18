@@ -863,8 +863,8 @@ switch ($service) {
     case 'filter-main-school-content':
         $lesson_id = isset($_POST['lesson_id']) ? $_POST['lesson_id'] : null;
         $unit_id = isset($_POST['unit_id']) ? $_POST['unit_id'] : null;
-        $topic_id = isset($_POST['topic_id']) ? $_POST['topic_id'] : null; 
-       
+        $topic_id = isset($_POST['topic_id']) ? $_POST['topic_id'] : null;
+
         $month = isset($_POST['month']) ? $_POST['month'] : null;
         $week = isset($_POST['week']) ? $_POST['week'] : null;
         $activity_title = isset($_POST['activity_title']) ? $_POST['activity_title'] : null;
@@ -878,17 +878,17 @@ switch ($service) {
         $params = [];
 
         // Dinamik filtreleri ekle
-         if ($lesson_id !== null && $lesson_id !== '') {
-            
+        if ($lesson_id !== null && $lesson_id !== '') {
+
             $whereClauses[] = 'lesson_id = :lesson_id';
             $params[':lesson_id'] = $lesson_id;
         }
-         if ($unit_id !== null && $unit_id !== '') {
-            
+        if ($unit_id !== null && $unit_id !== '') {
+
             $whereClauses[] = 'unit_id = :unit_id';
             $params[':unit_id'] = $unit_id;
         }
-         if ($month !== null && $month !== '') {
+        if ($month !== null && $month !== '') {
             $whereClauses[] = 'month = :month';
             $params[':month'] = $month;
         }
@@ -1280,17 +1280,19 @@ switch ($service) {
         $topicId = $_POST['topic_id'] ?? null;
         $subtopicId = $_POST['subtopic_id'] ?? null;
         $status = $_POST['status'] ?? null;
+        $addedUserId = $_SESSION['id'] ?? null;
+
 
         $title = $_POST['title'] ?? null;
         $startDate = $_POST['start_date'] ?? null;
         $endDate = $_POST['end_date'] ?? null;
 
-        if (empty($classId)) {
-            throw new Exception('Sınıf zorunludur.');
-        }
-        if (empty($title)) {
-            throw new Exception('Başlık zorunludur.');
-        }
+        // if (empty($classId)) {
+        //     throw new Exception('Sınıf zorunludur.');
+        // }
+        // if (empty($title)) {
+        //     throw new Exception('Başlık zorunludur.');
+        // }
         if (empty($startDate)) {
             throw new Exception('Başlangıç tarihi zorunludur.');
         }
@@ -1404,30 +1406,31 @@ switch ($service) {
 
             $teacherId = NULL;
 
-            if($_SESSION['role'] == 4){
+            if ($_SESSION['role'] == 4) {
                 $teacherId = $_SESSION['id'];
             }
 
             // Veritabanı bağlantısı
             $stmt = $pdo->prepare("
-            INSERT INTO tests_lnp 
-            (status,class_id, lesson_id, unit_id, topic_id, subtopic_id, test_title, start_date, end_date, cover_img, teacher_id)
-            VALUES
-            (:status,:class_id, :lesson_id, :unit_id, :topic_id, :subtopic_id, :title, :start_date, :end_date, :file_path, :teacher_id)
-        ");
+    INSERT INTO tests_lnp 
+    (status, class_id, lesson_id, unit_id, topic_id, subtopic_id, test_title, start_date, end_date, cover_img, teacher_id, added_user_id)
+    VALUES
+    (:status, :class_id, :lesson_id, :unit_id, :topic_id, :subtopic_id, :title, :start_date, :end_date, :file_path, :teacher_id, :added_user_id)
+");
 
             $stmt->execute([
-                ':status'       => $status,
-                ':class_id'     => $classId,
-                ':lesson_id'    => $lessonId,
-                ':unit_id'      => $unitId,
-                ':topic_id'     => $topicId,
-                ':subtopic_id'  => $subtopicId,
-                ':title'        => $title,
-                ':start_date'   => $startDate,
-                ':end_date'     => $endDate,
-                ':file_path'    => $filePath,
-                ':teacher_id'   => $teacherId
+                ':status'         => $status,
+                ':class_id'       => $classId,
+                ':lesson_id'      => $lessonId,
+                ':unit_id'        => $unitId,
+                ':topic_id'       => $topicId,
+                ':subtopic_id'    => $subtopicId,
+                ':title'          => $title,
+                ':start_date'     => $startDate,
+                ':end_date'       => $endDate,
+                ':file_path'      => $filePath,
+                ':teacher_id'     => $teacherId,
+                ':added_user_id'  => $addedUserId
             ]);
 
             $testId = $pdo->lastInsertId();
@@ -1578,101 +1581,94 @@ switch ($service) {
         break;
 
     case 'getFilteredTests':
-        $title = isset($_POST['title']) ? $_POST['title'] : '';
-        $classId = isset($_POST['class_id']) ? $_POST['class_id'] : '';
-        $lessonId = isset($_POST['lesson_id']) ? $_POST['lesson_id'] : '';
-        $unitId = isset($_POST['unit_id']) ? $_POST['unit_id'] : '';
-        $topicId = isset($_POST['topic_id']) ? $_POST['topic_id'] : '';
-        $subtopicId = isset($_POST['subtopic_id']) ? $_POST['subtopic_id'] : '';
-        $teacherId = '';
-        if($_SESSION['role'] == 4){
-            $teacherId = $_SESSION['id'];
-        }
-        try {
+    $title = $_POST['title'] ?? '';
+    $classId = $_POST['class_id'] ?? '';
+    $lessonId = $_POST['lesson_id'] ?? '';
+    $unitId = $_POST['unit_id'] ?? '';
+    $topicId = $_POST['topic_id'] ?? '';
+    $subtopicId = $_POST['subtopic_id'] ?? '';
+    $teacherId = '';
+    $addedUserId = '';
 
-            $sql = "SELECT t.id, t.test_title AS test_title, t.created_at,
+    if ($_SESSION['role'] == 4) {
+        $teacherId = $_SESSION['id'];
+    }
+
+    if ($_SESSION['role'] == 9) {
+        $addedUserId = $_SESSION['id'];
+    }
+
+    try {
+        $sql = "SELECT t.id, t.test_title AS test_title, t.created_at,
                        t.class_id, t.lesson_id,
                        t.unit_id, t.topic_id, t.subtopic_id
                 FROM tests_lnp t
-                WHERE 1=1"; // Her zaman doğru olan bir koşul ile başla
+                WHERE 1=1";
 
-            $params = [];
+        $params = [];
 
-            // Filtreleme koşulları (AND ile birleşir)
-            if (!empty($title)) {
-                $sql .= " AND t.test_title LIKE ?";
-                $params[] = '%' . $title . '%';
-            }
-            if (!empty($classId)) {
-                // Eğer class_id bir ID ise bu şekilde filtrelemeye devam edin.
-                // Eğer class_name üzerinden filtreleme yapılıyorsa, o zaman t.class_name LIKE ? kullanmalısınız.
-                // Mevcut yapınızda ID ile filtreleme olduğu için class_id kullanmaya devam ediyorum.
-                $sql .= " AND t.class_id = ?";
-                $params[] = $classId;
-            }
-            if (!empty($lessonId)) {
-                $sql .= " AND t.lesson_id = ?";
-                $params[] = $lessonId;
-            }
-            if (!empty($unitId)) {
-                $sql .= " AND t.unit_id = ?";
-                $params[] = $unitId;
-            }
-            if (!empty($topicId)) {
-                $sql .= " AND t.topic_id = ?";
-                $params[] = $topicId;
-            }
-            if (!empty($subtopicId)) {
-                $sql .= " AND t.subtopic_id = ?";
-                $params[] = $subtopicId;
-            }
-            if (!empty($teacherId)) {
-                $sql .= " AND t.teacher_id = ?";
-                $params[] = $teacherId;
-            }
+        if (!empty($title)) {
+            $sql .= " AND t.test_title LIKE ?";
+            $params[] = '%' . $title . '%';
+        }
+        if (!empty($classId)) {
+            $sql .= " AND t.class_id = ?";
+            $params[] = $classId;
+        }
+        if (!empty($lessonId)) {
+            $sql .= " AND t.lesson_id = ?";
+            $params[] = $lessonId;
+        }
+        if (!empty($unitId)) {
+            $sql .= " AND t.unit_id = ?";
+            $params[] = $unitId;
+        }
+        if (!empty($topicId)) {
+            $sql .= " AND t.topic_id = ?";
+            $params[] = $topicId;
+        }
+        if (!empty($subtopicId)) {
+            $sql .= " AND t.subtopic_id = ?";
+            $params[] = $subtopicId;
+        }
+        if (!empty($teacherId)) {
+            $sql .= " AND t.teacher_id = ?";
+            $params[] = $teacherId;
+        }
+        if (!empty($addedUserId)) {
+            $sql .= " AND t.added_user_id = ?";
+            $params[] = $addedUserId;
+        }
 
-            // Global arama (OR kullanarak tüm ilgili sütunlarda arama)
-            // Artık JOIN'lere gerek kalmadığı için doğrudan t.sutun_adi kullanıyoruz.
-            if (!empty($searchValue)) {
-                $sql .= " AND (t.title LIKE ? OR t.class_name LIKE ? OR t.lesson_name LIKE ? OR t.unit_name LIKE ? OR t.topic_name LIKE ? OR t.subtopic_name LIKE ?)";
-                $params[] = '%' . $searchValue . '%';
-                $params[] = '%' . $searchValue . '%';
-                $params[] = '%' . $searchValue . '%';
-                $params[] = '%' . $searchValue . '%';
-                $params[] = '%' . $searchValue . '%';
-                $params[] = '%' . $searchValue . '%';
-            }
+        $sql .= " ORDER BY t.created_at DESC";
 
-            $sql .= " ORDER BY t.created_at DESC";
+        $stmt = $pdo->prepare($sql);
 
-            $stmt = $pdo->prepare($sql);
-
-            if (!$stmt->execute($params)) {
-                $stmt = null;
-                error_log("Failed to fetch filtered tests (client-side): ");
-                return [];
-            }
-
-            $tests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (!$stmt->execute($params)) {
             $stmt = null;
-
-
-
-
-            if ($tests) {
-                echo json_encode(['status' => 'success', 'data' => $tests]);
-            } else {
-                echo json_encode(['status' => 'error', 'message' => 'Test bulunamadı.']);
-            }
-        } catch (Exception $e) {
-            http_response_code(422); // Veya uygun bir HTTP kodu
-            echo json_encode([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ]);
+            error_log("Failed to fetch filtered tests (client-side): ");
+            echo json_encode(['status' => 'error', 'message' => 'Sorgu çalıştırılamadı.']);
             exit();
         }
-        break;
+
+        $tests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = null;
+
+        if ($tests) {
+            echo json_encode(['status' => 'success', 'data' => $tests]);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Test bulunamadı.']);
+        }
+    } catch (Exception $e) {
+        http_response_code(422);
+        echo json_encode([
+            'status' => 'error',
+            'message' => $e->getMessage()
+        ]);
+        exit();
+    }
+    break;
+
 
 
 
@@ -2207,7 +2203,7 @@ WHERE t.id = :id";
             $stmt->execute($params);
 
             if ($stmt->rowCount() === 0) {
-                
+
                 echo json_encode(['status' => 'error', 'message' => 'Test bulunamadı.']);
                 exit;
             }
@@ -2415,52 +2411,63 @@ WHERE t.id = :id";
         }
         break;
     case 'getTestResults':
-        
-        $teacherId = '';
-        if($_SESSION['role'] == 4){
-            $teacherId = $_SESSION['id'];
+
+    $teacherId = '';
+    $addedUserId = '';
+
+    if ($_SESSION['role'] == 4) {
+        $teacherId = $_SESSION['id'];
+    }
+
+    if ($_SESSION['role'] == 9) {
+        $addedUserId = $_SESSION['id'];
+    }
+
+    try {
+        $where = [];
+        $params = [];
+
+        if (!empty($teacherId)) {
+            $where[] = "t.teacher_id = :teacher_id";
+            $params[':teacher_id'] = $teacherId;
         }
 
-        try {
-            $where = [];
-            $params = [];
+        if (!empty($addedUserId)) {
+            $where[] = "t.added_user_id = :added_user_id";
+            $params[':added_user_id'] = $addedUserId;
+        }
 
-            if (!empty($teacherId)) {
-                $where[] = "t.teacher_id = :teacher_id";
-                $params[':teacher_id'] = $teacherId;
-            }
+        if (!empty($_POST['name'])) {
+            $where[] = "CONCAT(u.name, ' ', u.surname) LIKE :search_name";
+            $params[':search_name'] = '%' . $_POST['name'] . '%';
+        }
 
-            if (!empty($_POST['name'])) {
-                $where[] = "CONCAT(u.name, ' ', u.surname) LIKE :search_name";
-                $params[':search_name'] = '%' . $_POST['name'] . '%';
-            }
+        if (!empty($_POST['class_id'])) {
+            $where[] = 'ug.class_id = :class_id';
+            $params[':class_id'] = $_POST['class_id'];
+        }
 
-            if (!empty($_POST['class_id'])) {
-                $where[] = 'ug.class_id = :class_id';
-                $params[':class_id'] = $_POST['class_id'];
-            }
+        if (!empty($_POST['lesson_id'])) {
+            $where[] = 'ug.lesson_id = :lesson_id';
+            $params[':lesson_id'] = $_POST['lesson_id'];
+        }
 
-            if (!empty($_POST['lesson_id'])) {
-                $where[] = 'ug.lesson_id = :lesson_id';
-                $params[':lesson_id'] = $_POST['lesson_id'];
-            }
+        if (!empty($_POST['unit_id'])) {
+            $where[] = 'ug.unit_id = :unit_id';
+            $params[':unit_id'] = $_POST['unit_id'];
+        }
 
-            if (!empty($_POST['unit_id'])) {
-                $where[] = 'ug.unit_id = :unit_id';
-                $params[':unit_id'] = $_POST['unit_id'];
-            }
+        if (!empty($_POST['topic_id'])) {
+            $where[] = 'ug.topic_id = :topic_id';
+            $params[':topic_id'] = $_POST['topic_id'];
+        }
 
-            if (!empty($_POST['topic_id'])) {
-                $where[] = 'ug.topic_id = :topic_id';
-                $params[':topic_id'] = $_POST['topic_id'];
-            }
+        if (!empty($_POST['subtopic_id'])) {
+            $where[] = 'ug.subtopic_id = :subtopic_id';
+            $params[':subtopic_id'] = $_POST['subtopic_id'];
+        }
 
-            if (!empty($_POST['subtopic_id'])) {
-                $where[] = 'ug.subtopic_id = :subtopic_id';
-                $params[':subtopic_id'] = $_POST['subtopic_id'];
-            }
-
-            $sql = "SELECT 
+        $sql = "SELECT 
             ug.test_id AS test_id,
             t.test_title AS test_title,
             CONCAT(u.name, ' ', u.surname) AS name,
@@ -2470,22 +2477,23 @@ WHERE t.id = :id";
         INNER JOIN users_lnp u ON u.id = ug.user_id
         INNER JOIN tests_lnp t ON t.id = ug.test_id";
 
-            if (count($where) > 0) {
-                $sql .= ' WHERE ' . implode(' AND ', $where);
-            }
-
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute($params);
-            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            echo json_encode(['status' => 'success', 'data' => $results]);
-        } catch (Exception $e) {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Bir hata oluştu: ' . $e->getMessage()
-            ]);
+        if (count($where) > 0) {
+            $sql .= ' WHERE ' . implode(' AND ', $where);
         }
-        break;
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode(['status' => 'success', 'data' => $results]);
+    } catch (Exception $e) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Bir hata oluştu: ' . $e->getMessage()
+        ]);
+    }
+    break;
+
     case 'mainSchoolLessonAdd':
         $classIdArray = $_POST['class_id'] ?? [];
         $lessonName = $_POST['lesson_name'] ?? null;
@@ -2881,7 +2889,7 @@ WHERE t.id = :id";
         break;
     case 'mainSchoolGetTopic':
         $topicId = $_GET['id'] ?? null;
-      
+
         if (!$topicId || !is_numeric($topicId)) {
             echo json_encode(['status' => 'error', 'message' => 'Geçersiz konu ID']);
             exit;
@@ -2890,7 +2898,7 @@ WHERE t.id = :id";
             $stmt = $pdo->prepare("SELECT t.id as id,u.id as unit_id,t.name as topic_name ,u.lesson_id as lesson_id,mlsc.class_id FROM main_school_topics_lnp t INNER JOIN main_school_units_lnp u ON t.unit_id=u.id INNER JOIN main_school_lessons_lnp l on l.id=u.lesson_id INNER JOIN mainschool_lesson_class_id_lnp as mlsc on mlsc.lesson_id=l.id  WHERE t.id = :id");
             $stmt->execute([':id' => $topicId]);
             $topic = $stmt->fetch(PDO::FETCH_ASSOC);
-          
+
             if (!$topic) {
                 echo json_encode(['status' => 'error', 'message' => 'Konu bulunamadı']);
                 exit;

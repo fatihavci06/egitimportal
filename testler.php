@@ -3,7 +3,8 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 4)) {
+
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 4 or $_SESSION['role'] == 9)) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
     include_once "classes/units.classes.php";
@@ -53,7 +54,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </div>
 
                                             <div class="col-lg-4">
-                                                <label class="required fs-6 fw-semibold mb-2" for="class_id">Sınıf Seçimi </label>
+                                                <label class=" fs-6 fw-semibold mb-2" for="class_id">Sınıf Seçimi </label>
                                                 <?php
                                                 $class = new Classes();
                                                 $classList = $class->getClassesList();
@@ -66,7 +67,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 </select>
                                             </div>
                                             <div class="col-lg-4 mt-3">
-                                                <label class="required fs-6 fw-semibold" for="lesson_id">Dersler</label>
+                                                <label class=" fs-6 fw-semibold" for="lesson_id">Dersler</label>
                                                 <select class="form-select" id="lesson_id" required>
                                                     <option value="">Ders seçiniz</option>
                                                 </select>
@@ -75,7 +76,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         <div class="row mt-3">
 
                                             <div class="col-lg-4 mt-4">
-                                                <label class="required fs-6 fw-semibold mb-2" for="unit_id">Ünite Seçimi</label>
+                                                <label class=" fs-6 fw-semibold mb-2" for="unit_id">Ünite Seçimi</label>
                                                 <select class="form-select" id="unit_id" required>
                                                     <option value="">Ünite seçiniz</option>
                                                 </select>
@@ -289,16 +290,16 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                         // Sınıf ve Ders seçimi zorunlu kontrolü
                         if (!classId || classId === '') {
-                            Swal.fire({
-                                icon: 'warning',
-                                title: 'Uyarı',
-                                text: 'Lütfen bir sınıf seçiniz.',
-                                confirmButtonText: 'Tamam'
-                            });
-                            $('#class_id').addClass('is-invalid'); // Bootstrap ile görsel uyarı
-                            $('#lesson_id').addClass('is-invalid'); // Bootstrap ile görsel uyarı
-                            $('#unit_id').addClass('is-invalid'); // Bootstrap ile görsel uyarı
-                            return; // Filtreleme işlemini durdur
+                            // Swal.fire({
+                            //     icon: 'warning',
+                            //     title: 'Uyarı',
+                            //     text: 'Lütfen bir sınıf seçiniz.',
+                            //     confirmButtonText: 'Tamam'
+                            // });
+                            // $('#class_id').addClass('is-invalid'); // Bootstrap ile görsel uyarı
+                            // $('#lesson_id').addClass('is-invalid'); // Bootstrap ile görsel uyarı
+                            // $('#unit_id').addClass('is-invalid'); // Bootstrap ile görsel uyarı
+                            // return; // Filtreleme işlemini durdur
                         } else {
                             $('#class_id').removeClass('is-invalid');
                             $('#lesson_id').removeClass('is-invalid');

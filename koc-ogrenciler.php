@@ -3,14 +3,14 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 )) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 9 or $_SESSION['role'] == 10)) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
 
     include_once "views/pages-head.php";
     $class = new Classes();
-    $data = $class->getPrivateLessonRequestList();
-
+    $data = $class->getCoachStudents($_SESSION['id']);
+  
 
 ?>
     <!--end::Head-->
@@ -109,27 +109,21 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 )) {
                                             <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_customers_table">
                                                 <thead>
                                                     <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                        <th class="min-w-125px">Öğrenci İsim Soyisim</th>
-                                                        <th class="min-w-125px">Sınıf</th>
-                                                        <th class="min-w-125px">Ders</th>
-                                                        <th class="min-w-125px">Durum</th>
-                                                        <th class="min-w-125px">Öğretmen</th>
+                                                        <th class="min-w-125px">Öğrenci İsim</th>
+                                                        <th class="min-w-125px">Öğrenci Soyisim</th>
                                                         <th class="text-end min-w-90px">İşlemler</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="fw-semibold text-gray-600">
                                                     <?php foreach ($data as $d) { ?>
                                                         <tr data-id="<?= $d['id'] ?>">
-                                                            <td><?= $d['student_full_name'] ?></td>
-                                                            <td><?= $d['class_name'] ?></td>
-                                                            <td><?= $d['lesson_name'] ?></td>
-                                                            <td><?= $d['request_status_text'] ?></td>
-                                                            <td><?= $d['teacher_full_name'] ?></td>
+                                                            <td><?= $d['name'] ?></td>
+                                                            <td><?= $d['surname'] ?></td>
+
                                                             <td class="text-end">
-                                                                <a class="btn btn-primary btn-sm me-1 " href="ozel-ders-talep-detay.php?id=<?= $d['id'] ?>" data-id="<?= $d['id'] ?>">
-                                                                    <i class="fas fa-edit"></i>
+                                                                <a class="btn btn-success btn-sm me-1" href="mesaj-gonder.php?id=<?= $d['id'] ?>" data-id="<?= $d['id'] ?>">
+                                                                    <i class="fas fa-paper-plane"></i> Mesaj Gönder
                                                                 </a>
-                                                                
                                                             </td>
                                                         </tr>
                                                     <?php } ?>
@@ -289,12 +283,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 )) {
                 });
 
                 // Add Modal: Tip seçimine göre alanları göster/gizle
-               
+
 
 
                 // Güncelleme butonuna tıklanınca modalı aç ve verileri doldur
-                
-                
+
+
 
             });
         </script>

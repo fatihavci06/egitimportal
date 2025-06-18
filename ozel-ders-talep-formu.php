@@ -3,13 +3,18 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role'])) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 2)) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
 
     include_once "views/pages-head.php";
     $class = new Classes();
     $data = $class->getExtraPackageList();
+     $remaining= $class->privateLessonRemainingLimit($_SESSION['id']);
+ if ($remaining == 0) {
+    header("Location: ek-paket-satin-al.php");
+    exit();
+}
 ?>
     <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" class="app-default">
         <script>

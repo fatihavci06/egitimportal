@@ -3,13 +3,14 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 )) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 2)) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
 
     include_once "views/pages-head.php";
     $class = new Classes();
-    $data = $class->getPrivateLessonRequestList();
+    $data = $class->getExtraPackageMyList($_SESSION['id']);
+
 
 
 ?>
@@ -81,7 +82,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 )) {
                                             <!--begin::Card toolbar-->
                                             <div class="card-toolbar">
                                                 <!--begin::Toolbar-->
+                                                <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
+                                                    <!--begin::Add school-->
+                                                    <button type="button" class="btn btn-primary btn-sm mb-3" data-bs-toggle="modal" data-bs-target="#addPackageModal">
+                                                        Ek Paket Ekle
+                                                    </button>
 
+                                                </div>
 
                                                 <!--end::Toolbar-->
                                                 <!--begin::week actions-->
@@ -109,33 +116,31 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 )) {
                                             <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_customers_table">
                                                 <thead>
                                                     <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                        <th class="min-w-125px">Öğrenci İsim Soyisim</th>
-                                                        <th class="min-w-125px">Sınıf</th>
-                                                        <th class="min-w-125px">Ders</th>
-                                                        <th class="min-w-125px">Durum</th>
-                                                        <th class="min-w-125px">Öğretmen</th>
-                                                        <th class="text-end min-w-90px">İşlemler</th>
+                                                        <th class="w-10px pe-2">
+                                                            <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                                                <input class="form-check-input" type="checkbox" data-kt-check="true" data-kt-check-target="#kt_customers_table .form-check-input" />
+                                                            </div>
+                                                        </th>
+                                                        <th class="min-w-125px">Ek Paket</th>
+                                                        <th class="min-w-125px">Tip</th>
+                                                        <th class="min-w-125px">Bitiş Tarihi/ Kalan Limit</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="fw-semibold text-gray-600">
                                                     <?php foreach ($data as $d) { ?>
-                                                        <tr data-id="<?= $d['id'] ?>">
-                                                            <td><?= $d['student_full_name'] ?></td>
-                                                            <td><?= $d['class_name'] ?></td>
-                                                            <td><?= $d['lesson_name'] ?></td>
-                                                            <td><?= $d['request_status_text'] ?></td>
-                                                            <td><?= $d['teacher_full_name'] ?></td>
-                                                            <td class="text-end">
-                                                                <a class="btn btn-primary btn-sm me-1 " href="ozel-ders-talep-detay.php?id=<?= $d['id'] ?>" data-id="<?= $d['id'] ?>">
-                                                                    <i class="fas fa-edit"></i>
-                                                                </a>
-                                                                
+                                                        <tr>
+                                                            <td>
+                                                                <div class="form-check form-check-sm form-check-custom form-check-solid">
+                                                                    <input class="form-check-input" type="checkbox" />
+                                                                </div>
                                                             </td>
+                                                            <td><?= htmlspecialchars($d['name']) ?></td>
+                                                            <td><?= htmlspecialchars($d['type']) ?></td>
+                                                            <td><?= htmlspecialchars($d['end_date']) ?></td>
                                                         </tr>
                                                     <?php } ?>
                                                 </tbody>
                                             </table>
-
 
                                             <!-- Ekleme Modal -->
                                             <div class="modal fade" id="addPackageModal" tabindex="-1" aria-labelledby="addPackageModalLabel" aria-hidden="true">
@@ -289,12 +294,198 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 )) {
                 });
 
                 // Add Modal: Tip seçimine göre alanları göster/gizle
-               
+                $('#addPackageType').on('change', function() {
+                    if (this.value === 'Koçluk' || this.value === 'Rehberlik') {
+                        $('#addMonthsWrapper').show();
+                        $('#addCountWrapper').hide();
+                        $('#addCount').val('');
+                    } else if (this.value === 'Özel Ders') {
+                        $('#addCountWrapper').show();
+                        $('#addMonthsWrapper').hide();
+                        $('#addMonths').val('');
+                    } else {
+                        $('#addMonthsWrapper').hide();
+                        $('#addCountWrapper').hide();
+                        $('#addMonths').val('');
+                        $('#addCount').val('');
+                    }
+                });
+
+                // Update Modal: Tip seçimine göre alanları göster/gizle
+                $('#updatePackageType').on('change', function() {
+                    if (this.value === 'Koçluk' || this.value === 'Rehberlik') {
+                        $('#updateMonthsWrapper').show();
+                        $('#updateCountWrapper').hide();
+                        $('#updateCount').val('');
+                    } else if (this.value === 'Özel Ders') {
+                        $('#updateCountWrapper').show();
+                        $('#updateMonthsWrapper').hide();
+                        $('#updateMonths').val('');
+                    } else {
+                        $('#updateMonthsWrapper').hide();
+                        $('#updateCountWrapper').hide();
+                        $('#updateMonths').val('');
+                        $('#updateCount').val('');
+                    }
+                });
+
+                // Ekleme form submit (örnek Ajax gönderim)
+                $('#addPackageForm').on('submit', function(e) {
+                    e.preventDefault();
+
+                    const formData = $(this).serialize();
+
+                    $.ajax({
+                        url: 'includes/ajax.php?service=addExtraPackage', // Backend PHP dosyası
+                        type: 'POST',
+                        data: formData,
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Başarılı!',
+                                    text: 'Yeni paket başarıyla eklendi.',
+                                    confirmButtonText: 'Tamam'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        // Modal kapat ve formu sıfırla
+                                        $('#addPackageModal').modal('hide');
+                                        $('#addPackageForm')[0].reset();
+
+                                    }
+                                    location.href = window.location.href;
+
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Hata!',
+                                    text: 'Bir sorun oluştu. Lütfen tekrar deneyin.',
+                                    confirmButtonText: 'Tamam'
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Sunucu Hatası!',
+                                text: 'İstek gönderilirken bir hata oluştu.',
+                                confirmButtonText: 'Tamam'
+                            });
+                        }
+                    });
+                });
 
 
                 // Güncelleme butonuna tıklanınca modalı aç ve verileri doldur
-                
-                
+                $('.update-btn').on('click', function() {
+                    const tr = $(this).closest('tr');
+                    const id = tr.data('id');
+                    const name = tr.data('name');
+                    const type = tr.data('type');
+                    const price = tr.data('price');
+                    const months = tr.data('months');
+                    const count = tr.data('count');
+
+                    $('#updatePackageId').val(id);
+                    $('#updatePackageName').val(name);
+                    $('#updatePackagePrice').val(price);
+                    $('#updatePackageType').val(type).trigger('change');
+                    if (type === 'Koçluk' || type === 'Rehberlik') {
+                        $('#updateMonths').val(months);
+                    } else if (type === 'Özel Ders') {
+                        $('#updateCount').val(count);
+                    }
+
+                    $('#updatePackageModal').modal('show');
+                });
+
+                // Güncelleme form submit (örnek Ajax)
+                $('#updatePackageForm').on('submit', function(e) {
+                    e.preventDefault();
+
+                    const formData = $(this).serialize();
+
+                    $.ajax({
+                        url: 'includes/ajax.php?service=updateExtraPackage', // Güncelleme işlemini yapan PHP endpoint
+                        type: 'POST',
+                        data: formData,
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Başarılı!',
+                                    text: 'Paket başarıyla güncellendi.',
+                                    confirmButtonText: 'Tamam'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        $('#updatePackageModal').modal('hide');
+                                        // Gerekirse tabloyu güncelle ya da yeniden yükle
+                                    }
+                                    location.href = window.location.href;
+
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Hata!',
+                                    text: 'Paket güncellenemedi. Lütfen tekrar deneyin.',
+                                    confirmButtonText: 'Tamam'
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Sunucu Hatası!',
+                                text: 'İstek gönderilirken bir hata oluştu.',
+                                confirmButtonText: 'Tamam'
+                            });
+                        }
+                    });
+                });
+
+
+                // Silme işlemi
+                $('.delete-btn').on('click', function() {
+                    const id = $(this).data('id');
+
+                    Swal.fire({
+                        title: 'Emin misiniz?',
+                        text: 'Bu paket kalıcı olarak silinecek!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Evet, sil',
+                        cancelButtonText: 'İptal',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: 'includes/ajax.php?service=deleteExtraPackage', // Silme işlemini yapan PHP endpoint
+                                type: 'POST',
+                                data: {
+                                    action: 'delete_package',
+                                    id: id
+                                },
+                                dataType: 'json',
+                                success: function(response) {
+                                    if (response.status === 'success') {
+                                        Swal.fire('Silindi!', 'Paket başarıyla silindi.', 'success');
+                                        $(`tr[data-id="${id}"]`).remove();
+                                    } else {
+                                        Swal.fire('Hata!', 'Paket silinemedi.', 'error');
+                                    }
+                                    location.href = window.location.href;
+
+                                },
+                                error: function() {
+                                    Swal.fire('Sunucu Hatası!', 'Bir hata oluştu.', 'error');
+                                }
+                            });
+                        }
+                    });
+                });
 
             });
         </script>

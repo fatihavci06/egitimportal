@@ -3,7 +3,7 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 4)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 4 or $_SESSION['role'] == 9)) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
     include_once "classes/units.classes.php";
@@ -12,6 +12,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     include_once "views/pages-head.php";
 
     $chooseUnit = new ShowUnit();
+   
 ?>
     <!--end::Head-->
     <!--begin::Body-->

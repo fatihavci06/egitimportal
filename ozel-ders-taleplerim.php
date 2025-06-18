@@ -3,13 +3,13 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 )) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 2)) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
 
     include_once "views/pages-head.php";
     $class = new Classes();
-    $data = $class->getPrivateLessonRequestList();
+    $data = $class->getPrivateLessonRequestList($_SESSION['id']);
 
 
 ?>
@@ -114,7 +114,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 )) {
                                                         <th class="min-w-125px">Ders</th>
                                                         <th class="min-w-125px">Durum</th>
                                                         <th class="min-w-125px">Öğretmen</th>
-                                                        <th class="text-end min-w-90px">İşlemler</th>
+                                                        <th class="min-w-125px">Toplantı Tarihi</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="fw-semibold text-gray-600">
@@ -125,12 +125,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 )) {
                                                             <td><?= $d['lesson_name'] ?></td>
                                                             <td><?= $d['request_status_text'] ?></td>
                                                             <td><?= $d['teacher_full_name'] ?></td>
-                                                            <td class="text-end">
-                                                                <a class="btn btn-primary btn-sm me-1 " href="ozel-ders-talep-detay.php?id=<?= $d['id'] ?>" data-id="<?= $d['id'] ?>">
-                                                                    <i class="fas fa-edit"></i>
-                                                                </a>
-                                                                
-                                                            </td>
+                                                            <td><?= $d['meet_date'] ?></td>
+                                                            
+                                                            
                                                         </tr>
                                                     <?php } ?>
                                                 </tbody>
