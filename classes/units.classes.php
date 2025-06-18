@@ -251,4 +251,17 @@ class Units extends Dbh
 		$stmt = null;
 		$stmt2 = null;
 	}
+	public function getUnitByLessonId($schoolId, $classId, $lessonId)
+	{
+
+		$stmt = $this->connect()->prepare('SELECT id, name FROM units_lnp WHERE  school_id=? AND class_id = ? AND lesson_id=? ');
+
+		if (!$stmt->execute([$schoolId, $classId, $lessonId])) {
+			$stmt = null;
+			exit();
+		}
+		$unitData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $unitData;
+	}
 }

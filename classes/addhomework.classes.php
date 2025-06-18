@@ -39,22 +39,24 @@ class AddHomework extends Dbh
              start_date = ?, 
              end_date = ?');
 
-            if (!$stmt->execute([
-                $slug,
-                $name,
-                $short_desc,
-                $school_id,
-                $teacher_id,
-                $classes,
-                $lessons,
-                $units,
-                $topics,
-                $sub_topics,
-                $imgName,
-                $text_content,
-                $start_date,
-                $end_date
-            ])) {
+            if (
+                !$stmt->execute([
+                    $slug,
+                    $name,
+                    $short_desc,
+                    $school_id,
+                    $teacher_id,
+                    $classes,
+                    $lessons,
+                    $units,
+                    $topics,
+                    $sub_topics,
+                    $imgName,
+                    $text_content,
+                    $start_date,
+                    $end_date
+                ])
+            ) {
                 $stmt = null;
                 //header("location: ../admin.php?error=stmtfailed");
                 exit();
@@ -96,7 +98,7 @@ class AddHomework extends Dbh
             if (isset($titles) && isset($urls)) {
 
                 /* $titles = $_POST['wordWallTitles'] ?? null; // ['Başlık1', 'Başlık2', ...]
-									$urls = $_POST['wordWallUrls'] ?? null;     // ['url1', 'url2', ...] */
+                                    $urls = $_POST['wordWallUrls'] ?? null;     // ['url1', 'url2', ...] */
 
                 // Temel güvenlik filtresi
                 $titles = array_map('strip_tags', $titles);
@@ -229,7 +231,36 @@ class GetHomework extends Dbh
 
         $stmt = null;
     }
+    public function getHomeworksByLessonId($schoolId, $classId, $lessonId, $teacherId)
+    {
+        $stmt = $this->connect()->prepare('SELECT homework_content_lnp.*, 
+            classes_lnp.name AS className, 
+            lessons_lnp.name AS lessonName, 
+            units_lnp.name AS unitName, 
+            topics_lnp.name AS topicName, 
+            subtopics_lnp.name AS subTopicName
+            FROM homework_content_lnp 
+            LEFT JOIN classes_lnp ON homework_content_lnp.class_id = classes_lnp.id 
+            LEFT JOIN lessons_lnp ON homework_content_lnp.lesson_id = lessons_lnp.id 
+            LEFT JOIN units_lnp ON homework_content_lnp.unit_id = units_lnp.id 
+            LEFT JOIN topics_lnp ON homework_content_lnp.topic_id = topics_lnp.id 
+            LEFT JOIN subtopics_lnp ON homework_content_lnp.subtopic_id = subtopics_lnp.id 
+            WHERE homework_content_lnp.school_id = ? 
+            AND homework_content_lnp.class_id = ? 
+            AND homework_content_lnp.lesson_id = ? 
+            AND homework_content_lnp.teacher_id = ? 
+            ORDER BY homework_content_lnp.id DESC');
 
+        if (!$stmt->execute([$schoolId, $classId, $lessonId, $teacherId])) {
+            $stmt = null;
+            exit();
+        }
+
+
+        $homeworkContentData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $homeworkContentData;
+    }
     // Homework ID'sini slug'dan alıp çek
 
     public function getHomeworkContentIdBySlug($slug)
