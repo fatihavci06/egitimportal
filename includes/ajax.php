@@ -3454,6 +3454,170 @@ WHERE t.id = :id";
         }
 
         break;
+    case 'updateCoachingRequest':
+        $id = $_POST['request_id'] ?? null;
+        $assigned_teacher_id = $_POST['assigned_teacher_id'] ?? null;
+
+        if (empty($id) || empty($assigned_teacher_id)) {
+            $response['message'] = 'Eksik veya geçersiz bilgi gönderildi. (Talep ID veya Öğretmen ID)';
+            echo json_encode($response);
+            exit();
+        }
+
+        try {
+            // 1. Talebi güncelle (Öğretmen ata ve durumu 'Atandı' yap)
+            $stmt = $pdo->prepare("UPDATE coaching_guidance_requests_lnp 
+                               SET 
+                                   teacher_id = :teacher_id, 
+                                   assignment_date = NOW(), 
+                                   status = 1               
+                               WHERE id = :request_id");
+
+            $stmt->bindParam(':teacher_id', $assigned_teacher_id, PDO::PARAM_INT);
+            $stmt->bindParam(':request_id', $id, PDO::PARAM_INT);
+            $result = $stmt->execute();
+
+            if ($result) {
+                // YENİ EKLENEN KISIM BAŞLANGICI
+                // 🔍 package_id'yi al
+                $packageInfoStmt = $pdo->prepare('SELECT package_id FROM coaching_guidance_requests_lnp WHERE id = :request_id');
+                $packageInfoStmt->bindParam(':request_id', $id, PDO::PARAM_INT);
+                $packageInfoStmt->execute();
+                $package_id_data = $packageInfoStmt->fetch(PDO::FETCH_ASSOC);
+                $package_id = $package_id_data['package_id'] ?? null;
+
+                $limit_count = 0; // Varsayılan değer
+
+                if (!empty($package_id)) {
+                    // 🔍 extra_packages_lnp tablosundan limit_count'u al
+                    $limitCountStmt = $pdo->prepare('SELECT limit_count FROM extra_packages_lnp WHERE id = :package_id');
+                    $limitCountStmt->bindParam(':package_id', $package_id, PDO::PARAM_INT);
+                    $limitCountStmt->execute();
+                    $limit_count_data = $limitCountStmt->fetch(PDO::FETCH_ASSOC);
+
+                    $limit_count = $limit_count_data['limit_count'] ?? 0;
+                    // Limit_count negatif veya çok büyük olmadığından emin ol
+                    $limit_count = max(0, (int)$limit_count);
+                }
+
+                // coaching_guidance_requests_lnp tablosundaki start_date ve end_date'i güncelle
+                // Sadece package_id varsa veya limit_count > 0 ise güncellenecek
+                if ($limit_count > 0) {
+                    $updateDatesStmt = $pdo->prepare("
+                        UPDATE coaching_guidance_requests_lnp 
+                        SET 
+                            start_date = NOW(), 
+                            end_date = DATE_ADD(NOW(), INTERVAL :limit_count MONTH) 
+                        WHERE id = :request_id
+                    ");
+                    $updateDatesStmt->bindParam(':limit_count', $limit_count, PDO::PARAM_INT);
+                    $updateDatesStmt->bindParam(':request_id', $id, PDO::PARAM_INT);
+                    $updateDatesResult = $updateDatesStmt->execute();
+
+                    if (!$updateDatesResult) {
+                        error_log("start_date/end_date güncelleme başarısız: Request ID: {$id}, Package ID: {$package_id}, Limit Count: {$limit_count}");
+                        // Hata mesajını response'a ekleyebilirsiniz, ancak genel başarıyı bozmayalım
+                    }
+                } else {
+                    // Eğer paket yoksa veya limit_count 0 ise start_date ve end_date'i NULL yapabiliriz
+                    $updateNullDatesStmt = $pdo->prepare("
+                        UPDATE coaching_guidance_requests_lnp 
+                        SET 
+                            start_date = NULL, 
+                            end_date = NULL 
+                        WHERE id = :request_id
+                    ");
+                    $updateNullDatesStmt->bindParam(':request_id', $id, PDO::PARAM_INT);
+                    $updateNullDatesStmt->execute();
+                }
+                // YENİ EKLENEN KISIM SONU
+
+                // 🔍 2. Güncellenen taleple ilgili detayları çek (e-posta için)
+                // Düzeltme: cgr.request_description buraya eklendi
+                $infoStmt = $pdo->prepare("
+                    SELECT 
+                        cgr.user_id AS student_user_id, 
+                        cgr.teacher_id AS assigned_teacher_id, 
+                        cgr.request_type
+                    FROM coaching_guidance_requests_lnp cgr
+                    WHERE cgr.id = :request_id
+                ");
+                $infoStmt->bindParam(':request_id', $id, PDO::PARAM_INT);
+                $infoStmt->execute();
+                $info = $infoStmt->fetch(PDO::FETCH_ASSOC);
+
+                if (!$info) {
+                    $response['message'] = 'Güncellenen talep bilgileri alınamadı.';
+                    echo json_encode($response);
+                    exit();
+                }
+
+                $student_id = $info['student_user_id'];
+                $teacher_id = $info['assigned_teacher_id'];
+                $request_type = $info['request_type'] ?? 'Bilinmiyor';
+
+                // 🔍 3. Öğrenci bilgileri
+                $studentStmt = $pdo->prepare("SELECT name, surname, email FROM users_lnp WHERE id = :student_id");
+                $studentStmt->bindParam(':student_id', $student_id, PDO::PARAM_INT);
+                $studentStmt->execute();
+                $student = $studentStmt->fetch(PDO::FETCH_ASSOC);
+
+                // 🔍 4. Öğretmen bilgileri
+                $teacherStmt = $pdo->prepare("SELECT name, surname, email FROM users_lnp WHERE id = :teacher_id");
+                $teacherStmt->bindParam(':teacher_id', $teacher_id, PDO::PARAM_INT);
+                $teacherStmt->execute();
+                $teacher = $teacherStmt->fetch(PDO::FETCH_ASSOC);
+
+                $student_full_name = $student ? $student['name'] . ' ' . $student['surname'] : 'Bilinmiyor';
+                $student_email = $student['email'] ?? null;
+
+                $teacher_full_name = $teacher ? $teacher['name'] . ' ' . $teacher['surname'] : 'Bilinmiyor';
+                $teacher_email = $teacher['email'] ?? null;
+
+                $current_assignment_date = (new DateTime())->format('d.m.Y H:i');
+
+                // E-posta içeriği (Başlangıç ve bitiş tarihlerini de içerebilir)
+                $mailText = "Merhaba,\n\n"
+                    . "Yeni bir Koçluk/Rehberlik talebi ataması yapılmıştır.\n\n"
+                    . "Talep Türü: {$request_type}\n"
+                    . "Atama Tarihi: {$current_assignment_date}\n";
+
+                if ($limit_count > 0) {
+                    $start_date_obj = new DateTime();
+                    $end_date_obj = (new DateTime())->modify("+{$limit_count} months");
+                    $mailText .= "Paket Başlangıç Tarihi: " . $start_date_obj->format('d.m.Y') . "\n";
+                    $mailText .= "Paket Bitiş Tarihi: " . $end_date_obj->format('d.m.Y') . "\n";
+                }
+
+                $mailText .= "Öğrenci: {$student_full_name}\n";
+                if ($student_email) {
+                    $mailText .= "Öğrenci E-posta: {$student_email}\n"; // Öğrenci e-postası da eklendi
+                }
+                $mailText .= "Öğretmen: {$teacher_full_name}\n";
+                if ($teacher_email) {
+                    $mailText .= "Öğretmen E-posta: {$teacher_email}\n"; // Düzeltme: Öğretmen e-postası eklendi
+                }
+                $mailText .= "\nBilgilerinize sunulur.\n\nİyi günler dileriz.";
+
+
+                if ($student_email) {
+                    $mailer->send($student_email, 'Koçluk/Rehberlik Talep Atama Bilgilendirmesi', $mailText);
+                }
+
+                if ($teacher_email) {
+                    $mailer->send($teacher_email, 'Yeni Koçluk/Rehberlik Talebi Ataması', $mailText);
+                }
+
+                $response['success'] = true;
+                echo json_encode(['success' => true, 'message' => 'Koçluk/Rehberlik talebi başarıyla güncellendi ve bilgilendirme e-postaları gönderildi.']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Güncelleme işlemi başarısız oldu. Veritabanı hatası.']); // 'false' anahtarı 'message' olarak değiştirildi
+            }
+        } catch (PDOException $e) {
+            error_log("Koçluk/Rehberlik talebi AJAX hatası: " . $e->getMessage());
+            echo json_encode(['success' => false, 'message' => 'Sunucu hatası oluştu: ' . $e->getMessage()]); // 'false' anahtarı 'message' olarak değiştirildi
+        }
+        break;
 
     default:
         echo json_encode(['status' => 'error', 'message' => 'Geçersiz servis']);

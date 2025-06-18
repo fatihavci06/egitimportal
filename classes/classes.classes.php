@@ -16,6 +16,80 @@ class Classes extends Dbh
 
 		return $data;
 	}
+	public function getCoachingRequestById($requestId)
+	{
+		$sql = "SELECT 
+            cg.*, 
+            CONCAT(u.name, ' ', u.surname) AS user_full_name,
+            CASE 
+                WHEN cg.status = 0 THEN 'Atama Bekliyor'
+                WHEN cg.status = 1 THEN 'Atandı'
+                ELSE 'Bilinmiyor'
+            END AS status_text,
+            CASE 
+                WHEN t.id IS NULL THEN '-'
+                ELSE CONCAT(t.name, ' ', t.surname)
+            END AS teacher_full_name
+        FROM coaching_guidance_requests_lnp AS cg
+        LEFT JOIN users_lnp AS u ON u.id = cg.user_id
+        LEFT JOIN users_lnp AS t ON t.id = cg.teacher_id
+        WHERE cg.id = :request_id;"; // Belirli bir ID'yi filtrelemek için WHERE eklendi
+
+		$stmt = $this->connect()->prepare($sql);
+
+		// Parametre bağlama
+		// Güvenlik için :request_id placeholder'ına $requestId değerini bağlıyoruz.
+		// PDO::PARAM_INT, request_id'nin bir tamsayı olduğunu belirtir.
+		$stmt->bindParam(':request_id', $requestId, PDO::PARAM_INT);
+
+		if (!$stmt->execute()) {
+			// Hata durumunda loglama ve null döndürme
+			error_log('Error executing coaching request by ID query. Request ID: ' . $requestId);
+			$stmt = null;
+			return null; // Tek bir öğe beklendiği için hata veya bulunamaması durumunda null döndürmek uygun olabilir.
+		}
+
+		// Tek bir satır beklediğimiz için fetch() kullanıyoruz.
+		// PDO::FETCH_ASSOC, sütun isimlerini anahtar olarak içeren bir dizi döndürür.
+		$result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		$stmt = null; // Bellek yönetimi için statement objesini null'a atıyoruz.
+
+		return $result; // Bulunan talep bilgilerini veya bulunamazsa/hata olursa null döndürür.
+	}
+	public function getCoachingRequestList()
+{
+	$sql = "SELECT 
+        cg.*, 
+        CONCAT(u.name, ' ', u.surname) AS user_full_name,
+        CASE 
+            WHEN cg.status = 0 THEN 'Atama Bekliyor'
+            WHEN cg.status = 1 THEN 'Atandı'
+            ELSE 'Bilinmiyor'
+        END AS status_text,
+        CASE 
+            WHEN t.id IS NULL THEN '-'
+            ELSE CONCAT(t.name, ' ', t.surname)
+        END AS teacher_full_name,
+        ep.name AS package_name
+    FROM coaching_guidance_requests_lnp AS cg
+    LEFT JOIN users_lnp AS u ON u.id = cg.user_id
+    LEFT JOIN users_lnp AS t ON t.id = cg.teacher_id
+    LEFT JOIN extra_packages_lnp AS ep ON ep.id = cg.package_id
+    ORDER BY cg.created_at DESC
+    LIMIT 1000"; // <-- EKLENEN KISIM
+
+	$stmt = $this->connect()->prepare($sql);
+
+	if (!$stmt->execute()) {
+		error_log('Error executing coaching request list query.');
+		$stmt = null;
+		return [];
+	}
+
+	return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 	public function getPrivateLessonRequestList(): array
 	{
 		$sql = 'SELECT
