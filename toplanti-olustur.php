@@ -133,6 +133,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] == 1 OR $_SESSION['role'] == 9
                                                 </div>
 
                                                 <div class="d-flex justify-content-end">
+                                                    <a href="zoom/index.php"  target="_blank" class="btn btn-success mr-2" style="margin-right:20px;">Zoom Login</a>
                                                     <button type="submit" id="submitButton" class="btn btn-primary">
                                                         <span class="indicator-label">Toplantı Oluştur</span>
                                                         <span class="indicator-progress">Lütfen bekleyin...

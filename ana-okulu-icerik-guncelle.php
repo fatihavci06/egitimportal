@@ -125,7 +125,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                                     </div>
                                                     <div class="col-lg-4 mt-4">
-                                                        <label class="required fs-6 fw-semibold mb-2" for="month">Ay </label>
+                                                        <label class=" fs-6 fw-semibold mb-2" for="month">Ay </label>
                                                         <select class="form-select" id="month" required>
                                                             <option value="">Seçiniz</option>
                                                             <?php
@@ -602,15 +602,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     }
 
                     // month kontrolü
-                    if ($('#month').val() === '') {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Uyarı',
-                            text: 'Lütfen bir ay seçin.',
-                            confirmButtonText: 'Tamam'
-                        });
-                        return;
-                    }
+                    
 
                     // subject kontrolü
                     if ($('#subject').val().trim() === '') {
