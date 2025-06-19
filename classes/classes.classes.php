@@ -3,35 +3,41 @@
 class Classes extends Dbh
 {
 	public function getCoachStudents($coach_user_id)
-{
-    if ($coach_user_id == 1) {
-        // Tüm öğrencileri getir (şartsız)
-        $stmt = $this->connect()->prepare('
-            SELECT u.id, u.name, u.surname 
+	{
+		if ($coach_user_id == 1) {
+			// Tüm öğrencileri getir (şartsız)
+			$stmt = $this->connect()->prepare('
+            SELECT u.id, u.name, u.surname,
+			c.id AS req_id, 
+			c.user_id AS req_user_id,
+			c.teacher_id AS req_teacher_id
             FROM coaching_guidance_requests_lnp c 
             INNER JOIN users_lnp u ON u.id = c.user_id
         ');
 
-        if (!$stmt->execute()) {
-            return [];
-        }
+			if (!$stmt->execute()) {
+				return [];
+			}
 
-    } else {
-        // Belirli öğretmene göre filtrele
-        $stmt = $this->connect()->prepare('
-            SELECT u.id, u.name, u.surname 
+		} else {
+			// Belirli öğretmene göre filtrele
+			$stmt = $this->connect()->prepare('
+            SELECT u.id, u.name, u.surname, 
+			c.id AS req_id, 
+			c.user_id AS req_user_id,
+			c.teacher_id AS req_teacher_id
             FROM coaching_guidance_requests_lnp c 
             INNER JOIN users_lnp u ON u.id = c.user_id 
             WHERE c.teacher_id = ?
         ');
 
-        if (!$stmt->execute([$coach_user_id])) {
-            return [];
-        }
-    }
+			if (!$stmt->execute([$coach_user_id])) {
+				return [];
+			}
+		}
 
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
 
 	public function privateLessonRemainingLimit($user_id)
 	{
@@ -58,7 +64,7 @@ class Classes extends Dbh
 		$stmt1->execute();
 		$result1 = $stmt1->fetch(PDO::FETCH_ASSOC);
 		return $result1['remaining'];
-		
+
 	}
 	public function getExtraPackageMyList($id)
 	{
