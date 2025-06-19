@@ -8,8 +8,10 @@ define('GUARD', true);
 } */
 
 require_once '../../classes/dbh.classes.php';
+require_once '../../classes/Mailer.php';
 require_once '../config.php';
 $config = new Config();
+$mailer = new Mailer();
 $options = $config::options();
 $db = new Dbh();
 $pdo = $db->connect();
@@ -82,9 +84,66 @@ if ($response->getStatus() === 'success' && $response->getPaymentStatus() === 'S
         $response->getIyziCommissionRateAmount()
     ]);
 
+    // koçluk ve rehberlik ataması 
+
+    $packageId=$_SESSION['extra_package_id'];
+    $stmt4=$pdo->prepare('SELECT type from extra_packages_lnp where id=?');
+   $stmt4->execute([$packageId]);
+     $extraPackage=$stmt4->fetch(PDO::FETCH_ASSOC);
+
+    $userId1 = $_SESSION['id'];
+    $requestType1 = $extraPackage['type'];
+    $teacherId1 = NULL; // Henüz atanmadı
+    $assignmentDate1 = NULL; // Henüz atanmadı
+    $status1 = 0;
+    $startDate1 = NULL; // Henüz belirlenmedi
+    $endDate1 = NULL; // Henüz belirlenmedi
+
+    $stmt2 = $pdo->prepare("
+        INSERT INTO coaching_guidance_requests_lnp (
+            user_id,
+            package_id,
+            request_type,
+            teacher_id,
+            assignment_date,
+            status,
+            start_date,
+            end_date
+        ) VALUES (
+            :user_id,
+            :package_id,
+            :request_type,
+            :teacher_id,
+            :assignment_date,
+            :status,
+            :start_date,
+            :end_date
+        );
+    ");
+
+    $stmt2->execute([
+        'user_id' => $userId1,
+        'package_id'=>$packageId,
+        'request_type' => $requestType1,
+        'teacher_id' => $teacherId1,
+        'assignment_date' => $assignmentDate1,
+        'status' => $status1,
+        'start_date' => $startDate1,
+        'end_date' => $endDate1
+    ]);
+
+
     $_SESSION['payment_success'] = true;
-}
- else {
+    $to_email = $_SESSION['email'];
+    $subject = 'Paket Bilgilendirmesi';
+    $body = 'Paketiniz kapsamında gerekli atama işlemi yapılacak olup tarafınıza bilgilendirme emaili gönderilecektir.';
+
+    if ($mailer->send($to_email, $subject, $body)) {
+        echo "Metin e-postası başarıyla gönderildi.\n";
+    } else {
+        echo "Metin e-postası gönderilemedi. Hata: " . $mailer->getErrorInfo() . "\n";
+    }
+} else {
     $_SESSION['payment_success'] = false;
     $_SESSION['payment_error'] = $response->getErrorMessage();
 }
