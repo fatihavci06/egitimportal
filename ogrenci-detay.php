@@ -3,7 +3,7 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 8 or $_SESSION['role'] == 4 or $_SESSION['role'] == 3)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 8 or $_SESSION['role'] == 4 or $_SESSION['role'] == 3 or $_SESSION['role'] == 5)) {
 	include_once "classes/dbh.classes.php";
 	include "classes/student.classes.php";
 	include "classes/student-view.classes.php";
@@ -28,6 +28,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 		$getStudentId = $studentId->getStudentIdForCoordinator($slug, $_SESSION['school_id']);
 	} elseif ($_SESSION['role'] == 4) {
 		$getStudentId = $studentId->getStudentIdForTeacher($slug, $_SESSION['school_id'], $_SESSION['class_id']);
+	} elseif ($_SESSION['role'] == 5) {
+		$getStudentId = $studentId->getStudentIdForParent($slug, $_SESSION['id']);
 	}
 
 	if ($getStudentId == null) {
@@ -46,7 +48,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 	$studentAdditionalPackages = $student->getStudentAdditionalPackages($getStudentId);
 
 	$studentClassName = $student->getStudentClass($studentInfo['class_id']);
-	?>
+?>
 
 	<!--end::Head-->
 	<!--begin::Body-->
@@ -267,7 +269,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 															<!--end::Stats-->
 														</div>
 														<!--end::Wrapper-->
-				
+
 													</div>
 													<!--end::Stats-->
 												</div>
@@ -6905,7 +6907,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 	</body>
 	<!--end::Body-->
 
-	</html>
+</html>
 <?php } else {
 	header("location: index");
 }

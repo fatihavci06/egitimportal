@@ -6,7 +6,7 @@ define('GUARD', true);
 // ini_set('display_startup_errors', 1);
 // error_reporting(E_ALL);
 
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 4 or $_SESSION['role'] == 8)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 4 or $_SESSION['role'] == 5 or $_SESSION['role'] == 8)) {
     include_once "classes/dbh.classes.php";
     include_once "classes/school.classes.php";
     include_once "classes/school-view.classes.php";
@@ -193,7 +193,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <!--end::Filter-->
                                                 <?php } ?>
                                                 <!--begin::Add school-->
-                                                <?php if ($_SESSION['role'] != 4) { ?><button type="button"
+                                                <?php if ($_SESSION['role'] == 1) { ?><button type="button"
                                                         class="btn btn-primary" data-bs-toggle="modal"
                                                         data-bs-target="#kt_modal_add_customer">Öğrenci
                                                         Ekle</button><?php } ?>
@@ -234,7 +234,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 </tr>
                                             </thead>
                                             <tbody class="fw-semibold text-gray-600">
-                                                <?php $students->getStudentProgressList(); ?>
+                                                <?php
+                                                if ($_SESSION['role'] == 5):
+                                                    $students->getStudentProgressListForParent($_SESSION['id']);
+                                                else:
+                                                    $students->getStudentProgressList();
+                                                endif;
+                                                ?>
                                             </tbody>
                                         </table>
                                         <!--end::Table-->
