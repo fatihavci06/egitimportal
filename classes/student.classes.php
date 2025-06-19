@@ -203,7 +203,7 @@ class Student extends Dbh
         WHERE id = :id
         ');
 
-		if (!$getChild->execute([':parent_id' => $userID])) {
+		if (!$getChild->execute([':id' => $userID])) {
 			$getChild = null;
 			exit();
 		}
@@ -293,7 +293,7 @@ class Student extends Dbh
         WHERE id = :id
         ');
 
-		if (!$getChild->execute([':parent_id' => $userID])) {
+		if (!$getChild->execute([':id' => $userID])) {
 			$getChild = null;
 			exit();
 		}
