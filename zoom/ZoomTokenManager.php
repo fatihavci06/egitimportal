@@ -1,7 +1,7 @@
 <?php
 class ZoomTokenManager {
-    private $client_id = '6PODjEJYRjaWnZ7uXqnT9Q';
-    private $client_secret = 'PA4SqhDYrjgDZWTmkfICXugrkQltbmuY';
+    private $client_id = '6zXzyMU2SVOdy5ExzSr8ug';
+    private $client_secret = 'iCIUVWAi47TQxvfX3I0OXDVdPmSfmZq1';
     private $token_file = __DIR__.'/access_token.json';
 
     public function getAccessToken() {

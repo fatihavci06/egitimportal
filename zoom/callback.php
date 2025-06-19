@@ -1,6 +1,6 @@
 <?php
-$client_id = '6PODjEJYRjaWnZ7uXqnT9Q';
-$client_secret = 'PA4SqhDYrjgDZWTmkfICXugrkQltbmuY';
+$client_id = '6zXzyMU2SVOdy5ExzSr8ug';
+$client_secret = 'iCIUVWAi47TQxvfX3I0OXDVdPmSfmZq1';
 $redirect_uri = 'http://localhost/lineup_campus/zoom/callback.php';
 
 if (!isset($_GET['code'])) {
