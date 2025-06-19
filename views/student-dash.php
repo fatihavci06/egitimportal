@@ -61,19 +61,19 @@ $getHomeworks = $dash->getHomeworksStudent();
                                         if (empty($getUnits)) {
                                             echo '<span class="text-gray-600 fw-bold fs-6"> - Bu derse ait Ünite bulunamadı!</span>';
                                         } else {
-                                            foreach ($getUnits as $unit) {
+                                            foreach (array_slice($getUnits, 0, 1) as $unit) {
                                                 echo '<div class="mt-3"><span class="text-gray-600 fw-bold fs-6">Ünite: <a href="unite/' . $unit['slug'] . '">' . $unit['name'] . '</a></span></div>';
                                                 $getTopics = $dash->getTopicsDash($value['id'], $unit['id']);
                                                 if (empty($getTopics)) {
                                                     echo '<span class="text-gray-600 fw-bold fs-6"> - Bu üniteye ait konu bulunamadı!</span>';
                                                 } else {
-                                                    foreach ($getTopics as $topic) {
+                                                    foreach (array_slice($getTopics, 0, 1) as $topic) {
                                                         echo '<div class="mt-1"><span class="text-gray-600 fw-bold fs-6">Konu: <a href="konu/' . $topic['slug'] . '">' . $topic['name'] . '</a></span></div>';
                                                         $getSubTopics = $dash->getSubTopicsDash($value['id'], $unit['id'], $topic['id']);
                                                         if (empty($getSubTopics)) {
                                                             echo '<span class="text-gray-600 fw-bold fs-6"> - Bu konuya ait alt konu bulunamadı!</span>';
                                                         } else {
-                                                            foreach ($getSubTopics as $subTopic) {
+                                                            foreach (array_slice($getSubTopics, 0, 1) as $subTopic) {
                                                                 echo '<div class="mt-1"><span class="text-gray-600 fw-bold fs-6">Alt Konu: <a href="alt-konu/' . $subTopic['slug'] . '">' . $subTopic['name'] . '</a></span></div><hr>';
                                                             }
                                                         }
@@ -86,6 +86,7 @@ $getHomeworks = $dash->getHomeworksStudent();
                                     }
                                 } ?>
                                 <!--end::Table-->
+                                <a href="ogrenci-haftalik-gorev"><button type="button" class="btn btn-primary btn-sm mt-5">Haftalık Görevler</button></a>
                             </div>
                             <!--end::Table container-->
                         </div>

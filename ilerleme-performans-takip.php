@@ -16,7 +16,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     $students = new ShowStudent();
     $schools = new ShowSchool();
     include_once "views/pages-head.php";
-}
 ?>
 
 <!DOCTYPE html>
@@ -328,3 +327,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 </body>
 
 </html>
+<?php
+} else {
+    header("location: index.php");
+    exit();
+}
