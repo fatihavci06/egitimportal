@@ -5,11 +5,11 @@
 session_start();
 define('GUARD', true);
 if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 2 or $_SESSION['role'] == 5)) {
-	include_once "classes/dbh.classes.php";
-	include_once "classes/addsupport.classes.php";
+    include_once "classes/dbh.classes.php";
+    include_once "classes/addsupport.classes.php";
     include_once "classes/support-view.classes.php";
-	$supportList = new ShowSupport();
-	include_once "views/pages-head.php";
+    $supportList = new ShowSupport();
+    include_once "views/pages-head.php";
 ?>
     <!--end::Head-->
     <!--begin::Body-->
@@ -66,8 +66,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             <!--begin::Table-->
                                             <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_customers_table">
                                                 <thead>
-                                                    
-                                                <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
+
+                                                    <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                                                         <th class="min-w-125px">Başlık</th>
                                                         <th class="min-w-125px">Konu</th>
                                                         <th class="min-w-125px">Son Yazan</th>
@@ -76,13 +76,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     </tr>
                                                 </thead>
                                                 <tbody class="fw-semibold text-gray-600">
-                                                    <?php 
-														if($_SESSION['role'] == 2 OR$_SESSION['role'] == 6 OR $_SESSION['role'] == 7){
-															$supportList->getSupportSolvedList($_SESSION['id']);
-														}if($_SESSION['role'] == 1){
-															$supportList->getSupportSolvedAdminList();
-														} 
-													?>
+                                                    <?php
+                                                    if ($_SESSION['role'] == 2 or $_SESSION['role'] == 5) {
+                                                        $supportList->getSupportSolvedList($_SESSION['id']);
+                                                    }
+                                                    if ($_SESSION['role'] == 1) {
+                                                        $supportList->getSupportSolvedAdminList();
+                                                    }
+                                                    ?>
                                                 </tbody>
                                             </table>
                                             <!--end::Table-->

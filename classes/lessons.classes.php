@@ -63,7 +63,7 @@ class Lessons extends Dbh {
 
 	public function getLessonForUnitList()
 	{
-		if ($_SESSION['role'] == 1 OR $_SESSION['role'] == 2) {
+		if ($_SESSION['role'] == 1 OR $_SESSION['role'] == 2 OR $_SESSION['role'] == 5) {
 			$stmt = $this->connect()->prepare('SELECT id, name, class_id FROM lessons_lnp ');
 
 			if (!$stmt->execute(array())) {

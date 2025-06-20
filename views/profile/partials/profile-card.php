@@ -25,6 +25,25 @@ if (!isset($userInfo)) {
                         <i class="fa-solid fa-school fs-4 me-1"></i>
                         <?= $schoolInfo['name'] ?? '-' ?>
                     </span>
+                    <?php if($userInfo['className']){
+                        $spanText=$userInfo['className'] ?? "-"; 
+                        echo ' 
+                        <span class="d-flex align-items-center text-gray-500 me-5 mb-2">
+                            <i class="fa-solid fa-table fs-4 me-1"></i>
+                            '.$spanText.'
+                        </span>';
+                    }
+                    ?>
+                    </span>
+                    <?php if($userInfo['lessonName']){
+                        $spanText=$userInfo['lessonName'] ?? "-"; 
+                        echo ' 
+                        <span class="d-flex align-items-center text-gray-500 me-5 mb-2">
+                            <i class="fa-solid fa-table fs-4 me-1"></i>
+                            '.$spanText.'
+                        </span>';
+                    }
+                    ?>
                     <a href="tel:<?php echo $userInfo['telephone']; ?>"
                         class="d-flex align-items-center text-gray-500 text-hover-primary me-5 mb-2">
                         <i class="fa-solid fa-phone fs-4 me-1"></i>

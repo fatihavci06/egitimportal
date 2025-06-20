@@ -103,8 +103,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             <!-- Modal -->
                                             <!-- Button trigger modal (id değeri burada veriliyor) -->
 
-
-
                                             <!-- Tablo -->
                                             <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_customers_table">
                                                 <thead>
@@ -116,12 +114,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 </thead>
                                                 <tbody class="fw-semibold text-gray-600">
                                                     <?php foreach ($data as $d) { ?>
-                                                        <tr data-id="<?= $d['id'] ?>">
+                                                        <tr data-id="<?= $d['req_id'] ?>">
                                                             <td><?= $d['name'] ?></td>
                                                             <td><?= $d['surname'] ?></td>
 
                                                             <td class="text-end">
-                                                                <a class="btn btn-success btn-sm me-1" href="mesaj-gonder.php?id=<?= $d['id'] ?>" data-id="<?= $d['id'] ?>">
+                                                                <a class="btn btn-success btn-sm me-1" href="koc-ogrenci-sohbet.php?id=<?= $d['req_id'] ?>" data-id="<?= $d['req_id'] ?>">
                                                                     <i class="fas fa-paper-plane"></i> Mesaj Gönder
                                                                 </a>
                                                             </td>
