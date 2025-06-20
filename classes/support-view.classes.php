@@ -174,6 +174,8 @@ class ShowSupport extends Support
 
         $dateFormat = new DateFormat();
 
+        $details ='';
+
         $i = 0;
 
         $supportList = "";

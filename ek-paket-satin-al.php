@@ -2,40 +2,107 @@
 <html lang="tr">
 <?php
 session_start();
-define('GUARD', true);
+define('GUARD', true); // Kendi güvenlik tanımınız için bir sabit
+
+// Frontend'de gösterilecek mesajları oturumdan çek ve temizle
 $success = $_SESSION['payment_success'] ?? null;
 $error = $_SESSION['payment_error'] ?? null;
-
-// Oturumu temizle
 unset($_SESSION['payment_success'], $_SESSION['payment_error']);
 
-// Kullanıcı rol kontrolü, kendi sisteminize göre düzenlemelisiniz
+// Kullanıcı rol kontrolü (sizin sisteminize göre düzenlenmeli)
 if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 2)) {
-    // Veritabanı ve sınıf dahil etme
-    include_once "classes/dbh.classes.php"; // Kendi Dbh sınıf dosyanız
-    include "classes/classes.classes.php"; // Kendi Classes sınıf dosyanız
+    // Veritabanı ve sınıf dosyalarınızı dahil edin
+    // Bu dosyalar paketi çekmek veya güvenlik hash'i oluşturmak için gerekebilir.
+    include_once "classes/dbh.classes.php"; 
+    include "classes/classes.classes.php"; 
+    include_once "views/pages-head.php"; 
+    
+    // Tami'nin SDK'sından security hash oluşturma veya diğer yardımcı fonksiyonlar için
+    // Eğer Direct Post için bir hash gerekiyorsa bu dosyaları dahil edersiniz.
+    // aksi takdirde bunları kaldırabilirsiniz.
+    require_once './tami-sanal-pos/securityHashV2.php'; 
+    require_once './tami-sanal-pos/lib/common_lib.php'; 
 
-    include_once "views/pages-head.php"; // Başlık ve meta etiketleri gibi sayfa başlığı kısmı
     $class = new Classes();
-    $data = $class->getExtraPackageList(); // Paket listesini çeken fonksiyon
+    $data = $class->getExtraPackageList(); // Paket listesini çeken fonksiyonunuz
+
+    // Dinamik veriler için varsayılanlar veya oturumdan çekme
+    $currentUserId = $_SESSION['user_id'] ?? 'default_user_id'; 
+    $buyerName = $_SESSION['user_name'] ?? 'Misafir';
+    $buyerSurname = $_SESSION['user_surname'] ?? 'Kullanıcı';
+    $buyerEmail = $_SESSION['user_email'] ?? 'misafir@example.com';
+    $buyerPhoneNumber = $_SESSION['user_phone'] ?? '05001234567';
+    $buyerId = $_SESSION['user_id'] ?? 'default_buyer_id'; 
+    $buyerIpAddress = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+
+    // Örnek sipariş bilgileri (bu kısımlar dinamik olarak seçilen pakete göre güncellenecektir)
+    $orderId = "ORDER_" . uniqid(); // Her işlem için benzersiz bir sipariş ID'si
+    $amount = 0.00; // Başlangıçta miktar 0, paket seçilince güncellenecek (float olarak)
+
+    // Tami'ye bildirilecek dönüş URL'leri (kendi alan adınızla güncelleyin!)
+    // Tami işlemi bitince kullanıcıyı bu URL'lere yönlendirecek
+    $successUrl = "https://www.sizin-site-adresiniz.com/payment_callback.php?status=success&order_id=" . $orderId;
+    $failureUrl = "https://www.sizin-site-adresiniz.com/payment_callback.php?status=failure&order_id=" . $orderId;
+    $cancelUrl = "https://www.sizin-site-adresiniz.com/payment_callback.php?status=cancel&order_id=" . $orderId; // Tami destekliyorsa
+
+    // Tami API Kimlik Bilgileri (Bu bilgileri güvenli bir yerden çekmelisiniz, sabit kodlamayın)
+    // Bu değerler hidden input olarak gönderilebilir veya hash oluşturmak için kullanılabilir.
+    $merchantId = "YOUR_TAMI_MERCHANT_ID"; // Tami'den aldığınız Merchant ID
+    $terminalId = "YOUR_TAMI_TERMINAL_ID"; // Tami'den aldığınız Terminal ID
+    $secretKey = "YOUR_TAMI_SECRET_KEY"; // Tami'den aldığınız Gizli Anahtar (Hash oluşturmak için)
+    $fixedKidValue = "YOUR_FIXED_KID_VALUE"; // Eğer Tami JWT için sabit bir KID bekliyorsa
+    $fixedKValue = "YOUR_FIXED_K_VALUE"; // Eğer Tami JWT için sabit bir K değeri bekliyorsa
+
+    // Güvenlik Hash'i Oluşturma (Eğer Tami Direct Post için bunu istiyorsa)
+    // Tami'nin dokümantasyonuna göre bu hash'in hangi verilerle oluşturulacağını kontrol edin.
+    // Genellikle (merchantId, terminalId, amount, orderId, secretKey) gibi veriler kullanılır.
+    $securityHash = '';
+    // Örnek: Eğer Tami, belirli bir body JSON'unu imzalamanızı istiyorsa
+    $hashBodyData = [
+        "merchantId" => $merchantId,
+        "terminalId" => $terminalId,
+        // Diğer önemli parametreler (örn: amount, orderId) burada olmalı
+        "amount" => number_format($amount, 2, '.', ''), // Tami'nin beklediği format
+        "orderId" => $orderId,
+        "successUrl" => $successUrl,
+        "failureUrl" => $failureUrl
+        // ... Tami dokümanlarındaki diğer hash inputları ...
+    ];
+    // JWT signature generator, bir JSON string beklediği için encode ediyoruz.
+    // Bu 'hashBodyData' genellikle Direct Post'ta gönderilen form parametrelerinin bir alt kümesi veya özeti olur.
+    $hashBodyJson = json_encode($hashBodyData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    
+    // Yorum satırı, çünkü $amount şu an 0.00. Gerçek miktarla güncellendiğinde hash oluşturulacak.
+    // $securityHash = JWTSignatureGenerator::generateJWKSignature(
+    //     $merchantId, 
+    //     $terminalId, 
+    //     $secretKey, 
+    //     $hashBodyJson, // Hash'lenecek veri
+    //     $fixedKidValue, 
+    //     $fixedKValue
+    // );
+    // **ÖNEMLİ:** Buradaki hash oluşturma mantığı, Tami'nin Direct Post için istediğiyle eşleşmeli.
+    // Eğer Tami basit bir MD5 veya SHA256 istiyorsa, o algoritmayı kullanmalısınız.
+
 ?>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ödeme Sayfası</title>
     
-    <?php // include_once "views/pages-head.php"; // Eğer bu dosya sadece head içeriğini dahil ediyorsa burada kalmalı ?>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <style>
-       
-        .main-card-container { /* Ana kapsayıcı */
+        /* Ana kapsayıcı */
+        .main-card-container { 
             background-color: #ffffff;
             padding: 40px;
-            border-radius: 15px; /* Daha yuvarlak köşeler */
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Daha belirgin gölge */
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba
+            (0, 0, 0, 0.1);
             width: 100%;
-            max-width: 900px; /* Genişlik, hem paket hem de kart formu için uygun */
-            border: 1px solid #e0e0e0; /* Hafif kenarlık */
+            max-width: 900px;
+            border: 1px solid #e0e0e0;
         }
         .payment-card-title {
             color: #333;
@@ -49,13 +116,13 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
             margin-bottom: 8px;
         }
         .form-control {
-            border-radius: 8px; /* Input alanları için yuvarlak köşeler */
+            border-radius: 8px;
             padding: 12px 15px;
             border: 1px solid #ddd;
             transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
         .form-control:focus {
-            border-color: #007bff; /* Bootstrap'in birincil rengi */
+            border-color: #007bff;
             box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
         }
         .btn-primary {
@@ -110,16 +177,47 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         .package-card.selected {
-            border: 2px solid #009ef7; /* Vurgu rengi */
+            border: 2px solid #009ef7;
             box-shadow: 0 0 15px rgba(0, 158, 247, 0.2);
             transform: translateY(-3px);
         }
         #cardPaymentForm {
-            max-width: 450px; /* Kart formunu ortalamak için */
-            margin: 30px auto 0 auto; /* Üstten boşluk */
+            max-width: 450px;
+            margin: 30px auto 0 auto;
         }
         #cardPaymentForm h4 {
-             margin-bottom: 25px; /* Kart formu başlığı için boşluk */
+             margin-bottom: 25px;
+        }
+
+        .card-icons {
+            position: absolute;
+            right: 15px;
+            top: 50%; 
+            transform: translateY(-50%);
+            font-size: 1.5em;
+            color: #ccc;
+        }
+        .card-icons .fab {
+            display: none;
+            margin-left: 5px;
+        }
+        .card-icons .fab.active {
+            display: inline-block;
+        }
+        .form-group-relative {
+            position: relative;
+        }
+        .cvv-info {
+            cursor: pointer;
+            color: #007bff;
+            margin-left: 5px;
+            font-size: 0.85em;
+        }
+        .cvv-info:hover {
+            text-decoration: underline;
+        }
+        .card-number-input {
+            padding-right: 60px;
         }
     </style>
 </head>
@@ -185,10 +283,16 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                             <h4 class="payment-card-title">Paket Seçimi ve Ödeme</h4>
 
                                             <form id="purchaseForm" class="mb-5">
-                                                <div class="row g-4"> <?php if (!empty($packages)): ?>
+                                                <div class="row g-4"> 
+                                                    <?php if (!empty($packages)): ?>
                                                         <?php foreach ($packages as $package): ?>
                                                             <div class="col-md-4">
-                                                                <div class="card h-100 package-card" data-package-id="<?= $package['id'] ?>">
+                                                                <div class="card h-100 package-card" 
+                                                                     data-package-id="<?= $package['id'] ?>" 
+                                                                     data-package-price="<?= $package['price'] ?>"
+                                                                     data-package-name="<?= htmlspecialchars($package['name']) ?>"
+                                                                     data-package-type="<?= htmlspecialchars($package['type']) ?>"
+                                                                     data-package-limit="<?= $package['limit_count'] ?>">
                                                                     <div class="card-body d-flex flex-column">
                                                                         <h5 class="card-title text-primary fw-bold"><?= htmlspecialchars($package['name']) ?></h5>
                                                                         <p class="card-text flex-grow-1">
@@ -202,7 +306,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                                         <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
                                                                             <h4 class="mb-0 text-success"><strong><?= number_format($package['price'], 2, ',', '.') ?> TL</strong></h4>
                                                                             <div class="form-check">
-                                                                                <input class="form-check-input" type="radio" name="package_id" value="<?= $package['id'] ?>" required>
+                                                                                <input class="form-check-input" type="radio" name="package_id_selection" value="<?= $package['id'] ?>" required>
                                                                                 <label class="form-check-label">Seç</label>
                                                                             </div>
                                                                         </div>
@@ -218,7 +322,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                         </div>
                                                     <?php endif; ?>
                                                 </div>
-                                                <input type="hidden" name="user_id" value="<?= $_SESSION['user_id'] ?? 1 ?>">
+                                                <input type="hidden" name="user_id_selection" value="<?= $currentUserId ?>">
                                                 <div class="text-end mt-4">
                                                     <button type="submit" class="btn btn-success" id="selectPackageButton">İleri ve Ödeme Bilgileri</button>
                                                 </div>
@@ -226,29 +330,60 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
 
                                             <div id="cardPaymentForm" class="d-none">
                                                 <h4 class="payment-card-title">Kart Bilgilerini Giriniz</h4>
-                                              
-                                                <form id="paymentDetailsForm">
-                                                    <div class="mb-3">
+                                                
+                                                <div class="alert alert-info" role="alert">
+                                                    <strong>Güvenli Ödeme:</strong> Kart bilgileriniz doğrudan Tami Sanal POS'un güvenli sunucularına iletilmektedir.
+                                                </div>
+
+                                                <form id="paymentDetailsForm" action="https://api.tami.com/direct_post_url" method="POST" target="_self"> 
+                                                    
+                                                    <input type="hidden" name="order_id" id="tamiOrderId" value="<?= htmlspecialchars($orderId) ?>">
+                                                    <input type="hidden" name="amount" id="tamiAmount" value="<?= number_format($amount, 2, '.', '') ?>"> 
+                                                    <input type="hidden" name="currency" value="TRY"> 
+                                                    <input type="hidden" name="installmentCount" value="1"> <input type="hidden" name="motoInd" value="false">
+                                                    <input type="hidden" name="paymentGroup" value="PRODUCT">
+                                                    <input type="hidden" name="paymentChannel" value="WEB">
+
+                                                    <input type="hidden" name="merchant_id" value="<?= htmlspecialchars($merchantId) ?>">
+                                                    <input type="hidden" name="terminal_id" value="<?= htmlspecialchars($terminalId) ?>">
+                                                    <input type="hidden" name="success_url" value="<?= htmlspecialchars($successUrl) ?>">
+                                                    <input type="hidden" name="failure_url" value="<?= htmlspecialchars($failureUrl) ?>">
+                                                    <input type="hidden" name="cancel_url" value="<?= htmlspecialchars($cancelUrl) ?>">
+                                                    
+                                                    <input type="hidden" name="buyer_id" value="<?= htmlspecialchars($buyerId) ?>">
+                                                    <input type="hidden" name="buyer_name" value="<?= htmlspecialchars($buyerName) ?>">
+                                                    <input type="hidden" name="buyer_surname" value="<?= htmlspecialchars($buyerSurname) ?>">
+                                                    <input type="hidden" name="buyer_email" value="<?= htmlspecialchars($buyerEmail) ?>">
+                                                    <input type="hidden" name="buyer_phone" value="<?= htmlspecialchars($buyerPhoneNumber) ?>">
+                                                    <input type="hidden" name="buyer_ip_address" value="<?= htmlspecialchars($buyerIpAddress) ?>">
+                                                    
+                                                    <input type="hidden" name="security_hash" id="tamiSecurityHash" value=""> 
+
+                                                    <div class="mb-3 form-group-relative">
                                                         <label for="cardNumber" class="form-label">Kart Numarası</label>
-                                                        <input type="text" class="form-control" id="cardNumber" placeholder="XXXX XXXX XXXX XXXX" required>
+                                                        <input type="text" class="form-control card-number-input" id="cardNumber" name="card_number" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" inputmode="numeric" autocomplete="cc-number" required>
+                                                        <div class="card-icons">
+                                                            <i class="fab fa-cc-visa" data-card-type="visa"></i>
+                                                            <i class="fab fa-cc-mastercard" data-card-type="mastercard"></i>
+                                                            <i class="fab fa-cc-amex" data-card-type="amex"></i>
+                                                            <i class="fab fa-cc-discover" data-card-type="discover"></i>
+                                                        </div>
                                                     </div>
                                                     <div class="mb-3">
                                                         <label for="cardHolder" class="form-label">Kart Üzerindeki İsim</label>
-                                                        <input type="text" class="form-control" id="cardHolder" placeholder="Ad Soyad" required>
+                                                        <input type="text" class="form-control" id="cardHolder" name="card_holder_name" placeholder="Ad Soyad" autocomplete="cc-name" required>
                                                     </div>
                                                     <div class="row mb-3">
                                                         <div class="col-md-6">
-                                                            <label for="expiryMonth" class="form-label">Son Kullanma Ayı</label>
-                                                            <input type="text" class="form-control" id="expiryMonth" placeholder="MM" maxlength="2" required>
+                                                            <label for="expiryDate" class="form-label">Son Kullanma Tarihi (AA/YY)</label>
+                                                            <input type="text" class="form-control" id="expiryDate" placeholder="AA/YY" maxlength="5" inputmode="numeric" autocomplete="cc-exp" required>
+                                                            <input type="hidden" id="expiryMonthHidden" name="expiry_month">
+                                                            <input type="hidden" id="expiryYearHidden" name="expiry_year">
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <label for="expiryYear" class="form-label">Son Kullanma Yılı</label>
-                                                            <input type="text" class="form-control" id="expiryYear" placeholder="YY" maxlength="2" required>
+                                                            <label for="cvv" class="form-label">CVV <span class="cvv-info" data-bs-toggle="tooltip" data-bs-placement="top" title="Kartınızın arkasındaki 3 veya 4 haneli güvenlik kodu."><i class="fas fa-question-circle"></i></span></label>
+                                                            <input type="password" class="form-control" id="cvv" name="cvv" placeholder="XXX" maxlength="4" inputmode="numeric" autocomplete="cc-csc" required>
                                                         </div>
-                                                    </div>
-                                                    <div class="mb-4">
-                                                        <label for="cvv" class="form-label">CVV</label>
-                                                        <input type="password" class="form-control" id="cvv" placeholder="XXX" maxlength="4" required>
                                                     </div>
                                                     <div class="d-flex justify-content-between">
                                                         <button type="button" class="btn btn-secondary" id="backToPackageSelection">Geri</button>
@@ -288,39 +423,91 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
 
     <script>
         $(document).ready(function() {
+            let selectedPackageId = null;
+            let selectedPackagePrice = 0; // Seçilen paketin fiyatını tutmak için
+            let selectedPackageName = '';
+
+            // PHP'den gelen Order ID ve Miktar başlangıç değerleri
+            const initialOrderId = $('#tamiOrderId').val();
+            let currentOrderId = initialOrderId; // Sipariş ID'sini dinamik olarak takip etmek için
+
+            // Tooltip'leri başlat (CVV bilgi ikonu için)
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
             // Paket kartlarının tıklanabilir olması ve seçili stilini alma
             $('.package-card').on('click', function() {
                 $(this).find('input[type="radio"]').prop('checked', true).trigger('change');
             });
 
-            // Radyo butonu değiştiğinde seçili kartı vurgula
-            $('input[name="package_id"]').on('change', function() {
-                $('.package-card').removeClass('selected'); // Tüm kartlardan selected sınıfını kaldır
-                $(this).closest('.package-card').addClass('selected'); // Seçili kartı işaretle
+            // Radyo butonu değiştiğinde seçili kartı vurgula ve paketin ID/fiyatını sakla
+            $('input[name="package_id_selection"]').on('change', function() {
+                $('.package-card').removeClass('selected');
+                const $selectedCard = $(this).closest('.package-card');
+                $selectedCard.addClass('selected');
+                selectedPackageId = $selectedCard.data('package-id');
+                selectedPackagePrice = parseFloat($selectedCard.data('package-price'));
+                selectedPackageName = $selectedCard.data('package-name');
             });
 
             // "İleri ve Ödeme Bilgileri" butonuna basıldığında
             $('#purchaseForm').on('submit', function(e) {
-                e.preventDefault(); // Formun varsayılan gönderimini engelle
+                e.preventDefault();
 
-                const selectedPackage = $('input[name="package_id"]:checked').val();
-                if (!selectedPackage) {
+                if (!selectedPackageId) {
                     Swal.fire({
                         icon: 'warning',
                         title: 'Paket Seçimi',
                         text: 'Lütfen satın almak istediğiniz bir paketi seçin.',
                         confirmButtonText: 'Tamam'
                     });
-                    return; // Paket seçilmediyse işlemi durdur
+                    return;
                 }
 
-                // Paket seçim formunu gizle, kart formunu göster
+                // Yeni bir orderId oluştur ve inputa yaz (her ödeme denemesi için farklı olması iyi olur)
+                currentOrderId = 'ORDER_' + Date.now() + Math.floor(Math.random() * 1000);
+                $('#tamiOrderId').val(currentOrderId);
+
+                // Seçilen paketin fiyatını Tami'ye gönderilecek input'a ata (0.00 formatında)
+                $('#tamiAmount').val(selectedPackagePrice.toFixed(2)); 
+                
+                // Eğer security_hash PHP tarafından dinamik olarak oluşturuluyorsa
+                // burada AJAX ile backend'e bir istek atıp hash'i almanız ve hidden input'a yazmanız gerekebilir.
+                // Eğer Tami'nin Direct Post'u sadece sabit API key/Merchant ID ile çalışıyorsa, hash'e gerek kalmayabilir.
+
+                // Örnek: Eğer güvenlik hash'i dinamik olarak PHP'de oluşturulup forma basılacaksa:
+                // ŞİMDİLİK BU KISIM YORUM SATIRINDA, Tami'nin Direct Post dokümanlarına göre düzenlenmeli.
+                /*
+                $.ajax({
+                    url: 'generate_tami_hash.php', // Bu PHP dosyası hash'i oluşturup dönecek
+                    type: 'POST',
+                    data: {
+                        orderId: currentOrderId,
+                        amount: selectedPackagePrice.toFixed(2),
+                        // Diğer hash için gerekli parametreler
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success && response.securityHash) {
+                            $('#tamiSecurityHash').val(response.securityHash);
+                            // Tüm hazır olunca formu göster
+                            $('#purchaseForm').addClass('d-none');
+                            $('#cardPaymentForm').removeClass('d-none');
+                        } else {
+                            Swal.fire('Hata', 'Güvenlik hash\'i oluşturulamadı. Lütfen tekrar deneyin.', 'error');
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('Hata', 'Hash oluşturma servisine ulaşılamadı.', 'error');
+                    }
+                });
+                */
+
+                // Geçici olarak direkt göster (Hash dinamik oluşturulmuyorsa veya başka bir mantık varsa)
                 $('#purchaseForm').addClass('d-none');
                 $('#cardPaymentForm').removeClass('d-none');
-                
-                // Seçilen paketin ID'sini kart formuna bir şekilde taşıyabilirsiniz,
-                // örneğin bir hidden input ile veya JavaScript değişkeninde tutarak.
-                // const selectedPackageId = selectedPackage; // selectedPackage değişkeninde zaten var.
             });
 
             // "Geri" butonuna basıldığında
@@ -329,44 +516,123 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                 $('#purchaseForm').removeClass('d-none');
             });
 
+            // Kart Numarası Biçimlendirme ve Kart Tipi Tespiti
+            $('#cardNumber').on('input', function() {
+                let cardNumber = $(this).val().replace(/\D/g, ''); 
+                let formattedCardNumber = '';
+                const cardIcons = $('.card-icons .fab');
+
+                let cardType = 'unknown';
+                if (/^4/.test(cardNumber)) {
+                    cardType = 'visa';
+                } else if (/^5[1-5]/.test(cardNumber)) {
+                    cardType = 'mastercard';
+                } else if (/^3[47]/.test(cardNumber)) {
+                    cardType = 'amex';
+                } else if (/^6(?:011|5)/.test(cardNumber)) {
+                    cardType = 'discover';
+                }
+
+                cardIcons.removeClass('active'); 
+                $(`.card-icons .fa-cc-${cardType}`).addClass('active'); 
+
+                for (let i = 0; i < cardNumber.length; i++) {
+                    if (i > 0 && i % 4 === 0) {
+                        formattedCardNumber += ' ';
+                    }
+                    formattedCardNumber += cardNumber[i];
+                }
+                $(this).val(formattedCardNumber);
+            });
+
+            // Son Kullanma Tarihi Biçimlendirme (AA/YY) ve hidden inputlara ayırma
+            $('#expiryDate').on('input', function() {
+                let expiryDate = $(this).val().replace(/\D/g, ''); 
+                let month = '';
+                let year = '';
+
+                if (expiryDate.length > 2) {
+                    month = expiryDate.substring(0, 2);
+                    year = expiryDate.substring(2, 4);
+                    $(this).val(month + '/' + year);
+                } else {
+                    month = expiryDate;
+                    $(this).val(expiryDate);
+                }
+                
+                // Hidden inputlara ay ve yıl değerlerini atama (Tami'nin beklediği format)
+                $('#expiryMonthHidden').val(month);
+                // Yılı 4 haneli yap (örn: 2040)
+                $('#expiryYearHidden').val(year.length === 2 ? '20' + year : year); 
+            });
+
+            // CVV alanı için sadece rakam kontrolü
+            $('#cvv').on('input', function() {
+                $(this).val($(this).val().replace(/\D/g, ''));
+            });
+
             // "Ödemeyi Tamamla" butonuna basıldığında (kart bilgileri formu)
             $('#paymentDetailsForm').on('submit', function(e) {
-                e.preventDefault(); // Formun varsayılan gönderimini engelle
-
-                // Burası, kart bilgilerini işleyeceğiniz yerdir.
-                // TEKRAR VURGULUĞORUM: Burada asla kart bilgilerini doğrudan sunucunuza göndermeyin!
-                // Güvenli bir ödeme geçidi (Payment Gateway) SDK'sı veya API'si kullanmalısınız.
-                // Örneğin: Stripe.js ile token oluşturma, Iyzico'nun kendi JS kütüphanesini kullanma vb.
-
-                const cardNumber = $('#cardNumber').val();
+                // Frontend doğrulamaları
+                const cardNumber = $('#cardNumber').val().replace(/\s/g, ''); 
                 const cardHolder = $('#cardHolder').val();
-                const expiryMonth = $('#expiryMonth').val();
-                const expiryYear = $('#expiryYear').val();
+                const expiryMonth = parseInt($('#expiryMonthHidden').val()); // Hidden inputtan al
+                const expiryYear = parseInt($('#expiryYearHidden').val()); // Hidden inputtan al
                 const cvv = $('#cvv').val();
 
-                // Sadece görsel bir geri bildirim için alert/Swal kullanıyoruz
+                // Basit frontend doğrulama
+                if (!cardNumber || cardNumber.length < 16 || !cardHolder || cardHolder.length === 0 || 
+                    isNaN(expiryMonth) || isNaN(expiryYear) || !cvv || cvv.length < 3) {
+                    e.preventDefault(); // Hata varsa submit etme
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Hata',
+                        text: 'Lütfen tüm kart bilgilerini doğru formatta doldurun.', 
+                        confirmButtonText: 'Tamam'
+                    });
+                    return;
+                }
+
+                // Ay ve Yıl doğru aralıkta mı?
+                if (expiryMonth < 1 || expiryMonth > 12) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Hata',
+                        text: 'Son kullanma ayı hatalı (AA).',
+                        confirmButtonText: 'Tamam'
+                    });
+                    return;
+                }
+
+                // Geçerlilik tarihi kontrolü
+                const currentYearFull = new Date().getFullYear();
+                const currentMonth = new Date().getMonth() + 1; 
+
+                if (expiryYear < currentYearFull || (expiryYear === currentYearFull && expiryMonth < currentMonth)) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Hata',
+                        text: 'Kartınızın süresi dolmuş.',
+                        confirmButtonText: 'Tamam'
+                    });
+                    return;
+                }
+                
+                // TÜM DOĞRULAMALAR GEÇERSE
+                // Swal.fire ile loading ekranı gösterebiliriz, ancak Direct Post'ta sayfa yönleneceği için
+                // bu SweetAlert tam olarak görünmeyebilir veya kullanıcı hızlıca yönlenebilir.
+                // Genellikle Direct Post'ta kullanıcıya "Yönlendiriliyorsunuz..." gibi kısa bir mesaj yeterlidir.
                 Swal.fire({
-                    icon: 'info',
-                    title: 'Ödeme Denemesi',
-                    html: `
-                        <p>Kart Numarası: ${cardNumber.replace(/.(?=.{4})/g, '*')}</p>
-                        <p>Kart Sahibi: ${cardHolder}</p>
-                        <p>SKT: ${expiryMonth}/${expiryYear}</p>
-                        <p>CVV: ***</p>
-                        <hr>
-                        <p>Bu form sadece bir **TASARIM ÖRNEĞİDİR.**</p>
-                        <p>Gerçek ödeme işlemleri için **mutlaka güvenli bir ödeme geçidi entegrasyonu** kullanmalısınız.</p>
-                        <p>Kart bilgileri asla doğrudan sunucunuzda işlenmemelidir!</p>
-                    `,
-                    confirmButtonText: 'Anladım',
-                    customClass: {
-                        popup: 'swal2-responsive'
-                    }
+                    title: 'Ödeme Yönlendiriliyor...',
+                    html: 'Güvenli ödeme için Tami Sanal POS sayfasına yönlendiriliyorsunuz. Lütfen bekleyiniz.',
+                    allowOutsideClick: false,
+                    didOpen: () => { Swal.showLoading(); }
                 });
 
-                // Başarılı bir token oluşturma veya ödeme API çağrısı sonrası
-                // aşağıdaki gibi bir yönlendirme veya durum güncellemesi yapılabilir.
-                // Örneğin: window.location.href = 'payment_success_page.php';
+                // Formun doğrudan Tami'nin "action" URL'sine POST edilmesine izin ver
+                // e.preventDefault() çağrısı kaldırılır veya yukarıdaki if bloklarında kalırsa sadece hata durumunda engellenir.
             });
 
         });
@@ -377,6 +643,6 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
 } else {
     // Rol yetersizse index sayfasına yönlendir
     header("location: index");
-    exit(); // Yönlendirmeden sonra scriptin çalışmasını durdur
+    exit(); 
 }
 ?>

@@ -26,13 +26,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 	include_once "views/pages-head.php";
 	$getTeacherId = $teacherId->getTeacherId($slug);
 
-	$teacherInfo = $teacher->getOneTeacher($getTeacherId);
+	$userInfo = $teacher->getOneTeacher($getTeacherId);
 
 	include_once "classes/addhomework.classes.php";
 	include_once "classes/homework-view.classes.php";
 	$homework = new ShowHomeworkContents();
 
-	$studentList = $teacher->getstudentsByClassId($teacherInfo['class_id']);
+	$studentList = $teacher->getstudentsByClassId($userInfo['class_id']);
 
 	include_once "views/pages-head.php";
 	$pdo = new Dbh();
@@ -55,7 +55,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 			AND tests_lnp.teacher_id = ? 
 			ORDER BY tests_lnp.id DESC');
 
-	if (!$stmt->execute([$teacherInfo['school_id'], $teacherInfo['class_id'], $teacherInfo['lesson_id'], $teacherInfo['id']])) {
+	if (!$stmt->execute([$userInfo['school_id'], $userInfo['class_id'], $userInfo['lesson_id'], $userInfo['id']])) {
 		$stmt = null;
 		exit();
 	}
@@ -81,7 +81,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
             AND homework_content_lnp.teacher_id = ? 
             ORDER BY homework_content_lnp.id DESC');
 
-	if (!$stmt->execute([$teacherInfo['school_id'], $teacherInfo['class_id'], $teacherInfo['lesson_id'], $teacherInfo['id']])) {
+	if (!$stmt->execute([$userInfo['school_id'], $userInfo['class_id'], $userInfo['lesson_id'], $userInfo['id']])) {
 		$stmt = null;
 		exit();
 	}
@@ -89,8 +89,51 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 	$homeworkList = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-	// return $homeworkContentData;
 
+	function getUnits($school_id, $class_id, $lesson_id)
+	{
+		$db = (new dbh())->connect();
+		$sql = 'SELECT * FROM units_lnp WHERE school_id=? AND class_id=? AND lesson_id=? ORDER BY created_at DESC';
+
+		try {
+			$stmt = $db->prepare($sql);
+			$stmt->execute([$school_id, $class_id, $lesson_id]);
+			$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			return $result;
+
+		} catch (PDOException $e) {
+			return false;
+		}
+	}
+	function getTopics($school_id, $class_id, $lesson_id)
+	{
+		$db = (new dbh())->connect();
+		$sql = 'SELECT * FROM topics_lnp WHERE school_id=? AND class_id=? AND lesson_id=? ORDER BY created_at DESC';
+
+		try {
+			$stmt = $db->prepare($sql);
+			$stmt->execute([$school_id, $class_id, $lesson_id]);
+			$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			return $result;
+		} catch (PDOException $e) {
+			return false;
+		}
+	}
+	function getSubtopics($school_id, $class_id, $lesson_id)
+	{
+		$db = (new dbh())->connect();
+		$sql = 'SELECT * FROM subtopics_lnp WHERE school_id=? AND class_id=? AND lesson_id=? ORDER BY created_at DESC';
+
+		try {
+			$stmt = $db->prepare($sql);
+			$stmt->execute([$school_id, $class_id, $lesson_id]);
+			$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			return $result;
+
+		} catch (PDOException $e) {
+			return false;
+		}
+	}
 	?>
 
 	<!--end::Head-->
@@ -121,30 +164,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 				document.documentElement.setAttribute("data-bs-theme", themeMode);
 			}
 		</script>
-		<style>
-			.scrollable-div {
-				height: 500px;
-				overflow-y: auto;
-				border: none;
-				padding: 10px;
-			}
 
-			.scrollable-div::-webkit-scrollbar {
-				width: 10px;
-			}
-
-			.scrollable-div::-webkit-scrollbar-track {
-				background: #f1f1f1;
-			}
-
-			.scrollable-div::-webkit-scrollbar-thumb {
-				background: #888;
-			}
-
-			.scrollable-div::-webkit-scrollbar-thumb:hover {
-				background: #555;
-			}
-		</style>
 		<!--end::Theme mode setup on page load-->
 		<!--begin::App-->
 		<div class="d-flex flex-column flex-root app-root" id="kt_app_root">
@@ -216,7 +236,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 												<div class="me-7 mb-4">
 													<div
 														class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
-														<img src="assets/media/profile/<?php echo $teacherInfo['photo'] ?>"
+														<img src="assets/media/profile/<?php echo $userInfo['photo'] ?>"
 															alt="image" />
 														<!-- <div class="position-absolute translate-middle bottom-0 start-100 mb-6 bg-success rounded-circle border border-4 border-body h-20px w-20px"></div> -->
 													</div>
@@ -232,7 +252,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 															<!--begin::Name-->
 															<div class="d-flex align-items-center mb-2">
 																<a href="#"
-																	class="text-gray-900 text-hover-primary fs-2 fw-bold me-1"><?php echo $teacherInfo['name'] . ' ' . $teacherInfo['surname'] ?>
+																	class="text-gray-900 text-hover-primary fs-2 fw-bold me-1"><?php echo $userInfo['name'] . ' ' . $userInfo['surname'] ?>
 																</a>
 															</div>
 															<!--end::Name-->
@@ -241,30 +261,30 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																<span
 																	class="d-flex align-items-center text-gray-500 me-5 mb-2">
 																	<i class="fa-solid fa-school fs-4 me-1"></i>
-																	<?php echo $teacherInfo['schoolName']; ?>
+																	<?php echo $userInfo['schoolName']; ?>
 																</span>
 																<span
 																	class="d-flex align-items-center text-gray-500 me-5 mb-2">
 																	<i class="fa-solid fa-table fs-4 me-1"></i>
-																	<?php echo $teacherInfo['className'] ?? "-"; ?>
+																	<?php echo $userInfo['className'] ?? "-"; ?>
 																</span>
 																<span
 																	class="d-flex align-items-center text-gray-500 me-5 mb-2">
 																	<i class="fa-solid fa-book fs-4 me-1"></i>
-																	<?php echo $teacherInfo['lessonName'] ?? "-"; ?>
+																	<?php echo $userInfo['lessonName'] ?? "-"; ?>
 																</span>
-																<a href="tel:<?php echo $teacherInfo['telephone']; ?>"
+																<a href="tel:<?php echo $userInfo['telephone']; ?>"
 																	class="d-flex align-items-center text-gray-500 text-hover-primary me-5 mb-2">
 																	<i class="fa-solid fa-phone fs-4 me-1"></i>
-																	<?php echo $teacherInfo['telephone']; ?>
+																	<?php echo $userInfo['telephone']; ?>
 																</a>
-																<a href="mailto:<?php echo $teacherInfo['email']; ?>"
+																<a href="mailto:<?php echo $userInfo['email']; ?>"
 																	class="d-flex align-items-center text-gray-500 text-hover-primary mb-2">
 																	<i class="ki-duotone ki-sms fs-4 me-1">
 																		<span class="path1"></span>
 																		<span class="path2"></span>
 																	</i>
-																	<?php echo $teacherInfo['email']; ?>
+																	<?php echo $userInfo['email']; ?>
 																</a>
 
 															</div>
@@ -392,8 +412,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																	<a class="nav-link btn btn-color-muted active px-0"
 																		data-bs-toggle="pill"
 																		href="#kt_timeline_widget_2_tab_1">
-																		<span
-																			class="nav-text fw-semibold fs-4 mb-3">Testler</span>
+																		<span class="nav-text fw-semibold fs-4 mb-3">
+																			Ödevler</span>
 
 																		<span
 																			class="bullet-custom position-absolute z-index-2 w-100 h-2px top-100 bottom-n100 bg-primary rounded"></span>
@@ -404,7 +424,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																		data-bs-toggle="pill"
 																		href="#kt_timeline_widget_2_tab_2">
 																		<span
-																			class="nav-text fw-semibold fs-4 mb-3">Ödevler</span>
+																			class="nav-text fw-semibold fs-4 mb-3">Testler</span>
 
 																		<span
 																			class="bullet-custom position-absolute z-index-2 w-100 h-2px top-100 bottom-n100 bg-primary rounded"></span>
@@ -435,27 +455,33 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																			<!--begin::Table body-->
 																			<tbody>
 																				<?php
+																				$homeworkListcounter = 0;
 																				foreach ($homeworkList as $key => $value) {
+																					if ($homeworkListcounter >= 5) {
+																						break;
+																					}
+
 																					if ($value['active'] == 1) {
 																						$aktifYazi = 'success';
 																					} else {
 																						$aktifYazi = 'primary';
 																					}
 																					$item = '
-																						<tr>
-																							<td>
-																								<span data-kt-element="bullet"
-																									class="bullet bullet-vertical d-flex align-items-center h-40px bg-' . $aktifYazi . '"></span>
-																							</td>
-																							<td>
-																								<a href="#"
-																									class="text-gray-800 text-hover-primary fw-bold fs-6">
-																									' . $value['title'] . '
-																								</a>
-																							</td>
-																						</tr>
-																					';
+																							<tr>
+																								<td>
+																									<span data-kt-element="bullet"
+																										class="bullet bullet-vertical d-flex align-items-center h-40px bg-' . $aktifYazi . '"></span>
+																								</td>
+																								<td>
+																									<a href="#"
+																										class="text-gray-800 text-hover-primary fw-bold fs-6">
+																										' . $value['title'] . '
+																									</a>
+																								</td>
+																							</tr>
+																						';
 																					echo $item;
+																					$homeworkListcounter++;
 																				}
 																				?>
 
@@ -482,7 +508,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																			<!--begin::Table body-->
 																			<tbody>
 																				<?php
+																				$testListcounter = 0;
 																				foreach ($testList as $key => $value) {
+																					if ($testListcounter >= 5) {
+																						break;
+																					}
 																					if ($value['status'] == 1) {
 																						$aktifYazi = 'success';
 																					} else {
@@ -503,6 +533,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																						</tr>
 																					';
 																					echo $item;
+																					$testListcounter++;
 																				}
 																				?>
 
@@ -512,321 +543,180 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																	</div>
 																	<!--end::Table-->
 																</div>
-																<!--end::Tap pane-->
-																<!--begin::Tap pane-->
-																<div class="tab-pane fade" id="kt_timeline_widget_2_tab_3">
-																	<!--begin::Table container-->
-																	<div class="table-responsive">
-																		<!--begin::Table-->
-																		<table class="table align-middle gs-0 gy-4">
-																			<!--begin::Table head-->
-																			<thead>
-																				<tr>
-																					<th class="p-0 w-10px"></th>
-																					<th class="p-0 w-25px"></th>
-																					<th class="p-0 min-w-400px"></th>
-																					<th class="p-0 min-w-100px"></th>
-																					<th class="p-0 min-w-125px"></th>
-																				</tr>
-																			</thead>
-																			<!--end::Table head-->
-																			<!--begin::Table body-->
-																			<tbody>
-																				<tr>
-																					<td>
-																						<span data-kt-element="bullet"
-																							class="bullet bullet-vertical d-flex align-items-center h-40px bg-primary"></span>
-																					</td>
-																					<td class="ps-0">
-																						<div
-																							class="form-check form-check-custom form-check-solid">
-																							<input class="form-check-input"
-																								type="checkbox" value=""
-																								data-kt-element="checkbox" />
-																						</div>
-																					</td>
-																					<td>
-																						<a href="#"
-																							class="text-gray-800 text-hover-primary fw-bold fs-6">Workbook
-																							p. 17, tasks 1-6</a>
-																						<span
-																							class="text-gray-500 fw-bold fs-7 d-block">Mathematics</span>
-																					</td>
-																					<td class="text-end">
-																						<span data-kt-element="status"
-																							class="badge badge-light-primary">In
-																							Process</span>
-																					</td>
-																					<td class="text-end">
-																						<!--begin::Icon-->
-																						<div
-																							class="d-flex justify-content-end flex-shrink-0">
-																							<!--begin::Print-->
-																							<a href="#"
-																								class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
-																								<i
-																									class="ki-duotone ki-printer fs-3">
-																									<span
-																										class="path1"></span>
-																									<span
-																										class="path2"></span>
-																									<span
-																										class="path3"></span>
-																									<span
-																										class="path4"></span>
-																									<span
-																										class="path5"></span>
-																								</i>
-																							</a>
-																							<!--end::Print-->
-																							<!--begin::Chat-->
-																							<a href="#"
-																								class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
-																								<i
-																									class="ki-duotone ki-sms fs-3">
-																									<span
-																										class="path1"></span>
-																									<span
-																										class="path2"></span>
-																								</i>
-																							</a>
-																							<!--end::Chat-->
-																							<!--begin::Attach-->
-																							<a href="#"
-																								class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm">
-																								<i
-																									class="ki-duotone ki-paper-clip fs-3"></i>
-																							</a>
-																							<!--end::Attach-->
-																						</div>
-																						<!--end::Icon-->
-																					</td>
-																				</tr>
-																				<tr>
-																					<td>
-																						<span data-kt-element="bullet"
-																							class="bullet bullet-vertical d-flex align-items-center h-40px bg-success"></span>
-																					</td>
-																					<td class="ps-0">
-																						<div
-																							class="form-check form-check-custom form-check-success form-check-solid">
-																							<input class="form-check-input"
-																								type="checkbox" value=""
-																								checked="checked"
-																								data-kt-element="checkbox" />
-																						</div>
-																					</td>
-																					<td>
-																						<a href="#"
-																							class="text-gray-800 text-hover-primary fw-bold fs-6">Learn
-																							paragraph p. 99, Exercise
-																							1,2,3Scoping & Estimations</a>
-																						<span
-																							class="text-gray-500 fw-bold fs-7 d-block">Chemistry</span>
-																					</td>
-																					<td class="text-end">
-																						<span data-kt-element="status"
-																							class="badge badge-light-success">Done</span>
-																					</td>
-																					<td class="text-end">
-																						<!--begin::Icon-->
-																						<div
-																							class="d-flex justify-content-end flex-shrink-0">
-																							<!--begin::Print-->
-																							<a href="#"
-																								class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
-																								<i
-																									class="ki-duotone ki-printer fs-3">
-																									<span
-																										class="path1"></span>
-																									<span
-																										class="path2"></span>
-																									<span
-																										class="path3"></span>
-																									<span
-																										class="path4"></span>
-																									<span
-																										class="path5"></span>
-																								</i>
-																							</a>
-																							<!--end::Print-->
-																							<!--begin::Chat-->
-																							<a href="#"
-																								class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
-																								<i
-																									class="ki-duotone ki-sms fs-3">
-																									<span
-																										class="path1"></span>
-																									<span
-																										class="path2"></span>
-																								</i>
-																							</a>
-																							<!--end::Chat-->
-																							<!--begin::Attach-->
-																							<a href="#"
-																								class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm">
-																								<i
-																									class="ki-duotone ki-paper-clip fs-3"></i>
-																							</a>
-																							<!--end::Attach-->
-																						</div>
-																						<!--end::Icon-->
-																					</td>
-																				</tr>
-																				<tr>
-																					<td>
-																						<span data-kt-element="bullet"
-																							class="bullet bullet-vertical d-flex align-items-center h-40px bg-primary"></span>
-																					</td>
-																					<td class="ps-0">
-																						<div
-																							class="form-check form-check-custom form-check-solid">
-																							<input class="form-check-input"
-																								type="checkbox" value=""
-																								data-kt-element="checkbox" />
-																						</div>
-																					</td>
-																					<td>
-																						<a href="#"
-																							class="text-gray-800 text-hover-primary fw-bold fs-6">Write
-																							essay 1000 words “WW2
-																							results”</a>
-																						<span
-																							class="text-gray-500 fw-bold fs-7 d-block">History</span>
-																					</td>
-																					<td class="text-end">
-																						<span data-kt-element="status"
-																							class="badge badge-light-primary">In
-																							Process</span>
-																					</td>
-																					<td class="text-end">
-																						<!--begin::Icon-->
-																						<div
-																							class="d-flex justify-content-end flex-shrink-0">
-																							<!--begin::Print-->
-																							<a href="#"
-																								class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
-																								<i
-																									class="ki-duotone ki-printer fs-3">
-																									<span
-																										class="path1"></span>
-																									<span
-																										class="path2"></span>
-																									<span
-																										class="path3"></span>
-																									<span
-																										class="path4"></span>
-																									<span
-																										class="path5"></span>
-																								</i>
-																							</a>
-																							<!--end::Print-->
-																							<!--begin::Chat-->
-																							<a href="#"
-																								class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
-																								<i
-																									class="ki-duotone ki-sms fs-3">
-																									<span
-																										class="path1"></span>
-																									<span
-																										class="path2"></span>
-																								</i>
-																							</a>
-																							<!--end::Chat-->
-																							<!--begin::Attach-->
-																							<a href="#"
-																								class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm">
-																								<i
-																									class="ki-duotone ki-paper-clip fs-3"></i>
-																							</a>
-																							<!--end::Attach-->
-																						</div>
-																						<!--end::Icon-->
-																					</td>
-																				</tr>
-																				<tr>
-																					<td>
-																						<span data-kt-element="bullet"
-																							class="bullet bullet-vertical d-flex align-items-center h-40px bg-primary"></span>
-																					</td>
-																					<td class="ps-0">
-																						<div
-																							class="form-check form-check-custom form-check-solid">
-																							<input class="form-check-input"
-																								type="checkbox" value=""
-																								data-kt-element="checkbox" />
-																						</div>
-																					</td>
-																					<td>
-																						<a href="#"
-																							class="text-gray-800 text-hover-primary fw-bold fs-6">Internal
-																							conflicts in Philip Larkin
-																							poems, read p 380-515</a>
-																						<span
-																							class="text-gray-500 fw-bold fs-7 d-block">English
-																							Language</span>
-																					</td>
-																					<td class="text-end">
-																						<span data-kt-element="status"
-																							class="badge badge-light-primary">In
-																							Process</span>
-																					</td>
-																					<td class="text-end">
-																						<!--begin::Icon-->
-																						<div
-																							class="d-flex justify-content-end flex-shrink-0">
-																							<!--begin::Print-->
-																							<a href="#"
-																								class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
-																								<i
-																									class="ki-duotone ki-printer fs-3">
-																									<span
-																										class="path1"></span>
-																									<span
-																										class="path2"></span>
-																									<span
-																										class="path3"></span>
-																									<span
-																										class="path4"></span>
-																									<span
-																										class="path5"></span>
-																								</i>
-																							</a>
-																							<!--end::Print-->
-																							<!--begin::Chat-->
-																							<a href="#"
-																								class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm me-3">
-																								<i
-																									class="ki-duotone ki-sms fs-3">
-																									<span
-																										class="path1"></span>
-																									<span
-																										class="path2"></span>
-																								</i>
-																							</a>
-																							<!--end::Chat-->
-																							<!--begin::Attach-->
-																							<a href="#"
-																								class="btn btn-icon btn-color-muted btn-bg-light btn-active-color-primary btn-sm">
-																								<i
-																									class="ki-duotone ki-paper-clip fs-3"></i>
-																							</a>
-																							<!--end::Attach-->
-																						</div>
-																						<!--end::Icon-->
-																					</td>
-																				</tr>
-																			</tbody>
-																			<!--end::Table body-->
-																		</table>
-																	</div>
-																	<!--end::Table-->
-																</div>
-																<!--end::Tap pane-->
+
 															</div>
 															<!--end::Tab Content-->
 														</div>
 														<!--end::Body-->
+													</div>
+													<div class="card mb-5 mb-xl-8">
+														<!--begin::Header-->
+														<div class="card-header border-0 pt-5">
+															<h3 class="card-title align-items-start flex-column">
+																<span class="card-label fw-bold text-gray-900">En Son Eklenen Üniteler</span>
+																<span
+																	class="text-muted mt-1 fw-semibold fs-7"><?php //echo $studentClassName[0]['name']; ?></span>
+															</h3>
+														</div>
+														<div class="card-body pt-6">
+															<!--begin::Table-->
+															<table class="table align-middle table-row-dashed fs-6 gy-5">
+																<!--begin::Table head-->
+																<thead>
+																	<tr>
+																		<th class="p-0 "></th>
+																	</tr>
+																</thead>
+																<tbody class="fw-semibold text-gray-600">
+
+																	<?php
+																	$curItems2 = getUnits($userInfo['school_id'], $userInfo['class_id'], $userInfo['lesson_id']);
+																	$counter2 = 0;
+																	$styles = ["danger", "success", "primary", "warning", "info", "secondary", "light", "dark"];
+																	$styleIndex = 0;
+
+																	$style = $styles[$styleIndex % count($styles)];
+
+																	foreach ($curItems2 as $item) {
+																		if ($counter2 >= 5) {
+																			break;
+																		}
+																		$view = '';
+																		$view .= '
+																		<div class="d-flex flex-stack">
+																			<div class="symbol symbol-40px me-4">
+																				<div class="symbol-label fs-2 fw-semibold bg-' . $style . ' text-inverse-' . $style . '">' . mb_substr($item['name'], 0, 1, 'UTF-8') . '</div>
+																			</div>
+																			<div class="d-flex align-items-center flex-row-fluid ">
+																				<div class="flex-grow-1 me-2">
+																					<a  class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $item['name'] . '</a>
+																				</div>
+																			</div>
+																		</div>
+																		<div class="separator separator-dashed my-4"></div>';
+
+																		echo $view;
+																		$counter2++;
+
+																	}
+																	?>
+																</tbody>
+															</table>
+
+														</div>
+													</div>
+													<div class="card mb-5 mb-xl-8">
+														<!--begin::Header-->
+														<div class="card-header border-0 pt-5">
+															<h3 class="card-title align-items-start flex-column">
+																<span class="card-label fw-bold text-gray-900">En Son Eklenen Konu</span>
+																<span
+																	class="text-muted mt-1 fw-semibold fs-7"><?php //echo $studentClassName[0]['name']; ?></span>
+															</h3>
+														</div>
+														<div class="card-body pt-6">
+															<!--begin::Table-->
+															<table class="table align-middle table-row-dashed fs-6 gy-5">
+																<!--begin::Table head-->
+																<thead>
+																	<tr>
+																		<th class="p-0 "></th>
+																	</tr>
+																</thead>
+																<tbody class="fw-semibold text-gray-600">
+
+																	<?php
+																	$curItems2 = getTopics($userInfo['school_id'], $userInfo['class_id'], $userInfo['lesson_id']);
+																	$counter2 = 0;
+																	$styles = ["danger", "success", "primary", "warning", "info", "secondary", "light", "dark"];
+																	$styleIndex = 0;
+
+																	$style = $styles[$styleIndex % count($styles)];
+
+																	foreach ($curItems2 as $item) {
+																		if ($counter2 >= 5) {
+																			break;
+																		}
+																		$view = '';
+																		$view .= '
+																		<div class="d-flex flex-stack">
+																			<div class="symbol symbol-40px me-4">
+																				<div class="symbol-label fs-2 fw-semibold bg-' . $style . ' text-inverse-' . $style . '">' . mb_substr($item['name'], 0, 1, 'UTF-8') . '</div>
+																			</div>
+																			<div class="d-flex align-items-center flex-row-fluid ">
+																				<div class="flex-grow-1 me-2">
+																					<a  class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $item['name'] . '</a>
+																				</div>
+																			</div>
+																		</div>
+																		<div class="separator separator-dashed my-4"></div>';
+
+																		echo $view;
+																		$counter2++;
+
+																	}
+																	?>
+																</tbody>
+															</table>
+
+														</div>
+													</div>
+													<div class="card mb-5 mb-xl-8">
+														<!--begin::Header-->
+														<div class="card-header border-0 pt-5">
+															<h3 class="card-title align-items-start flex-column">
+																<span
+																	class="card-label fw-bold text-gray-900">En Son Eklenen Altkonu</span>
+																<span
+																	class="text-muted mt-1 fw-semibold fs-7"><?php //echo $studentClassName[0]['name']; ?></span>
+															</h3>
+														</div>
+														<div class="card-body pt-6">
+															<!--begin::Table-->
+															<table class="table align-middle table-row-dashed fs-6 gy-5">
+																<!--begin::Table head-->
+																<thead>
+																	<tr>
+																		<th class="p-0 "></th>
+																	</tr>
+																</thead>
+																<tbody class="fw-semibold text-gray-600">
+
+																	<?php
+																	$curItems2 = getSubtopics($userInfo['school_id'], $userInfo['class_id'], $userInfo['lesson_id']);
+																	$counter2 = 0;
+																	$styles = ["danger", "success", "primary", "warning", "info", "secondary", "light", "dark"];
+																	$styleIndex = 0;
+
+																	$style = $styles[$styleIndex % count($styles)];
+
+																	foreach ($curItems2 as $item) {
+																		if ($counter2 >= 5) {
+																			break;
+																		}
+																		$view = '';
+																		$view .= '
+																		<div class="d-flex flex-stack">
+																			<div class="symbol symbol-40px me-4">
+																				<div class="symbol-label fs-2 fw-semibold bg-' . $style . ' text-inverse-' . $style . '">' . mb_substr($item['name'], 0, 1, 'UTF-8') . '</div>
+																			</div>
+																			<div class="d-flex align-items-center flex-row-fluid ">
+																				<div class="flex-grow-1 me-2">
+																					<a  class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $item['name'] . '</a>
+																				</div>
+																			</div>
+																		</div>
+																		<div class="separator separator-dashed my-4"></div>';
+
+																		echo $view;
+																		$counter2++;
+
+																	}
+																	?>
+																</tbody>
+															</table>
+
+														</div>
 													</div>
 												</div>
 												<!--end::Col-->
@@ -851,11 +741,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 															<div class="scrollable-div">
 																<?php
 																foreach ($studentList as $student) {
-																	$percentage = $contentObj->getSchoolContentAnalyticsOverall($value['id']);
+																	$percentage = $contentObj->getSchoolContentAnalyticsOverall($student['id']);
 																	$percentageW = ($percentage == null) ? 0 : $percentage;
 																	$percentageT = ($percentage == null) ? '-' : $percentage;
 
-																	$score = $gradeObj->getGradeOverall($value['id'], );
+																	$score = $gradeObj->getGradeOverall($student['id'], );
 																	$scoreW = ($score == null) ? 0 : $score;
 																	$scoreT = ($score == null) ? '-' : $score;
 
@@ -905,35 +795,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 														</div>
 														<!--end: Card Body-->
 													</div>
-													<div class="card mb-5 mb-xl-8">
-														<!--begin::Header-->
-														<div class="card-header border-0 pt-5">
-															<h3 class="card-title align-items-start flex-column">
-																<span
-																	class="card-label fw-bold text-gray-900">Dersler</span>
-																<span
-																	class="text-muted mt-1 fw-semibold fs-7"><?php //echo $studentClassName[0]['name']; ?></span>
-															</h3>
-															<!--begin::Toolbar-->
-															<!-- <div class="card-toolbar">
-																<a data-bs-toggle="pill" href="#kt_stats_widget_2_tab_22" class="btn btn-sm btn-light">Tüm Dersler</a>
-															</div> -->
-															<!--end::Toolbar-->
-														</div>
-														<!--end::Header-->
-														<!--begin::Body-->
-														<div class="card-body pt-6">
-															<?php //$student->showLessonsListForStudentDetails($teacherInfo['class_id'], $teacherInfo['school_id']); ?>
-															<!--begin::Item-->
-														</div>
-														<!--end::Body-->
-													</div>
+
 												</div>
 												<!--end::Col-->
 											</div>
 										</div>
-										<!--end::Row-->
-										<!--begin::Row-->
 										<div class="tab-pane fade " id="ogrenciler">
 
 											<div id="kt_app_content_container" class="app-content flex-column-fluid">
@@ -1006,11 +872,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																$gradeObj = new GradeResult();
 
 																foreach ($studentList as $student) {
-																	$percentage = $contentObj->getSchoolContentAnalyticsOverall($value['id']);
+																	$percentage = $contentObj->getSchoolContentAnalyticsOverall($student['id']);
 																	$percentageW = ($percentage == null) ? 0 : $percentage;
 																	$percentageT = ($percentage == null) ? '-' : $percentage;
 
-																	$score = $gradeObj->getGradeOverall($value['id'], );
+																	$score = $gradeObj->getGradeOverall($student['id'], );
 																	$scoreW = ($score == null) ? 0 : $score;
 																	$scoreT = ($score == null) ? '-' : $score;
 
@@ -1045,8 +911,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 											</div>
 											<!--end::Grup Dersler-->
 										</div>
-										<!--end::Row-->
-										<!--begin::Row-->
 										<div class="tab-pane fade " id="ders">
 											<div class="row g-5 g-xxl-8">
 
@@ -1055,21 +919,21 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 													<div class="card mb-5 mb-xl-8">
 														<div class="card-header border-0 pt-5">
 															<h3 class="card-title align-items-start flex-column">
-																<span class="card-label fw-bold text-gray-900">
-																	<?= $teacherInfo['lessonName'] ?> </span>
+																<span class="card-label fw-bold text-gray-900">En Son Eklenen 
+																	<?= $userInfo['lessonName'] ?> </span>
 															</h3>
 														</div>
 
 														<div class="card-body pt-6">
 															<form class="form" action="#" id="kt_form_curriculum">
 																<input type="hidden" id="classes" name="classes"
-																	value="<?= $teacherInfo['class_id'] ?>">
+																	value="<?= $userInfo['class_id'] ?>">
 																<input type="hidden" id="lessons" name="lessons"
-																	value="<?= $teacherInfo['lesson_id'] ?>">
+																	value="<?= $userInfo['lesson_id'] ?>">
 																<input type="hidden" id="student_id" name="student_id"
-																	value="<?= $teacherInfo['id'] ?>">
+																	value="<?= $userInfo['id'] ?>">
 																<input type="hidden" id="school_id" name="school_id"
-																	value="<?= $teacherInfo['school_id'] ?>">
+																	value="<?= $userInfo['school_id'] ?>">
 
 
 																<div class="row mt-4">
@@ -1086,7 +950,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																			include_once "classes/units-view.classes.php";
 																			$chooseUnit = new ShowUnit();
 
-																			$units = $chooseUnit->getUnitByLessonId($teacherInfo['school_id'], $teacherInfo['class_id'], $teacherInfo['lesson_id']);
+																			$units = $chooseUnit->getUnitByLessonId($userInfo['school_id'], $userInfo['class_id'], $userInfo['lesson_id']);
 																			foreach ($units as $unitOption) {
 																				echo '<option value="' . $unitOption["id"] . '">' . $unitOption["name"] . '</option>';
 																			}
@@ -1217,7 +1081,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 											</div>
 										</div>
-
 										<div class="tab-pane fade " id="odevler">
 											<div id="kt_app_content_container" class="app-container container-fluid">
 												<div class="card">
@@ -1285,7 +1148,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																	echo $contentList;
 																}
 
-																// $homework->getHomeworksViewByLessonId($teacherInfo['school_id'], $teacherInfo['class_id'], $teacherInfo['lesson_id'], $teacherInfo['id']); ?>
+																// $homework->getHomeworksViewByLessonId($userInfo['school_id'], $userInfo['class_id'], $userInfo['lesson_id'], $userInfo['id']); ?>
 															</tbody>
 														</table>
 													</div>
@@ -1344,7 +1207,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 															<!--end::Thead-->
 															<!--begin::Tbody-->
 															<tbody class="fw-6 fw-semibold text-gray-600">
-																<?php $studentObj->showLoginDetailsListForStudentDetails($teacherInfo['id']); ?>
+																<?php $studentObj->showLoginDetailsListForStudentDetails($userInfo['id']); ?>
 															</tbody>
 															<!--end::Tbody-->
 														</table>
@@ -1356,7 +1219,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 											</div>
 											<!--end::Login sessions-->
 										</div>
-										<!--end::Row-->
 									</div>
 								</div>
 								<!--end::Content container-->

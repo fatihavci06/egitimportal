@@ -101,7 +101,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] == 1 OR $_SESSION['role'] == 9
                                     <div class="card">
                                         <div class="card-header border-0 pt-6">
                                             <div class="card-title">
-                                                <h3 class="fw-bold m-0">Yeni Toplantı Oluştur</h3>
+                                                <h3 class="fw-bold m-0">Yeni Toplantı Oluştur (Koç öğretmen öğrencilerine oluşturur.Öğrenci listesinde sadece kendi koçluk yaptığı öğrenciler bulunur.)</h3>
                                             </div>
                                             <div class="card-toolbar">
                                                 </div>
