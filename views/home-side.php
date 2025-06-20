@@ -43,7 +43,7 @@ if($lastSegment == 'hesap-olustur') {
             </a>
             <!--end::Logo-->
             <!--begin::Title-->
-            <h1 class="d-none d-lg-block fw-bold text-white fs-2qx pb-5 pb-md-10">Lineup Campus'e <br>Hoş Geldiniz</h1>
+            <h1 class="d-none d-lg-block fw-bold text-white fs-2qx pb-5 pb-md-10">LineUp Campus'e <br>Hoş Geldiniz</h1>
             <!--end::Title-->
             <!--begin::Description-->
             <p class="d-none d-lg-block fw-semibold fs-2 text-white"><img src="assets/media/mascots/<?php echo $img; ?>" alt="Illustration" class="w-37" /></p>

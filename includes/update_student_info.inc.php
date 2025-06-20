@@ -38,7 +38,7 @@ function updateStudent($userInfo, $phone, $city, $district, $address, $postcode,
     $cityChanged = ($city !== $userInfo['city']);
     $districtChanged = ($district !== $userInfo['district']);
     $addressChanged = ($address !== $userInfo['address']);
-    $postcodeChanged = ($postcode !== $userInfo['postcaode']);
+    $postcodeChanged = ($postcode !== $userInfo['postcode']);
     $photoUploaded = ($fileTmpName != NULL);
     $imgName = $userInfo['photo'];
 

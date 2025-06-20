@@ -158,4 +158,21 @@ class User extends Dbh
 
 		$stmt = null;
 	}
+
+	public function getOneUserById($id)
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM users_lnp WHERE id = ?');
+
+		if (!$stmt->execute(array($id))) {
+			$stmt = null;
+			exit();
+		}
+
+		$userData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $userData;
+
+		$stmt = null;
+	}
 }

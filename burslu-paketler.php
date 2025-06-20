@@ -8,7 +8,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
     include_once "classes/classes.classes.php";
     include_once "classes/packages.classes.php";
     include_once "classes/packages-view.classes.php";
-    $package = new ShowPackagesForAdmin();
+    $package = new ShowSchoolarshipPackagesForAdmin();
     include_once "views/pages-head.php";
 ?>
     <!--end::Head-->
@@ -71,7 +71,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
                                                         <span class="path1"></span>
                                                         <span class="path2"></span>
                                                     </i>
-                                                    <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder="Paket Ara" />
+                                                    <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder="Burslu Paket Ara" />
                                                 </div>
                                                 <!--end::Search-->
                                             </div>
@@ -82,7 +82,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
                                                 <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
                                                     <!--begin::Add school-->
                                                     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#packageCreate">
-                                                        Paket Ekle
+                                                        Burslu Paket Ekle
                                                     </button>
 
                                                     <!-- Modal -->
@@ -90,7 +90,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
                                                         <div class="modal-dialog">
                                                             <div class="modal-content">
                                                                 <div class="modal-header">
-                                                                    <h5 class="modal-title" id="packageCreateLabel">Paket Ekle</h5>
+                                                                    <h5 class="modal-title" id="packageCreateLabel">Burslu Paket Ekle</h5>
                                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                 </div>
 
@@ -176,7 +176,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
                                                         <th class="min-w-125px">Paket Adı</th>
                                                         <th class="min-w-125px">Aylık Ücret</th>
                                                         <th class="min-w-125px">Kaç Aylık</th>
-                                                        <th class="min-w-125px">Peşin Alımda İndirim Yüzdesi</th>
                                                         <th class="min-w-125px">Hangi Sınıf</th>
                                                         <th class="text-end min-w-125px">İşlem</th>
                                                     </tr>
@@ -185,7 +184,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
 
                                                     <?php
 
-                                                    $package->showAllPackages(); ?>
+                                                    $package->showAllSchoolarshipPackages(); ?>
                                                 </tbody>
                                             </table>
                                             <!--end::Table-->
@@ -250,7 +249,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
         <script src="assets/js/custom/utilities/modals/users-search.js"></script>
         <script src="assets/js/fatih.js"></script>
 
-        <script src="assets/js/custom/apps/class/list/list.js"></script>
+        <script src="assets/js/custom/apps/schoolarship/list/list.js"></script>
 
         <script>
             $(document).ready(function() {
@@ -272,7 +271,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
 
                     // Ajax ile gönder
                     $.ajax({
-                        url: 'includes/ajax.php?service=createPackage',
+                        url: 'includes/ajax-ayd.php?service=createSchoolarshipPackage',
                         type: 'POST',
                         data: {
                             packageName: packageName,
