@@ -19,7 +19,13 @@ class AddStudent extends Dbh
 				throw new Exception("Prepare failed: " . $pdo->errorInfo());
 			}
 
-			if (!$stmt->execute([$photo, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $passwordStudent, "2", "1", $tckn, $address, $district, $postcode, $city, $nowTime, $endTime, $pack])) {
+			if($classes == 10 OR $classes == 11 OR $classes == 12){
+				$role = 10002;
+			}else {
+				$role = 2;
+			}
+
+			if (!$stmt->execute([$photo, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $passwordStudent, $role, "1", $tckn, $address, $district, $postcode, $city, $nowTime, $endTime, $pack])) {
 				throw new Exception(json_encode($stmt->errorInfo()));
 				/* $stmt = null;
 				header("location: ../admin.php?error=stmtfailed");

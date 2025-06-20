@@ -47,7 +47,7 @@ class Mailer
 
 
         // Default sender
-        $this->mail->setFrom('eposta@lineupcampus.com', 'Lineup Campus');
+        $this->mail->setFrom('eposta@lineupcampus.com', 'LineUp Campus');
 
         // Default charset and encoding
         $this->mail->CharSet = 'UTF-8';
@@ -147,7 +147,7 @@ class Mailer
             <style>
                 body { font-family: Arial, sans-serif; line-height: 1.6; }
                 .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background-color: #f8f9fa; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
+                .header { background-color: #fa6000; color: #ffffff; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
                 .content { background-color: #ffffff; padding: 20px; border-radius: 0 0 5px 5px; }
                 .button { display: inline-block; padding: 10px 20px; background-color:rgb(166, 209, 255); color: #ffffff; text-decoration: none; border-radius: 5px; }
                 .footer { margin-top: 20px; font-size: 12px; color: #6c757d; text-align: center; }
@@ -191,7 +191,7 @@ class Mailer
      */
     public function sendBankTransferEmail($veli_ad, $veli_soyad, $kullanici_mail, $price)
     {
-        $subject = "Havale Bilgileri - Lineup Campus";
+        $subject = "LineUp Campus Ödeme Bilgileri - Kaydınız Tamamlanmak Üzere!";
 
         // HTML body
         $htmlBody = "
@@ -199,8 +199,7 @@ class Mailer
         <head>
             <style>
                 body { font-family: Arial, sans-serif; line-height: 1.6; }
-                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background-color: #f8f9fa; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
+                .container { margin: 0 auto; padding: 20px; }
                 .content { background-color: #ffffff; padding: 20px; border-radius: 0 0 5px 5px; }
                 .button { display: inline-block; padding: 10px 20px; background-color:rgb(166, 209, 255); color: #ffffff; text-decoration: none; border-radius: 5px; }
                 .footer { margin-top: 20px; font-size: 12px; color: #6c757d; text-align: center; }
@@ -209,27 +208,27 @@ class Mailer
         </head>
         <body>
             <div class='container'>
-                <div class='header'>
-                    <h2>Havale Bekleniyor</h2>
-                </div>
                 <div class='content'>
-                    <p>Merhaba " . htmlspecialchars($veli_ad) . ' ' . htmlspecialchars($veli_soyad) . ",</p>
-                    <p>Ödemeniz havale yolu ile bekleniyor.</p>
-                    <p>Açıklama kısmına <strong>Öğrencinin Adı Soyadı ve T.C. Kimlik Numarasını</strong> yazmayı unutmayın.</p>
-                    <p>Ödemeniz gereken tutar: <strong> $price ₺</strong></p>
-                    <p>Teşekkür ederiz.</p>
-                    <p style='text-align: center;'>
-                        <div class='text-center mt-5'>
-                                <h3 >Hesap Bilgileri</h3>
-                                <p>Hesap Adı: Lineup </p>
-                                <p>IBAN: TR0000000000000000000000</p>
-                                <p>Banka: Bankası</p>
+                    <p><img src='https://lineupcampus.com/online/assets/media/mascots/lineup-robot-maskot.png' alt='Logo' style='width: 200px; height: auto;'></p>
+                    <p>Merhaba Sevgili Velimiz,</p>
+                    <p>LineUp Campus'e gösterdiğiniz ilgi için çok teşekkür ederiz! Eğitim paketimiz için havale ile ödeme seçeneğini tercih ettiğinizi görüyoruz. Minik öğrencimizin eğlenceli ve verimli öğrenme yolculuğuna en kısa sürede başlaması için son adımı tamamlamak üzereyiz.</p>
+                    <p>Ödemenizi aşağıdaki banka bilgilerimize yapabilirsiniz:</p>
+                    <p>
+                        <div class='mt-5'>
+                                <p>Banka Adı: [Banka Adı]</p>
+                                <p>Şube Adı/Kodu: [Şube Adı/Kodu]</p>
+                                <p>Hesap Adı: [Şirketinizin Tam Adı - Örn: Line Up Campus Eğitim Hizmetleri A.Ş.]</p>
+                                <p>IBAN Numarası: TR [XX XXXXXXXXXXXXXXXXXXXXXX]</p>
+                                <p>Ödemeniz gereken tutar: <strong> $price ₺</strong></p>
                         </div>
                     </p>
-                    <p>Saygılarımla,<br>Lineup Takımı</p>
+                    <p>Açıklama Kısmı: Lütfen havale açıklama kısmına Öğrencinin Adı Soyadı T.C. Kimlik Numarası ve E-Posta adresi bilgilerini yazmayı unutmayınız. Bu, ödemenizi hızlıca eşleştirmemizi sağlayacaktır.</p>
+                    <p>Ödemeniz tarafımıza ulaştığında, üyeliğiniz en kısa sürede aktif edilecek ve size bir onay e-postası daha göndereceğiz.</p>
+                    <p>Herhangi bir sorunuz veya yardıma ihtiyacınız olursa, <a href='tel:02323320390'>0 232 332 03 90</a> numaralı telefondan veya <a href='mailto:info@lineupcampus.com'>info@lineupcampus.com</a> üzerinden bize ulaşmaktan lütfen çekinmeyin.</p>
+                    <p>Minik kaşifinizle yakında LineUp Campus dünyasında buluşmak dileğiyle!</p>
+                    <p>Sevgi ve Saygılarımızla,<br>LineUp Campus Ekibi</p>
                 </div>
                 <div class='footer'>
-                    <p>Bu otomatik bir e-postadır. Lütfen bu mesaja cevap vermeyin.</p>
                 </div>
             </div>
         </body>
@@ -249,7 +248,7 @@ class Mailer
      */
     public function sendBankTransferEmailToAdmin($veli_ad, $veli_soyad, $adminEmail, $price)
     {
-        $subject = "Yeni Kayıt (Havale) - Lineup Campus";
+        $subject = "Yeni Kayıt (Havale) - LineUp Campus";
 
         // HTML body
         $htmlBody = "
@@ -258,7 +257,7 @@ class Mailer
             <style>
                 body { font-family: Arial, sans-serif; line-height: 1.6; }
                 .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background-color: #f8f9fa; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
+                .header { background-color: #fa6000; color: #ffffff; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
                 .content { background-color: #ffffff; padding: 20px; border-radius: 0 0 5px 5px; }
                 .button { display: inline-block; padding: 10px 20px; background-color:rgb(166, 209, 255); color: #ffffff; text-decoration: none; border-radius: 5px; }
                 .footer { margin-top: 20px; font-size: 12px; color: #6c757d; text-align: center; }
@@ -298,7 +297,7 @@ class Mailer
      */
     public function sendBankTransferApprovedEmail($veli_ad, $veli_soyad, $kullanici_mail, $sifreogrenci, $sifreveli, $veliUser, $ogrenciUser)
     {
-        $subject = "Havale Onaylandı - Lineup Campus";
+        $subject = "Havale Onaylandı - LineUp Campus";
 
         // HTML body
         $htmlBody = "
@@ -307,7 +306,7 @@ class Mailer
             <style>
                 body { font-family: Arial, sans-serif; line-height: 1.6; }
                 .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background-color: #f8f9fa; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
+                .header { background-color: #fa6000; color: #ffffff; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
                 .content { background-color: #ffffff; padding: 20px; border-radius: 0 0 5px 5px; }
                 .button { display: inline-block; padding: 10px 20px; background-color:rgb(166, 209, 255); color: #ffffff; text-decoration: none; border-radius: 5px; }
                 .footer { margin-top: 20px; font-size: 12px; color: #6c757d; text-align: center; }
@@ -348,7 +347,7 @@ class Mailer
      */
     public function sendSchoolAdminEmail($admin_ad, $admin_soyad, $admin_mail, $admin_sifre, $adminUser, $school_name)
     {
-        $subject = $school_name . " adlı okula admin olarak atandınız - Lineup Campus";
+        $subject = $school_name . " adlı okula admin olarak atandınız - LineUp Campus";
 
         // HTML body
         $htmlBody = "
@@ -357,7 +356,7 @@ class Mailer
             <style>
                 body { font-family: Arial, sans-serif; line-height: 1.6; }
                 .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background-color: #f8f9fa; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
+                .header { background-color: #fa6000; color: #ffffff; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
                 .content { background-color: #ffffff; padding: 20px; border-radius: 0 0 5px 5px; }
                 .button { display: inline-block; padding: 10px 20px; background-color:rgb(166, 209, 255); color: #ffffff; text-decoration: none; border-radius: 5px; }
                 .footer { margin-top: 20px; font-size: 12px; color: #6c757d; text-align: center; }
@@ -397,7 +396,7 @@ class Mailer
      */
     public function sendSchoolCoordinatorEmail($coordinator_ad, $coordinator_soyad, $coordinator_mail, $coordinator_sifre, $coordinatorUser, $school_name)
     {
-        $subject = $school_name . " adlı okula eğitim koordinatörü olarak atandınız - Lineup Campus";
+        $subject = $school_name . " adlı okula eğitim koordinatörü olarak atandınız - LineUp Campus";
 
         // HTML body
         $htmlBody = "
@@ -406,7 +405,7 @@ class Mailer
             <style>
                 body { font-family: Arial, sans-serif; line-height: 1.6; }
                 .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background-color: #f8f9fa; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
+                .header { background-color: #fa6000; color: #ffffff; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
                 .content { background-color: #ffffff; padding: 20px; border-radius: 0 0 5px 5px; }
                 .button { display: inline-block; padding: 10px 20px; background-color:rgb(166, 209, 255); color: #ffffff; text-decoration: none; border-radius: 5px; }
                 .footer { margin-top: 20px; font-size: 12px; color: #6c757d; text-align: center; }
@@ -446,7 +445,7 @@ class Mailer
      */
     public function sendTeacherEmail($teacher_ad, $teacher_soyad, $teacher_mail, $teacher_sifre, $teacherUser, $school_name)
     {
-        $subject = $school_name . " adlı okula öğretmen olarak eklendiniz - Lineup Campus";
+        $subject = $school_name . " adlı okula öğretmen olarak eklendiniz - LineUp Campus";
 
         // HTML body
         $htmlBody = "
@@ -455,7 +454,7 @@ class Mailer
             <style>
                 body { font-family: Arial, sans-serif; line-height: 1.6; }
                 .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background-color: #f8f9fa; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
+                .header { background-color: #fa6000; color: #ffffff; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
                 .content { background-color: #ffffff; padding: 20px; border-radius: 0 0 5px 5px; }
                 .button { display: inline-block; padding: 10px 20px; background-color:rgb(166, 209, 255); color: #ffffff; text-decoration: none; border-radius: 5px; }
                 .footer { margin-top: 20px; font-size: 12px; color: #6c757d; text-align: center; }
@@ -485,6 +484,150 @@ class Mailer
         return $this->send($teacher_mail, $subject, $htmlBody, true);
     }
 
+    
+
+    /**
+     * Send a Support email To Admin
+     * 
+     * @param string $to Recipient email
+     * @param string $username Username
+     * @param string $resetLink Password reset link
+     * @return bool True if email was sent successfully, false otherwise
+     */
+    public function sendSupportEmailToAdmin($subjectofsupport, $title, $comment, $name, $surname, $adminEmail)
+    {
+        $subject = "Yeni Destek Talebi - LineUp Campus";
+
+        // HTML body
+        $htmlBody = "
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; }
+                .container { margin: 0 auto; padding: 20px; }
+                .content { background-color: #ffffff; padding: 20px; border-radius: 0 0 5px 5px; }
+                .button { display: inline-block; padding: 10px 20px; background-color:rgb(166, 209, 255); color: #ffffff; text-decoration: none; border-radius: 5px; }
+                .footer { margin-top: 20px; font-size: 12px; color: #6c757d; text-align: center; }
+                .text-center { text-align: center; }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <div class='header'>
+                    <h2>Yeni Destek Talebi - $subjectofsupport</h2>
+                </div>
+                <div class='content'>
+                    <p>Merhaba</p>
+                    <p>$name $surname isimli kullanıcı \"$title\" başlıklı bir destek talebinde bulundu.</p>
+                    <p>Kullanıcıya sistem üzerinden cevap verebilirsiniz.</p>
+                    <p>Saygılarımızla,<br>LineUp Campus</p>
+                </div>
+                <div class='footer'>
+                    <p>Bu otomatik bir e-postadır. Lütfen bu mesaja cevap vermeyin.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        ";
+
+        return $this->send($adminEmail, $subject, $htmlBody, true);
+    }
+    
+
+    /**
+     * Send a Support Response email
+     * 
+     * @param string $to Recipient email
+     * @param string $username Username
+     * @param string $resetLink Password reset link
+     * @return bool True if email was sent successfully, false otherwise
+     */
+    public function sendSupportResponseEmail($subjectofsupport, $title, $comment, $name, $surname, $adminEmail)
+    {
+        $subject = "Destek Talebi Yanıtı - LineUp Campus";
+
+        // HTML body
+        $htmlBody = "
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; }
+                .container { margin: 0 auto; padding: 20px; }
+                .content { background-color: #ffffff; padding: 20px; border-radius: 0 0 5px 5px; }
+                .button { display: inline-block; padding: 10px 20px; background-color:rgb(166, 209, 255); color: #ffffff; text-decoration: none; border-radius: 5px; }
+                .footer { margin-top: 20px; font-size: 12px; color: #6c757d; text-align: center; }
+                .text-center { text-align: center; }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <div class='header'>
+                    <h2>Destek Talebi Yanıtı - $subjectofsupport</h2>
+                </div>
+                <div class='content'>
+                    <p>Merhaba</p>
+                    <p>\"$title\" başlıklı destek talebine yanıt verilmiştir.</p>
+                    <p>Destek talebinin detaylarını sistem üzerinden görebilirsiniz.</p>
+                    <p>Saygılarımızla,<br>LineUp Campus</p>
+                </div>
+                <div class='footer'>
+                    <p>Bu otomatik bir e-postadır. Lütfen bu mesaja cevap vermeyin.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        ";
+
+        return $this->send($adminEmail, $subject, $htmlBody, true);
+    }
+    
+
+    /**
+     * Send a Support Complete email
+     * 
+     * @param string $to Recipient email
+     * @param string $username Username
+     * @param string $resetLink Password reset link
+     * @return bool True if email was sent successfully, false otherwise
+     */
+    public function sendSupportCompleteEmail($title, $adminEmail)
+    {
+        $subject = "Destek Talebi Çözümlendi - LineUp Campus";
+
+        // HTML body
+        $htmlBody = "
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; }
+                .container { margin: 0 auto; padding: 20px; }
+                .content { background-color: #ffffff; padding: 20px; border-radius: 0 0 5px 5px; }
+                .button { display: inline-block; padding: 10px 20px; background-color:rgb(166, 209, 255); color: #ffffff; text-decoration: none; border-radius: 5px; }
+                .footer { margin-top: 20px; font-size: 12px; color: #6c757d; text-align: center; }
+                .text-center { text-align: center; }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <div class='header'>
+                    <h2>Destek Talebi Çözümlendi - $title</h2>
+                </div>
+                <div class='content'>
+                    <p>Merhaba</p>
+                    <p>\"$title\" başlıklı destek talebi çözümlenmiştir.</p>
+                    <p>Saygılarımızla,<br>LineUp Campus</p>
+                </div>
+                <div class='footer'>
+                    <p>Bu otomatik bir e-postadır. Lütfen bu mesaja cevap vermeyin.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        ";
+
+        return $this->send($adminEmail, $subject, $htmlBody, true);
+    }
+
     /**
      * Send a Login Information email to Parent From Add Student Page
      * 
@@ -495,7 +638,7 @@ class Mailer
      */
     public function sendLoginInfoEmail($veli_ad, $veli_soyad, $kullanici_mail, $sifreogrenci, $sifreveli, $veliUser, $ogrenciUser)
     {
-        $subject = "Lineup Campus'e Hoş Geldiniz! - Lineup Campus";
+        $subject = "LineUp Campus'e Hoş Geldiniz! - LineUp Campus";
 
         // HTML body
         $htmlBody = "
@@ -504,7 +647,7 @@ class Mailer
             <style>
                 body { font-family: Arial, sans-serif; line-height: 1.6; }
                 .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background-color: #f8f9fa; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
+                .header { background-color: #fa6000; color: #ffffff; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
                 .content { background-color: #ffffff; padding: 20px; border-radius: 0 0 5px 5px; }
                 .button { display: inline-block; padding: 10px 20px; background-color:rgb(166, 209, 255); color: #ffffff; text-decoration: none; border-radius: 5px; }
                 .footer { margin-top: 20px; font-size: 12px; color: #6c757d; text-align: center; }
@@ -514,15 +657,15 @@ class Mailer
         <body>
             <div class='container'>
                 <div class='header'>
-                    <h2>Lineup Campus'e Hoş Geldiniz!</h2>
+                    <h2>LineUp Campus'e Hoş Geldiniz!</h2>
                 </div>
                 <div class='content'>
                     <p>Merhaba " . htmlspecialchars($veli_ad) . ' ' . htmlspecialchars($veli_soyad) . ",</p>
-                    <p>Lineup Campus'e Hoş Geldiniz.</p>
+                    <p>LineUp Campus'e Hoş Geldiniz.</p>
                     <p>Giriş bilgileriniz aşağıda verilmiştir.</p>
                     <p>Öğrenci Giriş Bilgisi: <br> <b>Kullanıcı adı:</b> $ogrenciUser <br><b>Şifre:</b> $sifreogrenci</p>
                     <p>Veli Giriş Bilgisi: <br> <b>Kullanıcı adı:</b> $veliUser <br><b>Şifre:</b> $sifreveli</p>
-                    <p>Saygılarımızla,<br>Lineup Takımı</p>
+                    <p>Saygılarımızla,<br>LineUp Takımı</p>
                 </div>
                 <div class='footer'>
                     <p>Bu otomatik bir e-postadır. Lütfen bu mesaja cevap vermeyin.</p>
@@ -567,7 +710,7 @@ class Mailer
             .header {
                 text-align: center;
                 padding: 20px 0;
-                background-color: #f8f9fa;
+                background-color: #fa6000; color: #ffffff;
                 border-bottom: 1px solid #e9ecef;
             }
             .content {
@@ -580,7 +723,7 @@ class Mailer
                 text-align: center;
                 margin: 20px 0;
                 padding: 15px;
-                background-color: #f8f9fa;
+                background-color: #fa6000; color: #ffffff;
                 border-radius: 5px;
                 letter-spacing: 2px;
             }
@@ -590,7 +733,7 @@ class Mailer
                 text-align: center;
                 font-size: 12px;
                 color: #6c757d;
-                background-color: #f8f9fa;
+                background-color: #fa6000; color: #ffffff;
             }
             .button {
                 display: inline-block;
@@ -618,7 +761,7 @@ class Mailer
             <p>Bu kod 30 dakika boyunca geçerlidir. Eğer bu talebi siz yapmadıysanız, lütfen bu e-postayı dikkate almayın.</p>
             
             <p>Teşekkür ederiz,</p>
-            <p>Lineup Campus Ekibi</p>
+            <p>LineUp Campus Ekibi</p>
         </div>
         
         <div class='footer'>

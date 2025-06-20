@@ -326,4 +326,32 @@ class Support extends Dbh
 
 		$stmt = null;
 	}
+
+	public function getSupportName($supportID){
+		$stmt = $this->connect()->prepare('SELECT name FROM support_center_subjects_lnp WHERE id = ? ORDER BY slug ASC');
+
+		if (!$stmt->execute([$supportID])) {
+			$stmt = null;
+			header("location: ../admin.php?error=stmtfailed");
+			exit();
+		}
+		$result = $stmt->fetch(PDO::FETCH_ASSOC);
+		$stmt = null;
+
+		return $result;
+	}
+
+	public function getSupportTitle($supportSlug){
+		$stmt = $this->connect()->prepare('SELECT title FROM support_center_lnp WHERE slug = ? ORDER BY id ASC');
+
+		if (!$stmt->execute([$supportSlug])) {
+			$stmt = null;
+			header("location: ../admin.php?error=stmtfailed");
+			exit();
+		}
+		$result = $stmt->fetch(PDO::FETCH_ASSOC);
+		$stmt = null;
+
+		return $result;
+	}
 }

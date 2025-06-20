@@ -90,7 +90,7 @@ switch ($service) {
             echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası: ' . $e->getMessage()]);
         }
         break;
-    case 'createPackage':
+    case 'createSchoolarshipPackage':
 
         $packageName = isset($_POST['packageName']) ? cleanInput($_POST['packageName']) : null;
         $classId = isset($_POST['class_id']) ? (int)$_POST['class_id'] : null;
@@ -121,8 +121,8 @@ switch ($service) {
                 throw new Exception('Abonelik periyodu 1 ile 12 arasında bir tam sayı olmalıdır.');
             }
 
-            $stmt = $pdo->prepare("INSERT INTO packages_lnp (name, class_id, monthly_fee, subscription_period) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$packageName, $classId, $monthlyFee, $subscriptionPeriod]);
+            $stmt = $pdo->prepare("INSERT INTO packages_lnp (name, class_id, monthly_fee, subscription_period, pack_type) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$packageName, $classId, $monthlyFee, $subscriptionPeriod, 2]); // 2 burslu paket türü
 
             if ($stmt->rowCount() > 0) {
                 jsonResponse(200, 'success', 'Paket başarıyla eklendi.');

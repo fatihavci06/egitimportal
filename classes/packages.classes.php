@@ -10,9 +10,9 @@ class Packages extends Dbh
 			$class = 2;
 		} */
 
-		$stmt = $this->connect()->prepare('SELECT id, name, image FROM packages_lnp WHERE class_id = ? AND status = ?');
+		$stmt = $this->connect()->prepare('SELECT id, name, image FROM packages_lnp WHERE class_id = ? AND status = ? AND pack_type IS ?');
 
-		if (!$stmt->execute(array($class, 1))) {
+		if (!$stmt->execute(array($class, 1, NULL))) {
 			$stmt = null;
 			exit();
 		}
@@ -103,9 +103,26 @@ class PackagesForAdmin extends Dbh {
 	public function getAllPackages()
 	{
 
-		$stmt = $this->connect()->prepare('SELECT packages_lnp.id,packages_lnp.status, packages_lnp.name, packages_lnp.monthly_fee, packages_lnp.subscription_period, packages_lnp.discount, classes_lnp.name AS className FROM packages_lnp INNER JOIN classes_lnp ON packages_lnp.class_id = classes_lnp.id ORDER BY packages_lnp.id DESC'); 
+		$stmt = $this->connect()->prepare('SELECT packages_lnp.id,packages_lnp.status, packages_lnp.name, packages_lnp.monthly_fee, packages_lnp.subscription_period, packages_lnp.discount, classes_lnp.name AS className FROM packages_lnp INNER JOIN classes_lnp ON packages_lnp.class_id = classes_lnp.id WHERE packages_lnp.pack_type IS ? ORDER BY packages_lnp.id DESC'); 
 
-			if (!$stmt->execute(array())) {
+			if (!$stmt->execute(array(NULL))) {
+				$stmt = null;
+				exit();
+			}
+
+		$getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $getData;
+
+		$stmt = null;
+	}
+
+	public function getAllSchoolarshipPackages()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT packages_lnp.id,packages_lnp.status, packages_lnp.name, packages_lnp.monthly_fee, packages_lnp.subscription_period, packages_lnp.discount, classes_lnp.name AS className FROM packages_lnp INNER JOIN classes_lnp ON packages_lnp.class_id = classes_lnp.id WHERE packages_lnp.pack_type = ? ORDER BY packages_lnp.id DESC'); 
+
+			if (!$stmt->execute(array(2))) {
 				$stmt = null;
 				exit();
 			}

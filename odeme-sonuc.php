@@ -14,10 +14,13 @@ require_once('classes/dbh.classes.php');
 require_once('classes/adduser.classes.php');
 require_once('classes/userslist.classes.php');
 include_once('classes/packages.classes.php');
+include_once('classes/classes.classes.php');
 
 $admin = new User();
 $getadminEmail = $admin->getlnpAdmin();
 $adminEmail = $getadminEmail[0]['email'];
+
+$className = new Classes();
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -73,6 +76,9 @@ if($class == 10 OR $class == 11 OR $class == 12) {
     $role = 2;
 }
 
+$className = $className->getClassByLesson($class);
+$className = $className['name'];
+
 $veli_ad = $_SESSION['parentFirstName'];
 $veli_soyad = $_SESSION['parentLastName'];
 $kullanici_gsm = $_SESSION['telephone'];
@@ -123,6 +129,7 @@ if ($odeme_durum == "FAILURE") {
 
     foreach ($packInfo as $key => $value) {
         $period = $value['subscription_period'];
+        $packName = $value['name'];
     }
 
     $dateformat = new DateFormat();
@@ -152,9 +159,19 @@ if ($odeme_durum == "FAILURE") {
     $mail = new PHPMailer(true);
 
     try {
-        $baslik = "Lineup Campus'e Hoş Geldiniz!";
-        $mesaj = "Merhaba, <br> Giriş bilgileriniz aşağıda verilmiştir. <br><br> Öğrenci Giriş Bilgisi: <br> <b>Kullanıcı adı:</b> " . $username . " <br> <b>Şifre:</b> " . $yeniSifre . " <br> <br> Veli Giriş Bilgisi: <br> <b>Kullanıcı adı:</b> " . $username2 . " <br> <b>Şifre:</b> " . $yeniSifre2 . " <br> <br>";
-        $sirket_adi = "Lineup Campus";
+        $baslik = "LineUp Campus Ailesi Hoş Geldin Minik Kaşifimiz!";
+        $mesaj = "Merhaba Sevgili Velimiz, 
+        <br> LineUp Campus ailesine katıldığınız için çok mutluyuz! Minik öğrencinizle birlikte heyecan dolu bir öğrenme yolculuğuna çıkmaya hazır mısınız? 
+        <br><br> Okul öncesi ve ilkokul öğrencilerimiz için özel olarak hazırladığımız Eğlenceli ve Eğitici Konu Anlatımlı Animasyonlarımız, 3D Bilim Videolarımız, Okuma Yazma Etkinliklerimiz ve Eğlenceli Online Oyunlarımızla öğrenmek hiç bu kadar keyifli olmamıştı.
+        <br><br> <b>Kullanıcı Bilgileriniz:</b>
+        <br><br> <b>Öğrenci Giriş Bilgisi:</b> <br> Kullanıcı adı: " . $username . " <br> <b>Şifre:</b> " . $yeniSifre . " 
+        <br><br> <b>Veli Giriş Bilgisi:</b> <br> Kullanıcı adı: " . $username2 . " <br> <b>Şifre:</b> " . $yeniSifre2 . " 
+        <br> <br> Kullanıcı bilgilerinizle <a href='https://lineupcampus.com' target='_blank'>https://lineupcampus.com</a> adresinden giriş yaparak, çocuğunuz için özel olarak tasarlanmış eğitim dünyamızı keşfedebilirsiniz.
+        <br> <br> Her türlü soru ve desteğiniz için <a href='tel:02323320390'>0 232 332 03 90</a> numaralı telefondan veya <a href='mailto:info@lineupcampus.com'>info@lineupcampus.com</a> üzerinden bize ulaşmaktan çekinmeyin.
+        <br> <br>LineUp Campus ailesi olarak, minik kaşifimize başarılarla dolu, eğlenceli ve aydınlık bir öğrenme süreci dileriz!
+        <br><br> Sevgi ve neşeyle, <br> LineUp Campus Ekibi 
+        ";
+        $sirket_adi = "LineUp Campus";
 
         $mail_icerigi = file_get_contents('views/email-template.html');
 
@@ -175,7 +192,7 @@ if ($odeme_durum == "FAILURE") {
         $mail->CharSet    = 'UTF-8';                                // Karakter kodlaması
 
         // Alıcılar
-        $mail->setFrom('eposta@lineupcampus.com', 'Lineup Campus');
+        $mail->setFrom('eposta@lineupcampus.com', 'LineUp Campus');
         $mail->addAddress($kullanici_mail, $veli_ad . ' ' . $veli_soyad);     // İsteğe bağlı olarak isim ekleyebilirsiniz
         //$mail->addCC('cc@baskaalan.com');
         //$mail->addBCC('bcc@baskaalan.com');
@@ -205,13 +222,19 @@ if ($odeme_durum == "FAILURE") {
 
     try {
         $baslik = "Yeni Üye Kaydı!";
-        $mesaj = "Merhaba, <br> Yeni bir üye kaydoldu. <br><br> Öğrenci Bilgisi: <br> Adı Soyadı: $firstName $lastName <br> <br> 
-    Veli Bilgisi: <br> Adı Soyadı: $veli_ad $veli_soyad <br> <br>
-    Telefon: $kullanici_gsm  <br> <br>
-    E-posta: $kullanici_mail <br> <br>";
-        $sirket_adi = "Lineup Campus";
+        $mesaj = "Merhaba, 
+        <br> Yeni bir üye kaydoldu. 
+        <br><br> Öğrenci Bilgisi: 
+        <br> Adı Soyadı: $firstName $lastName 
+        <br> <br> Veli Bilgisi: 
+        <br> Adı Soyadı: $veli_ad $veli_soyad 
+        <br> <br> Telefon: $kullanici_gsm  
+        <br> <br> E-posta: $kullanici_mail
+        <br> <br> Sınıf Bilgisi: $className   
+        <br> <br> Paket Bilgisi: $packName <br> <br>";
+        $sirket_adi = "LineUp Campus";
 
-        $mail_icerigi = file_get_contents('views/email-template.html');
+        $mail_icerigi = file_get_contents('views/email-template-admin.html');
 
         $mail_icerigi = str_replace('{{baslik}}', $baslik, $mail_icerigi);
         $mail_icerigi = str_replace('{{mesaj}}', $mesaj, $mail_icerigi);
@@ -229,8 +252,8 @@ if ($odeme_durum == "FAILURE") {
         $mail->CharSet    = 'UTF-8';                                // Karakter kodlaması
 
         // Alıcılar
-        $mail->setFrom('eposta@lineupcampus.com', 'Lineup Campus');
-        $mail->addAddress($adminEmail, 'Lineup Campus');     // İsteğe bağlı olarak isim ekleyebilirsiniz
+        $mail->setFrom('eposta@lineupcampus.com', 'LineUp Campus');
+        $mail->addAddress($adminEmail, 'LineUp Campus');     // İsteğe bağlı olarak isim ekleyebilirsiniz
         //$mail->addCC('cc@baskaalan.com');
         //$mail->addBCC('bcc@baskaalan.com');
 

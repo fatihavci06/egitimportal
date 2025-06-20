@@ -6,16 +6,16 @@ if (!defined('GUARD')) {
 <!--begin::Head-->
 	<head>
 <base href="http://localhost/lineup_campus/" />
-		<title>Lineup Campus</title>
+		<title>LineUp Campus</title>
 		<meta charset="utf-8" />
-		<meta name="description" content="Lineup Campus" />
+		<meta name="description" content="LineUp Campus" />
 		<meta name="keywords" content="Saul, bootstrap, bootstrap 5, dmin themes, free admin themes, bootstrap admin, bootstrap dashboard" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta property="og:locale" content="tr_TR" />
 		<meta property="og:type" content="article" />
-		<meta property="og:title" content="Lineup Campus" />
+		<meta property="og:title" content="LineUp Campus" />
 		<meta property="og:url" content="https://keenthemes.com/products/saul-html-pro" />
-		<meta property="og:site_name" content="Lineup Campus" />
+		<meta property="og:site_name" content="LineUp Campus" />
 		<link rel="canonical" href="http://preview.keenthemes.comapps/calendar.html" />
 		<link rel="canonical" href="http://preview.keenthemes.comauthentication/sign-in/basic.html" />
 		<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/tr.js"></script>
