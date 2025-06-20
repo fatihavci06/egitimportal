@@ -3076,6 +3076,7 @@ WHERE t.id = :id";
             $type = $_POST['addPackageType'] ?? '';
             $price = $_POST['addPackagePrice'] ?? '';
             $addMonths = $_POST['addMonths'] ?? '';
+            $description = $_POST['addPackageDescription'] ?? '';
             if (empty($addMonths)) {
                 $limit_count = $_POST['addCount'] ?? '';
             } else {
@@ -3086,8 +3087,8 @@ WHERE t.id = :id";
                 throw new Exception('Geçersiz veya eksik parametreler.');
             }
 
-            $stmt = $pdo->prepare("INSERT INTO extra_packages_lnp (name, type, limit_count,price) VALUES (?, ?, ?,?)");
-            $stmt->execute([$name, $type, $limit_count, $price]);
+            $stmt = $pdo->prepare("INSERT INTO extra_packages_lnp (name, type, limit_count,price,description) VALUES (?, ?, ?,?,?)");
+            $stmt->execute([$name, $type, $limit_count, $price, $description]);
 
             echo json_encode(['status' => 'success', 'message' => 'Paket başarıyla eklendi.']);
         } catch (Exception $e) {
@@ -3102,7 +3103,7 @@ WHERE t.id = :id";
             $type = $_POST['updatePackageType'] ?? '';
             $price = $_POST['updatePackagePrice'] ?? '';
             $addMonths = $_POST['updateMonths'] ?? '';
-
+            $description = $_POST['updatePackageDescription'] ?? '';
             if (empty($addMonths)) {
                 $limit_count = $_POST['updateCount'] ?? '';
             } else {
@@ -3114,8 +3115,8 @@ WHERE t.id = :id";
                 throw new Exception('Geçersiz veya eksik parametreler.');
             }
 
-            $stmt = $pdo->prepare("UPDATE extra_packages_lnp SET name = ?, type = ?, limit_count = ?,price=? WHERE id = ?");
-            $stmt->execute([$name, $type, $limit_count, $price, $id]);
+            $stmt = $pdo->prepare("UPDATE extra_packages_lnp SET name = ?, type = ?, limit_count = ?,price=?,description=? WHERE id = ?");
+            $stmt->execute([$name, $type, $limit_count, $price,$description, $id]);
 
             echo json_encode(['status' => 'success', 'message' => 'Paket başarıyla güncellendi.']);
         } catch (Exception $e) {
@@ -3364,25 +3365,25 @@ WHERE t.id = :id";
         }
         break;
     case 'privateLessonRequest':
-    $id = $_POST['request_id'] ?? null;
-    $assigned_teacher_id = $_POST['assigned_teacher_id'] ?? null;
-    $desired_date = $_POST['desired_date'] ?? null;
+        $id = $_POST['request_id'] ?? null;
+        $assigned_teacher_id = $_POST['assigned_teacher_id'] ?? null;
+        $desired_date = $_POST['desired_date'] ?? null;
 
-    if (!$id || !$assigned_teacher_id || !$desired_date) {
-        echo json_encode(['success' => false, 'message' => 'Eksik bilgi gönderildi.']);
-        exit();
-    }
+        if (!$id || !$assigned_teacher_id || !$desired_date) {
+            echo json_encode(['success' => false, 'message' => 'Eksik bilgi gönderildi.']);
+            exit();
+        }
 
-    $stmt = $pdo->prepare("UPDATE private_lesson_requests_lnp 
+        $stmt = $pdo->prepare("UPDATE private_lesson_requests_lnp 
                            SET assigned_teacher_id = ?, meet_date = ?, request_status = ?
                            WHERE id = ?");
-    $result = $stmt->execute([$assigned_teacher_id, $desired_date, 1, $id]);
+        $result = $stmt->execute([$assigned_teacher_id, $desired_date, 1, $id]);
 
-    if ($result) {
-        $_SESSION['payment_success'] = true;
+        if ($result) {
+            $_SESSION['payment_success'] = true;
 
-        // 1. Gerekli bilgileri al
-        $infoStmt = $pdo->prepare("
+            // 1. Gerekli bilgileri al
+            $infoStmt = $pdo->prepare("
             SELECT 
                 pr.student_user_id, 
                 pr.assigned_teacher_id,  
@@ -3393,135 +3394,135 @@ WHERE t.id = :id";
             LEFT JOIN lessons_lnp l ON l.id = pr.lesson_id
             WHERE pr.id = ?
         ");
-        $infoStmt->execute([$id]);
-        $info = $infoStmt->fetch(PDO::FETCH_ASSOC);
+            $infoStmt->execute([$id]);
+            $info = $infoStmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$info) {
-            echo json_encode(['success' => false, 'message' => 'Bilgiler alınamadı.']);
-            exit();
-        }
-
-        $student_id = $info['student_user_id'];
-        $teacher_id = $info['assigned_teacher_id'];
-        $class_name = $info['class_name'] ?? '-';
-        $lesson_name = $info['lesson_name'] ?? '-';
-        $meetingDescription = "{$class_name} Özel Ders";
-
-        // Zoom Toplantısı Oluştur
-        require_once '../zoom/ZoomTokenManager.php';
-
-        try {
-            $zoom = new ZoomTokenManager();
-            $access_token = $zoom->getAccessToken();
-            $start_time = date('Y-m-d\TH:i:s', strtotime($desired_date));
-            $userId = 'me';
-
-            $meeting_details = [
-                'topic' => $meetingDescription,
-                'type' => 2,
-                'start_time' => $start_time,
-                'duration' => 60,
-                'timezone' => 'Europe/Istanbul',
-                'settings' => [
-                    'host_video' => true,
-                    'participant_video' => true,
-                    'auto_recording' => 'cloud',
-                ],
-            ];
-
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, "https://api.zoom.us/v2/users/{$userId}/meetings");
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                "Authorization: Bearer $access_token",
-                "Content-Type: application/json",
-            ]);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($meeting_details));
-
-            $response = curl_exec($ch);
-            $err = curl_error($ch);
-            curl_close($ch);
-
-            if ($err) {
-                error_log("Zoom API Hatası: " . $err);
-                echo json_encode(['success' => false, 'message' => 'Zoom bağlantısı kurulamadı.', 'zoom_error' => $err]);
+            if (!$info) {
+                echo json_encode(['success' => false, 'message' => 'Bilgiler alınamadı.']);
                 exit();
             }
 
-            $zoomResponse = json_decode($response, true);
-            if (!isset($zoomResponse['join_url'], $zoomResponse['start_url'])) {
-                error_log("Zoom Yanıtı Geçersiz: " . $response);
-                echo json_encode(['success' => false, 'message' => 'Zoom toplantısı oluşturulamadı.', 'zoom_error' => $response]);
-                exit();
-            }
+            $student_id = $info['student_user_id'];
+            $teacher_id = $info['assigned_teacher_id'];
+            $class_name = $info['class_name'] ?? '-';
+            $lesson_name = $info['lesson_name'] ?? '-';
+            $meetingDescription = "{$class_name} Özel Ders";
 
-            $joinUrl = $zoomResponse['join_url'];
-            $startUrl = $zoomResponse['start_url'];
+            // Zoom Toplantısı Oluştur
+            require_once '../zoom/ZoomTokenManager.php';
 
-            // meetings_lnp tablosuna kaydet
-            $insertMeetingStmt = $pdo->prepare("
+            try {
+                $zoom = new ZoomTokenManager();
+                $access_token = $zoom->getAccessToken();
+                $start_time = date('Y-m-d\TH:i:s', strtotime($desired_date));
+                $userId = 'me';
+
+                $meeting_details = [
+                    'topic' => $meetingDescription,
+                    'type' => 2,
+                    'start_time' => $start_time,
+                    'duration' => 60,
+                    'timezone' => 'Europe/Istanbul',
+                    'settings' => [
+                        'host_video' => true,
+                        'participant_video' => true,
+                        'auto_recording' => 'cloud',
+                    ],
+                ];
+
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, "https://api.zoom.us/v2/users/{$userId}/meetings");
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    "Authorization: Bearer $access_token",
+                    "Content-Type: application/json",
+                ]);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($meeting_details));
+
+                $response = curl_exec($ch);
+                $err = curl_error($ch);
+                curl_close($ch);
+
+                if ($err) {
+                    error_log("Zoom API Hatası: " . $err);
+                    echo json_encode(['success' => false, 'message' => 'Zoom bağlantısı kurulamadı.', 'zoom_error' => $err]);
+                    exit();
+                }
+
+                $zoomResponse = json_decode($response, true);
+                if (!isset($zoomResponse['join_url'], $zoomResponse['start_url'])) {
+                    error_log("Zoom Yanıtı Geçersiz: " . $response);
+                    echo json_encode(['success' => false, 'message' => 'Zoom toplantısı oluşturulamadı.', 'zoom_error' => $response]);
+                    exit();
+                }
+
+                $joinUrl = $zoomResponse['join_url'];
+                $startUrl = $zoomResponse['start_url'];
+
+                // meetings_lnp tablosuna kaydet
+                $insertMeetingStmt = $pdo->prepare("
                 INSERT INTO meetings_lnp 
                 (organizer_id, participant_id, description, meeting_date, zoom_join_url, zoom_start_url)
                 VALUES (?, ?, ?, ?, ?, ?)
             ");
-            $meetingResult = $insertMeetingStmt->execute([
-                $teacher_id,
-                $student_id,
-                $meetingDescription,
-                $desired_date,
-                $joinUrl,
-                $startUrl
-            ]);
+                $meetingResult = $insertMeetingStmt->execute([
+                    $teacher_id,
+                    $student_id,
+                    $meetingDescription,
+                    $desired_date,
+                    $joinUrl,
+                    $startUrl
+                ]);
 
-            if (!$meetingResult) {
-                error_log('Error inserting into meetings_lnp for Zoom meeting. ID: ' . $id);
+                if (!$meetingResult) {
+                    error_log('Error inserting into meetings_lnp for Zoom meeting. ID: ' . $id);
+                }
+            } catch (Exception $e) {
+                error_log("Zoom Hatası: " . $e->getMessage());
             }
-        } catch (Exception $e) {
-            error_log("Zoom Hatası: " . $e->getMessage());
+
+            // Kullanıcıları mail ile bilgilendir
+            $studentStmt = $pdo->prepare("SELECT name, surname, email FROM users_lnp WHERE id = ?");
+            $studentStmt->execute([$student_id]);
+            $student = $studentStmt->fetch(PDO::FETCH_ASSOC);
+
+            $teacherStmt = $pdo->prepare("SELECT name, surname, email FROM users_lnp WHERE id = ?");
+            $teacherStmt->execute([$teacher_id]);
+            $teacher = $teacherStmt->fetch(PDO::FETCH_ASSOC);
+
+            $student_full_name = $student ? $student['name'] . ' ' . $student['surname'] : 'Bilinmiyor';
+            $student_email = $student['email'] ?? null;
+
+            $teacher_full_name = $teacher ? $teacher['name'] . ' ' . $teacher['surname'] : 'Bilinmiyor';
+            $teacher_email = $teacher['email'] ?? null;
+
+            $dt = new DateTime($desired_date);
+            $formattedDate = $dt->format('d.m.Y H:i');
+
+            $mailText = "Merhaba,\n\n"
+                . "Özel ders {$formattedDate} tarihinde yapılacaktır.\n"
+                . "Sınıf: {$class_name}\n"
+                . "Ders: {$lesson_name}\n"
+                . "Öğrenci: {$student_full_name}\n"
+                . "Öğretmen: {$teacher_full_name}\n"
+                . "Ders Linki: {$joinUrl}\n\n"
+                . "Lütfen zamanında hazır olunuz.\n\nİyi dersler dileriz.";
+
+            if ($student_email) {
+                $mailer->send($student_email, 'Özel Ders Bilgilendirmesi', $mailText);
+            }
+
+            if ($teacher_email) {
+                $mailer->send($teacher_email, 'Özel Ders Ataması', $mailText . "\n\nBaşlatmak için link: {$startUrl}");
+            }
+
+            echo json_encode(['success' => true, 'message' => 'Özel ders oluşturuldu ve Zoom toplantısı planlandı.']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Güncelleme işlemi başarısız oldu.']);
         }
 
-        // Kullanıcıları mail ile bilgilendir
-        $studentStmt = $pdo->prepare("SELECT name, surname, email FROM users_lnp WHERE id = ?");
-        $studentStmt->execute([$student_id]);
-        $student = $studentStmt->fetch(PDO::FETCH_ASSOC);
-
-        $teacherStmt = $pdo->prepare("SELECT name, surname, email FROM users_lnp WHERE id = ?");
-        $teacherStmt->execute([$teacher_id]);
-        $teacher = $teacherStmt->fetch(PDO::FETCH_ASSOC);
-
-        $student_full_name = $student ? $student['name'] . ' ' . $student['surname'] : 'Bilinmiyor';
-        $student_email = $student['email'] ?? null;
-
-        $teacher_full_name = $teacher ? $teacher['name'] . ' ' . $teacher['surname'] : 'Bilinmiyor';
-        $teacher_email = $teacher['email'] ?? null;
-
-        $dt = new DateTime($desired_date);
-        $formattedDate = $dt->format('d.m.Y H:i');
-
-        $mailText = "Merhaba,\n\n"
-            . "Özel ders {$formattedDate} tarihinde yapılacaktır.\n"
-            . "Sınıf: {$class_name}\n"
-            . "Ders: {$lesson_name}\n"
-            . "Öğrenci: {$student_full_name}\n"
-            . "Öğretmen: {$teacher_full_name}\n"
-            . "Ders Linki: {$joinUrl}\n\n"
-            . "Lütfen zamanında hazır olunuz.\n\nİyi dersler dileriz.";
-
-        if ($student_email) {
-            $mailer->send($student_email, 'Özel Ders Bilgilendirmesi', $mailText);
-        }
-
-        if ($teacher_email) {
-            $mailer->send($teacher_email, 'Özel Ders Ataması', $mailText . "\n\nBaşlatmak için link: {$startUrl}");
-        }
-
-        echo json_encode(['success' => true, 'message' => 'Özel ders oluşturuldu ve Zoom toplantısı planlandı.']);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Güncelleme işlemi başarısız oldu.']);
-    }
-
-    break;
+        break;
 
     case 'updateCoachingRequest':
         $id = $_POST['request_id'] ?? null;
@@ -3807,139 +3808,139 @@ WHERE t.id = :id";
         break;
     case 'createMeeting':
 
-    $organizerId = $_SESSION['id'] ?? null;
-    $participantId = $_POST['participant_id'] ?? null;
-    $description = $_POST['description'] ?? null;
-    $meetingDate = $_POST['meeting_date'] ?? null;
+        $organizerId = $_SESSION['id'] ?? null;
+        $participantId = $_POST['participant_id'] ?? null;
+        $description = $_POST['description'] ?? null;
+        $meetingDate = $_POST['meeting_date'] ?? null;
 
-    if (empty($organizerId) || empty($participantId) || empty($description) || empty($meetingDate)) {
-        echo json_encode(['success' => false, 'message' => 'Lütfen tüm alanları doldurun.']);
-        exit();
-    }
-
-    try {
-        require_once '../zoom/ZoomTokenManager.php';
-        $zoom = new ZoomTokenManager();
-        $access_token = $zoom->getAccessToken();
-
-        $start_time = date('Y-m-d\TH:i:s', strtotime($meetingDate));
-        $userId = 'me';
-
-        $meeting_details = [
-            'topic' => $description,
-            'type' => 2,
-            'start_time' => $start_time,
-            'duration' => 60,
-            'timezone' => 'Europe/Istanbul',
-            'settings' => [
-                'host_video' => true,
-                'participant_video' => true,
-                'auto_recording' => 'cloud',
-            ],
-        ];
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://api.zoom.us/v2/users/{$userId}/meetings");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            "Authorization: Bearer $access_token",
-            "Content-Type: application/json",
-        ]);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($meeting_details));
-
-        $response = curl_exec($ch);
-        $err = curl_error($ch);
-        curl_close($ch);
-
-        if ($err) {
-            error_log("Zoom API Hatası: " . $err);
-            echo json_encode(['success' => false, 'message' => 'Zoom API bağlantı hatası: ' . $err]);
+        if (empty($organizerId) || empty($participantId) || empty($description) || empty($meetingDate)) {
+            echo json_encode(['success' => false, 'message' => 'Lütfen tüm alanları doldurun.']);
             exit();
         }
 
-        $zoomResponse = json_decode($response, true);
+        try {
+            require_once '../zoom/ZoomTokenManager.php';
+            $zoom = new ZoomTokenManager();
+            $access_token = $zoom->getAccessToken();
 
-        if (!isset($zoomResponse['join_url'], $zoomResponse['start_url'])) {
-            error_log("Zoom API Hatası: " . $response);
-            echo json_encode(['success' => false, 'message' => 'Zoom toplantısı oluşturulamadı.', 'detail' => $response]);
-            exit();
-        }
+            $start_time = date('Y-m-d\TH:i:s', strtotime($meetingDate));
+            $userId = 'me';
 
-        $zoomJoinUrl = $zoomResponse['join_url'];
-        $zoomStartUrl = $zoomResponse['start_url'];
+            $meeting_details = [
+                'topic' => $description,
+                'type' => 2,
+                'start_time' => $start_time,
+                'duration' => 60,
+                'timezone' => 'Europe/Istanbul',
+                'settings' => [
+                    'host_video' => true,
+                    'participant_video' => true,
+                    'auto_recording' => 'cloud',
+                ],
+            ];
 
-        // Veritabanına kaydet
-        $stmt = $pdo->prepare("
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, "https://api.zoom.us/v2/users/{$userId}/meetings");
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                "Authorization: Bearer $access_token",
+                "Content-Type: application/json",
+            ]);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($meeting_details));
+
+            $response = curl_exec($ch);
+            $err = curl_error($ch);
+            curl_close($ch);
+
+            if ($err) {
+                error_log("Zoom API Hatası: " . $err);
+                echo json_encode(['success' => false, 'message' => 'Zoom API bağlantı hatası: ' . $err]);
+                exit();
+            }
+
+            $zoomResponse = json_decode($response, true);
+
+            if (!isset($zoomResponse['join_url'], $zoomResponse['start_url'])) {
+                error_log("Zoom API Hatası: " . $response);
+                echo json_encode(['success' => false, 'message' => 'Zoom toplantısı oluşturulamadı.', 'detail' => $response]);
+                exit();
+            }
+
+            $zoomJoinUrl = $zoomResponse['join_url'];
+            $zoomStartUrl = $zoomResponse['start_url'];
+
+            // Veritabanına kaydet
+            $stmt = $pdo->prepare("
             INSERT INTO meetings_lnp 
             (organizer_id, participant_id, description, meeting_date, zoom_join_url, zoom_start_url) 
             VALUES (?, ?, ?, ?, ?, ?)
         ");
-        $success = $stmt->execute([
-            $organizerId,
-            $participantId,
-            $description,
-            $meetingDate,
-            $zoomJoinUrl,
-            $zoomStartUrl
-        ]);
+            $success = $stmt->execute([
+                $organizerId,
+                $participantId,
+                $description,
+                $meetingDate,
+                $zoomJoinUrl,
+                $zoomStartUrl
+            ]);
 
-        if (!$success) {
-            $errorInfo = $stmt->errorInfo();
-            error_log("Veritabanı hatası (Zoom URL'ler dahil): " . $errorInfo[2]);
-            echo json_encode(['success' => false, 'message' => 'Veritabanına kaydedilirken bir hata oluştu.']);
-            exit();
+            if (!$success) {
+                $errorInfo = $stmt->errorInfo();
+                error_log("Veritabanı hatası (Zoom URL'ler dahil): " . $errorInfo[2]);
+                echo json_encode(['success' => false, 'message' => 'Veritabanına kaydedilirken bir hata oluştu.']);
+                exit();
+            }
+
+            // Öğrenci ve öğretmen bilgilerini al
+            $studentStmt = $pdo->prepare("SELECT name, surname, email FROM users_lnp WHERE id = ?");
+            $studentStmt->execute([$participantId]);
+            $student = $studentStmt->fetch(PDO::FETCH_ASSOC);
+
+            $teacherStmt = $pdo->prepare("SELECT name, surname, email FROM users_lnp WHERE id = ?");
+            $teacherStmt->execute([$organizerId]);
+            $teacher = $teacherStmt->fetch(PDO::FETCH_ASSOC);
+
+            $student_full_name = $student ? $student['name'] . ' ' . $student['surname'] : 'Bilinmiyor';
+            $student_email = $student['email'] ?? null;
+
+            $teacher_full_name = $teacher ? $teacher['name'] . ' ' . $teacher['surname'] : 'Bilinmiyor';
+            $teacher_email = $teacher['email'] ?? null;
+
+            $dt = new DateTime($meetingDate);
+            $formattedDate = $dt->format('d.m.Y H:i');
+
+            $mailText = "Merhaba,\n\n"
+                . "Yeni bir özel toplantı oluşturuldu.\n\n"
+                . "📅 Tarih: {$formattedDate}\n"
+                . "📌 Konu: {$description}\n"
+                . "👩‍🏫 Öğretmen: {$teacher_full_name}\n"
+                . "👨‍🎓 Öğrenci: {$student_full_name}\n"
+                . "🔗 Toplantı Linki: {$zoomJoinUrl}\n\n"
+                . "İyi dersler dileriz.";
+
+            // Öğrenciye gönder
+            if ($student_email) {
+                $mailer->send($student_email, 'Yeni Özel Toplantı Bilgilendirmesi', $mailText);
+            }
+
+            // Öğretmene gönder (start link dahil)
+            if ($teacher_email) {
+                $teacherMailText = $mailText . "\n🧑‍💼 Toplantıyı Başlatmak İçin: {$zoomStartUrl}";
+                $mailer->send($teacher_email, 'Yeni Atanmış Toplantı (Başlatma Linkli)', $teacherMailText);
+            }
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Toplantı başarıyla oluşturuldu ve bilgilendirme e-postaları gönderildi.',
+                'zoom_meeting' => $zoomResponse,
+            ]);
+        } catch (Exception $e) {
+            error_log("Genel hata (createMeeting): " . $e->getMessage());
+            echo json_encode(['success' => false, 'message' => 'Beklenmedik hata: ' . $e->getMessage()]);
         }
 
-        // Öğrenci ve öğretmen bilgilerini al
-        $studentStmt = $pdo->prepare("SELECT name, surname, email FROM users_lnp WHERE id = ?");
-        $studentStmt->execute([$participantId]);
-        $student = $studentStmt->fetch(PDO::FETCH_ASSOC);
-
-        $teacherStmt = $pdo->prepare("SELECT name, surname, email FROM users_lnp WHERE id = ?");
-        $teacherStmt->execute([$organizerId]);
-        $teacher = $teacherStmt->fetch(PDO::FETCH_ASSOC);
-
-        $student_full_name = $student ? $student['name'] . ' ' . $student['surname'] : 'Bilinmiyor';
-        $student_email = $student['email'] ?? null;
-
-        $teacher_full_name = $teacher ? $teacher['name'] . ' ' . $teacher['surname'] : 'Bilinmiyor';
-        $teacher_email = $teacher['email'] ?? null;
-
-        $dt = new DateTime($meetingDate);
-        $formattedDate = $dt->format('d.m.Y H:i');
-
-        $mailText = "Merhaba,\n\n"
-            . "Yeni bir özel toplantı oluşturuldu.\n\n"
-            . "📅 Tarih: {$formattedDate}\n"
-            . "📌 Konu: {$description}\n"
-            . "👩‍🏫 Öğretmen: {$teacher_full_name}\n"
-            . "👨‍🎓 Öğrenci: {$student_full_name}\n"
-            . "🔗 Toplantı Linki: {$zoomJoinUrl}\n\n"
-            . "İyi dersler dileriz.";
-
-        // Öğrenciye gönder
-        if ($student_email) {
-            $mailer->send($student_email, 'Yeni Özel Toplantı Bilgilendirmesi', $mailText);
-        }
-
-        // Öğretmene gönder (start link dahil)
-        if ($teacher_email) {
-            $teacherMailText = $mailText . "\n🧑‍💼 Toplantıyı Başlatmak İçin: {$zoomStartUrl}";
-            $mailer->send($teacher_email, 'Yeni Atanmış Toplantı (Başlatma Linkli)', $teacherMailText);
-        }
-
-        echo json_encode([
-            'success' => true,
-            'message' => 'Toplantı başarıyla oluşturuldu ve bilgilendirme e-postaları gönderildi.',
-            'zoom_meeting' => $zoomResponse,
-        ]);
-    } catch (Exception $e) {
-        error_log("Genel hata (createMeeting): " . $e->getMessage());
-        echo json_encode(['success' => false, 'message' => 'Beklenmedik hata: ' . $e->getMessage()]);
-    }
-
-    break;
+        break;
 
 
 

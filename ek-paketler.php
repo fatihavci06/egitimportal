@@ -13,11 +13,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 
 ?>
-    <!--end::Head-->
-    <!--begin::Body-->
-
     <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
-        <!--begin::Theme mode setup on page load-->
         <script>
             var defaultThemeMode = "light";
             var themeMode;
@@ -37,37 +33,19 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 document.documentElement.setAttribute("data-bs-theme", themeMode);
             }
         </script>
-        <!--end::Theme mode setup on page load-->
-        <!--begin::App-->
         <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
-            <!--begin::Page-->
             <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
-                <!--begin::Header-->
                 <?php include_once "views/header.php"; ?>
-                <!--end::Header-->
-                <!--begin::Wrapper-->
                 <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
-                    <!--begin::Sidebar-->
                     <?php include_once "views/sidebar.php"; ?>
-                    <!--end::Sidebar-->
-                    <!--begin::Main-->
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
-                        <!--begin::Content wrapper-->
                         <div class="d-flex flex-column flex-column-fluid">
-                            <!--begin::Toolbar-->
                             <?php include_once "views/toolbar.php"; ?>
-                            <!--end::Toolbar-->
-                            <!--begin::Content-->
                             <div id="kt_app_content" class="app-content flex-column-fluid">
-                                <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
-                                    <!--begin::Card-->
                                     <div class="card">
-                                        <!--begin::Card header-->
                                         <div class="card-header border-0 pt-6">
-                                            <!--begin::Card title-->
                                             <div class="card-title">
-                                                <!--begin::Search-->
                                                 <div class="d-flex align-items-center position-relative my-1">
                                                     <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5">
                                                         <span class="path1"></span>
@@ -75,43 +53,23 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     </i>
                                                     <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder=" Ara" />
                                                 </div>
-                                                <!--end::Search-->
-                                            </div>
-                                            <!--begin::Card title-->
-                                            <!--begin::Card toolbar-->
+                                                </div>
                                             <div class="card-toolbar">
-                                                <!--begin::Toolbar-->
                                                 <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
-                                                    <!--begin::Add school-->
                                                     <button type="button" class="btn btn-primary btn-sm mb-3" data-bs-toggle="modal" data-bs-target="#addPackageModal">
                                                         Ek Paket Ekle
                                                     </button>
 
                                                 </div>
 
-                                                <!--end::Toolbar-->
-                                                <!--begin::week actions-->
                                                 <div class="d-flex justify-content-end align-items-center d-none" data-kt-customer-table-toolbar="selected">
                                                     <div class="fw-bold me-5">
                                                         <span class="me-2" data-kt-customer-table-select="selected_count"></span>Seçildi
                                                     </div>
                                                 </div>
-                                                <!--end::week actions-->
+                                                </div>
                                             </div>
-                                            <!--end::Card toolbar-->
-                                        </div>
-                                        <!--end::Card header-->
-                                        <!--begin::Card body-->
                                         <div class="card-body pt-0">
-                                            <!-- Button trigger modal -->
-
-
-                                            <!-- Modal -->
-                                            <!-- Button trigger modal (id değeri burada veriliyor) -->
-
-
-
-                                            <!-- Tablo -->
                                             <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_customers_table">
                                                 <thead>
                                                     <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
@@ -124,13 +82,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <th class="min-w-125px">Tip</th>
                                                         <th class="min-w-125px">Aylık / Adet</th>
                                                         <th class="min-w-125px">Fiyat</th>
-                                                        <th class="text-end min-w-90px">İşlemler</th>
+                                                        <th class="min-w-200px">Açıklama</th> <th class="text-end min-w-90px">İşlemler</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="fw-semibold text-gray-600">
                                                     <?php foreach ($data as $d) { ?>
-                                                        <!-- Dummy Data -->
-                                                        <tr data-id="<?= $d['id'] ?>" data-name="<?= $d['name'] ?>" data-type="<?= $d['type'] ?>" data-price="<?= $d['price'] ?>" data-months="<?= $d['limit_count'] ?>" data-count="<?= $d['limit_count'] ?>">
+                                                        <tr data-id="<?= $d['id'] ?>" data-name="<?= $d['name'] ?>" data-type="<?= $d['type'] ?>" data-price="<?= $d['price'] ?>" data-months="<?= $d['limit_count'] ?>" data-count="<?= $d['limit_count'] ?>" data-description="<?= htmlspecialchars($d['description']) ?>">
 
                                                             <td>
                                                                 <div class="form-check form-check-sm form-check-custom form-check-solid">
@@ -141,7 +98,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             <td><?= $d['type'] ?></td>
                                                             <td><?= $d['limit_count'] ?></td>
                                                             <td><?= $d['price'] ?></td>
-                                                            <td class="text-end">
+                                                            <td><?= $d['description'] ?></td> <td class="text-end">
                                                                 <button class="btn  btn-primary btn-sm me-1 update-btn" data-id="<?= $d['id'] ?>">
                                                                     <i class="fas fa-edit"></i> </button>
                                                                 <button class="btn   btn-danger btn-sm delete-btn" data-id="<?= $d['id'] ?>">
@@ -153,7 +110,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 </tbody>
                                             </table>
 
-                                            <!-- Ekleme Modal -->
                                             <div class="modal fade" id="addPackageModal" tabindex="-1" aria-labelledby="addPackageModalLabel" aria-hidden="true">
                                                 <div class="modal-dialog">
                                                     <form id="addPackageForm">
@@ -188,6 +144,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                     <label for="addCount" class="form-label required">Adet</label>
                                                                     <input type="number" id="addCount" name="addCount" min="1" class="form-control" />
                                                                 </div>
+                                                                <div class="mb-3">
+                                                                    <label for="addPackageDescription" class="form-label">Açıklama</label>
+                                                                    <textarea id="addPackageDescription" name="addPackageDescription" class="form-control" rows="3"></textarea>
+                                                                </div>
                                                             </div>
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
@@ -198,7 +158,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 </div>
                                             </div>
 
-                                            <!-- Güncelleme Modal -->
                                             <div class="modal fade" id="updatePackageModal" tabindex="-1" aria-labelledby="updatePackageModalLabel" aria-hidden="true">
                                                 <div class="modal-dialog">
                                                     <form id="updatePackageForm">
@@ -234,6 +193,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                     <label for="updateCount" class="form-label required">Adet</label>
                                                                     <input type="number" id="updateCount" name="updateCount" min="1" class="form-control" />
                                                                 </div>
+                                                                <div class="mb-3">
+                                                                    <label for="updatePackageDescription" class="form-label">Açıklama</label>
+                                                                    <textarea id="updatePackageDescription" name="updatePackageDescription" class="form-control" rows="3"></textarea>
+                                                                </div>
                                                             </div>
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
@@ -245,52 +208,30 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </div>
 
 
-                                            <!--end::Table-->
+                                            </div>
                                         </div>
-                                        <!--end::Card body-->
-                                    </div>
 
                                 </div>
-                                <!--end::Content container-->
+                                </div>
                             </div>
-                            <!--end::Content-->
-                        </div>
-                        <!--end::Content wrapper-->
-                        <!--begin::Footer-->
                         <?php include_once "views/footer.php"; ?>
-                        <!--end::Footer-->
-                    </div>
-                    <!--end:::Main-->
-                    <!--begin::aside-->
+                        </div>
                     <?php include_once "views/aside.php"; ?>
-                    <!--end::aside-->
+                    </div>
                 </div>
-                <!--end::Wrapper-->
             </div>
-            <!--end::Page-->
-        </div>
-        <!--end::App-->
-        <!--begin::Scrolltop-->
         <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
             <i class="ki-duotone ki-arrow-up">
                 <span class="path1"></span>
                 <span class="path2"></span>
             </i>
         </div>
-        <!--end::Scrolltop-->
-        <!--begin::Javascript-->
         <script>
             var hostUrl = "assets/";
         </script>
-        <!--begin::Global Javascript Bundle(mandatory for all pages)-->
         <script src="assets/plugins/global/plugins.bundle.js"></script>
         <script src="assets/js/scripts.bundle.js"></script>
-        <!--end::Global Javascript Bundle-->
-        <!--begin::Vendors Javascript(used for this page only)-->
         <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
-        <!--end::Vendors Javascript-->
-        <!--begin::Custom Javascript(used for this page only)-->
-
         <script src="assets/js/widgets.bundle.js"></script>
         <script src="assets/js/custom/widgets.js"></script>
 
@@ -398,6 +339,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     const price = tr.data('price');
                     const months = tr.data('months');
                     const count = tr.data('count');
+                    const description = tr.data('description'); // Açıklama verisini al
 
                     $('#updatePackageId').val(id);
                     $('#updatePackageName').val(name);
@@ -408,6 +350,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     } else if (type === 'Özel Ders') {
                         $('#updateCount').val(count);
                     }
+                    $('#updatePackageDescription').val(description); // Açıklama alanını doldur
 
                     $('#updatePackageModal').modal('show');
                 });
@@ -435,7 +378,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         $('#updatePackageModal').modal('hide');
                                         // Gerekirse tabloyu güncelle ya da yeniden yükle
                                     }
-                                            location.href = window.location.href;
+                                    location.href = window.location.href;
 
                                 });
                             } else {
@@ -487,7 +430,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                     } else {
                                         Swal.fire('Hata!', 'Paket silinemedi.', 'error');
                                     }
-                                            location.href = window.location.href;
+                                    location.href = window.location.href;
 
                                 },
                                 error: function() {
@@ -504,12 +447,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 
 
-        <!--end::Custom Javascript-->
-        <!--end::Javascript-->
-    </body>
-    <!--end::Body-->
-
-</html>
+        </body>
+    </html>
 <?php } else {
     header("location: index");
 }
