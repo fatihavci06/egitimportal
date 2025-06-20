@@ -20,6 +20,7 @@ function getUserInfo($userId, $pdo)
 }
 function setDatabasePackageInfo(PDO $pdo, array $response, float $amount, $packageId): void
 {
+
     try {
         $pdo->beginTransaction(); // ✅ Transaction başlatıldı
 
@@ -40,11 +41,12 @@ function setDatabasePackageInfo(PDO $pdo, array $response, float $amount, $packa
 
         // totalAmount: KDV dahil fiyat
         $totalAmount = round($amount, 2); // gelen toplam (örneğin: 10.00)
-
+  
         // KDV hariç fiyat
-        $priceExclKdv = round($totalAmount / (1 + $kdvRateDecimal), 2); // örn: 9.09
-        $kdvAmount = round($totalAmount - $priceExclKdv, 2);
-
+        $kdvAmount = $kdvAmount = round($totalAmount * $kdvRateDecimal, 2); 
+       
+        $priceExclKdv=round(($totalAmount-$kdvAmount),2);
+         
         // Ödeme ID’si
         $paymentId = $response['correlationId'] ?? null;
 
@@ -55,12 +57,13 @@ function setDatabasePackageInfo(PDO $pdo, array $response, float $amount, $packa
                 payment_status, payment_method, payment_id
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
+        
         $stmt->execute([
             $userId,
             $packageId,
             round($priceExclKdv, 2),
             $kdvRatio,
-            round($kdvAmount, 2),
+            $kdvAmount,
             round($amount, 2),
             'success',
             'tami',
@@ -266,7 +269,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                     $_SESSION['payment_error'] = 'Curl Hatası: ' . curl_error($ch);
                 } else {
                     $responseData = json_decode($response, true);
-
+                    
 
                     if (isset($responseData['success']) && $responseData['success'] === true) {
                         setDatabasePackageInfo($pdo, $responseData, $amount, $selectedPackageId);
