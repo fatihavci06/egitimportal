@@ -1002,7 +1002,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 											</div>
 										</div>
 										<div class="tab-pane fade " id="testler">
-											<div id="kt_app_content_container" class="app-container container-fluid">
+											<div id="kt_app_content_container" class="app-content flex-column-fluid">
 												<div class="card">
 													<div class="card-header border-0 pt-6">
 														<div class="card-title">

@@ -17,6 +17,7 @@ include_once "views/pages-head.php";
 $timeSpend = new timeSpend();
 $userObj = new User();
 $userInfo = $userObj->getUserById($_SESSION['id']);
+
 $timeSpendInfo = $timeSpend->getTimeSpend($userInfo["id"]);
 
 ?>
