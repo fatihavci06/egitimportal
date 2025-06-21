@@ -32,7 +32,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 	include_once "classes/homework-view.classes.php";
 	$homework = new ShowHomeworkContents();
 
-	$studentList = $teacher->getstudentsByClassId($userInfo['class_id']);
+	$studentList = $teacher->getstudentsByClassId($userInfo['school_id'], $userInfo['class_id']);
 
 	include_once "views/pages-head.php";
 	$pdo = new Dbh();

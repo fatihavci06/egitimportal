@@ -108,16 +108,16 @@ class Teacher extends Dbh
 		$stmt = null;
 	}
 
-	public function getstudentsByClassId($class_id)
+	public function getstudentsByClassId($school_id, $class_id)
 	{
 		$stmt = $this->connect()->prepare('
 			SELECT 
 			*
 			FROM users_lnp 
-			WHERE users_lnp.class_id = ?
+			WHERE school_id = ? AND class_id = ? AND role = 2 AND active = 1
 		');
 
-		if (!$stmt->execute([$class_id])) {
+		if (!$stmt->execute([$school_id, $class_id])) {
 			$stmt = null;
 			exit();
 		}
