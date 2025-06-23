@@ -382,6 +382,112 @@ class SubTopics extends Dbh
 		$stmt = null;
 	}
 
+	protected function getSubTopicsListWithFilter()
+	{
+
+		if ($_SESSION['role'] == 1) {
+
+			$filtre_durum = isset($_GET['durum']) ? $_GET['durum'] : '';
+			$filtre_ders = isset($_GET['ders']) ? $_GET['ders'] : '';
+			$filtre_sinif = isset($_GET['sinif']) ? $_GET['sinif'] : '';
+			$filtre_unite = isset($_GET['unite']) ? $_GET['unite'] : '';
+			$filtre_konu = isset($_GET['konu']) ? $_GET['konu'] : '';
+
+			$sql = 'SELECT subtopics_lnp.id AS subTopicID, subtopics_lnp.name AS subTopicName, subtopics_lnp.slug AS subTopicSlug, subtopics_lnp.start_date AS subTopicStartDate, subtopics_lnp.end_date AS subTopicEndDate, subtopics_lnp.order_no AS subTopicOrder, subtopics_lnp.active AS subTopicActive, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName FROM subtopics_lnp INNER JOIN topics_lnp ON subtopics_lnp.topic_id = topics_lnp.id INNER JOIN classes_lnp ON topics_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON topics_lnp.lesson_id = lessons_lnp.id INNER JOIN units_lnp ON topics_lnp.unit_id = units_lnp.id';
+
+			$whereClauses = [];
+			$parameters = [];
+
+			// Durum filtresi varsa ekle
+			if (!empty($filtre_durum)) {
+				if($filtre_durum == 'aktif') {
+					$filtre_durum = 1;
+				} elseif ($filtre_durum == 'pasif') {
+					$filtre_durum = 0;
+				}
+				$whereClauses[] = "subtopics_lnp.active = ?";
+				$parameters[] = $filtre_durum;
+			}
+
+			// Ders filtresi varsa ekle
+			if (!empty($filtre_ders)) {
+				$whereClauses[] = "subtopics_lnp.lesson_id = ?";
+				$parameters[] = $filtre_ders;
+			}
+
+			// Sınıf filtresi varsa ekle
+			if (!empty($filtre_sinif)) {
+				$whereClauses[] = "subtopics_lnp.class_id = ?";
+				$parameters[] = $filtre_sinif;
+			}
+
+			// Ünite filtresi varsa ekle
+			if (!empty($filtre_unite)) {
+				$whereClauses[] = "subtopics_lnp.unit_id = ?";
+				$parameters[] = $filtre_unite;
+			}
+
+			// Konu filtresi varsa ekle
+			if (!empty($filtre_konu)) {
+				$whereClauses[] = "subtopics_lnp.topic_id = ?";
+				$parameters[] = $filtre_konu;
+			}
+
+			// WHERE koşulları varsa sorguya ekle
+			if (!empty($whereClauses)) {
+				$sql .= " WHERE " . implode(" AND ", $whereClauses);
+			}
+
+			$stmt = $this->connect()->prepare($sql);
+
+			if (!$stmt->execute($parameters)) {
+				$stmt = null;
+				exit();
+			}
+
+			//$stmt = $this->connect()->prepare('SELECT topics_lnp.id AS topicID, topics_lnp.name AS topicName, topics_lnp.slug AS topicSlug, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName FROM topics_lnp INNER JOIN classes_lnp ON topics_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON topics_lnp.lesson_id = lessons_lnp.id INNER JOIN units_lnp ON topics_lnp.unit_id = units_lnp.id');
+
+			/* $stmt = $this->connect()->prepare('SELECT subtopics_lnp.id AS subTopicID, subtopics_lnp.name AS subTopicName, subtopics_lnp.slug AS subTopicSlug, subtopics_lnp.start_date AS subTopicStartDate, subtopics_lnp.end_date AS subTopicEndDate, subtopics_lnp.order_no AS subTopicOrder, subtopics_lnp.active AS subTopicActive, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName FROM subtopics_lnp INNER JOIN topics_lnp ON subtopics_lnp.topic_id = topics_lnp.id INNER JOIN classes_lnp ON topics_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON topics_lnp.lesson_id = lessons_lnp.id INNER JOIN units_lnp ON topics_lnp.unit_id = units_lnp.id'); 
+
+			if (!$stmt->execute(array())) {
+				$stmt = null;
+				exit();
+			}*/
+		} elseif ($_SESSION['role'] == 2) {
+			$school = $_SESSION['school_id'];
+			$stmt = $this->connect()->prepare('SELECT subtopics_lnp.id AS subTopicID, subtopics_lnp.name AS subTopicName, subtopics_lnp.slug AS subTopicSlug, subtopics_lnp.start_date AS subTopicStartDate, subtopics_lnp.end_date AS subTopicEndDate, subtopics_lnp.order_no AS subTopicOrder, subtopics_lnp.active AS subTopicActive, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName FROM subtopics_lnp INNER JOIN topics_lnp ON subtopics_lnp.topic_id = topics_lnp.id INNER JOIN classes_lnp ON topics_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON topics_lnp.lesson_id = lessons_lnp.id INNER JOIN units_lnp ON topics_lnp.unit_id = units_lnp.id WHERE subtopics_lnp.school_id = ?');
+
+			if (!$stmt->execute(array($school))) {
+				$stmt = null;
+				exit();
+			}
+		} elseif ($_SESSION['role'] == 3) {
+			$school = $_SESSION['school_id'];
+			$stmt = $this->connect()->prepare('SELECT subtopics_lnp.id AS subTopicID, subtopics_lnp.name AS subTopicName, subtopics_lnp.slug AS subTopicSlug, subtopics_lnp.start_date AS subTopicStartDate, subtopics_lnp.end_date AS subTopicEndDate, subtopics_lnp.order_no AS subTopicOrder, subtopics_lnp.active AS subTopicActive, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName FROM subtopics_lnp INNER JOIN topics_lnp ON subtopics_lnp.topic_id = topics_lnp.id INNER JOIN classes_lnp ON topics_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON topics_lnp.lesson_id = lessons_lnp.id INNER JOIN units_lnp ON topics_lnp.unit_id = units_lnp.id WHERE subtopics_lnp.school_id = ?');
+
+			if (!$stmt->execute(array($school))) {
+				$stmt = null;
+				exit();
+			}
+		} elseif ($_SESSION['role'] == 4) {
+			$school = $_SESSION['school_id'];
+			$class_id = $_SESSION['class_id'];
+			$lesson_id = $_SESSION['lesson_id'];
+			$stmt = $this->connect()->prepare('SELECT subtopics_lnp.id AS subTopicID, subtopics_lnp.name AS subTopicName, subtopics_lnp.slug AS subTopicSlug, subtopics_lnp.start_date AS subTopicStartDate, subtopics_lnp.end_date AS subTopicEndDate, subtopics_lnp.order_no AS subTopicOrder, subtopics_lnp.active AS subTopicActive, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName FROM subtopics_lnp INNER JOIN topics_lnp ON subtopics_lnp.topic_id = topics_lnp.id INNER JOIN classes_lnp ON topics_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON topics_lnp.lesson_id = lessons_lnp.id INNER JOIN units_lnp ON topics_lnp.unit_id = units_lnp.id  WHERE subtopics_lnp.school_id = ? AND  subtopics_lnp.class_id = ? AND subtopics_lnp.lesson_id = ?');
+
+			if (!$stmt->execute(array($school, $class_id, $lesson_id))) {
+				$stmt = null;
+				exit();
+			}
+		}
+
+		$lessonData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $lessonData;
+
+		$stmt = null;
+	}
+
 	public function getOneSubTopicDetailsAdmin($slug)
 	{
 

@@ -214,6 +214,13 @@ var KTModalCustomersAdd = function () {
                             }
                         }
                     },
+                    'secenek': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Öğrenci Türü zorunlu'
+                            }
+                        }
+                    },
 				},
 				plugins: {
 					trigger: new FormValidation.plugins.Trigger(),

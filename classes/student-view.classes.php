@@ -44,6 +44,54 @@ class ShowStudent extends Student
         echo $classList;
     }
 
+    // Get Class Dropdown List For Search
+
+    public function getClassDropdownListWithId()
+    {
+
+        $schoolInfo = $this->getAllClasses();
+
+        $classList = '';
+
+        foreach ($schoolInfo as $key => $value) {
+
+            $classList .= '<option value="' . $value['id'] . '">' . $value['name'] . '</option>';
+        }
+        echo $classList;
+    }
+
+    // Get Unit Dropdown List For Search
+
+    public function getUnitsDropdownListWithId()
+    {
+
+        $schoolInfo = $this->getAllUnits();
+
+        $classList = '';
+
+        foreach ($schoolInfo as $key => $value) {
+
+            $classList .= '<option value="' . $value['id'] . '">' . $value['name'] . '</option>';
+        }
+        echo $classList;
+    }
+
+    // Get Topic Dropdown List For Search
+
+    public function getTopicsDropdownListWithId()
+    {
+
+        $schoolInfo = $this->getAllTopics();
+
+        $classList = '';
+
+        foreach ($schoolInfo as $key => $value) {
+
+            $classList .= '<option value="' . $value['id'] . '">' . $value['name'] . '</option>';
+        }
+        echo $classList;
+    }
+
     // Get Lesson List For Search
 
     public function getLessonList()
@@ -56,6 +104,22 @@ class ShowStudent extends Student
         foreach ($schoolInfo as $key => $value) {
 
             $lessonList .= '<option value="' . $value['name'] . '">' . $value['name'] . '</option>';
+        }
+        echo $lessonList;
+    }
+
+    // Get Lesson List For Search
+
+    public function getLessonListwithId()
+    {
+
+        $schoolInfo = $this->getAllLessons();
+
+        $lessonList = '';
+
+        foreach ($schoolInfo as $key => $value) {
+
+            $lessonList .= '<option value="' . $value['id'] . '">' . $value['name'] . '</option>';
         }
         echo $lessonList;
     }
@@ -181,13 +245,7 @@ class ShowStudent extends Student
             $studentList .= '
                     <tr>
                         <td ' . $aktifArama . '>
-                            <div class="cursor-pointer symbol symbol-90px symbol-lg-90px"><img src="assets/media/profile/' . $value['photo'] . '"></div>
-                        </td>
-                        <td>
                             <a href="./ogrenci-detay/' . $value['username'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['name'] . ' ' . $value['surname'] . '</a>
-                        </td>
-                        <td>
-                            <a href="mailto:' . $value['email'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['email'] . '</a>
                         </td>
                         <td ' . $sinifArama . '>
                             ' . $value['className'] . '
@@ -195,11 +253,10 @@ class ShowStudent extends Student
                         <td data-filter="' . $value['schoolName'] . '">
                             ' . $value['schoolName'] . '
                         </td>
-                        <td  data-order="' . $dateFormat->forDB($value['subscribed_end']) . '">' . $dateFormat->changeDate($value['subscribed_end']) . '</td>
-                        <td>
+                        <td class="text-end">
                             <span class="fw-bold fs-6">' . $percentageT . '%</span>
                         </td>
-                        <td>
+                        <td class="text-end">
                             <span class="fw-bold fs-6">' . $scoreT . '%</span>
                         </td>
 
@@ -249,13 +306,7 @@ class ShowStudent extends Student
             $studentList .= '
                     <tr>
                         <td ' . $aktifArama . '>
-                            <div class="cursor-pointer symbol symbol-90px symbol-lg-90px"><img src="assets/media/profile/' . $value['photo'] . '"></div>
-                        </td>
-                        <td>
                             <a href="./ogrenci-detay/' . $value['username'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['name'] . ' ' . $value['surname'] . '</a>
-                        </td>
-                        <td>
-                            <a href="mailto:' . $value['email'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['email'] . '</a>
                         </td>
                         <td ' . $sinifArama . '>
                             ' . $value['className'] . '
@@ -263,7 +314,6 @@ class ShowStudent extends Student
                         <td data-filter="' . $value['schoolName'] . '">
                             ' . $value['schoolName'] . '
                         </td>
-                        <td  data-order="' . $dateFormat->forDB($value['subscribed_end']) . '">' . $dateFormat->changeDate($value['subscribed_end']) . '</td>
                         <td>
                             <span class="fw-bold fs-6">' . $percentageT . '%</span>
                         </td>

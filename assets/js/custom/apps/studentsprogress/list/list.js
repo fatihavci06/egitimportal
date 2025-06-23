@@ -25,10 +25,7 @@ var KTCustomersList = function () {
         // Init datatable --- more info on datatables: https://datatables.net/manual/
         datatable = $(table).DataTable({
             "info": false,
-            'order': [[7, 'desc']], // Set default order
-            'columnDefs': [
-                { orderable: false, targets: 0 }, // Disable ordering on column 0 (checkbox)
-            ],
+            'order': [[4, 'desc']], // Set default order
             "language": {
                 //"url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json"
                 // Eğer dil dosyasını lokal olarak yüklediyseniz:

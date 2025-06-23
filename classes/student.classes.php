@@ -100,6 +100,40 @@ class Student extends Dbh
 		$stmt = null;
 	}
 
+	protected function getAllUnits()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM units_lnp ORDER BY order_no ASC');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $getData;
+
+		$stmt = null;
+	}
+
+	protected function getAllTopics()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM topics_lnp ORDER BY order_no ASC');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$getData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $getData;
+
+		$stmt = null;
+	}
+
 	protected function getAllLessons()
 	{
 

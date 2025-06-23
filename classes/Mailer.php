@@ -146,29 +146,27 @@ class Mailer
         <head>
             <style>
                 body { font-family: Arial, sans-serif; line-height: 1.6; }
-                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background-color: #fa6000; color: #ffffff; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
+                .container { margin: 0 auto; padding: 20px; }
+                .header { background-color: #fa6000; color: #ffffff; padding: 15px; border-radius: 5px 5px 0 0; }
                 .content { background-color: #ffffff; padding: 20px; border-radius: 0 0 5px 5px; }
                 .button { display: inline-block; padding: 10px 20px; background-color:rgb(166, 209, 255); color: #ffffff; text-decoration: none; border-radius: 5px; }
-                .footer { margin-top: 20px; font-size: 12px; color: #6c757d; text-align: center; }
+                .footer { margin-top: 20px; font-size: 12px; color: #6c757d; }
             </style>
         </head>
         <body>
             <div class='container'>
-                <div class='header'>
-                    <h2>Şifre Sıfırlama Talebi</h2>
-                </div>
                 <div class='content'>
+                    <p><img src='https://lineupcampus.com/online/assets/media/mascots/lineup-robot-maskot.png' alt='Logo' style='width: 200px; height: auto;'></p>
                     <p>Merhaba " . htmlspecialchars($username) . ",</p>
                     <p>Şifrenizi sıfırlamanız için bir istek aldık. Eğer bu isteği siz yapmadıysanız, bu e-postayı yok sayabilirsiniz.</p>
                     <p>Şifrenizi sıfırlamak için lütfen aşağıdaki butona tıklayın:</p>
-                    <p style='text-align: center;'>
+                    <p>
                         <a href='" . htmlspecialchars($resetLink) . "' class='button'>Şifreyi Sıfırla</a>
                     </p>
                     <p>Veya aşağıdaki bağlantıyı kopyalayıp tarayıcınıza yapıştırın:</p>
                     <p>" . htmlspecialchars($resetLink) . "</p>
                     <p>Güvenlik nedeniyle bu bağlantı 1 saat sonra geçerliliğini yitirecektir.</p>
-                    <p>Saygılarımla,<br>Lineup Takımı</p>
+                    <p>Saygılarımızla,<br>LineUp Campus Ekibi</p>
                 </div>
                 <div class='footer'>
                     <p>Bu otomatik bir e-postadır. Lütfen bu mesaja cevap vermeyin.</p>
@@ -215,10 +213,10 @@ class Mailer
                     <p>Ödemenizi aşağıdaki banka bilgilerimize yapabilirsiniz:</p>
                     <p>
                         <div class='mt-5'>
-                                <p>Banka Adı: [Banka Adı]</p>
-                                <p>Şube Adı/Kodu: [Şube Adı/Kodu]</p>
-                                <p>Hesap Adı: [Şirketinizin Tam Adı - Örn: Line Up Campus Eğitim Hizmetleri A.Ş.]</p>
-                                <p>IBAN Numarası: TR [XX XXXXXXXXXXXXXXXXXXXXXX]</p>
+                                <p>Banka Adı: Garanti Bankası</p>
+                                <p>Şube Adı: Altındağ Şubesi</p>
+                                <p>Hesap Adı: İlk Çizgi Eğitim Hiz. Tic. Ltd. Şti.</p>
+                                <p>IBAN Numarası: TR46 0006 2001 2210 0006 2976 24</p>
                                 <p>Ödemeniz gereken tutar: <strong> $price ₺</strong></p>
                         </div>
                     </p>
@@ -246,9 +244,9 @@ class Mailer
      * @param string $resetLink Password reset link
      * @return bool True if email was sent successfully, false otherwise
      */
-    public function sendBankTransferEmailToAdmin($veli_ad, $veli_soyad, $adminEmail, $price)
+    public function sendBankTransferEmailToAdmin($firstName, $lastName, $veli_ad, $veli_soyad, $adminEmail, $price, $className, $packName, $kullanici_gsm, $kullanici_mail)
     {
-        $subject = "Yeni Kayıt (Havale) - LineUp Campus";
+        $subject = "Yeni Kayıt - Havale Bekleniyor";
 
         // HTML body
         $htmlBody = "
@@ -270,11 +268,20 @@ class Mailer
                     <h2>Yeni Kayıt - Havale Bekleniyor</h2>
                 </div>
                 <div class='content'>
-                    <p>Merhaba</p>
-                    <p>Yeni bir kullanıcı kayıt oldu.</p>
-                    <p>Havale Bekleniyor.</p>
-                    <p>Ödenmesi gereken tutar: <strong> $price ₺</strong></p>
-                    <p>Saygılarımla,<br>Lineup Takımı</p>
+                    Merhaba
+                    <br> Yeni bir üye kaydoldu. 
+                    <br><br> Öğrenci Bilgisi: 
+                    <br> Adı Soyadı: $firstName $lastName 
+                    <br> <br> Veli Bilgisi: 
+                    <br> Adı Soyadı: $veli_ad $veli_soyad 
+                    <br> <br> Telefon: $kullanici_gsm  
+                    <br> <br> E-posta: $kullanici_mail
+                    <br> <br> Sınıf Bilgisi: $className   
+                    <br> <br> Paket Bilgisi: $packName 
+                    <br> <br> <b>Durum: Havale Bekleniyor
+                    <br> <br> Ödenmesi gereken tutar: $price ₺</b>
+                    <br> <br>Saygılarımızla,
+                    <br>LineUp Campus   
                 </div>
                 <div class='footer'>
                     <p>Bu otomatik bir e-postadır. Lütfen bu mesaja cevap vermeyin.</p>
@@ -297,7 +304,7 @@ class Mailer
      */
     public function sendBankTransferApprovedEmail($veli_ad, $veli_soyad, $kullanici_mail, $sifreogrenci, $sifreveli, $veliUser, $ogrenciUser)
     {
-        $subject = "Havale Onaylandı - LineUp Campus";
+        $subject = "LineUp Campus Ailesi Hoş Geldin Minik Kaşifimiz!";
 
         // HTML body
         $htmlBody = "
@@ -315,16 +322,17 @@ class Mailer
         </head>
         <body>
             <div class='container'>
-                <div class='header'>
-                    <h2>Havale Onaylandı</h2>
-                </div>
                 <div class='content'>
-                    <p>Merhaba " . htmlspecialchars($veli_ad) . ' ' . htmlspecialchars($veli_soyad) . ",</p>
-                    <p>Ödemeniz onaylandı.</p>
-                    <p>Giriş bilgileriniz aşağıda verilmiştir.</p>
-                    <p>Öğrenci Giriş Bilgisi: <br> <b>Kullanıcı adı:</b> $ogrenciUser <br><b>Şifre:</b> $sifreogrenci</p>
-                    <p>Veli Giriş Bilgisi: <br> <b>Kullanıcı adı:</b> $veliUser <br><b>Şifre:</b> $sifreveli</p>
-                    <p>Saygılarımızla,<br>Lineup Takımı</p>
+                    Merhaba Sevgili Velimiz, 
+                    <br> LineUp Campus ailesine katıldığınız için çok mutluyuz! Minik öğrencinizle birlikte heyecan dolu bir öğrenme yolculuğuna çıkmaya hazır mısınız? 
+                    <br><br> Okul öncesi ve ilkokul öğrencilerimiz için özel olarak hazırladığımız Eğlenceli ve Eğitici Konu Anlatımlı Animasyonlarımız, 3D Bilim Videolarımız, Okuma Yazma Etkinliklerimiz ve Eğlenceli Online Oyunlarımızla öğrenmek hiç bu kadar keyifli olmamıştı.
+                    <br><br> <b>Kullanıcı Bilgileriniz:</b>
+                    <br><br> <b>Öğrenci Giriş Bilgisi:</b> <br> Kullanıcı adı: " . $ogrenciUser . " <br> <b>Şifre:</b> " . $sifreogrenci . " 
+                    <br><br> <b>Veli Giriş Bilgisi:</b> <br> Kullanıcı adı: " . $veliUser . " <br> <b>Şifre:</b> " . $sifreveli . " 
+                    <br> <br> Kullanıcı bilgilerinizle <a href='https://lineupcampus.com/online' target='_blank'>https://lineupcampus.com/online</a> adresinden giriş yaparak, çocuğunuz için özel olarak tasarlanmış eğitim dünyamızı keşfedebilirsiniz.
+                    <br> <br> Her türlü soru ve desteğiniz için <a href='tel:02323320390'>0 232 332 03 90</a> numaralı telefondan veya <a href='mailto:info@lineupcampus.com'>info@lineupcampus.com</a> üzerinden bize ulaşmaktan çekinmeyin.
+                    <br> <br>LineUp Campus ailesi olarak, minik kaşifimize başarılarla dolu, eğlenceli ve aydınlık bir öğrenme süreci dileriz!
+                    <br><br> Sevgi ve neşeyle, <br> LineUp Campus Ekibi 
                 </div>
                 <div class='footer'>
                     <p>Bu otomatik bir e-postadır. Lütfen bu mesaja cevap vermeyin.</p>

@@ -5,27 +5,28 @@ session_start();
 class AddStudent extends Dbh
 {
 
-	protected function setStudent($photo, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $parentFirstName, $parentLastName, $address, $district, $postcode, $city, $passwordStudent, $passwordParent, $parentUsername, $tckn, $nowTime, $endTime, $pack)
+	protected function setStudent($photo, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $parentFirstName, $parentLastName, $address, $district, $postcode, $city, $passwordStudent, $passwordParent, $parentUsername, $tckn, $nowTime, $endTime, $pack, $student_type, $price, $vatAmount, $siparis_no, $vat)
 	{
 		$pdo = $this->connect();
 
 		$pdo->beginTransaction(); // İşlemleri başlat
 
 		try {
+
 			// Öğrenci ekleme işlemi için SQL sorgusu
-			$stmt = $pdo->prepare('INSERT INTO users_lnp SET photo = ?, name = ?, surname = ?, username = ?, gender = ?, birth_date = ?, email = ?, telephone = ?, school_id = ?, class_id = ?, password=?, role=?, active = ?, identity_id=?, address = ?, district=?, postcode=?, city=?, subscribed_at=?, subscribed_end=?, package_id=?');
+			$stmt = $pdo->prepare('INSERT INTO users_lnp SET photo = ?, name = ?, surname = ?, username = ?, gender = ?, birth_date = ?, email = ?, telephone = ?, school_id = ?, class_id = ?, password=?, role=?, active = ?, identity_id=?, address = ?, district=?, postcode=?, city=?, subscribed_at=?, subscribed_end=?, package_id=?, student_type = ?');
 
 			if (!$stmt) {
 				throw new Exception("Prepare failed: " . $pdo->errorInfo());
 			}
 
-			if($classes == 10 OR $classes == 11 OR $classes == 12){
+			if ($classes == 10 or $classes == 11 or $classes == 12) {
 				$role = 10002;
-			}else {
+			} else {
 				$role = 2;
 			}
 
-			if (!$stmt->execute([$photo, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $passwordStudent, $role, "1", $tckn, $address, $district, $postcode, $city, $nowTime, $endTime, $pack])) {
+			if (!$stmt->execute([$photo, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $passwordStudent, $role, "1", $tckn, $address, $district, $postcode, $city, $nowTime, $endTime, $pack, $student_type])) {
 				throw new Exception(json_encode($stmt->errorInfo()));
 				/* $stmt = null;
 				header("location: ../admin.php?error=stmtfailed");
@@ -54,7 +55,7 @@ class AddStudent extends Dbh
 			if (!$stmt3) {
 				throw new Exception("Prepare failed: " . $pdo->errorInfo());
 			}
-			
+
 
 			if (!$stmt3->execute([$parentFirstName, $parentLastName, $parentUsername, $passwordParent, "5", "1", $lastId])) {
 				throw new Exception(json_encode($stmt3->errorInfo()));
@@ -83,10 +84,28 @@ class AddStudent extends Dbh
 
 			$stmt4 = null;
 
+			if ($student_type != "0") {
+
+				$stmt5 = $pdo->prepare('INSERT INTO package_payments_lnp SET user_id = ?, pack_id = ?, order_no = ?, payment_type = ?, payment_status = ?, pay_amount = ?, kdv_amount=?, kdv_percent=?');
+
+				if (!$stmt5) {
+					throw new Exception("Prepare failed: " . $pdo->errorInfo());
+				}
+
+
+				if (!$stmt5->execute([$lastId, $pack, $siparis_no, "1", "2", $price, $vatAmount, $vat])) {
+					throw new Exception(json_encode($stmt5->errorInfo()));
+					/* $stmt = null;
+				header("location: ../admin.php?error=stmtfailed");
+				exit(); */
+				}
+
+				$stmt5 = null;
+			}
+
 			$pdo->commit(); // Tüm işlemler başarılıysa commit et
 
 			echo json_encode(["status" => "success", "message" => $name . ' ' . $surname]);
-
 		} catch (\Exception $e) {
 			$pdo->rollback(); // Bir hata oluşursa tüm işlemleri geri al
 			echo json_encode(["status" => "error", "message" => "Bir hata oluştu"]);

@@ -223,14 +223,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             id="kt_customers_table">
                                             <thead>
                                                 <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                    <th class="min-w-125px">Fotoğraf</th>
                                                     <th class="min-w-125px">Öğrenci Adı</th>
-                                                    <th class="min-w-125px">E-posta Adresi</th>
                                                     <th class="min-w-125px">Sınıfı</th>
                                                     <th class="min-w-125px">Okulu</th>
-                                                    <th class="min-w-125px">Paket Bitiş Tarihi</th>
-                                                    <th class="min-w-125px">Tamamlama</th>
-                                                    <th class="min-w-125px">Başarı</th>
+                                                    <th class="min-w-125px text-end">Tamamlama</th>
+                                                    <th class="min-w-125px text-end">Başarı</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="fw-semibold text-gray-600">

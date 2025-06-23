@@ -23,8 +23,9 @@ class AddStudentContr extends AddStudent
 	private $city;
 	private $tckn;
 	private $pack;
+	private $student_type;
 
-	public function __construct($photoSize, $photoName, $fileTmpName, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $parentFirstName, $parentLastName, $address, $district, $postcode, $city, $tckn, $pack)
+	public function __construct($photoSize, $photoName, $fileTmpName, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $parentFirstName, $parentLastName, $address, $district, $postcode, $city, $tckn, $pack, $student_type)
 	{
 		$this->photoSize = $photoSize;
 		$this->photoName = $photoName;
@@ -46,6 +47,7 @@ class AddStudentContr extends AddStudent
 		$this->city = $city;
 		$this->tckn = $tckn;
 		$this->pack = $pack;
+		$this->student_type = $student_type;
 	}
 
 	public function addStudentDb()
@@ -116,9 +118,34 @@ class AddStudentContr extends AddStudent
 
 		$packInfo = $package->getPackagePrice(htmlspecialchars(trim($this->pack)));
 
+		$vatInfo = $package->getVat();
+
 		foreach ($packInfo as $key => $value) {
 			$period = $value['subscription_period'];
+			$monthly_fee = $value['monthly_fee'];
+			$discount = $value['discount'];
 		}
+
+		$price = $monthly_fee * $period;
+
+		$moneyTransferDiscount = $package->getTransferDiscount();
+		$moneyTransferDiscount = $moneyTransferDiscount['discount_rate'];
+
+		$price -= $price * ($moneyTransferDiscount / 100); // Havale indirimini uygula
+		$price = number_format($price, 2, '.', ''); // İki ondalık basamakla formatla
+
+		$vat = $vatInfo['tax_rate'];
+
+		$price += $price * ($vat / 100); // KDV'yi ekle
+		$vatAmount = $price * ($vat / 100); // KDV tutarını hesapla
+		$price = number_format($price, 2, '.', ''); // İki ondalık basamakla formatla
+
+		if($this->student_type == 1) {
+			$price = 0; // Havale bekleyen öğrenci
+		}
+
+		$siparis_no = rand() . rand();
+
 
 		$suAn = new DateTime();
 
@@ -137,7 +164,7 @@ class AddStudentContr extends AddStudent
 
 		$parentUsername = $this->username . "-veli";
 
-		$this->setStudent($imgName, $this->name, $this->surname, $this->username, $this->gender, $this->birthdate, $this->email, $this->telephone, $this->school, $this->classes, $this->parentFirstName, $this->parentLastName, $this->address, $this->district, $this->postcode, $this->city, $passwordStudentHash, $passwordParentHash, $parentUsername, $this->tckn, $nowTime, $endTime, $this->pack);
+		$this->setStudent($imgName, $this->name, $this->surname, $this->username, $this->gender, $this->birthdate, $this->email, $this->telephone, $this->school, $this->classes, $this->parentFirstName, $this->parentLastName, $this->address, $this->district, $this->postcode, $this->city, $passwordStudentHash, $passwordParentHash, $parentUsername, $this->tckn, $nowTime, $endTime, $this->pack, $this->student_type, $price, $vatAmount, $siparis_no, $vat);
 
 		$mailer = new Mailer();
 		$mailer->sendLoginInfoEmail($this->parentFirstName, $this->parentLastName, $this->email, $passwordStudent, $passwordParent, $parentUsername, $this->username);
