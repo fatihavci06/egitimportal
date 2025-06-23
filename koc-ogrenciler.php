@@ -119,7 +119,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             <td><?= $d['surname'] ?></td>
 
                                                             <td class="text-end">
-                                                                <a class="btn btn-success btn-sm me-1" href="koc-ogrenci-sohbet.php?id=<?= $d['req_id'] ?>" data-id="<?= $d['req_id'] ?>">
+                                                                <a class="btn btn-success btn-sm me-1" href="kocluk-sohbet.php?id=<?= $d['req_id'] ?>" data-id="<?= $d['req_id'] ?>">
                                                                     <i class="fas fa-paper-plane"></i> Mesaj Gönder
                                                                 </a>
                                                             </td>
