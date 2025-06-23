@@ -3360,6 +3360,10 @@ WHERE t.id = :id";
             } else {
                 echo json_encode(['status' => 'success', 'message' => 'Ders talebi gönderilirken bir hata oluştu. Lütfen tekrar deneyin.']);
             }
+            $mailText = "Merhaba,\n\n"
+                . "Özel ders ataması yapıldıktan sonra tarafınıza bilgilendirme yapılacaktır..\n";
+               
+             $mailer->send($_SESSION['email'], 'Özel Ders Bilgilendirmesi', $mailText);
         } catch (Exception $e) {
             echo json_encode(['status' => 'error', 'message' => 'Geçersiz servis']);
         }

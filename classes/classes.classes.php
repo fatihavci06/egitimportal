@@ -2,42 +2,71 @@
 
 class Classes extends Dbh
 {
-	public function getCoachStudents($coach_user_id)
-	{
-		if ($coach_user_id == 1) {
-			// Tüm öğrencileri getir (şartsız)
-			$stmt = $this->connect()->prepare('
-            SELECT u.id, u.name, u.surname,
-			c.id AS req_id, 
-			c.user_id AS req_user_id,
-			c.teacher_id AS req_teacher_id
-            FROM coaching_guidance_requests_lnp c 
-            INNER JOIN users_lnp u ON u.id = c.user_id
+	public function getCoachStudents($coach_user_id) {
+    if ($coach_user_id == 1) {
+        // Tüm öğrencileri getir (her öğrenci için tek kayıt)
+        $stmt = $this->connect()->prepare('
+            WITH ranked_requests AS (
+                SELECT 
+                    u.id AS user_id,
+                    u.name,
+                    u.surname,
+                    c.id AS req_id,
+                    c.user_id AS req_user_id,
+                    c.teacher_id AS req_teacher_id,
+                    ROW_NUMBER() OVER (PARTITION BY u.id ORDER BY c.id DESC) AS rn
+                FROM coaching_guidance_requests_lnp c 
+                INNER JOIN users_lnp u ON u.id = c.user_id
+            )
+            SELECT 
+                user_id AS id,
+                name,
+                surname,
+                req_id,
+                req_user_id,
+                req_teacher_id
+            FROM ranked_requests
+            WHERE rn = 1
+        ');
+        
+        if (!$stmt->execute()) {
+            return [];
+        }
+    } else {
+        // Belirli öğretmene göre filtrele (her öğrenci için tek kayıt)
+        $stmt = $this->connect()->prepare('
+            WITH ranked_requests AS (
+                SELECT 
+                    u.id AS user_id,
+                    u.name,
+                    u.surname,
+                    c.id AS req_id,
+                    c.user_id AS req_user_id,
+                    c.teacher_id AS req_teacher_id,
+                    ROW_NUMBER() OVER (PARTITION BY u.id ORDER BY c.id DESC) AS rn
+                FROM coaching_guidance_requests_lnp c 
+                INNER JOIN users_lnp u ON u.id = c.user_id
+                WHERE c.teacher_id = ?
+            )
+            SELECT 
+                user_id AS id,
+                name,
+                surname,
+                req_id,
+                req_user_id,
+                req_teacher_id
+            FROM ranked_requests
+            WHERE rn = 1
         ');
 
-			if (!$stmt->execute()) {
-				return [];
-			}
+        if (!$stmt->execute([$coach_user_id])) {
+            return [];
+        }
+    }
 
-		} else {
-			// Belirli öğretmene göre filtrele
-			$stmt = $this->connect()->prepare('
-            SELECT u.id, u.name, u.surname, 
-			c.id AS req_id, 
-			c.user_id AS req_user_id,
-			c.teacher_id AS req_teacher_id
-            FROM coaching_guidance_requests_lnp c 
-            INNER JOIN users_lnp u ON u.id = c.user_id 
-            WHERE c.teacher_id = ?
-        ');
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
-			if (!$stmt->execute([$coach_user_id])) {
-				return [];
-			}
-		}
-
-		return $stmt->fetchAll(PDO::FETCH_ASSOC);
-	}
 
 	public function privateLessonRemainingLimit($user_id)
 	{
@@ -64,7 +93,6 @@ class Classes extends Dbh
 		$stmt1->execute();
 		$result1 = $stmt1->fetch(PDO::FETCH_ASSOC);
 		return $result1['remaining'];
-
 	}
 	public function getExtraPackageMyList($id)
 	{
