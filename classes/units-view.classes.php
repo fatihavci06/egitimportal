@@ -10,7 +10,7 @@ class ShowUnit extends Units
     public function getUnitList()
     {
 
-        $unitInfo = $this->getUnitsList();
+        $unitInfo = $this->getUnitsListWithFilter();
 
         $dateFormat = new DateFormat();
 

@@ -31,6 +31,7 @@ if ($coupon) {
 }
 foreach ($packInfo as $key => $value) {
     $price = $value['monthly_fee'] * $value['subscription_period'];
+    $packName = $value['name'];
     if ($discount_type === 'amount') {
         $price -= $discount_value;
     } else if ($discount_type === 'percentage') {
@@ -99,6 +100,9 @@ if($class == 10 OR $class == 11 OR $class == 12) {
     $role = 2;
 }
 
+$className = $className->getClassByLesson($class);
+$className = $className['name'];
+
 $veli_ad = $_SESSION['parentFirstName'];
 $veli_soyad = $_SESSION['parentLastName'];
 $kullanici_gsm = $_SESSION['telephone'];
@@ -164,9 +168,10 @@ $text =  '
                             Teşekkür ederiz.
                             <div class="text-center mt-5">
                                 <h3 >Hesap Bilgileri</h3>
-                                <p>Hesap Adı: Lineup </p>
-                                <p>IBAN: TR0000000000000000000000</p>
-                                <p>Banka: Bankası</p>
+                                <p>Banka Adı: Garanti Bankası </p>
+                                <p>Şube Adı: Altındağ Şubesi </p>
+                                <p>Hesap Adı: İlk Çizgi Eğitim Hiz. Tic. Ltd. Şti. </p>
+                                <p>IBAN Numarası: TR46 0006 2001 2210 0006 2976 24</p>
                             </div>
                         </div>
                             ' . $error . '
@@ -183,7 +188,7 @@ $text =  '
 $mailer = new Mailer();
 
 
-$emailResultAdmin = $mailer->sendBankTransferEmailToAdmin($veli_ad, $veli_soyad, $adminEmail, $price);
+$emailResultAdmin = $mailer->sendBankTransferEmailToAdmin($firstName, $lastName, $veli_ad, $veli_soyad, $adminEmail, $price, $className, $packName, $kullanici_gsm, $kullanici_mail);
 $emailResult = $mailer->sendBankTransferEmail($veli_ad, $veli_soyad, $kullanici_mail, $price);
 
 

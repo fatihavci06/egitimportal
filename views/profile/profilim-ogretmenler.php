@@ -30,7 +30,7 @@ include_once "classes/addhomework.classes.php";
 include_once "classes/homework-view.classes.php";
 $homework = new ShowHomeworkContents();
 
-$studentList = $teacher->getstudentsByClassId($userInfo['class_id']);
+$studentList = $teacher->getstudentsByClassId($userInfo['school_id'], $userInfo['class_id']);
 
 $pdo = new Dbh();
 $con = $pdo->connect();

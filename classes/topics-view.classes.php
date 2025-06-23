@@ -1131,7 +1131,7 @@ class ShowSubTopic extends SubTopics
     public function getSubTopicList()
     {
 
-        $subTopicInfo = $this->getSubTopicsList();
+        $subTopicInfo = $this->getSubTopicsListWithFilter();
 
         $dateFormat = new DateFormat();
 

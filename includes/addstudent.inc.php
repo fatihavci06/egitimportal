@@ -23,6 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 	$city = htmlspecialchars(trim($_POST['city']));
 	$tckn = htmlspecialchars(trim($_POST['tckn']));
 	$pack = trim($_POST["pack"]);
+	$student_type = trim($_POST["secenek"]);
 
     /*$fileTempPath = $_FILES['image']['tmp_name'];
     $fileName = $_FILES['image']['name'];
@@ -39,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 	include_once "../classes/packages.classes.php";
 
 
-	$addStudent = new AddStudentContr($photoSize, $photoName, $fileTmpName, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $parentFirstName, $parentLastName, $address, $district, $postcode, $city, $tckn, $pack);
+	$addStudent = new AddStudentContr($photoSize, $photoName, $fileTmpName, $name, $surname, $username, $gender, $birthdate, $email, $telephone, $school, $classes, $parentFirstName, $parentLastName, $address, $district, $postcode, $city, $tckn, $pack, $student_type);
 
 	// Running error handlers and school addStudent
 	$addStudent->addStudentDb();

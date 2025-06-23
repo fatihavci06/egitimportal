@@ -166,7 +166,7 @@ if ($odeme_durum == "FAILURE") {
         <br><br> <b>Kullanıcı Bilgileriniz:</b>
         <br><br> <b>Öğrenci Giriş Bilgisi:</b> <br> Kullanıcı adı: " . $username . " <br> <b>Şifre:</b> " . $yeniSifre . " 
         <br><br> <b>Veli Giriş Bilgisi:</b> <br> Kullanıcı adı: " . $username2 . " <br> <b>Şifre:</b> " . $yeniSifre2 . " 
-        <br> <br> Kullanıcı bilgilerinizle <a href='https://lineupcampus.com' target='_blank'>https://lineupcampus.com</a> adresinden giriş yaparak, çocuğunuz için özel olarak tasarlanmış eğitim dünyamızı keşfedebilirsiniz.
+        <br> <br> Kullanıcı bilgilerinizle <a href='https://lineupcampus.com/online' target='_blank'>https://lineupcampus.com/online</a> adresinden giriş yaparak, çocuğunuz için özel olarak tasarlanmış eğitim dünyamızı keşfedebilirsiniz.
         <br> <br> Her türlü soru ve desteğiniz için <a href='tel:02323320390'>0 232 332 03 90</a> numaralı telefondan veya <a href='mailto:info@lineupcampus.com'>info@lineupcampus.com</a> üzerinden bize ulaşmaktan çekinmeyin.
         <br> <br>LineUp Campus ailesi olarak, minik kaşifimize başarılarla dolu, eğlenceli ve aydınlık bir öğrenme süreci dileriz!
         <br><br> Sevgi ve neşeyle, <br> LineUp Campus Ekibi 

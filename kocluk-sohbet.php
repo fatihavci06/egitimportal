@@ -74,26 +74,16 @@ include_once "classes/dateformat.classes.php";
                                             <!--begin::Conversations List-->
                                             <div class="col-xl-4">
                                                 <div class="card card-flush h-xl-100">
-                                                    <!--begin::Card header-->
                                                     <div class="card-header pt-7">
                                                         <h3 class="card-title align-items-start flex-column">
-                                                            <span
-                                                                class="card-label fw-bold text-gray-800">Mesajlar</span>
-                                                            <span class="text-gray-500 mt-1 fw-semibold fs-6">Sohbet
+                                                            <span class="card-label fw-bold text-gray-800">Mesajlar
+                                                                (Koçluk)</span>
+                                                            <span class="text-gray-500 mt-1 fw-semibold fs-6">Koçluk
+                                                                wohbet
                                                                 geçmişiniz</span>
                                                         </h3>
-                                                        <div class="card-toolbar">
-                                                            <button type="button" class="btn btn-sm btn-primary"
-                                                                id="openContactsButton" data-bs-toggle="modal"
-                                                                data-bs-target="#contactsModal">
-                                                                <i class="ki-duotone ki-plus fs-2"></i>
-                                                                Yeni Sohbet
-                                                            </button>
-                                                        </div>
                                                     </div>
-                                                    <!--end::Card header-->
 
-                                                    <!--begin::Card body-->
                                                     <div class="card-body pt-5">
                                                         <!--begin::Search-->
                                                         <div class="d-flex align-items-center position-relative mb-5">
@@ -126,12 +116,9 @@ include_once "classes/dateformat.classes.php";
                                                         </div>
                                                         <!--end::Conversations-->
                                                     </div>
-                                                    <!--end::Card body-->
                                                 </div>
                                             </div>
-                                            <!--end::Conversations List-->
 
-                                            <!--begin::Chat Area-->
                                             <div class="col-xl-8">
                                                 <div class="card card-flush h-xl-100">
                                                     <!--begin::Card header-->
@@ -188,7 +175,44 @@ include_once "classes/dateformat.classes.php";
                                                     <!--begin::Card footer-->
                                                     <div class="card-footer pt-4" id="messageInputArea"
                                                         style="display: none;">
+                                                        <!-- File Upload Preview Area -->
+                                                        <div id="filePreviewArea" class="mb-3" style="display: none;">
+                                                            <div class="d-flex align-items-center p-3 bg-light rounded">
+                                                                <i
+                                                                    class="ki-duotone ki-document fs-2 text-primary me-3">
+                                                                    <span class="path1"></span>
+                                                                    <span class="path2"></span>
+                                                                </i>
+                                                                <div class="flex-grow-1">
+                                                                    <div class="fw-bold text-gray-800" id="fileName">
+                                                                    </div>
+                                                                    <div class="text-gray-500 fs-7" id="fileSize"></div>
+                                                                </div>
+                                                                <button type="button"
+                                                                    class="btn btn-sm btn-icon btn-light"
+                                                                    onclick="cancelFileUpload()">
+                                                                    <i class="ki-duotone ki-cross fs-2">
+                                                                        <span class="path1"></span>
+                                                                        <span class="path2"></span>
+                                                                    </i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
                                                         <div class="d-flex align-items-center">
+                                                            <!-- File Upload Button -->
+                                                            <button type="button"
+                                                                class="btn btn-sm btn-icon btn-light me-2"
+                                                                onclick="document.getElementById('fileInput').click()">
+                                                                <i class="ki-duotone ki-paper-clip fs-2">
+                                                                    <span class="path1"></span>
+                                                                    <span class="path2"></span>
+                                                                </i>
+                                                            </button>
+                                                            <input type="file" id="fileInput" style="display: none;"
+                                                                onchange="handleFileSelect(this)"
+                                                                accept="image/*,.pdf,.doc,.docx,.txt,.zip,.rar">
+
                                                             <div class="d-flex align-items-center flex-row-fluid me-3">
                                                                 <input class="form-control form-control-flush mb-0"
                                                                     rows="1" placeholder="Mesajınızı yazın..."
@@ -208,7 +232,6 @@ include_once "classes/dateformat.classes.php";
                                                     <!--end::Card footer-->
                                                 </div>
                                             </div>
-                                            <!--end::Chat Area-->
                                         </div>
                                         <!--end::Chat Layout-->
 
@@ -503,37 +526,13 @@ include_once "classes/dateformat.classes.php";
     </style>
 
 
-    <!-- <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            document.querySelectorAll(".contact-item").forEach(function (item) {
-                item.addEventListener("click", function () {
-                    const url = this.getAttribute("data-url");
-                    if (url) {
-                        window.location.href = url;
-                    }
-                });
-            });
 
-            const searchInput = document.getElementById("contactSearch");
-            const contactItems = document.querySelectorAll("#contactsList .contact-item");
-
-            searchInput.addEventListener("input", function () {
-                const query = this.value.toLowerCase();
-                contactItems.forEach(function (item) {
-                    const name = item.querySelector(".contact-name").textContent.toLowerCase();
-                    item.style.display = name.includes(query) ? "" : "none";
-                });
-            });
-        });
-    </script> -->
 
     <!--end::Global Javascript Bundle-->
     <!--begin::Vendors Javascript(used for this page only)-->
     <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
     <!--end::Vendors Javascript-->
     <!--begin::Custom Javascript(used for this page only)-->
-
-    <!-- <script src="assets/js/custom/apps/messages/list.js"></script> -->
 
     <script src="assets/js/widgets.bundle.js"></script>
     <script src="assets/js/custom/widgets.js"></script>
@@ -542,8 +541,7 @@ include_once "classes/dateformat.classes.php";
         let currentConversationId = null;
         let currentChatUser = null;
         let conversations = [];
-
-        const openContactsButton = document.getElementById('openContactsButton');
+        let selectedFile = null;
 
         const contactsModal = new bootstrap.Modal(document.getElementById('contactsModal'));
 
@@ -554,22 +552,19 @@ include_once "classes/dateformat.classes.php";
 
         function hideContactsModal() {
             contactsModal.hide();
-            openContactsButton.focus();
         }
 
-        document.getElementById('openContactsButton').addEventListener('click', showContactsModal);
         document.getElementById('closeModalButton').addEventListener('click', hideContactsModal);
+
         document.addEventListener('DOMContentLoaded', function () {
             loadConversations();
-
             setInterval(loadConversations, 30000);
-
             document.getElementById('conversationSearch').addEventListener('input', filterConversations);
             document.getElementById('contactSearch').addEventListener('input', filterContacts);
         });
 
         function loadConversations() {
-            fetch('includes/chat_handler.inc.php?action=get_conversations')
+            fetch('includes/coaching_chat_handler.inc.php?action=get_conversations')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -585,38 +580,37 @@ include_once "classes/dateformat.classes.php";
 
             if (conversations.length === 0) {
                 list.innerHTML = `
-                    <div class="text-center py-10">
-                        <i class="ki-duotone ki-message-text-2 fs-3x text-gray-400 mb-3">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                            <span class="path3"></span>
-                        </i>
-                        <div class="text-gray-500 fs-6">Henüz sohbet yok. Yeni bir sohbet başlatın!</div>
-                    </div>
-                `;
+            <div class="text-center py-10">
+                <i class="ki-duotone ki-message-text-2 fs-3x text-gray-400 mb-3">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                </i>
+                <div class="text-gray-500 fs-6">Henüz sohbet yok. Yeni bir sohbet başlatın!</div>
+            </div>
+        `;
                 return;
             }
 
             list.innerHTML = conversations.map(conv => `
-                <div class="conversation-item ${currentConversationId == conv.id ? 'active' : ''}" 
-                     onclick="selectConversation(${conv.id}, '${conv.other_name} ${conv.other_surname}', ${conv.other_user_id},'${conv.other_photo}')">
-                    <div class="d-flex align-items-center">
-                        <div class="symbol symbol-45px me-3">
-                            <img src="assets/media/profile/${conv.other_photo}" alt="${conv.other_username}" class="rounded-circle">
-                        </div>
-                        <div class="flex-grow-1">
-                            <div class="d-flex align-items-center justify-content-between mb-1">
-                                <span class="text-gray-900 fw-bold fs-6">${conv.other_name} ${conv.other_surname} </span>
-                                ${conv.unread_count > 0 ? `<span class="unread-badge">${conv.unread_count}</span>` : ''}
-                            </div>
-                            <span class="text-gray-500 fw-semibold fs-7 d-block">
-                                ${conv.last_message ? (conv.last_message.length > 30 ? conv.last_message.substring(0, 30) + '...' : conv.last_message) : 'Henüz mesaj yok'}
-                            </span>
-                        </div>
-                    </div>
+        <div class="conversation-item ${currentConversationId == conv.id ? 'active' : ''}" 
+             onclick="selectConversation(${conv.id}, '${conv.other_name} ${conv.other_surname}', ${conv.other_user_id},'${conv.other_photo}')">
+            <div class="d-flex align-items-center">
+                <div class="symbol symbol-45px me-3">
+                    <img src="assets/media/profile/${conv.other_photo}" alt="${conv.other_username}" class="rounded-circle">
                 </div>
-            `).join('');
-
+                <div class="flex-grow-1">
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                        <span class="text-gray-900 fw-bold fs-6">${conv.other_name} ${conv.other_surname} </span>
+                        ${conv.unread_count > 0 ? `<span class="unread-badge">${conv.unread_count}</span>` : ''}
+                    </div>
+                    <span class="text-gray-500 fw-semibold fs-7 d-block">
+                        ${conv.last_message ? (conv.last_message.length > 30 ? conv.last_message.substring(0, 30) + '...' : conv.last_message) : 'Henüz mesaj yok'}
+                    </span>
+                </div>
+            </div>
+        </div>
+    `).join('');
         }
 
         function selectConversation(conversationId, userName, userId, photo) {
@@ -633,7 +627,6 @@ include_once "classes/dateformat.classes.php";
             });
             if (event) {
                 event.target.closest('.conversation-item').classList.add('active');
-
             }
             loadMessages();
         }
@@ -641,7 +634,7 @@ include_once "classes/dateformat.classes.php";
         function loadMessages() {
             if (!currentConversationId) return;
 
-            fetch(`includes/chat_handler.inc.php?action=get_messages&conversation_id=${currentConversationId}`)
+            fetch(`includes/coaching_chat_handler.inc.php?action=get_messages&conversation_id=${currentConversationId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -657,15 +650,15 @@ include_once "classes/dateformat.classes.php";
 
             if (messages.length === 0) {
                 container.innerHTML = `
-                    <div class="text-center py-10">
-                        <i class="ki-duotone ki-message-text-2 fs-3x text-gray-400 mb-3">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                            <span class="path3"></span>
-                        </i>
-                        <div class="text-gray-500 fs-6">Henüz mesaj yok. Merhaba deyin!</div>
-                    </div>
-                `;
+            <div class="text-center py-10">
+                <i class="ki-duotone ki-message-text-2 fs-3x text-gray-400 mb-3">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                </i>
+                <div class="text-gray-500 fs-6">Henüz mesaj yok. Merhaba deyin!</div>
+            </div>
+        `;
                 return;
             }
 
@@ -676,35 +669,91 @@ include_once "classes/dateformat.classes.php";
                     minute: '2-digit'
                 });
 
-                return `
-                    <div class="message-bubble ${isOwn ? 'own' : ''} d-flex flex-column">
-                        <div class="message-content">
-                            ${escapeHtml(msg.message)}
-                        </div>
-                        <div class="message-time ${isOwn ? 'text-end' : ''}">${messageTime}</div>
-                    </div>
-                `;
+                // Check if message is a file
+                if (msg.file_name) {
+                    return renderFileMessage(msg, isOwn, messageTime);
+                } else {
+                    return renderTextMessage(msg, isOwn, messageTime);
+                }
             }).join('');
 
             container.scrollTop = container.scrollHeight;
+        }
+
+        function renderTextMessage(msg, isOwn, messageTime) {
+            return `
+        <div class="message-bubble ${isOwn ? 'own' : ''} d-flex flex-column">
+            <div class="message-content">
+                ${escapeHtml(msg.message)}
+            </div>
+            <div class="message-time ${isOwn ? 'text-end' : ''}">${messageTime}</div>
+        </div>
+    `;
+        }
+
+        function renderFileMessage(msg, isOwn, messageTime) {
+            const fileExtension = msg.file_name.split('.').pop().toLowerCase();
+            const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension);
+
+            let fileIcon = 'ki-document';
+            if (isImage) fileIcon = 'ki-picture';
+            else if (['pdf'].includes(fileExtension)) fileIcon = 'ki-file-text';
+            else if (['zip', 'rar'].includes(fileExtension)) fileIcon = 'ki-archive';
+
+            return `
+        <div class="message-bubble ${isOwn ? 'own' : ''} d-flex flex-column">
+            <div class="message-content file-message">
+                ${isImage ? `
+                    <div class="file-image-preview mb-2">
+                        <img src="uploads/coaching_chat_files/${msg.file_path}" alt="${msg.file_name}" 
+                             style="max-width: 200px; max-height: 200px; border-radius: 8px; cursor: pointer;"
+                             onclick="openImageModal('uploads/coaching_chat_files/${msg.file_path}', '${msg.file_name}')">
+                    </div>
+                ` : ''}
+                <div class="d-flex align-items-center">
+
+                    <div class="flex-grow-1">
+                        <div class="fw-bold text-gray-800">${escapeHtml(msg.file_name)}</div>
+                        <div class="text-gray-200 fs-7">${formatFileSize(msg.file_size)}</div>
+                    </div>
+                    <a href="uploads/coaching_chat_files/${encodeURIComponent(msg.file_path)}" 
+                       class="btn btn-sm btn-light" download>
+                        <i class="ki-outline ki-file-down fs-4">
+                        </i>
+                    </a>
+                </div>
+            </div>
+            <div class="message-time ${isOwn ? 'text-end' : ''}">${messageTime}</div>
+        </div>
+    `;
         }
 
         function sendMessage() {
             const input = document.getElementById('messageInput');
             const message = input.value.trim();
 
-            if (!message || !currentConversationId) return;
+            if ((!message && !selectedFile) || !currentConversationId) return;
 
             const sendBtn = document.getElementById('sendBtn');
             sendBtn.disabled = true;
             sendBtn.innerHTML = '<div class="spinner-border spinner-border-sm me-2" role="status"></div>Gönderiliyor...';
 
             const formData = new FormData();
-            formData.append('action', 'send_message');
-            formData.append('conversation_id', currentConversationId);
-            formData.append('message', message);
 
-            fetch('includes/chat_handler.inc.php', {
+            if (selectedFile) {
+                formData.append('action', 'send_file');
+                formData.append('file', selectedFile);
+                if (message) {
+                    formData.append('message', message);
+                }
+            } else {
+                formData.append('action', 'send_message');
+                formData.append('message', message);
+            }
+
+            formData.append('conversation_id', currentConversationId);
+
+            fetch('includes/coaching_chat_handler.inc.php', {
                 method: 'POST',
                 body: formData
             })
@@ -712,9 +761,16 @@ include_once "classes/dateformat.classes.php";
                 .then(data => {
                     if (data.success) {
                         input.value = '';
+                        cancelFileUpload();
                         loadMessages();
                         loadConversations();
-
+                    } else {
+                        Swal.fire({
+                            title: 'Hata!',
+                            text: data.error || 'Mesaj gönderilirken bir hata oluştu',
+                            icon: 'error',
+                            confirmButtonText: 'Tamam'
+                        });
                     }
                 })
                 .catch(error => {
@@ -731,6 +787,76 @@ include_once "classes/dateformat.classes.php";
                     sendBtn.innerHTML = '<i class="ki-duotone ki-send fs-2"><span class="path1"></span><span class="path2"></span></i>Gönder';
                     input.focus();
                 });
+        }
+
+        function handleFileSelect(input) {
+            const file = input.files[0];
+            if (file) {
+                // Check file size (10MB limit)
+                if (file.size > 10 * 1024 * 1024) {
+                    Swal.fire({
+                        title: 'Dosya Çok Büyük!',
+                        text: 'Dosya boyutu 10MB\'dan küçük olmalıdır.',
+                        icon: 'error',
+                        confirmButtonText: 'Tamam'
+                    });
+                    input.value = '';
+                    return;
+                }
+
+                selectedFile = file;
+                showFilePreview(file);
+            }
+        }
+
+        function showFilePreview(file) {
+            const previewArea = document.getElementById('filePreviewArea');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            previewArea.style.display = 'block';
+        }
+
+        function cancelFileUpload() {
+            selectedFile = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('filePreviewArea').style.display = 'none';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function openImageModal(imageSrc, imageName) {
+            const modal = document.createElement('div');
+            modal.className = 'modal fade';
+            modal.innerHTML = `
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">${escapeHtml(imageName)}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img src="${imageSrc}" alt="${escapeHtml(imageName)}" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    `;
+
+            document.body.appendChild(modal);
+            const bsModal = new bootstrap.Modal(modal);
+            bsModal.show();
+
+            modal.addEventListener('hidden.bs.modal', () => {
+                document.body.removeChild(modal);
+            });
         }
 
         function handleKeyPress(event) {
@@ -760,23 +886,23 @@ include_once "classes/dateformat.classes.php";
 
             if (users.length === 0) {
                 list.innerHTML = `
-                    <div class="text-center py-5">
-                        <div class="text-gray-500">Başka kullanıcı bulunamadı.</div>
-                    </div>
-                `;
+            <div class="text-center py-5">
+                <div class="text-gray-500">Başka kullanıcı bulunamadı.</div>
+            </div>
+        `;
                 return;
             }
 
             list.innerHTML = users.map(user => `
-                <li class="list-group-item contact-item" onclick="startConversation(${user.id}, '${user.username}','${user.photo}')">
-                    <div class="d-flex align-items-center">
-                        <img src="assets/media/profile/${user.photo}" alt="${user.username}" class="rounded-circle me-3" width="40">
-                        <div>
-                            <div class="fw-bold">${user.name} ${user.surname}</div>
-                        </div>
-                    </div>
-                </li>
-            `).join('');
+        <li class="list-group-item contact-item" onclick="startConversation(${user.id}, '${user.username}','${user.photo}')">
+            <div class="d-flex align-items-center">
+                <img src="assets/media/profile/${user.photo}" alt="${user.username}" class="rounded-circle me-3" width="40">
+                <div>
+                    <div class="fw-bold">${user.name} ${user.surname}</div>
+                </div>
+            </div>
+        </li>
+    `).join('');
         }
 
         function startConversation(userId, username, photo) {
@@ -784,7 +910,7 @@ include_once "classes/dateformat.classes.php";
             formData.append('action', 'start_conversation');
             formData.append('other_user_id', userId);
 
-            fetch('includes/chat_handler.inc.php', {
+            fetch('includes/coaching_chat_handler.inc.php', {
                 method: 'POST',
                 body: formData
             })
@@ -792,9 +918,7 @@ include_once "classes/dateformat.classes.php";
                 .then(data => {
                     if (data.success) {
                         const modal = bootstrap.Modal.getInstance(document.getElementById('contactsModal'));
-
                         modal.hide();
-
                         loadConversations();
                         setTimeout(() => {
                             selectConversation(data.conversation_id, username, userId, photo);

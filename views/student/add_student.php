@@ -358,25 +358,23 @@ $chooseSchool = new ShowSchool();
                             <!--end::Input group-->
                             <!--begin::Input group-->
                             <div class="d-flex flex-column mb-7 fv-row">
-                                <!--begin::Label-->
                                 <label class="fs-6 fw-semibold mb-2">
                                     <span class="required">Öğrenci Türü</span>
                                 </label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="secenek" id="normal" value="normal">
-                                    <label class="form-check-label" for="normal">Normal</label>
+                                <div class="d-flex">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="secenek" id="ucretli" value="2">
+                                        <label class="form-check-label" for="ucretli">Ücretli</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="secenek" id="burslu" value="1">
+                                        <label class="form-check-label" for="burslu">Burslu</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="secenek" id="ucretsiz" value="0">
+                                        <label class="form-check-label" for="ucretsiz">Ücretsiz</label>
+                                    </div>
                                 </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="secenek" id="burslu" value="burslu">
-                                    <label class="form-check-label" for="burslu">Burslu</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="secenek" id="ucretsiz" value="ucretsiz">
-                                    <label class="form-check-label" for="ucretsiz">Ücretsiz</label>
-                                </div>
-                                <!--end::Input-->
                             </div>
                             <!--end::Input group-->
                             <!--begin::Input group-->

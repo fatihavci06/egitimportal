@@ -101,16 +101,17 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                                                         <!--end::Separator-->
                                                         <!--begin::Content-->
                                                         <div class="px-7 py-5">
+                                                            <form action="" method="GET">
                                                             <!--begin::Input group-->
                                                             <div class="mb-10">
                                                                 <!--begin::Label-->
                                                                 <label class="form-label fs-5 fw-semibold mb-3">Durum:</label>
                                                                 <!--end::Label-->
                                                                 <!--begin::Input-->
-                                                                <select class="form-select form-select-solid fw-bold" data-kt-select2="true" data-placeholder="Durum Seçin" data-allow-clear="true" data-kt-customer-table-filter="status" data-dropdown-parent="#kt-toolbar-filter">
+                                                                <select class="form-select form-select-solid fw-bold" name="durum" data-kt-select2="true" data-placeholder="Durum Seçin" data-allow-clear="true" data-kt-customer-table-filter="status" data-dropdown-parent="#kt-toolbar-filter">
                                                                     <option></option>
-                                                                    <option value="Aktif">Aktif</option>
-                                                                    <option value="Passive">Pasif</option>
+                                                                    <option value="aktif">Aktif</option>
+                                                                    <option value="pasif">Pasif</option>
                                                                 </select>
                                                                 <!--end::Input-->
                                                             </div>
@@ -120,9 +121,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                                                                 <label class="form-label fs-5 fw-semibold mb-3">Ders:</label>
                                                                 <!--end::Label-->
                                                                 <!--begin::Input-->
-                                                                <select class="form-select form-select-solid fw-bold" data-kt-select2="true" data-placeholder="Ders Seçin" data-allow-clear="true" data-kt-customer-table-filter="lesson" data-dropdown-parent="#kt-toolbar-filter">
+                                                                <select class="form-select form-select-solid fw-bold" name="ders" data-kt-select2="true" data-placeholder="Ders Seçin" data-allow-clear="true" data-kt-customer-table-filter="lesson" data-dropdown-parent="#kt-toolbar-filter">
                                                                     <option></option>
-                                                                        <?php $students->getLessonList(); ?>
+                                                                        <?php $students->getLessonListwithId(); ?>
                                                                 </select>
                                                                 <!--end::Input-->
                                                             </div>
@@ -136,9 +137,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                                                                 <div class="d-flex flex-column flex-wrap fw-semibold">
 
                                                                     <!--begin::Input-->
-                                                                    <select class="form-select form-select-solid fw-bold" data-kt-select2="true" data-placeholder="Sınıf" data-allow-clear="true" data-kt-customer-table-filter="student_class" data-dropdown-parent="#kt-toolbar-filter">
+                                                                    <select class="form-select form-select-solid fw-bold" name="sinif" data-kt-select2="true" data-placeholder="Sınıf" data-allow-clear="true" data-kt-customer-table-filter="student_class" data-dropdown-parent="#kt-toolbar-filter">
                                                                         <option></option>
-                                                                        <?php $students->getClassDropdownList(); ?>
+                                                                        <?php $students->getClassDropdownListWithId(); ?>
                                                                     </select>
                                                                     <!--end::Input-->
 
@@ -148,10 +149,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                                                             <!--end::Input group-->
                                                             <!--begin::Actions-->
                                                             <div class="d-flex justify-content-end">
-                                                                <button type="reset" class="btn btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true" data-kt-customer-table-filter="reset">Temizle</button>
-                                                                <button type="submit" class="btn btn-primary" data-kt-menu-dismiss="true" data-kt-customer-table-filter="filter">Uygula</button>
+                                                                <a href="uniteler"><button type="submit" class="btn btn-light btn-active-light-primary me-2">Temizle</button></a>
+                                                                <a href=""><button type="submit" class="btn btn-primary">Uygula</button></a>
                                                             </div>
                                                             <!--end::Actions-->
+                                                            </form>
                                                         </div>
                                                         <!--end::Content-->
                                                     </div>
