@@ -18,107 +18,6 @@ function getUserInfo($userId, $pdo)
     $user = $stmt4->fetch(PDO::FETCH_ASSOC);
     return $user;
 }
-function setDatabasePackageInfo(PDO $pdo, array $response, float $amount, $packageId): void
-{
-
-    try {
-        $pdo->beginTransaction(); // ✅ Transaction başlatıldı
-
-        $mailer = new Mailer();
-        $userId = $_SESSION['id'] ?? null;
-        $userEmail = $_SESSION['email'] ?? null;
-
-        if (!$userId || !$packageId) {
-            throw new Exception("User ID veya Package ID eksik.");
-        }
-
-        // Ayarları al
-        $stmt = $pdo->query("SELECT tax_rate FROM settings_lnp LIMIT 1");
-        $settings = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        $kdvRatio = isset($settings['tax_rate']) ? (float)$settings['tax_rate'] : 10.0;
-        $kdvRateDecimal = $kdvRatio / 100;
-
-        // totalAmount: KDV dahil fiyat
-        $totalAmount = round($amount, 2); // gelen toplam (örneğin: 10.00)
-  
-        // KDV hariç fiyat
-        $kdvAmount = $kdvAmount = round($totalAmount * $kdvRateDecimal, 2); 
-       
-        $priceExclKdv=round(($totalAmount-$kdvAmount),2);
-         
-        // Ödeme ID’si
-        $paymentId = $response['correlationId'] ?? null;
-
-        // Ödeme kaydı
-        $stmt = $pdo->prepare("
-            INSERT INTO extra_package_payments_lnp (
-                user_id, package_id, price, kdv_ratio, kdv_amount, total_amount,
-                payment_status, payment_method, payment_id
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ");
-        
-        $stmt->execute([
-            $userId,
-            $packageId,
-            round($priceExclKdv, 2),
-            $kdvRatio,
-            $kdvAmount,
-            round($amount, 2),
-            'success',
-            'tami',
-            $paymentId
-        ]);
-
-        // Ek paket türünü al
-        $stmt = $pdo->prepare('SELECT type FROM extra_packages_lnp WHERE id = ?');
-        $stmt->execute([$packageId]);
-        $extraPackage = $stmt->fetch(PDO::FETCH_ASSOC);
-        $requestType = $extraPackage['type'] ?? 'Genel';
-
-        // Koçluk / rehberlik kaydı
-        $stmt = $pdo->prepare("
-            INSERT INTO coaching_guidance_requests_lnp (
-                user_id, package_id, request_type, teacher_id, assignment_date,
-                status, start_date, end_date
-            ) VALUES (
-                :user_id, :package_id, :request_type, :teacher_id, :assignment_date,
-                :status, :start_date, :end_date
-            )
-        ");
-        $stmt->execute([
-            'user_id' => $userId,
-            'package_id' => $packageId,
-            'request_type' => $requestType,
-            'teacher_id' => null,
-            'assignment_date' => null,
-            'status' => 0,
-            'start_date' => null,
-            'end_date' => null
-        ]);
-
-        // Transaction commit ✅
-        $pdo->commit();
-
-        // Oturumda ödeme başarılı olarak işaretle
-        $_SESSION['payment_success'] = true;
-
-        // Bilgilendirme e-postası gönder
-        $subject = 'Paket Bilgilendirmesi';
-        $body = 'Paketiniz kapsamında gerekli atama işlemi yapılacak olup tarafınıza bilgilendirme emaili gönderilecektir.';
-        $toEmail = $userEmail;
-
-        if ($mailer->send($toEmail, $subject, $body)) {
-            echo "E-posta başarıyla gönderildi.\n";
-        } else {
-            echo "E-posta gönderilemedi. Hata: " . $mailer->getErrorInfo() . "\n";
-        }
-    } catch (Exception $e) {
-        $pdo->rollBack(); // ❌ Hata varsa işlemleri geri al
-        error_log("Hata: " . $e->getMessage());
-        echo "Bir hata oluştu. Lütfen daha sonra tekrar deneyin.";
-    }
-}
 
 
 
@@ -138,160 +37,160 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
     $data = $class->getExtraPackageList(); // Paket listesini çeken fonksiyon
 
     // Form gönderildiğinde (POST isteği geldiğinde) ödeme işlemini yap
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $selectedPackageId = $_POST['package_id'] ?? null;
-        $cardNumber = preg_replace('/\s+/', '', $_POST['cardNumber'] ?? '');
-        $cardHolder = $_POST['cardHolder'] ?? '';
-        $expiryMonth = $_POST['expiryMonth'] ?? '';
-        $expiryYear = $_POST['expiryYear'] ?? ''; // Kullanıcıdan 2 haneli alınacak
-        $cvv = $_POST['cvv'] ?? '';
-        $userId = $_POST['user_id'] ?? null;
+    // if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    //     $selectedPackageId = $_POST['package_id'] ?? null;
+    //     $cardNumber = preg_replace('/\s+/', '', $_POST['cardNumber'] ?? '');
+    //     $cardHolder = $_POST['cardHolder'] ?? '';
+    //     $expiryMonth = $_POST['expiryMonth'] ?? '';
+    //     $expiryYear = $_POST['expiryYear'] ?? ''; // Kullanıcıdan 2 haneli alınacak
+    //     $cvv = $_POST['cvv'] ?? '';
+    //     $userId = $_POST['user_id'] ?? null;
 
-        $selectedPackage = null;
-        foreach ($data as $package) {
-            if ($package['id'] == $selectedPackageId) {
-                $selectedPackage = $package;
-                break;
-            }
-        }
+    //     $selectedPackage = null;
+    //     foreach ($data as $package) {
+    //         if ($package['id'] == $selectedPackageId) {
+    //             $selectedPackage = $package;
+    //             break;
+    //         }
+    //     }
 
-        // Son kullanma yılının 2 haneli olduğundan emin olun ve başına 20 ekleyin
-        if (strlen($expiryYear) === 2 && is_numeric($expiryYear)) {
-            $expiryYear = '20' . $expiryYear; // Başına '20' ekleniyor
-        } else {
-            $_SESSION['payment_error'] = 'Son kullanma yılı 2 haneli sayısal olmalıdır.';
-            header("Location: " . $_SERVER['PHP_SELF']);
-            exit();
-        }
+    //     // Son kullanma yılının 2 haneli olduğundan emin olun ve başına 20 ekleyin
+    //     if (strlen($expiryYear) === 2 && is_numeric($expiryYear)) {
+    //         $expiryYear = '20' . $expiryYear; // Başına '20' ekleniyor
+    //     } else {
+    //         $_SESSION['payment_error'] = 'Son kullanma yılı 2 haneli sayısal olmalıdır.';
+    //         header("Location: " . $_SERVER['PHP_SELF']);
+    //         exit();
+    //     }
 
-        if ($selectedPackage && !empty($cardNumber) && !empty($cardHolder) && !empty($expiryMonth) && !empty($expiryYear) && !empty($cvv)) {
-            $orderId = getGUID();
-            $amount = (float)$selectedPackage['price'];
-            $currency = "TRY";
-            $installmentCount = 1;
-            $userId = $_SESSION['id'] ?? null;
-            $userInfo = getUserInfo($userId, $pdo);
+    //     if ($selectedPackage && !empty($cardNumber) && !empty($cardHolder) && !empty($expiryMonth) && !empty($expiryYear) && !empty($cvv)) {
+    //         $orderId = getGUID();
+    //         $amount = (float)$selectedPackage['price'];
+    //         $currency = "TRY";
+    //         $installmentCount = 1;
+    //         $userId = $_SESSION['id'] ?? null;
+    //         $userInfo = getUserInfo($userId, $pdo);
 
-            $bodyArray = [
-                "currency" => $currency,
-                "installmentCount" => $installmentCount,
-                "motoInd" => false,
-                "paymentGroup" => "PRODUCT",
-                "paymentChannel" => "WEB",
-                "card" => [
-                    "holderName" => htmlspecialchars($cardHolder),
-                    "cvv" => htmlspecialchars($cvv),
-                    "expireMonth" => (int)$expiryMonth,
-                    "expireYear" => (int)$expiryYear,
-                    "number" => htmlspecialchars($cardNumber)
-                ],
-                "billingAddress" => [
-                    "address" => $userInfo['address'] ?: '-',
-                    "city" => $userInfo['address'] ?: '-',
-                    "companyName" => "-",
-                    "country" => "Türkiye",
-                    "district" => $userInfo['district'] ?: '-',
-                    "contactName" => (($userInfo['name'] ?? '') . ' ' . ($userInfo['surname'] ?? '')) ?: '-',
-                    "phoneNumber" => $userInfo['telephone'] ?: '905000000000',
-                    "zipCode" => $userInfo['postcode'] ?: '-'
-                ],
-                "shippingAddress" => [
-                    "address" => $userInfo['address'] ?: '-',
-                    "city" => $userInfo['address'] ?: '-',
-                    "companyName" => "-",
-                    "country" => "Türkiye",
-                    "district" => $userInfo['district'] ?: '-',
-                    "contactName" => (($userInfo['name'] ?? '') . ' ' . ($userInfo['surname'] ?? '')) ?: '-',
-                    "phoneNumber" => $userInfo['telephone'] ?: '905000000000',
-                    "zipCode" => $userInfo['postcode'] ?: '-'
-                ],
-                "buyer" => [
-                    "ipAddress" => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-                    "buyerId" => $_SESSION['id'] ?? 'default_buyer_id',
-                    "name" => $userInfo['name'] ?: '-',
-                    "surName" => $userInfo['surname'] ?: '-',
-                    "identityNumber" => 11111111111,
-                    "city" => $userInfo['city'] ?: '-',
-                    "country" => "Türkiye",
-                    "zipCode" => $userInfo['postcode'] ?: '-',
-                    "emailAddress" => $userInfo['email'] ?: '-',
-                    "phoneNumber" => $userInfo['telephone'] ?: '905000000000',
-                    "registrationAddress" => $userInfo['address'] ?: '-',
-                    "lastLoginDate" => date('Y-m-d\TH:i:s.v'),
-                    "registrationDate" => date('Y-m-d\TH:i:s.v')
-                ],
-                "basket" => [
-                    "basketId" => getGUID(),
-                    "basketItems" => [
-                        [
-                            "itemId" => htmlspecialchars($selectedPackage['id']),
-                            "name" => htmlspecialchars($selectedPackage['name']),
-                            "itemType" => "PHYSICAL",
-                            "category" => "Eğitim",
-                            "subCategory" => htmlspecialchars($selectedPackage['type']),
-                            "numberOfProducts" => 1,
-                            "totalPrice" => $amount,
-                            "unitPrice" => $amount
-                        ]
-                    ]
-                ],
-                "orderId" => $orderId,
-                "amount" => $amount
-            ];
+    //         $bodyArray = [
+    //             "currency" => $currency,
+    //             "installmentCount" => $installmentCount,
+    //             "motoInd" => false,
+    //             "paymentGroup" => "PRODUCT",
+    //             "paymentChannel" => "WEB",
+    //             "card" => [
+    //                 "holderName" => htmlspecialchars($cardHolder),
+    //                 "cvv" => htmlspecialchars($cvv),
+    //                 "expireMonth" => (int)$expiryMonth,
+    //                 "expireYear" => (int)$expiryYear,
+    //                 "number" => htmlspecialchars($cardNumber)
+    //             ],
+    //             "billingAddress" => [
+    //                 "address" => $userInfo['address'] ?: '-',
+    //                 "city" => $userInfo['address'] ?: '-',
+    //                 "companyName" => "-",
+    //                 "country" => "Türkiye",
+    //                 "district" => $userInfo['district'] ?: '-',
+    //                 "contactName" => (($userInfo['name'] ?? '') . ' ' . ($userInfo['surname'] ?? '')) ?: '-',
+    //                 "phoneNumber" => $userInfo['telephone'] ?: '905000000000',
+    //                 "zipCode" => $userInfo['postcode'] ?: '-'
+    //             ],
+    //             "shippingAddress" => [
+    //                 "address" => $userInfo['address'] ?: '-',
+    //                 "city" => $userInfo['address'] ?: '-',
+    //                 "companyName" => "-",
+    //                 "country" => "Türkiye",
+    //                 "district" => $userInfo['district'] ?: '-',
+    //                 "contactName" => (($userInfo['name'] ?? '') . ' ' . ($userInfo['surname'] ?? '')) ?: '-',
+    //                 "phoneNumber" => $userInfo['telephone'] ?: '905000000000',
+    //                 "zipCode" => $userInfo['postcode'] ?: '-'
+    //             ],
+    //             "buyer" => [
+    //                 "ipAddress" => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
+    //                 "buyerId" => $_SESSION['id'] ?? 'default_buyer_id',
+    //                 "name" => $userInfo['name'] ?: '-',
+    //                 "surName" => $userInfo['surname'] ?: '-',
+    //                 "identityNumber" => 11111111111,
+    //                 "city" => $userInfo['city'] ?: '-',
+    //                 "country" => "Türkiye",
+    //                 "zipCode" => $userInfo['postcode'] ?: '-',
+    //                 "emailAddress" => $userInfo['email'] ?: '-',
+    //                 "phoneNumber" => $userInfo['telephone'] ?: '905000000000',
+    //                 "registrationAddress" => $userInfo['address'] ?: '-',
+    //                 "lastLoginDate" => date('Y-m-d\TH:i:s.v'),
+    //                 "registrationDate" => date('Y-m-d\TH:i:s.v')
+    //             ],
+    //             "basket" => [
+    //                 "basketId" => getGUID(),
+    //                 "basketItems" => [
+    //                     [
+    //                         "itemId" => htmlspecialchars($selectedPackage['id']),
+    //                         "name" => htmlspecialchars($selectedPackage['name']),
+    //                         "itemType" => "PHYSICAL",
+    //                         "category" => "Eğitim",
+    //                         "subCategory" => htmlspecialchars($selectedPackage['type']),
+    //                         "numberOfProducts" => 1,
+    //                         "totalPrice" => $amount,
+    //                         "unitPrice" => $amount
+    //                     ]
+    //                 ]
+    //             ],
+    //             "orderId" => $orderId,
+    //             "amount" => $amount
+    //         ];
 
 
-            $body = json_encode($bodyArray);
+    //         $body = json_encode($bodyArray);
 
-            try {
-                $securityHash = JWTSignatureGenerator::generateJWKSignature($merchantId, $terminalId, $secretKey, $body, $fixedKidValue, $fixedKValue);
+    //         try {
+    //             $securityHash = JWTSignatureGenerator::generateJWKSignature($merchantId, $terminalId, $secretKey, $body, $fixedKidValue, $fixedKValue);
 
-                $bodyArray['securityHash'] = $securityHash;
-                $updatedBody = json_encode($bodyArray);
+    //             $bodyArray['securityHash'] = $securityHash;
+    //             $updatedBody = json_encode($bodyArray);
 
-                $url = $serviceEndpoint . '/payment/auth';
+    //             $url = $serviceEndpoint . '/payment/auth';
 
-                $ch = curl_init($url);
+    //             $ch = curl_init($url);
 
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_POST, true);
+    //             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    //             curl_setopt($ch, CURLOPT_POST, true);
 
-                $formattedHeaders = [];
-                foreach ($headers as $key => $value) {
-                    $formattedHeaders[] = "$key: $value";
-                }
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $formattedHeaders);
+    //             $formattedHeaders = [];
+    //             foreach ($headers as $key => $value) {
+    //                 $formattedHeaders[] = "$key: $value";
+    //             }
+    //             curl_setopt($ch, CURLOPT_HTTPHEADER, $formattedHeaders);
 
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $updatedBody);
+    //             curl_setopt($ch, CURLOPT_POSTFIELDS, $updatedBody);
 
-                $response = curl_exec($ch);
+    //             $response = curl_exec($ch);
 
-                if (curl_errno($ch)) {
-                    $_SESSION['payment_error'] = 'Curl Hatası: ' . curl_error($ch);
-                } else {
-                    $responseData = json_decode($response, true);
-                    
+    //             if (curl_errno($ch)) {
+    //                 $_SESSION['payment_error'] = 'Curl Hatası: ' . curl_error($ch);
+    //             } else {
+    //                 $responseData = json_decode($response, true);
 
-                    if (isset($responseData['success']) && $responseData['success'] === true) {
-                        setDatabasePackageInfo($pdo, $responseData, $amount, $selectedPackageId);
-                        $_SESSION['payment_success'] = 'Ödeme başarılı! ';
-                    } else {
-                        $errorMessage = $responseData['errorMessage'] ?? 'Bilinmeyen bir hata oluştu.';
-                        $_SESSION['payment_error'] = 'Ödeme başarısız: Lütfen kart bilgilerini doğru giriniz.';
-                    }
-                }
-                curl_close($ch);
-            } catch (Exception $e) {
-                $_SESSION['payment_error'] = 'İşlem sırasında bir hata oluştu: ' . $e->getMessage();
-            }
 
-            header("Location: " . $_SERVER['PHP_SELF']);
-            exit();
-        } else {
-            $_SESSION['payment_error'] = 'Lütfen tüm ödeme bilgilerini eksiksiz ve doğru formatta girin ve bir paket seçin.';
-            header("Location: " . $_SERVER['PHP_SELF']);
-            exit();
-        }
-    }
+    //                 if (isset($responseData['success']) && $responseData['success'] === true) {
+    //                     setDatabasePackageInfo($pdo, $responseData, $amount, $selectedPackageId);
+    //                     $_SESSION['payment_success'] = 'Ödeme başarılı! ';
+    //                 } else {
+    //                     $errorMessage = $responseData['errorMessage'] ?? 'Bilinmeyen bir hata oluştu.';
+    //                     $_SESSION['payment_error'] = 'Ödeme başarısız: Lütfen kart bilgilerini doğru giriniz.';
+    //                 }
+    //             }
+    //             curl_close($ch);
+    //         } catch (Exception $e) {
+    //             $_SESSION['payment_error'] = 'İşlem sırasında bir hata oluştu: ' . $e->getMessage();
+    //         }
+
+    //         header("Location: " . $_SERVER['PHP_SELF']);
+    //         exit();
+    //     } else {
+    //         $_SESSION['payment_error'] = 'Lütfen tüm ödeme bilgilerini eksiksiz ve doğru formatta girin ve bir paket seçin.';
+    //         header("Location: " . $_SERVER['PHP_SELF']);
+    //         exit();
+    //     }
+    // }
 
 
 ?>
@@ -483,21 +382,21 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
             }
 
             /* Formların Genel Düzeni */
-            #cardPaymentForm {
+            /* #cardPaymentForm {
                 max-width: 500px;
                 /* Form genişliği artırıldı */
-                margin: 30px auto 0 auto;
+            /* margin: 30px auto 0 auto;
                 padding: 30px;
                 border-radius: 15px;
                 background-color: #ffffff;
                 box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
                 border: 1px solid #e9ecef;
-            }
+            } */
 
-            #cardPaymentForm h4 {
+            /* #cardPaymentForm h4 {
                 margin-bottom: 25px;
                 color: #333;
-            }
+            } */
 
             /* Ekstra Görsel İyileştirmeler */
             .input-group {
@@ -600,14 +499,16 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                             <?php $packages = $data; ?>
 
                                             <div id="packageSelectionAndPaymentContainer" class="main-card-container">
-                                                <h4 class="payment-card-title">Paket Seçimi ve Ödeme</h4>
+                                                <h4 class="payment-card-title">Paket Seçimi</h4>
 
                                                 <form id="purchaseForm" class="mb-5">
                                                     <div class="row g-4">
                                                         <?php if (!empty($packages)): ?>
                                                             <?php foreach ($packages as $package): ?>
                                                                 <div class="col-md-4">
-                                                                    <div class="card h-100 package-card" data-package-id="<?= $package['id'] ?>">
+                                                                    <div class="card h-100 package-card"
+                                                                        data-package-id="<?= $package['id'] ?>"
+                                                                        data-package-price="<?= htmlspecialchars($package['price']) ?>">
                                                                         <div class="card-body d-flex flex-column">
                                                                             <h5 class="card-title text-primary fw-bold"><?= htmlspecialchars($package['name']) ?></h5>
                                                                             <p class="card-text flex-grow-1">
@@ -640,51 +541,9 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                     </div>
                                                     <input type="hidden" name="user_id" value="<?= $_SESSION['user_id'] ?? 1 ?>">
                                                     <div class="text-end mt-4">
-                                                        <button type="submit" class="btn btn-success" id="selectPackageButton">İleri ve Ödeme Bilgileri</button>
+                                                        <button type="submit" class="btn btn-success" id="selectPackageButton">Seçili Paketi Onayla</button>
                                                     </div>
                                                 </form>
-
-                                                <div id="cardPaymentForm" class="d-none">
-                                                    <h4 class="payment-card-title">Kart Bilgilerini Giriniz</h4>
-
-                                                    <form id="paymentDetailsForm" action="" method="POST">
-                                                        <input type="hidden" name="package_id" id="hiddenPackageId">
-                                                        <input type="hidden" name="user_id" value="<?= $_SESSION['user_id'] ?? 1 ?>">
-                                                        <div class="mb-3">
-                                                            <label for="cardNumber" class="form-label">Kart Numarası</label>
-                                                            <input type="text" class="form-control" name="cardNumber" id="cardNumber" placeholder="XXXX XXXX XXXX XXXX" required maxlength="19" inputmode="numeric">
-                                                            <div id="cardNumberFeedback" class="invalid-feedback">Geçerli bir kart numarası giriniz.</div>
-                                                            <div id="formattedCardNumberOutput" class="text-muted small mt-1"></div>
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label for="cardHolder" class="form-label">Kart Üzerindeki İsim</label>
-                                                            <input type="text" class="form-control" name="cardHolder" id="cardHolder" placeholder="AD SOYAD" required>
-                                                            <div id="cardHolderFeedback" class="invalid-feedback">Kart üzerindeki ismi giriniz.</div>
-                                                        </div>
-                                                        <div class="row mb-3">
-                                                            <div class="col-md-6">
-                                                                <label for="expiryMonth" class="form-label">Son Kullanma Ayı (MM)</label>
-                                                                <input type="text" class="form-control" name="expiryMonth" id="expiryMonth" placeholder="MM" maxlength="2" required inputmode="numeric">
-                                                                <div id="expiryMonthFeedback" class="invalid-feedback">Geçerli bir ay giriniz (01-12).</div>
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                                <label for="expiryYear" class="form-label">Son Kullanma Yılı (YY)</label>
-                                                                <input type="text" class="form-control" name="expiryYear" id="expiryYear" placeholder="YY" maxlength="2" required inputmode="numeric">
-                                                                <div id="expiryYearFeedback" class="invalid-feedback">Geçerli bir yıl giriniz (örn. 25).</div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="mb-4">
-                                                            <label for="cvv" class="form-label">CVV</label>
-                                                            <input type="password" class="form-control" name="cvv" id="cvv" placeholder="XXX" maxlength="4" required inputmode="numeric">
-                                                            <div id="cvvFeedback" class="invalid-feedback">Geçerli bir CVV kodu giriniz.</div>
-                                                        </div>
-                                                        <div class="d-flex justify-content-between">
-                                                            <button type="button" class="btn btn-secondary" id="backToPackageSelection">Geri</button>
-                                                            <button type="submit" class="btn btn-primary" id="finalizePaymentButton">Ödemeyi Tamamla</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-
                                             </div>
 
                                         </div>
@@ -717,6 +576,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
         <script>
             $(document).ready(function() {
                 let selectedPackageId = null;
+                let selectedPackagePrice = 0; // Seçilen paketin fiyatını saklamak için değişken
 
                 // Paket kartlarına tıklama olayı
                 $('.package-card').on('click', function() {
@@ -724,217 +584,62 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                     $(this).find('input[type="radio"]').prop('checked', true).trigger('change');
                 });
 
-                // Radio butonu değiştiğinde kart stilini güncelle
+                // Radio butonu değiştiğinde kart stilini güncelle ve fiyatı al
                 $('input[name="package_id"]').on('change', function() {
                     $('.package-card').removeClass('selected'); // Tüm kartlardan 'selected' sınıfını kaldır
-                    $(this).closest('.package-card').addClass('selected'); // Seçili karta 'selected' sınıfını ekle
+                    const $selectedCard = $(this).closest('.package-card');
+                    $selectedCard.addClass('selected'); // Seçili karta 'selected' sınıfını ekle
                     selectedPackageId = $(this).val(); // Seçilen paketin ID'sini sakla
+
+                    // PHP tarafından döngü içinde oluşturulmuş paket verisinden fiyatı al
+                    // Bu veriyi JavaScript'e aktarmanın en iyi yolu, her paket kartına bir data attribute eklemektir.
+                    selectedPackagePrice = parseFloat($selectedCard.data('package-price'));
                 });
 
-                // "İleri ve Ödeme Bilgileri" butonuna basıldığında
+                // "Seçili Paketi Onayla" butonuna basıldığında
                 $('#purchaseForm').on('submit', function(e) {
-                    e.preventDefault(); // Formun normal submit işlemini engelle
+                    e.preventDefault();
+
+                    // Seçili paketin ID'si
+                    const selectedPackageId = $('input[name="package_id"]:checked').val();
 
                     if (!selectedPackageId) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Paket Seçimi',
-                            text: 'Lütfen satın almak istediğiniz bir paketi seçin.',
-                            confirmButtonText: 'Tamam'
-                        });
+                        alert('Lütfen bir paket seçin!');
                         return;
                     }
 
-                    // Seçilen paketin ID'sini gizli alana ata
-                    $('#hiddenPackageId').val(selectedPackageId);
-                    // Paket seçim formunu gizle
-                    $('#purchaseForm').addClass('d-none');
-                    // Kart ödeme formunu göster
-                    $('#cardPaymentForm').removeClass('d-none');
-                });
+                    // Aynı package-id'ye sahip div'ten fiyatı al
+                    const packageCard = $('.package-card[data-package-id="' + selectedPackageId + '"]');
+                    const amount = packageCard.data('package-price');
 
-                // "Geri" butonuna basıldığında
-                $('#backToPackageSelection').on('click', function() {
-                    // Kart ödeme formunu gizle
-                    $('#cardPaymentForm').addClass('d-none');
-                    // Paket seçim formunu göster
-                    $('#purchaseForm').removeClass('d-none');
-                    // Kart ödeme formunu sıfırla
-                    $('#paymentDetailsForm')[0].reset();
-                    // Seçili paketi sıfırla
-                    selectedPackageId = null;
-                    // Tüm kartlardan 'selected' sınıfını kaldır
-                    $('.package-card').removeClass('selected');
-                    // Formatlanmış kart numarası çıktısını temizle
-                    $('#formattedCardNumberOutput').text('');
-                });
+                    // İstersen user_id'yi de alabilirsiniz
+                    const userId = $('input[name="user_id"]').val();
 
-                // Ödeme detayları formu gönderildiğinde
-                $('#paymentDetailsForm').on('submit', function(e) {
-                    // Özel validasyonları çalıştır
-                    if (!validatePaymentForm()) {
-                        e.preventDefault(); // Geçersizse formu gönderme
-                        return;
-                    }
-
-                    // SweetAlert ile yükleme animasyonu göster
-                    Swal.fire({
-                        icon: 'info',
-                        title: 'Ödeme İşleniyor',
-                        html: `
-                        <p>Lütfen bekleyin, ödeme işleminiz gerçekleştiriliyor.</p>
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Yükleniyor...</span>
-                        </div>
-                    `,
-                        allowOutsideClick: false, // Dışarı tıklamayla kapatmayı engelle
-                        showConfirmButton: false, // Onay butonunu gösterme
-
+                    // Ajax isteği
+                    $.ajax({
+                        url: 'tami-sanal-pos/auth.php',
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                            amount: amount,
+                            package_id: selectedPackageId,
+                            user_id: userId
+                        },
+                        success: function(response) {
+                            if (response.oneTimeToken) {
+                                window.location.href = 'https://sandbox-portal.tami.com.tr/hostedPaymentPage?token=' + response.oneTimeToken;
+                            } else {
+                                alert('Bir hata oluştu: Token alınamadı.');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Hata:', error);
+                            alert('Sunucu ile iletişimde bir hata oluştu.');
+                        }
                     });
+
                 });
 
-                // Kart numarası formatlama (kullanıcıya anlık geri bildirim)
-                $('#cardNumber').on('input', function() {
-                    let val = $(this).val().replace(/\D/g, ''); // Sadece rakamları al
-                    val = val.substring(0, 16); // İlk 16 haneyi al (maksimum kart numarası uzunluğu)
-                    let formattedVal = val.replace(/(\d{4})(?=\d)/g, '$1 '); // Her 4 rakamda bir boşluk ekle
-                    $(this).val(formattedVal);
-
-                    // API'ye gönderilecek formatı kullanıcıya göster
-                    $('#formattedCardNumberOutput').text('API\'ye gönderilecek format: ' + val);
-
-                    // Dinamik validasyon
-                    if (val.length === 16) {
-                        $(this).removeClass('is-invalid').addClass('is-valid');
-                        $('#cardNumberFeedback').hide();
-                    } else {
-                        $(this).removeClass('is-valid').addClass('is-invalid');
-                        $('#cardNumberFeedback').text('Kart numarası 16 haneli olmalıdır.').show();
-                    }
-                });
-
-                // Kart üzerindeki isim alanı
-                $('#cardHolder').on('input', function() {
-                    if ($(this).val().trim().length > 2) { // En az 3 karakter kontrolü
-                        $(this).removeClass('is-invalid').addClass('is-valid');
-                        $('#cardHolderFeedback').hide();
-                    } else {
-                        $(this).removeClass('is-valid').addClass('is-invalid');
-                        $('#cardHolderFeedback').text('Lütfen geçerli bir isim giriniz.').show();
-                    }
-                });
-
-                // Ay ve yıl alanları için sadece rakam girişi ve maxlength kontrolü
-                $('#expiryMonth, #expiryYear, #cvv').on('input', function() {
-                    this.value = this.value.replace(/\D/g, ''); // Sadece rakamları koru
-                });
-
-                // Son Kullanma Ayı Validasyonu
-                $('#expiryMonth').on('input', function() {
-                    let month = parseInt($(this).val());
-                    if ($(this).val().length === 2 && month >= 1 && month <= 12) {
-                        $(this).removeClass('is-invalid').addClass('is-valid');
-                        $('#expiryMonthFeedback').hide();
-                    } else {
-                        $(this).removeClass('is-valid').addClass('is-invalid');
-                        $('#expiryMonthFeedback').text('Ay 01-12 arasında olmalıdır.').show();
-                    }
-                });
-
-                // Son Kullanma Yılı Validasyonu (2 haneli)
-                $('#expiryYear').on('input', function() {
-                    let year = parseInt($(this).val());
-                    let currentYear = new Date().getFullYear() % 100; // Mevcut yılın son 2 hanesi
-                    if ($(this).val().length === 2 && year >= currentYear) { // Geçmiş yıl olmaması için basit kontrol
-                        $(this).removeClass('is-invalid').addClass('is-valid');
-                        $('#expiryYearFeedback').hide();
-                    } else {
-                        $(this).removeClass('is-valid').addClass('is-invalid');
-                        $('#expiryYearFeedback').text('Geçerli bir yıl giriniz (örn. ' + currentYear + ').').show();
-                    }
-                });
-
-                // CVV Validasyonu
-                $('#cvv').on('input', function() {
-                    let cvvLength = $(this).val().length;
-                    if (cvvLength >= 3 && cvvLength <= 4) {
-                        $(this).removeClass('is-invalid').addClass('is-valid');
-                        $('#cvvFeedback').hide();
-                    } else {
-                        $(this).removeClass('is-valid').addClass('is-invalid');
-                        $('#cvvFeedback').text('CVV 3 veya 4 haneli olmalıdır.').show();
-                    }
-                });
-
-                // Tüm form alanlarını kontrol eden validasyon fonksiyonu
-                function validatePaymentForm() {
-                    let isValid = true;
-
-                    // Kart Numarası Validasyonu
-                    const cardNumberInput = $('#cardNumber');
-                    const cleanCardNumber = cardNumberInput.val().replace(/\s/g, ''); // Boşlukları temizle
-                    if (cleanCardNumber.length !== 16 || !/^\d{16}$/.test(cleanCardNumber)) {
-                        cardNumberInput.addClass('is-invalid').removeClass('is-valid');
-                        $('#cardNumberFeedback').text('Kart numarası 16 haneli sayı olmalıdır.').show();
-                        isValid = false;
-                    } else {
-                        cardNumberInput.removeClass('is-invalid').addClass('is-valid');
-                        $('#cardNumberFeedback').hide();
-                    }
-
-                    // Kart Sahibi Adı Validasyonu
-                    const cardHolderInput = $('#cardHolder');
-                    if (cardHolderInput.val().trim().length < 3) {
-                        cardHolderInput.addClass('is-invalid').removeClass('is-valid');
-                        $('#cardHolderFeedback').text('Kart üzerindeki isim en az 3 karakter olmalıdır.').show();
-                        isValid = false;
-                    } else {
-                        cardHolderInput.removeClass('is-invalid').addClass('is-valid');
-                        $('#cardHolderFeedback').hide();
-                    }
-
-                    // Son Kullanma Ayı Validasyonu
-                    const expiryMonthInput = $('#expiryMonth');
-                    const month = parseInt(expiryMonthInput.val());
-                    if (expiryMonthInput.val().length !== 2 || isNaN(month) || month < 1 || month > 12) {
-                        expiryMonthInput.addClass('is-invalid').removeClass('is-valid');
-                        $('#expiryMonthFeedback').text('Ay 01-12 arasında olmalıdır.').show();
-                        isValid = false;
-                    } else {
-                        expiryMonthInput.removeClass('is-invalid').addClass('is-valid');
-                        $('#expiryMonthFeedback').hide();
-                    }
-
-                    // Son Kullanma Yılı Validasyonu
-                    const expiryYearInput = $('#expiryYear');
-                    const year = parseInt(expiryYearInput.val());
-                    const currentYearFull = new Date().getFullYear();
-                    const currentMonth = new Date().getMonth() + 1; // 1-12 arası
-                    const fullExpiryYear = 2000 + year; // Örneğin 25 -> 2025
-
-                    if (expiryYearInput.val().length !== 2 || isNaN(year) || fullExpiryYear < currentYearFull || (fullExpiryYear === currentYearFull && month < currentMonth)) {
-                        expiryYearInput.addClass('is-invalid').removeClass('is-valid');
-                        $('#expiryYearFeedback').text('Geçerli bir gelecek yıl giriniz.').show();
-                        isValid = false;
-                    } else {
-                        expiryYearInput.removeClass('is-invalid').addClass('is-valid');
-                        $('#expiryYearFeedback').hide();
-                    }
-
-                    // CVV Validasyonu
-                    const cvvInput = $('#cvv');
-                    const cvvVal = cvvInput.val();
-                    if (cvvVal.length < 3 || cvvVal.length > 4 || !/^\d{3,4}$/.test(cvvVal)) {
-                        cvvInput.addClass('is-invalid').removeClass('is-valid');
-                        $('#cvvFeedback').text('CVV 3 veya 4 haneli sayı olmalıdır.').show();
-                        isValid = false;
-                    } else {
-                        cvvInput.removeClass('is-invalid').addClass('is-valid');
-                        $('#cvvFeedback').hide();
-                    }
-
-                    return isValid;
-                }
             });
         </script>
     </body>
