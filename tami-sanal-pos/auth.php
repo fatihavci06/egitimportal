@@ -20,12 +20,21 @@ try {
   $amount = $_POST['amount'] ?? null;
   $failCallbackUrl = $_POST['fail_callback_url'] ?? "http://localhost/canlitest/tami-sanal-pos/callback_url.php";
   $successCallbackUrl = $_POST['success_callback_url'] ?? "http://localhost/canlitest/tami-sanal-pos/callback_url.php";
-  $userId = $_SESSION['id'];
+  if(isset($_POST['telephone']))
+  {
+    $telephone=$_POST['telephone'];
+  }
+  else{
+    $userId = $_SESSION['id'];
+    $userInfo = getUserInfo($userId, $pdo);
+    $telephone=$userInfo['telephone'];
+  }
+  
   $orderId = getGUID();
-  $userInfo = getUserInfo($userId, $pdo);
+  
  
   $body = json_encode([
-    "mobilePhoneNumber" => $userInfo['telephone'],
+    "mobilePhoneNumber" => $telephone,
     "failCallbackUrl" => $failCallbackUrl,
     "successCallbackUrl" =>$successCallbackUrl,
     "orderId" => $orderId,
