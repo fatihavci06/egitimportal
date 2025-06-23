@@ -55,8 +55,9 @@ $timeSpendInfo = $timeSpend->getTimeSpend($userInfo["id"]);
     // Page content should go here 
     
     if ($_SESSION['role'] == 1) {
-        // admin profilim sayfasi
-    
+
+        require_once "views/profile/profilim-admin.php";
+
     } elseif ($_SESSION["role"] == 2) {
         require_once "classes/student.classes.php";
         require_once "classes/student-view.classes.php";
@@ -86,6 +87,19 @@ $timeSpendInfo = $timeSpend->getTimeSpend($userInfo["id"]);
         $schoolInfo = $school->getOneSchoolById($userInfo['school_id']);
         // ogretmen profilim sayfasi
         require_once "views/profile/profilim-ogretmenler.php";
+        
+    } elseif ($_SESSION["role"] == 3) {
+
+        require_once "views/profile/profilim-koordinator.php";
+
+    } elseif ($_SESSION["role"] == 5) {
+
+        require_once "views/profile/profilim-veli.php";
+
+    } elseif ($_SESSION["role"] == 1002) {
+
+        require_once "views/profile/profilim-anaokul-ogrenci.php";
+
     } else {
         header("HTTP/1.0 404 Not Found");
         header("Location: 404.php");

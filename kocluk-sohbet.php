@@ -554,26 +554,60 @@ include_once "classes/dateformat.classes.php";
             contactsModal.hide();
         }
 
+        function clickConversationFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            if (id) {
+                setTimeout(() => {
+                    const element = document.querySelector(`[conv-id="${id}"]`);
+
+                    if (element) {
+                        element.click();
+
+                    } else {
+                        console.warn(`Element with id "${id}" not found`);
+                    }
+
+                }, 100);
+            }
+        }
         document.getElementById('closeModalButton').addEventListener('click', hideContactsModal);
 
-        document.addEventListener('DOMContentLoaded', function () {
-            loadConversations();
-            setInterval(loadConversations, 30000);
-            document.getElementById('conversationSearch').addEventListener('input', filterConversations);
-            document.getElementById('contactSearch').addEventListener('input', filterContacts);
-        });
+        document.addEventListener('DOMContentLoaded', async function () {
+            try {
+                await loadConversations();
+                clickConversationFromURL();
 
-        function loadConversations() {
-            fetch('includes/coaching_chat_handler.inc.php?action=get_conversations')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        conversations = data.conversations;
-                        renderConversations();
-                    }
-                })
-                .catch(error => console.error('Error loading conversations:', error));
+                setInterval(loadConversations, 30000);
+                document.getElementById('conversationSearch').addEventListener('input', filterConversations);
+                document.getElementById('contactSearch').addEventListener('input', filterContacts);
+            } catch (error) {
+                console.error('Error in initialization:', error);
+            }
+        });
+        async function loadConversations() {
+            try {
+                const response = await fetch('includes/coaching_chat_handler.inc.php?action=get_conversations');
+                const data = await response.json();
+                if (data.success) {
+                    conversations = data.conversations;
+                    renderConversations();
+                }
+            } catch (error) {
+                console.error('Error loading conversations:', error);
+            }
         }
+        // function loadConversations() {
+        //     fetch('includes/coaching_chat_handler.inc.php?action=get_conversations')
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             if (data.success) {
+        //                 conversations = data.conversations;
+        //                 renderConversations();
+        //             }
+        //         })
+        //         .catch(error => console.error('Error loading conversations:', error));
+        // }
 
         function renderConversations() {
             const list = document.getElementById('conversationsList');
@@ -594,7 +628,7 @@ include_once "classes/dateformat.classes.php";
 
             list.innerHTML = conversations.map(conv => `
         <div class="conversation-item ${currentConversationId == conv.id ? 'active' : ''}" 
-             onclick="selectConversation(${conv.id}, '${conv.other_name} ${conv.other_surname}', ${conv.other_user_id},'${conv.other_photo}')">
+            conv-id="${conv.id}" onclick="selectConversation(${conv.id}, '${conv.other_name} ${conv.other_surname}', ${conv.other_user_id},'${conv.other_photo}')">
             <div class="d-flex align-items-center">
                 <div class="symbol symbol-45px me-3">
                     <img src="assets/media/profile/${conv.other_photo}" alt="${conv.other_username}" class="rounded-circle">
