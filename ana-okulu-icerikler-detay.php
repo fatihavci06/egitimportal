@@ -31,7 +31,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 ?>
     <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
-        <script>
+      
+       <script>
             var defaultThemeMode = "light";
             var themeMode;
             if (document.documentElement) {
@@ -78,9 +79,17 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                     return 'https://www.youtube.com/embed/' . $matches[1];
                                 }
                                 // Vimeo URL'sini işleme
-                                if (preg_match('/(?:www\.|player\.)?vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/\d+\/video\/|video\/|)(\d+)(?:[?&]t=\d+)?/', $url, $matches)) {
-                                    return 'https://player.vimeo.com/video/' . $matches[2];
+                               if (preg_match('/vimeo\.com\/(\d+)\/?([a-zA-Z0-9]+)?/', $url, $matches)) {
+                                $vimeoId = $matches[1];
+                                // İkinci yakalama grubunun (hash) varlığını kontrol et
+                                $vimeoHash = isset($matches[2]) && !empty($matches[2]) ? $matches[2] : '';
+                                
+                                $embedUrl = 'https://player.vimeo.com/video/' . $vimeoId;
+                                if (!empty($vimeoHash)) {
+                                    $embedUrl .= '?h=' . $vimeoHash;
                                 }
+                                return $embedUrl;
+                            }
                                 return null; // Geçerli bir YouTube veya Vimeo linki değilse null döndür
                             }
                             ?>
@@ -110,11 +119,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <?php endforeach;
                                                     } ?>
                                                 </div>
+                                                
                                                 <div class="row mt-4" id="videoContent">
+                                              
                                                     <?php
                                                     $videoUrl = $data['video_url'] ?? ''; // video_url'nin tanımlı olduğundan emin olun
                                                     $embedUrl = convertToEmbedUrl($videoUrl);
-
+                                                   
                                                     if ($embedUrl) :
                                                         // YouTube veya Vimeo iframe özelliklerini ayarla
                                                         $iframeProperties = 'width="100%" height="400" frameborder="0" allowfullscreen';
