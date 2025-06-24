@@ -2,6 +2,10 @@
 if (!defined('GUARD')) {
     die('Erişim yasak!');
 }
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 
 include_once "classes/dbh.classes.php";
 include_once "classes/announcement.classes.php";
@@ -70,7 +74,7 @@ $timeDifference = new DateFormat();
 
                 $totalNotification = count($unviewedNotifications);
 
-                
+
                 $anouncementInfo = $anouncement->getAnnouncementsWithViewStatus($_SESSION['id'], $_SESSION['role'], $_SESSION['class_id']);
 
                 $unviewedAnnouncements = array_filter($anouncementInfo, function ($annonce) {
@@ -78,7 +82,7 @@ $timeDifference = new DateFormat();
                 });
 
                 $totalAnouncement = count($unviewedAnnouncements);
-                
+
                 $totalNumber = $totalAnouncement + $totalNotification;
 
                 ?>
@@ -97,6 +101,12 @@ $timeDifference = new DateFormat();
                     <li class="nav-item">
                         <a class="nav-link text-white opacity-75 opacity-state-100 pb-4" data-bs-toggle="tab"
                             href="#kt_topbar_notifications_3">Kayıtlar</a>
+                    </li>
+                <?php } ?>
+                <?php if ($_SESSION['role'] == 2) { ?>
+                    <li class="nav-item">
+                        <a class="nav-link text-white opacity-75 opacity-state-100 pb-4" data-bs-toggle="tab"
+                            href="#kt_topbar_notifications_4">Koçluk</a>
                     </li>
                 <?php } ?>
             </ul>
@@ -225,6 +235,50 @@ $timeDifference = new DateFormat();
                                 <span class="path1"></span>
                                 <span class="path2"></span>
                             </i></a>
+                    </div>
+                </div>
+            <?php } ?>
+            <?php if ($_SESSION['role'] == 2) { ?>
+                <div class="tab-pane fade" id="kt_topbar_notifications_4" role="tabpanel">
+                    <div class="scroll-y mh-325px my-5 px-8">
+                        <?php
+                        require_once 'classes/ChatCoaching.php';
+                        $chat = new ChatCoaching();
+                        $conversations = $chat->getUserConversations($_SESSION['id']);
+                        if (empty($conversations)) { ?>
+                            <div class="d-flex flex-column px-9">
+                                <div class="pt-10 pb-0">
+                                    <h3 class="text-gray-900 text-center fw-bold">Sohbet Yok!</h3>
+                                    <div class="text-center text-gray-600 fw-semibold pt-1"> buradan görebilirsiniz
+                                    </div>
+                                </div>
+                                <div class="text-center px-4">
+                                    <img class="mw-100 mh-200px" alt="image" src="assets/media/illustrations/sketchy-1/1.png" />
+                                </div>
+                            </div>
+                        <?php } else {
+                            foreach ($conversations as $conv) { ?>
+                                <div class="d-flex flex-stack py-4">
+                                    <div class="d-flex align-items-center me-2">
+                                        <a href="kocluk-sohbet.php?id=<?php echo $conv['id']; ?>" class="text-gray-800 text-hover-primary fw-semibold">
+                                            <?php echo $conv['other_surname'] . ' ' . $conv['other_name']; ?>
+                                        </a>
+                                    </div>
+                                    <span class="badge badge-light fs-8">
+                                        <?php $timeDifference->timeDifference($now, $value['updated_at']) ?>
+                                    </span>
+                                </div>
+                            <?php }
+                        } ?>
+                    </div>
+                    <div class="py-3 text-center border-top">
+                        <a href="kocluk-sohbet.php" class="btn btn-color-gray-600 btn-active-color-primary">
+                            Tümünü Gör
+                            <i class="ki-duotone ki-arrow-right fs-5">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                        </a>
                     </div>
                 </div>
             <?php } ?>
