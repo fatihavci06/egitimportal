@@ -98,24 +98,24 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                                 </div>
                                                 <div class="col-lg-4">
-                                                    
-                                                        <label for="unit_id" class=" required form-label">Ünite Adı</label>
-                                                        <select class="form-select form-control" id="unit_id" name="lesson_id">
-                                                            <option selected disabled>Önce ders seçiniz...</option>
-                                                        </select>
-                                                    
+
+                                                    <label for="unit_id" class=" required form-label">Ünite Adı</label>
+                                                    <select class="form-select form-control" id="unit_id" name="lesson_id">
+                                                        <option selected disabled>Önce ders seçiniz...</option>
+                                                    </select>
+
                                                 </div>
 
                                             </div>
 
                                             <div class="row mt-4">
                                                 <div class="col-lg-4">
-                                                    
-                                                        <label for="topic_id" class=" required form-label">Konu Adı</label>
-                                                        <select class="form-select form-control" id="topic_id" name="lesson_id">
-                                                            <option selected disabled>Önce ünite seçiniz...</option>
-                                                        </select>
-                                                   
+
+                                                    <label for="topic_id" class=" required form-label">Konu Adı</label>
+                                                    <select class="form-select form-control" id="topic_id" name="lesson_id">
+                                                        <option selected disabled>Önce ünite seçiniz...</option>
+                                                    </select>
+
                                                 </div>
                                                 <div class="col-lg-4">
                                                     <label class=" fs-6 fw-semibold mb-2" for="month">Ay </label>
@@ -337,51 +337,51 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/js/custom/utilities/modals/users-search.js"></script>
         <script>
             $(document).ready(function() {
-                $('#main_school_class_id').on('change', function() {
-                    var selectedClassId = $(this).val();
+                $('#main_school_class_id').on('change', function () {
+    var selectedClassId = $(this).val();
 
-                    $.ajax({
-                        url: 'includes/ajax.php?service=mainSchoolGetLessons', // Backend dosyanın yolu
-                        type: 'POST',
-                        data: {
-                            class_id: selectedClassId
-                        },
-                        dataType: 'json', // JSON olarak bekliyoruz
-                        success: function(response) {
-                            if (response.status === 'success') {
-                                var lessonSelect = $('#lesson_id');
-                                lessonSelect.empty(); // Önceki optionları temizle
+    // class_id dışındaki tüm input/select/textarea alanlarını temizle
+    
 
-                                if (response.data.length > 0) {
-                                    lessonSelect.append('<option selected disabled>Ders Seçiniz...</option>');
+    // AJAX isteği
+    $.ajax({
+        url: 'includes/ajax.php?service=mainSchoolGetLessons',
+        type: 'POST',
+        data: {
+            class_id: selectedClassId
+        },
+        dataType: 'json',
+        success: function (response) {
+            var lessonSelect = $('#lesson_id');
+            lessonSelect.empty();
 
-                                    // Gelen datayı option olarak ekle
-                                    $.each(response.data, function(index, lesson) {
-                                        lessonSelect.append(
-                                            $('<option></option>')
-                                            .val(lesson.id)
-                                            .text(lesson.name)
-                                        );
-                                    });
-                                } else {
-                                    lessonSelect.append('<option disabled>Bu sınıfa ait ders bulunamadı.</option>');
-                                }
-                            } else {
-                                
-                            }
-                        },
-                        error: function() {
-                            alert('Sunucu ile iletişimde hata oluştu!');
-                        }
+            if (response.status === 'success') {
+                if (response.data.length > 0) {
+                    lessonSelect.append('<option selected disabled>Ders Seçiniz...</option>');
+                    $.each(response.data, function (index, lesson) {
+                        lessonSelect.append(
+                            $('<option></option>').val(lesson.id).text(lesson.name)
+                        );
                     });
-                });
+                } else {
+                    lessonSelect.append('<option disabled>Bu sınıfa ait ders bulunamadı.</option>');
+                }
+            }
+        },
+        error: function () {
+            alert('Sunucu ile iletişimde hata oluştu!');
+        }
+    });
+});
+
                 $('#lesson_id').on('change', function() {
                     var selectedLessonId = $(this).val();
-
+                    var selectedClassId = $('#main_school_class_id').val();
                     $.ajax({
                         url: 'includes/ajax.php?service=mainSchoolGetUnits', // Backend dosyanın yolu
                         type: 'POST',
                         data: {
+                            class_id: selectedClassId,
                             lesson_id: selectedLessonId
                         },
                         dataType: 'json', // JSON olarak bekliyoruz
@@ -405,7 +405,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                     unitSelect.append('<option disabled>Bu sınıfa ait ders bulunamadı.</option>');
                                 }
                             } else {
-                                alert('Dersler yüklenirken hata oluştu!');
                             }
                         },
                         error: function() {
@@ -444,7 +443,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                     topicSelect.append('<option disabled>Bu sınıfa ait ders bulunamadı.</option>');
                                 }
                             } else {
-                                alert('Dersler yüklenirken hata oluştu!');
                             }
                         },
                         error: function() {
@@ -526,7 +524,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         return;
                     }
 
-                    
+
 
                     // subject kontrolü
                     if ($('#subject').val().trim() === '') {

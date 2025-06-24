@@ -64,7 +64,7 @@ class Lessons extends Dbh {
 	public function getLessonForUnitList()
 	{
 		if ($_SESSION['role'] == 1 OR $_SESSION['role'] == 2 OR $_SESSION['role'] == 5) {
-			$stmt = $this->connect()->prepare('SELECT id, name, class_id FROM lessons_lnp ');
+			$stmt = $this->connect()->prepare('SELECT id, name, class_id,package_type FROM lessons_lnp ');
 
 			if (!$stmt->execute(array())) {
 				$stmt = null;
@@ -72,7 +72,7 @@ class Lessons extends Dbh {
 			}
 		} elseif ($_SESSION['role'] == 3 OR $_SESSION['role'] == 8 ) {
 			$school = $_SESSION['school_id'];
-			$stmt = $this->connect()->prepare('SELECT id, name, class_id FROM lessons_lnp WHERE (school_id=? OR school_id=?)');
+			$stmt = $this->connect()->prepare('SELECT id, name, class_id,package_type FROM lessons_lnp WHERE (school_id=? OR school_id=?)');
 
 			if (!$stmt->execute(array($school, "1"))) {
 				$stmt = null;

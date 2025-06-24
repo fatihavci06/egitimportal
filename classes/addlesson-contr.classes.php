@@ -5,11 +5,13 @@ class AddLessonContr extends AddLesson
 
 	private $name;
 	private $classes;
+	private $package_type;
 
-	public function __construct($name, $classes)
+	public function __construct($name, $classes,$package_type)
 	{
 		$this->name = $name;
 		$this->classes = $classes;
+		$this->package_type = $package_type;
 	}
 
 	public function addLessonDb()
@@ -35,6 +37,6 @@ class AddLessonContr extends AddLesson
 			$slug = $slug;
 		}
 
-		$this->setLesson($slug, $this->name, $this->classes);
+		$this->setLesson($slug, $this->name, $this->classes,$this->package_type);
 	}
 }

@@ -9,17 +9,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
     include_once "views/pages-head.php";
 ?>
-    <!--end::Head-->
-    <!--begin::Body-->
-<style>
-.red-border {
+    <style>
+/* .red-border {
     border: 2px solid red;
     padding: 15px;
     border-radius: 5px;
-}
+} */ /* Removed the red-border style */
 </style>
-    <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
-        <!--begin::Theme mode setup on page load-->
+    <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" class="app-default">
         <script>
             var defaultThemeMode = "light";
             var themeMode;
@@ -39,34 +36,17 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 document.documentElement.setAttribute("data-bs-theme", themeMode);
             }
         </script>
-        <!--end::Theme mode setup on page load-->
-        <!--begin::App-->
         <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
-            <!--begin::Page-->
             <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
-                <!--begin::Header-->
                 <?php include_once "views/header.php"; ?>
-                <!--end::Header-->
-                <!--begin::Wrapper-->
                 <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
-                    <!--begin::Sidebar-->
                     <?php include_once "views/sidebar.php"; ?>
-                    <!--end::Sidebar-->
-                    <!--begin::Main-->
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
-                        <!--begin::Content wrapper-->
                         <div class="d-flex flex-column flex-column-fluid">
-                            <!--begin::Toolbar-->
                             <?php include_once "views/toolbar.php"; ?>
-                            <!--end::Toolbar-->
-                            <!--begin::Content-->
                             <div id="kt_app_content" class="app-content flex-column-fluid">
-                                <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
-                                    <!--begin::Card-->
                                     <div class="card-body pt-5">
-
-
                                         <div class="row mt-4">
                                             <div class="col-lg-4">
                                                 <label class="fs-6 fw-semibold mb-2" for="main_school_class_id">Yaş Grubu </label>
@@ -74,30 +54,50 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 $class = new Classes();
                                                 $roleId = $_SESSION['role'];
 
-
-
                                                 if ($roleId == 10002) {
-                                                  
-
                                                     $classId = $class->getClassId($_SESSION['id']);
                                                     $mainSchoolClasses = $class->getAgeGroup($classId);
-                                                     $_SESSION['class_id'] = $classId;
+                                                    $_SESSION['class_id'] = $classId;
                                                 } else {
                                                     unset($_SESSION['class_id']);
                                                     $mainSchoolClasses = $class->getAgeGroup(); // class_id = null
                                                 }
                                                 ?>
                                                 <select class="form-select" id="main_school_class_id" required aria-label="Default select example">
-
                                                     <option value="">Seçiniz</option>
                                                     <?php foreach ($mainSchoolClasses as $c) { ?>
                                                         <option <?php if (isset($classId) && $c['id'] == $classId) echo 'selected'; ?> value="<?= $c['id'] ?>"><?= $c['name'] ?></option>
                                                     <?php } ?>
                                                 </select>
                                             </div>
+                                            <?php
+                                            $lessonList = $class->getMainSchoolLessonList();
+                                            ?>
+                                            <div class="col-lg-4">
+                                                <label for="lesson_id" class="form-label">Ders Adı</label>
+                                                <select class="form-select form-control" id="lesson_id" name="lesson_id">
+                                                    <option selected disabled>Seçiniz</option>
+                                                    <?php foreach ($lessonList as $lesson) { ?>
+                                                        <option value="<?= $lesson['id'] ?>"><?= $lesson['name'] ?></option>    
+                                                    <?php } ?>
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <label for="unit_id" class="form-label">Ünite Adı</label>
+                                                <select class="form-select form-control" id="unit_id" name="lesson_id">
+                                                    <option selected disabled>Önce ders seçiniz...</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-4">
+                                            <div class="col-lg-4">
+                                                <label for="topic_id" class="form-label">Konu Adı</label>
+                                                <select class="form-select form-control" id="topic_id" name="lesson_id">
+                                                    <option selected disabled>Önce ünite seçiniz...</option>
+                                                </select>
+                                            </div>
                                             <div class="col-lg-4">
                                                 <label class="required fs-6 fw-semibold mb-2" for="month">Ay </label>
-
                                                 <select class="form-select" id="month" required aria-label="Default select example">
                                                     <option value="">Seçiniz</option>
                                                     <option value="Ocak">Ocak</option>
@@ -112,7 +112,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <option value="Ekim">Ekim</option>
                                                     <option value="Kasım">Kasım</option>
                                                     <option value="Aralık">Aralık2</option>
-
                                                 </select>
                                             </div>
                                             <div class="col-lg-4">
@@ -130,8 +129,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </div>
                                         </div>
 
-
-
                                         <div class="row mt-4">
                                             <div class="col-lg-4">
                                                 <label class=" fs-6 fw-semibold mb-2" for="activity_type">Etkinlik Türü Başlığı</label>
@@ -143,16 +140,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     ?>
                                                         <option value="<?= $title['id'] ?>"><?= $title['title'] ?></option>
                                                     <?php }  ?>
-
                                                 </select>
-
-
                                             </div>
                                             <div class="col-lg-4">
                                                 <label class=" fs-6 fw-semibold mb-2" for="content_title">İçerik Başlığı</label>
                                                 <select class="form-select form-control" id="content_title" aria-label="Default select example">
                                                     <option value="">Seçiniz</option>
-
                                                     <?php
                                                     $titlesContent = $class->getTitleList(1);
                                                     foreach ($titlesContent as $title) {
@@ -165,7 +158,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <label class=" fs-6 fw-semibold mb-2" for="concept_title">Kavram Başlığı</label>
                                                 <select class="form-select form-control" id="concept_title" aria-label="Default select example">
                                                     <option value="">Seçiniz</option>
-
                                                     <?php
                                                     $titlesContent = $class->getTitleList(2);
                                                     foreach ($titlesContent as $title) {
@@ -174,40 +166,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <?php }  ?>
                                                 </select>
                                             </div>
-
-                                        </div>
-                                        <div class="row mt-4" style="border: 2px solid red; padding: 15px; border-radius: 5px;">
-
-                                                <?php 
-                                                $lessonList=$class->getMainSchoolLessonList();
-                                                ?>
-                                                <div class="col-lg-4">
-
-                                                    <label for="lesson_id" class="  form-label">Ders Adı</label>
-                                                    <select class="form-select form-control" id="lesson_id" name="lesson_id">
-                                                        <option selected disabled>Seçiniz</option>
-                                                        <?php foreach ($lessonList as $lesson) { ?>
-                                                            <option value="<?= $lesson['id'] ?>"><?= $lesson['name'] ?></option>    
-                                                        <?php } ?>
-                                                    </select>
-
-                                                </div>
-                                                <div class="col-lg-4">
-                                                    
-                                                        <label for="unit_id" class="  form-label">Ünite Adı</label>
-                                                        <select class="form-select form-control" id="unit_id" name="lesson_id">
-                                                            <option selected disabled>Önce ders seçiniz...</option>
-                                                        </select>
-                                                    
-                                                </div>
-                                                <div class="col-lg-4">
-                                                    
-                                                        <label for="topic_id" class="  form-label">Konu Adı</label>
-                                                        <select class="form-select form-control" id="topic_id" name="lesson_id">
-                                                            <option selected disabled>Önce ünite seçiniz...</option>
-                                                        </select>
-                                                   
-                                                </div>
                                         </div>
 
                                         <div class="row mt-4">
@@ -229,47 +187,27 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 
                                 </div>
-                                <!--end::Card-->
+                                </div>
                             </div>
-                            <!--end::Content container-->
                         </div>
-                        <!--end::Content-->
-                    </div>
-                    <!--end::Content wrapper-->
-                    <!--begin::Footer-->
                     <?php include_once "views/footer.php"; ?>
-                    <!--end::Footer-->
-                </div>
-                <!--end:::Main-->
-                <!--begin::aside-->
+                    </div>
                 <?php include_once "views/aside.php"; ?>
-                <!--end::aside-->
+                </div>
             </div>
-            <!--end::Wrapper-->
         </div>
-        <!--end::Page-->
-        </div>
-        <!--end::App-->
-        <!--begin::Scrolltop-->
         <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
             <i class="ki-duotone ki-arrow-up">
                 <span class="path1"></span>
                 <span class="path2"></span>
             </i>
         </div>
-        <!--end::Scrolltop-->
-        <!--begin::Javascript-->
         <script>
             var hostUrl = "assets/";
         </script>
-        <!--begin::Global Javascript Bundle(mandatory for all pages)-->
         <script src="assets/plugins/global/plugins.bundle.js"></script>
         <script src="assets/js/scripts.bundle.js"></script>
-        <!--end::Global Javascript Bundle-->
-        <!--begin::Vendors Javascript(used for this page only)-->
         <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
-        <!--end::Vendors Javascript-->
-        <!--begin::Custom Javascript(used for this page only)-->
         <script src="assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
         <script src="assets/js/custom/apps/subtopics/list/export.js"></script>
         <script src="assets/js/custom/apps/subtopics/list/list.js"></script>
@@ -292,6 +230,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         url: 'includes/ajax.php?service=mainSchoolGetUnits', // Backend dosyanın yolu
                         type: 'POST',
                         data: {
+                            class_id:$('#main_school_class_id').val(),
                             lesson_id: selectedLessonId
                         },
                         dataType: 'json', // JSON olarak bekliyoruz
@@ -315,7 +254,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                     unitSelect.append('<option disabled>Bu sınıfa ait ders bulunamadı.</option>');
                                 }
                             } else {
-                               
+                                
                             }
                         },
                         error: function() {
@@ -449,6 +388,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 
             });
+            
             $('#clearFilterBtn').on('click', function() {
                 $('#month').val('');
 
@@ -475,13 +415,51 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     $('#myTable').DataTable().clear().draw();
                 }
             });
-        </script>
-        <!--end::Custom Javascript-->
-        <!--end::Javascript-->
-    </body>
-    <!--end::Body-->
+            $('#main_school_class_id').on('change', function() {
+        var selectedClassId = $(this).val();
+        var lessonSelect = $('#lesson_id');
+        var unitSelect = $('#unit_id');
+        var topicSelect = $('#topic_id');
 
-</html>
+        lessonSelect.empty(); // Clear existing lessons
+        unitSelect.empty();   // Clear existing units
+        topicSelect.empty();  // Clear existing topics
+
+        lessonSelect.append('<option selected disabled>Seçiniz</option>');
+        unitSelect.append('<option selected disabled>Önce ders seçiniz...</option>');
+        topicSelect.append('<option selected disabled>Önce ünite seçiniz...</option>');
+
+        if (selectedClassId) { // Only make AJAX call if a class is selected
+            $.ajax({
+                url: 'includes/ajax.php?service=getMainSchoolLessonList', // New service for fetching lessons
+                type: 'POST',
+                data: {
+                    class_id: selectedClassId
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success' && response.data.length > 0) {
+                        $.each(response.data, function(index, lesson) {
+                            lessonSelect.append(
+                                $('<option></option>')
+                                .val(lesson.id)
+                                .text(lesson.name)
+                            );
+                        });
+                    } else {
+                        lessonSelect.append('<option disabled>Bu yaş grubuna ait ders bulunamadı.</option>');
+                    }
+                },
+                error: function() {
+                    alert('Dersler yüklenirken bir hata oluştu!');
+                }
+            });
+        }
+    });
+        </script>
+        </body>
+    </html>
 <?php } else {
     header("location: index");
 }
+?>
