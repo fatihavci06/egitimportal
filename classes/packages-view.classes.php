@@ -128,7 +128,7 @@ class ShowPackage extends Packages
             $priceTotal = '
                         <h2 class="text-black-500 fw-semibold fs-12">Paket Ücreti: <span id="PriceWOVat">' . number_format($total, 2, '.', '') . '</span>₺</h2>
                         <h2 class="text-black-500 fw-semibold fs-12">KDV Oranı: %<span id="vatPercentage">' . $kdv . '</span></h2>
-                        <h2 class="text-black-500 fw-semibold fs-12">Toplam Ücret: <span id="PriceWVat">' . number_format(($total + ($total * $vatPercentage)), 2, '.', '') . '</span>₺</h2>
+                        <h2 class="text-black-500 fw-semibold fs-12">Toplam Ücret: <span id="PriceWVat" value="' . number_format(($total + ($total * $vatPercentage)), 2, '.', '') . '">' . number_format(($total + ($total * $vatPercentage)), 2, '.', '') . '</span>₺</h2>
             ';
         }
 

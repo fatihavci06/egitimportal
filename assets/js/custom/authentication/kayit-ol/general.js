@@ -144,8 +144,8 @@ var KTSignupGeneral = function () {
                     'telephone': {
                         validators: {
                             regexp: {
-                                regexp: /^0/,
-                                message: 'Telefon numarası 0 ile başlamalıdır'
+                                regexp: /^05/,
+                                message: 'Telefon numarası 05 ile başlamalıdır'
                             },
                             stringLength: {
                                 min: 11,
@@ -307,9 +307,35 @@ var KTSignupGeneral = function () {
                             dataType: "json",
                             success: function (response) {
                                 if (response.status === "success") {
+
+                                    var telephone = $("#telephone").val();
+                                    var PriceWVat = $("#PriceWVat").attr('value');
+
                                     var type = response.type;
                                     if (type === "credit_card") {
-                                        window.location.replace("odeme-al.php");
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "tami-sanal-pos/auth.php",
+                                            data: {
+                                                fail_callback_url: "http://localhost/lineup_campus/odeme-sonuc-tami",
+                                                success_callback_url: "http://localhost/lineup_campus/odeme-sonuc-tami",
+                                                telephone: '9' + telephone,
+                                                amount: PriceWVat,
+                                            },
+                                            dataType: "json",
+                                            success: function (response) {
+                                                if (response.oneTimeToken) {
+                                                    window.location.href = 'https://sandbox-portal.tami.com.tr/hostedPaymentPage?token=' + response.oneTimeToken;
+                                                } else {
+                                                    alert('Bir hata oluştu: Token alınamadı.');
+                                                }
+                                            },
+                                            error: function (xhr, status, error) {
+                                                console.error('Hata:', error);
+                                                alert('Sunucu ile iletişimde bir hata oluştu.');
+                                            }
+                                        });
+                                        /* window.location.replace("odeme-al.php"); */
                                     } else if (type === "bank_transfer") {
                                         window.location.replace("havale-bilgisi.php");
                                     }
@@ -517,12 +543,14 @@ var KTSignupGeneral = function () {
                                             $('#PriceWOVat').html(priceWoDiscount.toFixed(2));
                                             var newPriceWVat = priceWoDiscount + (priceWoDiscount * (vatPercentage / 100));
                                             $('#PriceWVat').html(newPriceWVat.toFixed(2));
+                                            $('#PriceWVat').attr('value', newPriceWVat.toFixed(2));
                                         }
                                         couponButton.disabled = false;
                                         $('#coupon_code').val('');
                                         $('#PriceWOVat').html(priceWoDiscount);
                                         var newPriceWVat = priceWoDiscount + (priceWoDiscount * (vatPercentage / 100));
                                         $('#PriceWVat').html(newPriceWVat.toFixed(2));
+                                        $('#PriceWVat').attr('value', newPriceWVat.toFixed(2));
                                         $('#couponInfo').html("");
                                     });
 
@@ -533,6 +561,7 @@ var KTSignupGeneral = function () {
                                     $('#priceWCoupon').html(oldPrice);
                                     var newPriceWVat = oldPrice + (oldPrice * (vatPercentage / 100));
                                     $('#PriceWVat').html(newPriceWVat.toFixed(2));
+                                    $('#PriceWVat').attr('value', newPriceWVat.toFixed(2));
                                     $('#couponInfo').html(response.message);
                                 }
                             },
@@ -570,10 +599,12 @@ var KTSignupGeneral = function () {
                     $('#PriceWOVat').html(oldPrice.toFixed(2));
                     var newPriceWVat = oldPrice + (oldPrice * (vatPercentage / 100));
                     $('#PriceWVat').html(newPriceWVat.toFixed(2));
+                    $('#PriceWVat').attr('value', newPriceWVat.toFixed(2));
                 } else {
                     $('#PriceWOVat').html(priceWCoupon.toFixed(2));
                     var newPriceWVat = priceWCoupon + (priceWCoupon * (vatPercentage / 100));
                     $('#PriceWVat').html(newPriceWVat.toFixed(2));
+                    $('#PriceWVat').attr('value', newPriceWVat.toFixed(2));
                 }
                 $('#moneyTransferInfo').html("");
                 /* if (subscription_month > 1) {
@@ -651,11 +682,13 @@ var KTSignupGeneral = function () {
                                 $('#PriceWOVat').html(newPrice.toFixed(2));
                                 var newPriceWVat = newPrice + (newPrice * (vatPercentage / 100));
                                 $('#PriceWVat').html(newPriceWVat.toFixed(2));
+                                $('#PriceWVat').attr('value', newPriceWVat.toFixed(2));
                             } else {
                                 var newPrice = priceWCoupon - (priceWCoupon * (discount / 100));
                                 $('#PriceWOVat').html(newPrice.toFixed(2));
                                 var newPriceWVat = newPrice + (newPrice * (vatPercentage / 100));
                                 $('#PriceWVat').html(newPriceWVat.toFixed(2));
+                                $('#PriceWVat').attr('value', newPriceWVat.toFixed(2));
                             }
                             $('#moneyTransferInfo').html(response.message);
                         } else {

@@ -276,7 +276,7 @@ include_once "views/pages-head.php";
 								<label class="required fs-6 fw-semibold mb-2">Telefon Numarası</label>
 								<!--end::Label-->
 								<!--begin::Input-->
-								<input type="text" class="form-control form-control-solid" placeholder="05001234578" id="telephone" name="telephone" />
+								<input type="text" class="form-control form-control-solid" placeholder="05301234578" id="telephone" name="telephone" />
 								<!--end::Input-->
 							</div>
 							<!--end::Input group-->
