@@ -74,7 +74,7 @@ class ChatCoaching
         LEFT JOIN users_lnp u2 ON c.teacher_id = u2.id
         LEFT JOIN coaching_messages m ON c.id = m.conversation_id
         LEFT JOIN coaching_messages m3 ON c.id = m3.conversation_id AND m.created_at < m3.created_at
-        WHERE (c.user_id = :user_id OR c.teacher_id = :user_id) AND m3.id IS NULL
+        WHERE (c.user_id = :user_id OR c.teacher_id = :user_id) AND m3.id IS NULL AND c.end_date > NOW()
         ORDER BY c.updated_at DESC";
 
         $stmt = $this->pdo->prepare($sql);
