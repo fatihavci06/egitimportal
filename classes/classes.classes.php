@@ -360,7 +360,19 @@ class Classes extends Dbh
 		return $data;
 	}
 
+	public function getDevelopmentPackageList()
+	{
+		$stmt = $this->connect()->prepare('SELECT *FROM development_packages_lnp where school_id=1 ORDER BY id desc');
 
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $data;
+	}
 	public function getExtraPackageList()
 	{
 		$stmt = $this->connect()->prepare('SELECT *FROM extra_packages_lnp where school_id=1 ORDER BY id desc');

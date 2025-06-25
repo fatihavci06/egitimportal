@@ -7,7 +7,7 @@ include_once "classes/classes.classes.php";
 include_once "classes/classes-view.classes.php";
 
 $chooseClass = new ShowClass();
-?>	
+?>
 <div class="modal fade" id="kt_modal_add_customer" tabindex="-1" aria-hidden="true">
     <!--begin::Modal dialog-->
     <div class="modal-dialog modal-dialog-centered mw-650px">
@@ -32,6 +32,19 @@ $chooseClass = new ShowClass();
                 <!--end::Modal header-->
                 <!--begin::Modal body-->
                 <div class="modal-body py-10 px-lg-17">
+                    <div class="fv-row mb-7">
+                        <label class="required fs-6 fw-semibold mb-2">Paket Tipi</label>
+                        <div class="d-flex">
+                            <label class="form-check form-check-custom form-check-solid me-5">
+                                <input class="form-check-input" type="radio" id="package_type" name="package_type" value="0" checked />
+                                <span class="form-check-label">Standart Paket</span>
+                            </label>
+                            <label class="form-check form-check-custom form-check-solid">
+                                <input class="form-check-input" type="radio" id="package_type" name="package_type" value="1" />
+                                <span class="form-check-label">Gelişim Paketi</span>
+                            </label>
+                        </div>
+                    </div>
                     <!--begin::Scroll-->
                     <div class="scroll-y me-n7 pe-7" id="kt_modal_add_customer_scroll" data-kt-scroll="true"
                         data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto"

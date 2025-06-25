@@ -518,7 +518,6 @@ class ShowUnit extends Units
 
     public function updateOneUnit($slug)
     {
-
         $chooseClass = new ShowClass();
         $chooseLesson = new ShowLesson();
         $unitInfo = $this->getOneUnitForDetails($slug);
@@ -527,186 +526,131 @@ class ShowUnit extends Units
 
         foreach ($unitInfo as $value) {
 
-            if ($value['photo'] == NULL) {
-                $image = 'assets/media/units/blank-image.svg';
-            } else {
-                $image = 'assets/media/units/' . $value['photo'];
-            }
-
+            // Görsel
+            $image = $value['photo'] ? 'assets/media/units/' . $value['photo'] : 'assets/media/units/blank-image.svg';
             $order_no = $value['order_no'] ?? '';
-
             $startDate = htmlspecialchars($value['start_date'] ?? '');
             $endDate = htmlspecialchars($value['end_date'] ?? '');
 
-            $lessonList = '
-                <form class="form" action="#" id="kt_modal_add_customer_form" data-kt-redirect="uniteler">
-                    <!--begin::Modal header-->
-                    <div class="modal-header" id="kt_modal_add_customer_header">
-                        <!--begin::Modal title-->
-                        <h2 class="fw-bold">Ünite Ekleyin</h2>
-                        <!--end::Modal title-->
-                        <!--begin::Close-->
-                        <div id="kt_modal_add_customer_close" class="btn btn-icon btn-sm btn-active-icon-primary">
-                            <i class="ki-duotone ki-cross fs-1">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                            </i>
-                        </div>
-                        <!--end::Close-->
-                    </div>
-                    <!--end::Modal header-->
-                    <!--begin::Modal body-->
-                    <div class="modal-body py-10 px-lg-17">
-                        <!--begin::Scroll-->
-                        <div class="scroll-y me-n7 pe-7" id="kt_modal_add_customer_scroll" data-kt-scroll="true"
-                            data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto"
-                            data-kt-scroll-dependencies="#kt_modal_add_customer_header"
-                            data-kt-scroll-wrappers="#kt_modal_add_customer_scroll" data-kt-scroll-offset="300px">
-                            <!--begin::Input group-->
-                            <div class="mb-7">
-                                <!--begin::Label-->
-                                <label class="fs-6 fw-semibold mb-3">
-                                    <span>Görsel</span>
-                                    <span class="ms-1" data-bs-toggle="tooltip" title="İzin verilen dosya türleri: png, jpg, jpeg.">
-                                        <i class="ki-duotone ki-information fs-7">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                            <span class="path3"></span>
-                                        </i>
-                                    </span>
-                                </label>
-                                <!--end::Label-->
-                                <!--begin::Image input wrapper-->
-                                <div class="mt-1">
-                                    <!--begin::Image placeholder-->
-                                    <style>
-                                        .image-input-placeholder {
-                                            background-image: url("assets/media/svg/files/blank-image.svg");
-                                        }
+            // ✔ Development paketlerini al
+            $selectedPackageIds = [];
+            if (!empty($value['development_package_id'])) {
+                $selectedPackageIds = explode(';', $value['development_package_id']);
+            }
 
-                                        [data-bs-theme="dark"] .image-input-placeholder {
-                                            background-image: url("assets/media/svg/files/blank-image-dark.svg");
-                                        }
-                                    </style>
-                                    <!--end::Image placeholder-->
-                                    <!--begin::Image input-->
-                                    <div class="image-input image-input-outline image-input-placeholder image-input-empty image-input-empty"
-                                        data-kt-image-input="true">
-                                        <!--begin::Preview existing avatar-->
-                                        <div class="image-input-wrapper w-100px h-100px" style="background-image: url(\'' . $image . '\')"></div>
-                                        <!--end::Preview existing avatar-->
-                                        <!--begin::Edit-->
-                                        <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                                            data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Görsel Ekle">
-                                            <i class="ki-duotone ki-pencil fs-7">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                            <!--begin::Inputs-->
-                                            <input type="file" name="photo" id="photo" accept=".png, .jpg, .jpeg, .PNG, .JPG, .JPEG" />
-                                            <input type="hidden" name="avatar_remove" />
-                                            <!--end::Inputs-->
-                                        </label>
-                                        <!--end::Edit-->
-                                        <!--begin::Cancel-->
-                                        <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                                            data-kt-image-input-action="cancel" data-bs-toggle="tooltip" title="Fotoğrafı İptal Et">
-                                            <i class="ki-duotone ki-cross fs-2">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                        </span>
-                                        <!--end::Cancel-->
-                                        <!--begin::Remove-->
-                                        <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                                            data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove avatar">
-                                            <i class="ki-duotone ki-cross fs-2">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                        </span>
-                                        <!--end::Remove-->
-                                    </div>
-                                    <!--end::Image input-->
-                                </div>
-                                <!--end::Image input wrapper-->
+            // ✔ Tüm development paketlerini getir
+            $stmt = $this->connect()->prepare("SELECT id, name, price FROM development_packages_lnp");
+            $stmt->execute();
+            $allPackages = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // ✔ Select HTML'ini hazırla
+            $packageSelectHtml = '<div class="fv-row mb-7" id="develeopmentPackage">';
+            $packageSelectHtml .= '<label class="required fs-6 fw-semibold mb-2">Gelişim Paketleri</label>';
+            $packageSelectHtml .= '<select name="development_package_id[]" id="development_package_id" class="form-select" multiple>';
+
+            foreach ($allPackages as $pkg) {
+                $selected = in_array($pkg['id'], $selectedPackageIds) ? 'selected' : '';
+                $packageSelectHtml .= '<option value="' . $pkg['id'] . '" ' . $selected . '>' .
+                    htmlspecialchars($pkg['name']) . ' - ' . number_format($pkg['price'], 2, ',', '.') . '₺</option>';
+            }
+
+            $packageSelectHtml .= '</select></div>';
+
+            // ✔ Formu oluştur
+            $lessonList = '
+        <form class="form" action="#" id="kt_modal_add_customer_form" data-kt-redirect="uniteler">
+            <!--begin::Modal header-->
+            <div class="modal-header" id="kt_modal_add_customer_header">
+                <h2 class="fw-bold">Ünite Güncelle</h2>
+                <div id="kt_modal_add_customer_close" class="btn btn-icon btn-sm btn-active-icon-primary">
+                    <i class="ki-duotone ki-cross fs-1">
+                        <span class="path1"></span><span class="path2"></span>
+                    </i>
+                </div>
+            </div>
+            <!--begin::Modal body-->
+            <div class="modal-body py-10 px-lg-17">
+                <div class="scroll-y me-n7 pe-7" id="kt_modal_add_customer_scroll" data-kt-scroll="true"
+                    data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto"
+                    data-kt-scroll-dependencies="#kt_modal_add_customer_header"
+                    data-kt-scroll-wrappers="#kt_modal_add_customer_scroll" data-kt-scroll-offset="300px">
+
+                    <!-- Görsel -->
+                    <div class="mb-7">
+                        <label class="fs-6 fw-semibold mb-3">Görsel</label>
+                        <div class="mt-1">
+                            <div class="image-input image-input-outline image-input-placeholder"
+                                data-kt-image-input="true">
+                                <div class="image-input-wrapper w-100px h-100px" style="background-image: url(\'' . $image . '\')"></div>
+                                <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                    data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Görsel Ekle">
+                                    <i class="ki-duotone ki-pencil fs-7"><span class="path1"></span><span class="path2"></span></i>
+                                    <input type="file" name="photo" id="photo" accept=".png, .jpg, .jpeg, .PNG, .JPG, .JPEG" />
+                                    <input type="hidden" name="avatar_remove" />
+                                </label>
+                                <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                    data-kt-image-input-action="cancel" data-bs-toggle="tooltip" title="Fotoğrafı İptal Et">
+                                    <i class="ki-duotone ki-cross fs-2"><span class="path1"></span><span class="path2"></span></i>
+                                </span>
+                                <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                    data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Avatarı Kaldır">
+                                    <i class="ki-duotone ki-cross fs-2"><span class="path1"></span><span class="path2"></span></i>
+                                </span>
                             </div>
-                            <!--end::Input group-->
-                            <!--begin::Input group-->
-                            <div class="fv-row mb-7">
-                                <!--begin::Label-->
-                                <label class="required fs-6 fw-semibold mb-2">Ünite</label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <input type="text" id="name" class="form-control form-control-solid" value="' . $value['name'] . '"
-                                    name="name" />
-                                <input type="hidden" id="unit_slug" name="unit_slug" value="' . $slug . '">
-                                <!--end::Input-->
-                            </div>
-                            <!--end::Input group-->
-                            <!--begin::Input group-->
-                            <div class="fv-row mb-7">
-                                <!--begin::Label-->
-                                <label class="required fs-6 fw-semibold mb-2">Kısa Açıklama</label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <input type="text" id="short_desc" class="form-control form-control-solid"
-                                    value="' . $value['short_desc'] . '" name="short_desc" />
-                                <!--end::Input-->
-                            </div>
-                            <!--end::Input group-->
-                            <!--begin::Input group-->
-                            <div class="fv-row mb-7">
-                                <!--begin::Label-->
-                                <label class="required fs-6 fw-semibold mb-2">Ünite Başlangıç Tarihi</label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                    <input type="date" class="form-control form-control-solid fw-bold pe-5" value="' . $startDate . '" placeholder="Ünite Başlangıç Tarihi Seçin" name="unit_start_date" id="unit_start_date">
-                                <!--end::Input-->
-                            </div>
-                            <!--end::Input group-->
-                            <!--begin::Input group-->
-                            <div class="fv-row mb-7">
-                                <!--begin::Label-->
-                                <label class="required fs-6 fw-semibold mb-2">Ünite Bitiş Tarihi</label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                    <input type="date" class="form-control form-control-solid fw-bold pe-5" value="' . $endDate . '" placeholder="Ünite Bitiş Tarihi Seçin" name="unit_end_date" id="unit_end_date">
-                                <!--end::Input-->
-                            </div>
-                            <!--end::Input group-->
-                            <!--begin::Input group-->
-                            <div class="fv-row mb-7">
-                                <!--begin::Label-->
-                                <label class="required fs-6 fw-semibold mb-2">Ünite Sırası</label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                    <input type="number" class="form-control form-control-solid fw-bold pe-5" value=' . $order_no . ' placeholder="Ünite Sırası Girin" name="unit_order" id="unit_order">
-                                <!--end::Input-->
-                            </div>
-                            <!--end::Input group-->
-                            <!--end::Scroll-->
                         </div>
-                        <!--end::Modal body-->
-                        <!--begin::Modal footer-->
-                        <div class="modal-footer flex-center">
-                            <!--begin::Button-->
-                            <button type="reset" id="kt_modal_add_customer_cancel" class="btn btn-light btn-sm me-3">İptal</button>
-                            <!--end::Button-->
-                            <!--begin::Button-->
-                            <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary btn-sm">
-                                <span class="indicator-label">Gönder</span>
-                                <span class="indicator-progress">Lütfen Bekleyin...
-                                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                            </button>
-                            <!--end::Button-->
-                        </div>
-                        <!--end::Modal footer-->
-                </form>
-                ';
+                    </div>
+
+                    <!-- Ünite Adı -->
+                    <div class="fv-row mb-7">
+                        <label class="required fs-6 fw-semibold mb-2">Ünite</label>
+                        <input type="text" id="name" class="form-control form-control-solid" value="' . htmlspecialchars($value['name']) . '" name="name" />
+                        <input type="hidden" id="unit_slug" name="unit_slug" value="' . $slug . '">
+                    </div>
+
+                    <!-- Kısa Açıklama -->
+                    <div class="fv-row mb-7">
+                        <label class="required fs-6 fw-semibold mb-2">Kısa Açıklama</label>
+                        <input type="text" id="short_desc" class="form-control form-control-solid" value="' . htmlspecialchars($value['short_desc']) . '" name="short_desc" />
+                    </div>
+
+                    <!-- Başlangıç Tarihi -->
+                    <div class="fv-row mb-7">
+                        <label class="required fs-6 fw-semibold mb-2">Ünite Başlangıç Tarihi</label>
+                        <input type="date" class="form-control form-control-solid fw-bold pe-5" value="' . $startDate . '" name="unit_start_date" id="unit_start_date">
+                    </div>
+
+                    <!-- Bitiş Tarihi -->
+                    <div class="fv-row mb-7">
+                        <label class="required fs-6 fw-semibold mb-2">Ünite Bitiş Tarihi</label>
+                        <input type="date" class="form-control form-control-solid fw-bold pe-5" value="' . $endDate . '" name="unit_end_date" id="unit_end_date">
+                    </div>
+
+                    <!-- Sıra -->
+                    <div class="fv-row mb-7">
+                        <label class="required fs-6 fw-semibold mb-2">Ünite Sırası</label>
+                        <input type="number" class="form-control form-control-solid fw-bold pe-5" value="' . $order_no . '" name="unit_order" id="unit_order">
+                    </div>
+
+                    <!-- Gelişim Paketleri -->
+                    ' . $packageSelectHtml . '
+
+                </div>
+            </div>
+            <!--begin::Modal footer-->
+            <div class="modal-footer flex-center">
+                <button type="reset" id="kt_modal_add_customer_cancel" class="btn btn-light btn-sm me-3">İptal</button>
+                <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary btn-sm">
+                    <span class="indicator-label">Gönder</span>
+                    <span class="indicator-progress">Lütfen Bekleyin...
+                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                </button>
+            </div>
+        </form>';
         }
+
         echo $lessonList;
     }
+
 
     // List of Unit
 

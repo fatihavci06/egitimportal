@@ -444,6 +444,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         url: 'includes/ajax.php?service=mainSchoolGetUnits',
                         type: 'POST',
                         data: {
+                            class_id:$('#main_school_class_id').val(),
                             lesson_id: lessonId
                         },
                         success: function(units) {

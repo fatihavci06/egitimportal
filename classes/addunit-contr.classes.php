@@ -13,8 +13,9 @@ class AddUnitContr extends AddUnit
 	private $start_date;
 	private $end_date;
 	private $unit_order;
+	private $development_package_str;
 
-	public function __construct($photoSize, $photoName, $fileTmpName, $name, $classes, $lessons, $short_desc, $start_date, $end_date, $unit_order)
+	public function __construct($photoSize, $photoName, $fileTmpName, $name, $classes, $lessons, $short_desc, $start_date, $end_date, $unit_order,$development_package_str )
 	{
 		$this->photoSize = $photoSize;
 		$this->photoName = $photoName;
@@ -26,6 +27,7 @@ class AddUnitContr extends AddUnit
 		$this->start_date = $start_date;
 		$this->end_date = $end_date;
 		$this->unit_order = $unit_order;
+		$this->development_package_str=$development_package_str;
 	}
 
 	public function addUnitDb()
@@ -59,7 +61,7 @@ class AddUnitContr extends AddUnit
 			$imgName = 'uniteDefault.jpg';
 		}
 
-		$this->setUnit($imgName, $slug, $this->name, $this->classes, $this->lessons, $this->short_desc, $this->start_date, $this->end_date, $this->unit_order);
+		$this->setUnit($imgName, $slug, $this->name, $this->classes, $this->lessons, $this->short_desc, $this->start_date, $this->end_date, $this->unit_order,$this->development_package_str);
 	}
 }
 
@@ -75,8 +77,9 @@ class UpdateUnitContr extends AddUnit
 	private $end_date;
 	private $unit_order;
 	private $slug;
+	private $development_package_id;
 
-	public function __construct($photoSize, $photoName, $fileTmpName, $name, $short_desc, $start_date, $end_date, $unit_order, $slug)
+	public function __construct($photoSize, $photoName, $fileTmpName, $name, $short_desc, $start_date, $end_date, $unit_order, $slug,$development_package_id)
 	{
 		$this->photoSize = $photoSize;
 		$this->photoName = $photoName;
@@ -87,6 +90,7 @@ class UpdateUnitContr extends AddUnit
 		$this->end_date = $end_date;
 		$this->unit_order = $unit_order;
 		$this->slug = $slug;
+		$this->development_package_id=$development_package_id;
 	}
 
 	public function updateUnitDb()
@@ -130,6 +134,6 @@ class UpdateUnitContr extends AddUnit
 
 		$unit_id = $unitInfo[0]['id'];
 
-		$this->updateUnit($imgName, $slug, $this->name, $this->short_desc, $this->start_date, $this->end_date, $this->unit_order, $unit_id);
+		$this->updateUnit($imgName, $slug, $this->name, $this->short_desc, $this->start_date, $this->end_date, $this->unit_order, $unit_id,$this->development_package_id);
 	}
 }

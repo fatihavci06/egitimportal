@@ -442,7 +442,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                     lessonSelect.append('<option disabled>Bu sınıfa ait ders bulunamadı.</option>');
                                 }
                             } else {
-                                alert('Dersler yüklenirken hata oluştu!');
+                                alert(response.message);
                             }
                         },
                         error: function() {

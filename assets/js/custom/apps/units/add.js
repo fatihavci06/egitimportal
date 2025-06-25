@@ -79,39 +79,40 @@ var KTModalCustomersAdd = function () {
 
 		// Revalidate country field. For more info, plase visit the official plugin site: https://select2.org/
 		//$(form.querySelector('[name="country"]')).on('change', function () {
-			// Revalidate the field when an option is chosen
-			//validator.revalidateField('country');
+		// Revalidate the field when an option is chosen
+		//validator.revalidateField('country');
 		//});
 
 
 		$(form.querySelector('[name="classes"]')).on('change', function () {
 			$('#lessons').select2('destroy');
-      		$('#lessons').html('<option value="">Ünite Yok</option>');
+			$('#lessons').html('<option value="">Ünite Yok</option>');
 			// Revalidate the field when an option is chosen
 			validator.revalidateField('classes');
-			
-			var classChoose = $("#classes").val();
-			
 
-			  // AJAX isteği gönder
-			  $.ajax({
+			var classChoose = $("#classes").val();
+
+
+			// AJAX isteği gönder
+			$.ajax({
 				allowClear: true,
 				type: "POST",
 				url: "includes/select_for_lesson.inc.php",
-				data: { class: classChoose
-				 },
+				data: {
+					class: classChoose
+				},
 				dataType: "json",
-				success: function(data) {
-				  // İkinci Select2'nin içeriğini güncelle
+				success: function (data) {
+					// İkinci Select2'nin içeriğini güncelle
 
-				  if (data.length > 0) {
-					$('#lessons').select2({ data: data });
-				  } else {
-					$('#lessons').select2('destroy');
-					$('#lessons').html('<option value="">Ders Yok</option>');
-				  }
+					if (data.length > 0) {
+						$('#lessons').select2({ data: data });
+					} else {
+						$('#lessons').select2('destroy');
+						$('#lessons').html('<option value="">Ders Yok</option>');
+					}
 
-				},error: function(xhr, status, error, response) {
+				}, error: function (xhr, status, error, response) {
 					Swal.fire({
 						text: error.responseText + ' ' + xhr.responseText,
 						icon: "error",
@@ -130,7 +131,7 @@ var KTModalCustomersAdd = function () {
 					//alert(status + "0");
 
 				}
-			  });
+			});
 		});
 
 		// Action buttons
@@ -213,7 +214,7 @@ var KTModalCustomersAdd = function () {
 										});
 									}
 								},
-								error: function(xhr, status, error, response) {
+								error: function (xhr, status, error, response) {
 									Swal.fire({
 										text: "Bir sorun oldu!",
 										icon: "error",
@@ -312,6 +313,66 @@ var KTModalCustomersAdd = function () {
 				}
 			});
 		})
+		// Select2 seçim dinleyicisi: package_type === 1 ise AJAX isteği at
+		$(form.querySelector('[name="lessons"]')).on('select2:select', function (e) {
+			const selectedLesson = e.params.data;
+
+			if (selectedLesson.package_type === 1) {
+	$.ajax({
+		url: 'includes/ajax.php?service=getDevelopmentPackageList',
+		type: 'POST',
+		data: { lesson_id: selectedLesson.id },
+		success: function (response) {
+			try {
+				const json = typeof response === 'string' ? JSON.parse(response) : response;
+
+				if (json.status === 'success' && Array.isArray(json.data) && json.data.length > 0) {
+					let html = `<label class="form-label required">Gelişim Paketi Seç</label>
+						<select name="development_package_id[]" id="development_package_id" class="form-select" multiple>`;
+
+					json.data.forEach(pkg => {
+						html += `<option value="${pkg.id}">${pkg.name} - ${parseFloat(pkg.price).toFixed(2)}₺</option>`;
+					});
+
+					html += `</select>`;
+
+					$('#develeopmentPackage').html(html).show(); // göster
+					
+					// Select2 uygula
+					$('#development_package_id').select2({
+						placeholder: "Gelişim Paketi Seçin",
+						allowClear: true
+					});
+				} else {
+					$('#develeopmentPackage').html(`<div class="text-danger">Gelişim paketi bulunamadı.</div>`).show();
+				}
+			} catch (err) {
+				console.error('JSON Parse Hatası:', err);
+				$('#develeopmentPackage').html(`<div class="text-danger">Veri işlenemedi.</div>`).show();
+			}
+		},
+		error: function (xhr) {
+			Swal.fire({
+				text: "İşlem sırasında hata oluştu!",
+				icon: "error",
+				buttonsStyling: false,
+				confirmButtonText: "Tamam, anladım!",
+				customClass: {
+					confirmButton: "btn btn-primary"
+				}
+			});
+			$('#develeopmentPackage').html('').hide();
+		}
+	});
+} else {
+	// Eğer package_type 1 değilse development package alanını gizle
+	$('#develeopmentPackage').html('').hide();
+}
+
+
+
+		});
+
 	}
 
 	return {

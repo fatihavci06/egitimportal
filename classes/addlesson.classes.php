@@ -5,16 +5,16 @@ session_start();
 class AddLesson extends Dbh
 {
 
-	protected function setLesson($slug, $name, $classes)
+	protected function setLesson($slug, $name, $classes,$package_type)
 	{
 		$pdo = $this->connect();
 
 		$pdo->beginTransaction(); // İşlemleri başlat
 
 		try {
-			$stmt = $pdo->prepare('INSERT INTO lessons_lnp SET slug = ?, name = ?, class_id = ?, school_id = ?, teacher_id = ?');
+			$stmt = $pdo->prepare('INSERT INTO lessons_lnp SET slug = ?,package_type=?, name = ?, class_id = ?, school_id = ?, teacher_id = ?');
 
-			if (!$stmt->execute([$slug, $name, $classes, 1, 0])) {
+			if (!$stmt->execute([$slug,$package_type, $name, $classes, 1, 0])) {
 				$stmt = null;
 				//header("location: ../admin.php?error=stmtfailed");
 				exit();

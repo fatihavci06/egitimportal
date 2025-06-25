@@ -627,11 +627,11 @@ class ShowLesson extends Lessons
 
             foreach ($classList as $classId) {
                 if ($class == $classId) {
-                    $units[] = array("id" => $unit["id"], "text" => $unit["name"]);
+                    $units[] = array("id" => $unit["id"], "text" => $unit["name"],"package_type" => $unit["package_type"]);
                 }
             }
         }
-
+        	
         echo json_encode($units);
     }
 

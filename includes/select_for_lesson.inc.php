@@ -17,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
 	$addLesson = new ShowLesson();
 
+
 	// Running error handlers and addLesson
 	$addLesson->showLessonForUnitList($class);
 

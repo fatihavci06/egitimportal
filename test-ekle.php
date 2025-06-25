@@ -12,7 +12,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     include_once "views/pages-head.php";
 
     $chooseUnit = new ShowUnit();
-   
+
 ?>
     <!--end::Head-->
     <!--begin::Body-->
@@ -227,7 +227,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </div>
 
                                         </div>
-                                        
+
                                         <div class="row mt-5 mb-5">
                                             <div class="col-lg-4"></div>
                                             <div class="col-lg-3">
@@ -513,18 +513,22 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         },
                         dataType: 'json',
                         success: function(response) {
-                            var $lessonSelect = $('#lesson_id');
-                            $('#option_count').val(response.data.optionCount);
-                            $lessonSelect.empty();
-                            $lessonSelect.append('<option value="">Ders seçiniz</option>'); // Ders seçeneğini ekle
-                            $.each(response.data.lessons, function(index, lesson) {
-                                $lessonSelect.append('<option value="' + lesson.id + '">' + lesson.name + '</option>');
+                            var lessonSelect = $('#lesson_id');
+                            $('#option_count').val(response.data.length); // response.data bir dizi
+
+                            lessonSelect.empty();
+                            lessonSelect.append('<option value="">Ders seçiniz</option>');
+
+                            $.each(response.data, function(index, lesson) {
+                                lessonSelect.append('<option value="' + lesson.id + '">' + lesson.name + '</option>');
                             });
                         },
                         error: function(xhr) {
                             handleAjaxError(xhr);
                         }
                     });
+
+
                 } else {
                     $('#lesson_id').html('<option value="">Ders seçiniz</option>');
                     $('#unit_id').html('<option value="">Ünite seçiniz</option>');

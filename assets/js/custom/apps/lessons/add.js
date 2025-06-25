@@ -44,7 +44,6 @@ var KTModalCustomersAdd = function () {
 		// Action buttons
 		submitButton.addEventListener('click', function (e) {
 			e.preventDefault();
-
 			// Validate form before submit
 			if (validator) {
 				validator.validate().then(function (status) {
@@ -61,13 +60,16 @@ var KTModalCustomersAdd = function () {
 
 							var name = $("#name").val();
 							var classes = $("#classes").val();
+							var package_type =  document.querySelector('input[name="package_type"]:checked').value;
+
 
 							$.ajax({
 								type: "POST",
 								url: "includes/addlesson.inc.php",
 								data: {
 									name: name,
-									classes: classes
+									classes: classes,
+									package_type:package_type
 								},
 								dataType: "json",
 								success: function (response) {
