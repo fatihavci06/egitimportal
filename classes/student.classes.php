@@ -407,7 +407,7 @@ class Student extends Dbh
 
 	public function getStudentAdditionalPackagesWithName($id)
 	{
-		$stmt = $this->connect()->prepare('SELECT additional_package_payments_lnp.*, packages_lnp.name AS packageName, users_lnp.subscribed_end FROM additional_package_payments_lnp INNER JOIN packages_lnp ON additional_package_payments_lnp.pack_id = packages_lnp.id INNER JOIN users_lnp ON additional_package_payments_lnp.user_id = users_lnp.id WHERE additional_package_payments_lnp.user_id = ?');
+		$stmt = $this->connect()->prepare('SELECT extra_package_payments_lnp.*, extra_packages_lnp.name AS packageName, extra_packages_lnp.type AS packageType, extra_packages_lnp.limit_count AS packageLimit, coaching_guidance_requests_lnp.end_date FROM extra_package_payments_lnp INNER JOIN extra_packages_lnp ON extra_package_payments_lnp.package_id = extra_packages_lnp.id INNER JOIN coaching_guidance_requests_lnp ON extra_package_payments_lnp.user_id = coaching_guidance_requests_lnp.user_id WHERE extra_package_payments_lnp.user_id = ?');
 
 		if (!$stmt->execute(array($id))) {
 			$stmt = null;

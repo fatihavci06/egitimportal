@@ -48,11 +48,11 @@ $userInfo = $teacher->getOneTeacher($getTeacherId);
                                         <li class="breadcrumb-item">
                                             <i class="ki-duotone ki-right fs-4 text-gray-700 mx-n1"></i>
                                         </li>
-                                        <li class="breadcrumb-item text-gray-700">Admin Detay</li>
+                                        <li class="breadcrumb-item text-gray-700">Profilim</li>
                                     </ul>
                                     <h1
                                         class="page-heading d-flex flex-column justify-content-center text-gray-900 fw-bolder fs-1 lh-0">
-                                        Admin Detay
+                                        Profilim
                                     </h1>
                                 </div>
                             </div>

@@ -96,7 +96,7 @@ $timeSpendInfo = $timeSpend->getTimeSpend($userInfo["id"]);
 
         require_once "views/profile/profilim-veli.php";
 
-    } elseif ($_SESSION["role"] == 1002) {
+    } elseif ($_SESSION["role"] == 10002) {
 
         require_once "views/profile/profilim-anaokul-ogrenci.php";
 

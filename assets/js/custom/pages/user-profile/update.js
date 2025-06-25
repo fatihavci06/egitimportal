@@ -9,6 +9,25 @@ var KTModalUpdateCustomer = function () {
     var modal;
     var element;
 
+    const maxLength = 11;
+
+    const inputTel = $('#phone');
+
+    // Karakter girişini engelleme
+    inputTel.on('input', function () {
+        if (this.value.length > maxLength) {
+            this.value = this.value.slice(0, maxLength);
+        }
+    });
+
+    const sayiGirisInput = document.getElementById("phone");
+
+    sayiGirisInput.addEventListener("input", function (e) {
+        const girilenDeger = e.target.value;
+        const sadeceRakam = girilenDeger.replace(/[^0-9]/g, ""); // Sadece rakamları al
+        e.target.value = sadeceRakam; // Giriş değerini güncelle
+    });
+
 
     var initForm = function () {
 
@@ -19,8 +38,8 @@ var KTModalUpdateCustomer = function () {
                     'phone': {
                         validators: {
                             regexp: {
-                                regexp: /^0/,
-                                message: 'Telefon numarası 0 ile başlamalıdır'
+                                regexp: /^05/,
+                                message: 'Telefon numarası 05 ile başlamalıdır'
                             },
                             stringLength: {
                                 min: 11,

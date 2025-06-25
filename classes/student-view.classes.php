@@ -1034,7 +1034,7 @@ class ShowStudent extends Student
 
         if (empty($packagesInfo)) {
             $packagesList = '<tr>
-                                <td class="ps-0" colspan="4">
+                                <td colspan="4">
                                     Alınan Paket Yok!
                                 </td>
                             </tr>';
@@ -1060,7 +1060,7 @@ class ShowStudent extends Student
                             <tr>
                                 <td class="text-gray-800 fw-bold mb-1 fs-6 text-start pe-0">Toplam Ücret</td>
                                 <td></td>
-                                <td>' . str_replace('.', ',', strval($totalPrice)) . '₺</td>
+                                <td class="text-gray-800 fw-bold">' . number_format($totalPrice, 2, ',', '.') . '₺</td>
                                 <td></td>
                             </tr>
                         </tfoot>';
@@ -1092,10 +1092,10 @@ class ShowStudent extends Student
                                         <a href="paket-detay?id=' . $value['id'] . '" class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6 text-start pe-0">' . $value['packageName'] . '</a>
                                     </td>
                                     <td>
-                                        <span class="text-gray-800 fw-bold d-block fs-6 ps-0 text-end">' . str_replace('.', ',', strval($value['pay_amount'])) . '₺</span>
+                                        <span class="text-gray-800 fw-bold d-block fs-6 ps-0 text-end">' . str_replace('.', ',', strval($value['total_amount'])) . '₺</span>
                                     </td>
                                     <td class="text-end pe-0">
-                                        <span class="text-gray-800 fw-bold d-block fs-6">' . $dateFormat->changeDate($value['subscribed_end']) . '</span>
+                                        <span class="text-gray-800 fw-bold d-block fs-6">' . $dateFormat->changeDate($value['end_date']) . '</span>
                                     </td>
                                 </tr>';
             }
@@ -1126,17 +1126,26 @@ class ShowStudent extends Student
         } else {
             foreach ($packagesInfo as $value) {
 
-                $totalPrice += $value['pay_amount'];
+                if($value['packageType'] == 'Özel Ders'){
+                    $yazisi = 'adet';
+                } else {
+                    $yazisi = $value['packageLimit'] . ' aylık';
+                }
+
+                $totalPrice += $value['total_amount'];
 
                 $packagesList .= '<tr>
                                     <td>
                                         <a href="paket-detay?id=' . $value['id'] . '" class="text-hover-primary text-gray-600">' . $value['packageName'] . '</a>
                                     </td>
                                     <td>
-                                        ' . $value['className'] . '
+                                        ' . $value['packageType'] . '
                                     </td>
-                                    <td>' . str_replace('.', ',', strval($value['pay_amount'])) . '₺</td>
-                                    <td class="text-end">' . $dateFormat->changeDate($value['subscribed_end']) . '</td>
+                                    <td>
+                                        ' . $yazisi . '
+                                    </td>
+                                    <td>' . str_replace('.', ',', strval($value['total_amount'])) . '₺</td>
+                                    <td class="text-end">' . $dateFormat->changeDate($value['end_date']) . '</td>
                                 </tr>';
             }
         }
@@ -1144,7 +1153,8 @@ class ShowStudent extends Student
         $packagesList .= '<tr>
                             <td class="text-gray-800 fw-bold mb-1 fs-6 text-start pe-0">Toplam Ücret</td>
                             <td></td>
-                            <td>' . str_replace('.', ',', strval($totalPrice)) . '₺</td>
+                            <td></td>
+                            <td class="text-gray-800 fw-bold">' . number_format($totalPrice, 2, ',', '.') . '₺</td>
                             <td></td>
                         </tr>';
 
@@ -1338,9 +1348,10 @@ class ShowStudent extends Student
         } else {
             foreach ($loginInfo as $value) {
 
-                $logoutTime = $dateFormat->changeDateHour($value['logoutTime']);
-                if ($value['logoutTime'] == '0000-00-00 00:00:00') {
+                if ($value['logoutTime'] == '0000-00-00 00:00:00' or $value['logoutTime'] == null) {
                     $logoutTime = 'Çıkış Bilgisi Yok';
+                } else {
+                    $logoutTime = $dateFormat->changeDateHour($value['logoutTime']);
                 }
 
                 $loginList .= '<tr>
