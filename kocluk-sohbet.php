@@ -79,7 +79,7 @@ include_once "classes/dateformat.classes.php";
                                                             <span class="card-label fw-bold text-gray-800">Mesajlar
                                                                 (Koçluk)</span>
                                                             <span class="text-gray-500 mt-1 fw-semibold fs-6">Koçluk
-                                                                wohbet
+                                                                sohbet
                                                                 geçmişiniz</span>
                                                         </h3>
                                                     </div>
@@ -587,7 +587,7 @@ include_once "classes/dateformat.classes.php";
         });
         async function loadConversations() {
             try {
-                const response = await fetch('includes/coaching_chat_handler.inc.php?action=get_conversations');
+                const response = await fetch('includes/chat_coaching_handler.inc.php?action=get_conversations');
                 const data = await response.json();
                 if (data.success) {
                     conversations = data.conversations;
@@ -598,7 +598,7 @@ include_once "classes/dateformat.classes.php";
             }
         }
         // function loadConversations() {
-        //     fetch('includes/coaching_chat_handler.inc.php?action=get_conversations')
+        //     fetch('includes/chat_coaching_handler.inc.php?action=get_conversations')
         //         .then(response => response.json())
         //         .then(data => {
         //             if (data.success) {
@@ -668,7 +668,7 @@ include_once "classes/dateformat.classes.php";
         function loadMessages() {
             if (!currentConversationId) return;
 
-            fetch(`includes/coaching_chat_handler.inc.php?action=get_messages&conversation_id=${currentConversationId}`)
+            fetch(`includes/chat_coaching_handler.inc.php?action=get_messages&conversation_id=${currentConversationId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -787,7 +787,7 @@ include_once "classes/dateformat.classes.php";
 
             formData.append('conversation_id', currentConversationId);
 
-            fetch('includes/coaching_chat_handler.inc.php', {
+            fetch('includes/chat_coaching_handler.inc.php', {
                 method: 'POST',
                 body: formData
             })
@@ -944,7 +944,7 @@ include_once "classes/dateformat.classes.php";
             formData.append('action', 'start_conversation');
             formData.append('other_user_id', userId);
 
-            fetch('includes/coaching_chat_handler.inc.php', {
+            fetch('includes/chat_coaching_handler.inc.php', {
                 method: 'POST',
                 body: formData
             })
