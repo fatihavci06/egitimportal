@@ -15,6 +15,16 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 	$data = $classes->getContent($_GET['q']);
 
 
+
+	$files = $data['files'];
+	$videos = $data['videos'];
+	$wordwalls = $data['wordwall'];
+
+	$data = $data['data'];
+
+
+
+
 	include_once "views/pages-head.php";
 
 ?>
@@ -67,7 +77,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 								<!--begin::Content container-->
 								<div id="kt_app_content_container" class="app-container container-fluid">
 									<!--begin::Card-->
-									<form class="form" action="#" id="kt_modal_add_customer_form" data-kt-redirect="icerikler">
+									<form class="form" action="#" id="kt_modal_add_content_form" data-kt-redirect="icerikler">
 										<div class="card-body pt-5">
 											<input type="hidden" name="content_id" value="<?= $data['id'] ?>">
 
@@ -95,7 +105,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 													<div class="image-input image-input-outline image-input-placeholder <?= empty($data['cover_img']) ? 'image-input-empty' : '' ?>" data-kt-image-input="true">
 														<div class="image-input-wrapper w-100px h-100px"
 															style="background-image: url('<?= !empty($data['cover_img']) ? ltrim(htmlspecialchars($data['cover_img']), './') : '' ?>')">
-															
+
 														</div>
 														<label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Görsel Ekle">
 															<i class="ki-duotone ki-pencil fs-7">
@@ -218,48 +228,58 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 												</select>
 											</div>
 											<div class="row mt-4">
-												<label class="required fs-6 fw-semibold mb-2" for="chooseOne">İçerik Türü</label>
+												<label class="required fs-6 fw-semibold mb-2" for="chooseOne">İçerik Türü </label>
 												<div class="fv-row mb-7 mt-4" id="chooseOne">
+
 													<label>
-														<input class="form-check-input" type="radio" name="secim" value="video_link" <?= (!empty($data['video_link']) && empty($data['file_path']) && empty($data['text_content']) && empty($data['interactive_game_links'])) ? 'checked' : '' ?>> Video URL
+														<input class="form-check-input" type="radio" name="secim" value="video_link"> Video URL
 													</label>
 													<label>
-														<input class="form-check-input ms-10" type="radio" name="secim" value="file_path" <?= (!empty($data['file_path']) && empty($data['video_link']) && empty($data['text_content']) && empty($data['interactive_game_links'])) ? 'checked' : '' ?>> Dosya Yükle
+														<input class="form-check-input ms-10" type="radio" name="secim" value="file_path"> Dosya Yükle
 													</label>
 													<label>
-														<input class="form-check-input ms-10" type="radio" name="secim" value="content" <?= (!empty($data['text_content']) && empty($data['video_link']) && empty($data['file_path']) && empty($data['interactive_game_links'])) ? 'checked' : '' ?>> Text
+														<input class="form-check-input ms-10" type="radio" name="secim" value="content" checked> Text
 													</label>
 													<label>
-														<input class="form-check-input ms-10" type="radio" name="secim" value="wordwall" <?= (!empty($data['interactive_game_links']) && empty($data['video_link']) && empty($data['file_path']) && empty($data['text_content'])) ? 'checked' : '' ?>> Interaktif Oyun
+														<input class="form-check-input ms-10" type="radio" name="secim" value="wordwall"> Interaktif Oyun
 													</label>
 												</div>
 
 												<div id="videoInput" class="mb-4" style="display:none;">
 													<label for="video_url">Video Link (Vimeo):</label>
-													<input type="text" class="form-control" name="video_url" id="video_url" value="<?= htmlspecialchars($data['video_link'] ?? '') ?>">
+													<input type="text" class="form-control" name="video_url" id="video_url" value="<?= htmlspecialchars($videos['video_url']  ?? '') ?>">
 												</div>
 
 												<div id="fileInput" class="mb-4" style="display:none;">
 													<label for="file_path">Dosya Yükle:</label>
 													<input type="file" class="form-control" name="file_path[]" id="files" multiple accept=".xls,.xlsx,.doc,.docx,.ppt,.pptx,.png,.jpeg,.jpg,.svg,.pdf">
 													<div id="existingFiles" class="mt-2">
-														<?php
-														// Eğer $data['file_path'] birden fazla dosyayı noktalı virgülle ayırıyorsa
-														$existingFiles = explode(';', $data['file_path'] ?? '');
-														foreach ($existingFiles as $file) {
-															if (!empty($file)) {
-																// Dosya adını ve yolunu ayarlayın
-																$fileName = basename($file);
-																$filePath = 'path/to/your/files/' . htmlspecialchars($file); // Dosyaların yüklü olduğu gerçek yolu buraya yazın
-																echo "<div class='d-flex align-items-center mb-1'>";
-																echo "<a href='{$filePath}' target='_blank' class='me-2'>" . htmlspecialchars($fileName) . "</a>";
-																echo "<button type='button' class='btn btn-sm btn-danger delete-file-btn' data-file-name='" . htmlspecialchars($file) . "'>Sil</button>";
-																echo "<input type='hidden' name='existing_files[]' value='" . htmlspecialchars($file) . "'>";
-																echo "</div>";
-															}
-														}
-														?>
+														<?php foreach ($files as $file): ?>
+															<div class="border p-3 rounded mb-3" data-file-id="<?= $file['id'] ?>">
+																<div class="mb-2"><strong>Dosya:</strong> <?= htmlspecialchars($file['file_path']) ?></div>
+
+																<div class="row align-items-center">
+																	<!-- Açıklama alanı -->
+																	<div class="col-md-8 mb-2 mb-md-0">
+																		<input type="text" class="form-control form-control-sm file-description-input"
+																			value="<?= htmlspecialchars($file['description']) ?>"
+																			placeholder="Açıklama girin...">
+																	</div>
+
+																	<!-- Tüm butonlar yan yana -->
+																	<div class="col-md-4 text-end">
+																		<div class="d-flex justify-content-end gap-2">
+																			<button class="btn btn-sm btn-success update-description-btn">Güncelle</button>
+																			<a class="btn btn-sm btn-secondary"
+																				href="<?= str_replace('../', '', $file['file_path']) ?>" target="_blank">Görüntüle</a>
+																			<button class="btn btn-sm btn-danger delete-file-btn">Sil</button>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														<?php endforeach; ?>
 													</div>
+
 													<div id="fileDescriptions"></div>
 												</div>
 
@@ -268,13 +288,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 													<div id="dynamicFields">
 														<?php
 														// Eğer $data['interactive_game_links'] JSON string olarak geliyorsa
-														$interactiveGames = json_decode($data['interactive_game_links'] ?? '[]', true);
-														if (!empty($interactiveGames)) {
+														$interactiveGames = $wordwalls;
+														if (count($interactiveGames) > 0) {
+
 															foreach ($interactiveGames as $index => $game) {
 														?>
 																<div class="input-group mb-2" data-index="<?= $index ?>">
-																	<input type="text" name="wordWallTitles[]" class="form-control me-2" placeholder="Başlık" value="<?= htmlspecialchars($game['title'] ?? '') ?>">
-																	<input type="text" name="wordWallUrls[]" class="form-control me-2" placeholder="URL" value="<?= htmlspecialchars($game['url'] ?? '') ?>">
+																	<input type="text" name="wordWallTitles[]" class="form-control me-2" placeholder="Başlık" value="<?= htmlspecialchars($game['wordwall_title'] ?? '') ?>">
+																	<input type="text" name="wordWallUrls[]" class="form-control me-2" placeholder="URL" value="<?= htmlspecialchars($game['wordwall_url'] ?? '') ?>">
 																	<button type="button" class="btn btn-danger removeField">Sil</button>
 																</div>
 															<?php
@@ -588,12 +609,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 				$('#addField').on('click', function() {
 					var newField = `
-            <div class="input-group mb-2" data-index="${dynamicFieldIndex}">
-                <input type="text" name="wordWallTitles[]" class="form-control me-2" placeholder="Başlık">
-                <input type="text" name="wordWallUrls[]" class="form-control me-2" placeholder="URL">
-                <button type="button" class="btn btn-danger removeField">Sil</button>
-            </div>
-        `;
+					<div class="input-group mb-2" data-index="${dynamicFieldIndex}">
+						<input type="text" name="wordWallTitles[]" class="form-control me-2" placeholder="Başlık">
+						<input type="text" name="wordWallUrls[]" class="form-control me-2" placeholder="URL">
+						<button type="button" class="btn btn-danger removeField">Sil</button>
+					</div>
+					`;
 					$('#dynamicFields').append(newField);
 					dynamicFieldIndex++;
 				});
@@ -621,25 +642,24 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 				// Mevcut dosyaları silme düğmeleri için olay dinleyicisi
 				$('#existingFiles').on('click', '.delete-file-btn', function() {
-					var button = $(this);
-					var fileNameToDelete = button.data('file-name');
+					const button = $(this);
+					const fileWrapper = button.closest('[data-file-id]');
+					const fileId = fileWrapper.data('file-id');
 
 					if (confirm("Bu dosyayı silmek istediğinizden emin misiniz?")) {
-						// Sunucuya AJAX isteği göndererek dosyayı sil
 						$.ajax({
-							url: 'api/delete_file.php', // Dosya silme işlemini yapacak PHP dosyasının yolu
+							url: 'includes/ajax.php?service=deleteContentFile',
 							type: 'POST',
 							data: {
-								file_name: fileNameToDelete,
-								content_id: $('input[name="content_id"]').val()
+								id: fileId
 							},
 							dataType: 'json',
 							success: function(response) {
 								if (response.success) {
-									button.closest('.d-flex').remove(); // HTML'den kaldır
 									alert(response.message);
+									location.reload(); // Sayfayı yenile (aynı sayfada kalır)
 								} else {
-									alert("Dosya silinirken bir hata oluştu: " + response.message);
+									alert(response.message);
 								}
 							},
 							error: function(xhr, status, error) {
@@ -649,9 +669,42 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 						});
 					}
 				});
+				document.querySelectorAll('.update-description-btn').forEach(button => {
+					button.addEventListener('click', async function() {
+						const wrapper = this.closest('[data-file-id]');
+						const fileId = wrapper.dataset.fileId;
+						const description = wrapper.querySelector('.file-description-input').value;
+
+						try {
+							const response = await fetch('includes/ajax.php?service=updateFileDescription', {
+								method: 'POST',
+								headers: {
+									'Content-Type': 'application/x-www-form-urlencoded'
+								},
+								body: `id=${fileId}&description=${encodeURIComponent(description)}`
+							});
+
+							const data = await response.json();
+
+							Swal.fire({
+								icon: data.status === 'success' ? 'success' : 'error',
+								text: data.message
+							});
+						} catch (error) {
+							console.error(error);
+							Swal.fire({
+								icon: 'error',
+								text: 'Bir hata oluştu, lütfen tekrar deneyin.'
+							});
+						}
+					});
+				});
+
+
+
 				const submitButton = document.getElementById('updateContent');
 				// Get the form element (still needed to easily get all form data)
-				const form = document.getElementById('kt_modal_add_customer_form');
+				const form = document.getElementById('kt_modal_add_content_form');
 
 				if (submitButton) {
 					// Add click event listener to the button
@@ -663,6 +716,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 						submitButton.disabled = true;
 
 						// Collect all form data using FormData
+						tinymce.triggerSave();
+
+						// Form verisini hazırla
 						const formData = new FormData(form);
 
 						// Conditional Data Handling based on radio button selection

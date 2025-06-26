@@ -4127,6 +4127,7 @@ ORDER BY msu.unit_order asc
         break;
     case 'updateContent':
         try {
+
             $pdo->beginTransaction();
 
             $content_id     = $_POST['content_id'] ?? null;
@@ -4141,12 +4142,13 @@ ORDER BY msu.unit_order asc
             $sub_topics     = $_POST['sub_topics'] ?? null;
             $mcontent       = $_POST['mcontent'] ?? null;
             $video_url       = $_POST['video_url'] ?? null;
-          
+
 
             $file_paths     = $_FILES['file_path'] ?? [];
+            $fileDescriptions = $_POST['file_descriptions'] ?? [];
             $wordWallTitles = $_POST['wordWallTitles'] ?? [];
             $wordWallUrls   = $_POST['wordWallUrls'] ?? [];
-           
+
 
             // Fotoğraf işlemi (örnek)
             $cover_img_path = null;
@@ -4193,13 +4195,13 @@ ORDER BY msu.unit_order asc
 
             // Sonra yeni kayıt ekle
             $insertVideoStmt  = $pdo->prepare("INSERT INTO school_content_videos_url (video_url, school_content_id) VALUES (?, ?)");
-            $insertVideoStmt ->execute([
+            $insertVideoStmt->execute([
                 $video_url,
                 $content_id
             ]);
-         
+
             // Diğer tabloya ekleme (örnek tablo adı: content_meta)
-          
+
             $deleteWordWallStmt = $pdo->prepare("DELETE FROM school_content_wordwall_lnp WHERE school_content_id = ?");
             $deleteWordWallStmt->execute([$content_id]);
 
@@ -4209,25 +4211,36 @@ ORDER BY msu.unit_order asc
             foreach ($wordWallUrls as $index => $url) {
                 $title = $wordWallTitles[$index] ?? ''; // eşleşen başlık varsa al
                 if (!empty($url)) {
-                   
+
                     $insertWordWallStmt->execute([$content_id, $url, $title]);
                 }
-               
             }
 
             // // Dosyaları da saklamak istersen
-            // foreach ($file_paths['name'] ?? [] as $index => $name) {
-            //     if ($file_paths['error'][$index] === 0) {
-            //         $tmpPath = $file_paths['tmp_name'][$index];
-            //         $uploadDir = '../uploads/contents/';
-            //         $filename = uniqid() . '_' . basename($name);
-            //         $uploadPath = $uploadDir . $filename;
+            $uploadDir = '../uploads/contents/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true); // klasör yoksa oluştur
+            }
 
-            //         if (move_uploaded_file($tmpPath, $uploadPath)) {
-            //             $insertMeta->execute([$content_id, 'file_path', $uploadPath]);
-            //         }
-            //     }
-            // }
+            // Açıklamaları formdan al
+
+
+            // Veritabanına hazırlık
+            $insertFileStmt = $pdo->prepare("INSERT INTO school_content_files_lnp (school_content_id, file_path, description) VALUES (?, ?, ?)");
+
+            foreach ($file_paths['name'] ?? [] as $index => $name) {
+                if ($file_paths['error'][$index] === 0) {
+                    $tmpPath = $file_paths['tmp_name'][$index];
+                    $filename = uniqid() . '_' . basename($name);
+                    $uploadPath = $uploadDir . $filename;
+
+                    if (move_uploaded_file($tmpPath, $uploadPath)) {
+                        // İlgili açıklamayı al (index'e göre)
+                        $description = $fileDescriptions[$index] ?? '';
+                        $insertFileStmt->execute([$content_id, $uploadPath, $description]);
+                    }
+                }
+            }
 
             $pdo->commit();
             echo json_encode(['status' => 'success', 'message' => 'İçerik başarıyla güncellendi.']);
@@ -4236,7 +4249,40 @@ ORDER BY msu.unit_order asc
             echo json_encode(['status' => 'error', 'message' => 'Geçersiz servis']);
         }
         break;
+    case 'deleteContentFile':
+        $id = $_POST['id'] ?? null;
+        try {
 
+
+            if ($id) {
+                // (Opsiyonel) dosyayı sunucudan silmek istersen burada path alıp unlink() yapabilirsin
+                $stmt = $pdo->prepare("DELETE FROM school_content_files_lnp WHERE id = ?");
+                $stmt->execute([$id]);
+                echo json_encode(['status' => 'success', 'message' => 'Dosya silindi.']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Dosya ID eksik.']);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Dosya silinirken hata oluştu: ' . $e->getMessage()]);
+        }
+        break;
+    case 'updateFileDescription':
+        $id = $_POST['id'] ?? null;
+        $description = trim($_POST['description'] ?? '');
+
+        if (!$id) {
+            echo json_encode(['status' => 'error', 'message' => 'Geçersiz dosya ID.']);
+            exit;
+        }
+
+        $stmt = $pdo->prepare("UPDATE school_content_files_lnp SET description = ? WHERE id = ?");
+        if ($stmt->execute([$description, $id])) {
+            echo json_encode(['status' => 'success', 'message' => 'Açıklama güncellendi.']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Güncelleme başarısız.']);
+        }
+        exit;
+        break;
 
     default:
         echo json_encode(['status' => 'error', 'message' => 'Geçersiz servis']);

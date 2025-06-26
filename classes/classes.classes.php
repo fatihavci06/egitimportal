@@ -55,7 +55,29 @@ class Classes extends Dbh
 			$stmt = null;
 			exit();
 		}
-		$data = $stmt->fetch(PDO::FETCH_ASSOC);
+		$data['data'] = $stmt->fetch(PDO::FETCH_ASSOC);
+		$id=$data['data']['id'];
+		$stmt2 = $this->connect()->prepare('SELECT * FROM school_content_videos_url WHERE school_content_id = ?');
+		if (!$stmt2->execute([$id])) {
+			$stmt2 = null;
+			exit();
+		}
+		$data['videos'] = $stmt2->fetch(PDO::FETCH_ASSOC);
+
+		$stmt3 = $this->connect()->prepare('SELECT * FROM school_content_wordwall_lnp WHERE school_content_id = ?');
+		if (!$stmt3->execute([$id])) {
+			$stmt3 = null;
+			exit();
+		}
+		$data['wordwall'] = $stmt3->fetchAll(PDO::FETCH_ASSOC);
+		
+
+		$stmt4 = $this->connect()->prepare('SELECT * FROM school_content_files_lnp WHERE school_content_id = ?');
+		if (!$stmt4->execute([$id])) {
+			$stmt4 = null;
+			exit();
+		}
+		$data['files'] = $stmt4->fetchAll(PDO::FETCH_ASSOC);
 		return $data;
 	}
 	public function getCoachStudents($coach_user_id)
