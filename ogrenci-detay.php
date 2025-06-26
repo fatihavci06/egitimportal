@@ -5,15 +5,14 @@ session_start();
 define('GUARD', true);
 if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 8 or $_SESSION['role'] == 4 or $_SESSION['role'] == 3 or $_SESSION['role'] == 5)) {
 	include_once "classes/dbh.classes.php";
-	include "classes/student.classes.php";
-	include "classes/student-view.classes.php";
-	include "classes/school.classes.php";
-	include "classes/timespend.classes.php";
-
 	include_once "classes/classes.classes.php";
 	include_once "classes/classes-view.classes.php";
 	include_once "classes/lessons.classes.php";
 	include_once "classes/lessons-view.classes.php";
+	include "classes/student.classes.php";
+	include "classes/student-view.classes.php";
+	include "classes/school.classes.php";
+	include "classes/timespend.classes.php";
 
 	$studentId = new Student();
 	$student = new ShowStudent();
@@ -695,7 +694,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 												<div class="card-header">
 													<!--begin::Heading-->
 													<div class="card-title">
-														<h3>Alınan Özel Dersler</h3>
+														<h3>Talep Edilen Özel Dersler</h3>
 													</div>
 													<!--end::Heading-->
 													<!--begin::Toolbar-->
@@ -732,7 +731,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																	<th class="min-w-100px">Konu</th>
 																	<th class="min-w-100px">Alt Konu</th>
 																	<th class="min-w-150px">Öğretmen</th>
-																	<th class="min-w-150px">Fiyatı</th>
 																	<th class="min-w-150px">Zaman</th>
 																	<th class="min-w-150px">Durum</th>
 																</tr>
@@ -740,42 +738,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 															<!--end::Thead-->
 															<!--begin::Tbody-->
 															<tbody class="fw-6 fw-semibold text-gray-600">
-																<tr>
-																	<td>
-																		<a href="#"
-																			class="text-hover-primary text-gray-600">Özel
-																			Ders 1</a>
-																	</td>
-																	<td>
-																		1. Sınıf
-																	</td>
-																	<td>Hayat Bilgisi</td>
-																	<td>Doğada Hayat</td>
-																	<td>Konusu</td>
-																	<td>Alt Konusu</td>
-																	<td>Öğretmen A</td>
-																	<td>400₺</td>
-																	<td>20.05.2025</td>
-																	<td>Girdi</td>
-																</tr>
-																<tr>
-																	<td>
-																		<a href="#"
-																			class="text-hover-primary text-gray-600">Özel
-																			Ders 2</a>
-																	</td>
-																	<td>
-																		1. Sınıf
-																	</td>
-																	<td>İngilizce</td>
-																	<td>1. Ünite</td>
-																	<td>Konusu</td>
-																	<td>Alt Konusu</td>
-																	<td>Öğretmen B</td>
-																	<td>400₺</td>
-																	<td>21.05.2025</td>
-																	<td>Girmedi</td>
-																</tr>
+
+																<?php $student->showprivateLessons($getStudentId); ?>
+
 															</tbody>
 															<!--end::Tbody-->
 														</table>
@@ -886,7 +851,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																	<th class="min-w-100px">Tür</th>
 																	<th class="min-w-100px">Süre / Adet</th>
 																	<th class="min-w-150px">Fiyatı</th>
-																	<th class="min-w-150px text-end">Bitiş Tarihi / Kalan Adet</th>
+																	<th class="min-w-150px text-end">Bitiş Tarihi / Kalan</th>
 																</tr>
 															</thead>
 															<!--end::Thead-->

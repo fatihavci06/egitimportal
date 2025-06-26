@@ -258,6 +258,7 @@ class Classes extends Dbh
 	{
 		$sql = 'SELECT
         pr.id,
+		pr.request_status,
         COALESCE(c.name, \'-\') AS class_name,
         COALESCE(l.name, \'-\') AS lesson_name,
         COALESCE(u.name, \'-\') AS unit_name,

@@ -1109,7 +1109,7 @@ class ShowStudent extends Student
     public function showAdditionalPackageDetailsListForStudentDetails($id)
     {
 
-        $packagesInfo = $this->getStudentAdditionalPackagesWithName($id);
+        $packagesInfo = $this->getExtraPackageMyList($id);
 
         $dateFormat = new DateFormat();
 
@@ -1123,7 +1123,7 @@ class ShowStudent extends Student
                                     Alınan Ek Paket Yok!
                                 </td>
                             </tr>';
-        } else {
+        } else {/* 
             foreach ($packagesInfo as $value) {
 
                 if($value['packageType'] == 'Özel Ders'){
@@ -1147,6 +1147,30 @@ class ShowStudent extends Student
                                     <td>' . str_replace('.', ',', strval($value['total_amount'])) . '₺</td>
                                     <td class="text-end">' . $dateFormat->changeDate($value['end_date']) . '</td>
                                 </tr>';
+            } */
+            foreach ($packagesInfo as $value) {
+
+                $totalPrice += $value['total_amount'];
+
+                if ($value['type'] == 'Özel Ders') {
+                    $yazisi = $value['end_date'] . ' adet';
+                } else {
+                    $yazisi = $dateFormat->changeDate($value['end_date']);
+                }
+
+                $packagesList .= '<tr>
+                                    <td>
+                                        ' . $value['name'] . '
+                                    </td>
+                                    <td>
+                                        ' . $value['type'] . '
+                                    </td>
+                                    <td>
+                                        ' . $value['adet'] . '
+                                    </td>
+                                    <td>' . str_replace('.', ',', strval($value['total_amount'])) . '₺</td>
+                                    <td class="text-end">' . $yazisi . '</td>
+                                </tr>';
             }
         }
 
@@ -1159,6 +1183,67 @@ class ShowStudent extends Student
                         </tr>';
 
         echo $packagesList;
+    }
+
+    public function showprivateLessons($id)
+    {
+
+        $showPrivateLessons = new Classes();
+        $data = $showPrivateLessons->getPrivateLessonRequestList($id);
+
+        foreach ($data as $key => $value) {
+            switch ($value['request_status']) {
+                case 0:
+                    $status = 'Beklemede';
+                    break;
+                case 1:
+                    $status = 'Onaylandı';
+                    break;
+                case 2:
+                    $status = 'Reddedildi';
+                    break;
+                case 3:
+                    $status = 'Öğretmen Atandı';
+                    break;
+                case 4:
+                    $status = 'Tamamlandı';
+                    break;
+                case 5:
+                    $status = 'İptal Edildi';
+                    break;
+            }
+
+            $privateLessons = '
+                                <tr>
+                                    <td>
+                                        <a href="#" class="text-hover-primary text-gray-600">Özel Ders ' . $key + 1 . '</a>
+                                    </td>
+                                    <td>
+                                        ' . $value['class_name'] . '
+                                    </td>
+                                    <td>
+                                        ' . $value['lesson_name'] . '
+                                    </td>
+                                    <td>
+                                        ' . $value['unit_name'] . '
+                                    </td>
+                                    <td>
+                                        ' . $value['topic_name'] . '
+                                    </td>
+                                    <td>
+                                        ' . $value['subtopic_name'] . '
+                                    </td>
+                                    <td>
+                                        ' . $value['teacher_full_name'] . '
+                                    </td>
+                                    <td>
+                                        ' . $value['meet_date'] . '
+                                    </td>
+                                    <td>' . $status . '</td>
+                                </tr>';
+
+            echo $privateLessons;
+        }
     }
 
     // List of Students
