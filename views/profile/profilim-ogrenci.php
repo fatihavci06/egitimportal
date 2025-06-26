@@ -333,7 +333,7 @@ $resultProfileT = ($resultProfile == null) ? '-' : $resultProfile;
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="card mb-5 mb-xl-8" id="kt_timeline_widget_2_card">
+                                            <!-- <div class="card mb-5 mb-xl-8" id="kt_timeline_widget_2_card">
                                                 <div class="card-header position-relative py-0 border-bottom-2">
                                                     <ul class="nav nav-stretch nav-pills nav-pills-custom d-flex mt-3">
                                                         <li class="nav-item p-0 ms-0 me-8">
@@ -1151,7 +1151,7 @@ $resultProfileT = ($resultProfile == null) ? '-' : $resultProfile;
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            </div> -->
                                         </div>
                                     </div>
                                 </div>

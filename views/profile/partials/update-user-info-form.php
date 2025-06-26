@@ -215,10 +215,10 @@ $cities = [
                         </div>
                         <div class="fv-row mb-7">
 
-                            <label class="fs-6 fw-semibold mb-2">Posta Kod</label>
+                            <label class="fs-6 fw-semibold mb-2">Posta Kodu</label>
 
                             <input class="form-control form-control-solid" name="postcode" id="postcode"
-                                placeholder="Posta Kod" value="<?= $userInfo['postcode'] ?>" />
+                                placeholder="Posta Kodu" value="<?= $userInfo['postcode'] ?>" />
 
                         </div>
                     </div>

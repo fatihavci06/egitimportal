@@ -66,7 +66,7 @@ $timeDifference = new DateFormat();
             <h3 class="text-white fw-semibold px-9 mt-10 mb-6">Bildirim ve Duyurular
                 <?php
 
-                $notificationInfo = $notification->getNotificationsWithViewStatus($_SESSION['id'], $_SESSION['role'], $_SESSION['class_id']);
+                $notificationInfo = $notification->getNotificationsWithViewStatus($_SESSION['id'], $_SESSION['role'], $_SESSION['class_id'] ?? '');
 
                 $unviewedNotifications = array_filter($notificationInfo, function ($notif) {
                     return isset($notif['is_viewed']) && $notif['is_viewed'] == 0;
@@ -75,7 +75,7 @@ $timeDifference = new DateFormat();
                 $totalNotification = count($unviewedNotifications);
 
 
-                $anouncementInfo = $anouncement->getAnnouncementsWithViewStatus($_SESSION['id'], $_SESSION['role'], $_SESSION['class_id']);
+                $anouncementInfo = $anouncement->getAnnouncementsWithViewStatus($_SESSION['id'], $_SESSION['role'], $_SESSION['class_id'] ?? '');
 
                 $unviewedAnnouncements = array_filter($anouncementInfo, function ($annonce) {
                     return isset($annonce['viewed_at']) && $annonce['viewed_at'] == 0;

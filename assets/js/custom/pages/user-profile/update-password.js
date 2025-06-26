@@ -182,8 +182,8 @@ var KTModalUpdatePassword = function () {
             }).then(function (result) {
                 if (result.value) {
                     form.reset(); // Reset form	
-                    passwordMeter.reset();
-                    modal.hide(); // Hide modal				
+                    modal.hide(); // Hide modal	
+                    passwordMeter.reset();			
                 } else if (result.dismiss === 'cancel') {
                     Swal.fire({
                         text: "Formunuz iptal edilmedi!.",
@@ -202,7 +202,7 @@ var KTModalUpdatePassword = function () {
             e.preventDefault();
 
             Swal.fire({
-                text: "İptal etmek istediğinizden emin misiniz??",
+                text: "İptal etmek istediğinizden emin misiniz?",
                 icon: "warning",
                 showCancelButton: true,
                 buttonsStyling: false,

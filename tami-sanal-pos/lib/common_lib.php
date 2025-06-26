@@ -1,8 +1,8 @@
 <?php
 $serviceEndpoint = "https://sandbox-paymentapi.tami.com.tr";
-$merchantId = "77006952";
-$terminalId = "84006955";
-$secretKey = "ff7d4895-0c32-4f48-86ab-fb9ecca9f3d7";
+$merchantId = "77006950";
+$terminalId = "84006953";
+$secretKey = "0edad05a-7ea7-40f1-a80c-d600121ca51b";
 $fixedKidValue = '33124ff0-0b19-4cf9-b002-13a35eae865b';
 $fixedKValue = '87919a8f-957b-427b-ae12-167622ab52b5';
 $callbackUrl = "https://gbtunelemulator-d.fw.garantibbva.com.tr/secure3d";

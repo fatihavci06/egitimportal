@@ -407,7 +407,7 @@ class Student extends Dbh
 
 	public function getStudentAdditionalPackagesWithName($id)
 	{
-		$stmt = $this->connect()->prepare('SELECT additional_package_payments_lnp.*, packages_lnp.name AS packageName, users_lnp.subscribed_end FROM additional_package_payments_lnp INNER JOIN packages_lnp ON additional_package_payments_lnp.pack_id = packages_lnp.id INNER JOIN users_lnp ON additional_package_payments_lnp.user_id = users_lnp.id WHERE additional_package_payments_lnp.user_id = ?');
+		$stmt = $this->connect()->prepare('SELECT extra_package_payments_lnp.*, extra_packages_lnp.name AS packageName, extra_packages_lnp.type AS packageType, extra_packages_lnp.limit_count AS packageLimit, coaching_guidance_requests_lnp.end_date FROM extra_package_payments_lnp INNER JOIN extra_packages_lnp ON extra_package_payments_lnp.package_id = extra_packages_lnp.id INNER JOIN coaching_guidance_requests_lnp ON extra_package_payments_lnp.user_id = coaching_guidance_requests_lnp.user_id WHERE extra_package_payments_lnp.user_id = ?');
 
 		if (!$stmt->execute(array($id))) {
 			$stmt = null;
@@ -417,6 +417,75 @@ class Student extends Dbh
 		$studentPackages = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		return $studentPackages;
 		$stmt = null;
+	}
+
+	public function getExtraPackageMyList($id)
+	{
+		// 1. Özel Ders Bilgisi
+		$sql1 = "
+        SELECT ep.name AS name, 
+            IFNULL(SUM(ep.limit_count), 0) AS total_limit,
+            (
+                SELECT COUNT(*) 
+                FROM private_lesson_requests_lnp 
+                WHERE student_user_id = :user_id
+            ) AS total_used,
+            IFNULL(SUM(ep.limit_count), 0) - (
+                SELECT COUNT(*) 
+                FROM private_lesson_requests_lnp 
+                WHERE student_user_id = :user_id
+            ) AS remaining,
+			 SUM(epp.total_amount) AS total_amount
+        FROM extra_package_payments_lnp epp
+        INNER JOIN extra_packages_lnp ep ON ep.id = epp.package_id
+        WHERE epp.user_id = :user_id;
+    ";
+
+		$stmt1 = $this->connect()->prepare($sql1);
+		$stmt1->bindParam(':user_id', $id, PDO::PARAM_INT);
+		$stmt1->execute();
+		$result1 = $stmt1->fetch(PDO::FETCH_ASSOC);
+
+		$data = [];
+
+		$data[] = [
+			'name' => '-',
+			'type' => 'Özel Ders',
+			'total_amount' => $result1['total_amount'],
+			'adet' => $result1['remaining'] + $result1['total_used'] . ' adet',
+			'end_date' => $result1['remaining']
+		];
+
+		// 2. Koçluk/Rehberlik Paket Bilgileri
+		$sql2 = "
+        SELECT 
+            ep.name, 
+            ep.type, 
+			ep.limit_count,
+			epp.total_amount,
+            IF(cgr.end_date IS NULL, '-', DATE_FORMAT(cgr.end_date, '%d-%m-%Y %H:%i')) AS end_date 
+        FROM extra_package_payments_lnp epp 
+        INNER JOIN extra_packages_lnp ep ON ep.id = epp.package_id 
+        INNER JOIN coaching_guidance_requests_lnp cgr ON cgr.package_id = ep.id 
+        WHERE ep.type IN ('Koçluk', 'Rehberlik') AND epp.user_id = :user_id2;
+    ";
+
+		$stmt2 = $this->connect()->prepare($sql2);
+		$stmt2->bindParam(':user_id2', $id, PDO::PARAM_INT);
+		$stmt2->execute();
+		$result2 = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+
+		foreach ($result2 as $row) {
+			$data[] = [
+				'name' => $row['name'],
+				'type' => $row['type'],
+				'total_amount' => $row['total_amount'],
+				'adet' => $row['limit_count'] . ' aylık',
+				'end_date' => $row['end_date']
+			];
+		}
+
+		return $data;
 	}
 
 	public function getStudentLoginInfo($id)
