@@ -89,13 +89,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <div class="modal-dialog">
                                                         <div class="modal-content">
 
-                                                            <!-- Modal Başlık -->
                                                             <div class="modal-header">
                                                                 <h5 class="modal-title" id="exampleModalLabel">Ders Ekle</h5>
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
                                                             </div>
 
-                                                            <!-- Modal İçeriği -->
                                                             <div class="modal-body">
 
                                                                 <div class="mb-3">
@@ -109,15 +107,27 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                         <?php endforeach; ?>
                                                                     </select>
                                                                 </div>
-
+                                                                <div class="mb-3">
+                                                                    <label class="required form-label">Paket Tipi</label>
+                                                                    <div>
+                                                                        <div class="form-check form-check-inline">
+                                                                            <input class="form-check-input" type="radio" name="packageType" id="packageTypeStandard" value="0" checked>
+                                                                            <label class="form-check-label" for="packageTypeStandard">Standart Paket</label>
+                                                                        </div>
+                                                                        <div class="form-check form-check-inline">
+                                                                            <input class="form-check-input" type="radio" name="packageType" id="packageTypeGelisim" value="1">
+                                                                            <label class="form-check-label" for="packageTypeGelisim">Gelişim Paketi</label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                                 <div class="mb-3">
                                                                     <label for="lessonName" class=" required form-label">Ders Adı</label>
                                                                     <input type="text" class="form-control" id="lessonName" placeholder="Ders Adı">
                                                                 </div>
 
+
                                                             </div>
 
-                                                            <!-- Modal Footer -->
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
                                                                 <button type="button" id="saveLessonBtn" class="btn btn-primary">Kaydet</button>
@@ -173,6 +183,19 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                         <option value="<?= htmlspecialchars($d['id']) ?>"><?= htmlspecialchars($d['name']) ?></option>
                                                                     <?php endforeach; ?>
                                                                 </select>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="required form-label">Paket Tipi</label>
+                                                                <div>
+                                                                    <div class="form-check form-check-inline">
+                                                                        <input class="form-check-input" type="radio" name="packageType" id="packageTypeStandardU" value="0" checked>
+                                                                        <label class="form-check-label" for="packageTypeStandardU">Standart Paket</label>
+                                                                    </div>
+                                                                    <div class="form-check form-check-inline">
+                                                                        <input class="form-check-input" type="radio" name="packageType" id="packageTypeGelisimU" value="1">
+                                                                        <label class="form-check-label" for="packageTypeGelisimU">Gelişim Paketi</label>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                             <div class="mb-3">
                                                                 <label for="lessonName" class=" required form-label">Ders Adı</label>
@@ -331,7 +354,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 // Ders adı ve ID'yi ata
                                 updateLessonModal.querySelector('#lessonName').value = data.data.name;
                                 updateLessonModal.querySelector('#lessonId').value = data.data.id;
+                                updateLessonModal.querySelector('#packageTypeStandardU').checked = String(data.data.package_type) === '0';
+                                updateLessonModal.querySelector('#packageTypeGelisimU').checked = String(data.data.package_type) === '1';
 
+                                console.log(data.data.package_type); // 🔍 debug
                                 // Multiple select için class_id alanını güncelle
                                 const selectElement = updateLessonModal.querySelector('#class_id');
                                 const classIds = data.data.classes.map(item => item.id.toString());
@@ -362,6 +388,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 $('#saveLessonBtn').on('click', function() {
                     const classId = $('#class_id').val();
                     const lessonName = $('#lessonName').val();
+                    const packageType = $('input[name="packageType"]:checked').val();
+
+
 
                     // Basit doğrulama
                     if (!classId || !lessonName) {
@@ -377,7 +406,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     // Form verilerini hazırla
                     const formData = {
                         class_id: classId,
-                        lesson_name: lessonName
+                        lesson_name: lessonName,
+                        package_type: packageType // PHP tarafında package_type olarak alınabilir
                     };
 
                     // AJAX isteği
@@ -419,6 +449,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     const lessonId = $('#updateLessonModal #lessonId').val();
                     const classIds = $('#updateLessonModal #class_id').val(); // multiple seçilen değerler array olarak gelir
                     const lessonName = $('#updateLessonModal #lessonName').val();
+                    const packageType = $('input[name="packageType"]:checked').val();
 
                     console.log({
                         lessonId,
@@ -441,7 +472,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     const formData = {
                         lesson_id: lessonId,
                         lesson_name: lessonName,
-                        class_ids: classIds // PHP tarafında class_ids[] olarak alınabilir
+                        class_ids: classIds, // PHP tarafında class_ids[] olarak alınabilir
+                        package_type: packageType // PHP tarafında package_type olarak alınabilir
                     };
 
                     // AJAX isteği

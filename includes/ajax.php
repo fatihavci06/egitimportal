@@ -2640,6 +2640,8 @@ WHERE t.id = :id";
     case 'mainSchoolLessonAdd':
         $classIdArray = $_POST['class_id'] ?? [];
         $lessonName = $_POST['lesson_name'] ?? null;
+        $packageType = $_POST['package_type'] ?? null;
+
 
         if (empty($classIdArray) || !$lessonName) {
             echo json_encode(['status' => 'error', 'message' => 'Yaş grubu ve ders adı gereklidir.']);
@@ -2654,8 +2656,8 @@ WHERE t.id = :id";
             $pdo->beginTransaction();
 
             // 1. Ders tablosuna ekle
-            $stmt = $pdo->prepare("INSERT INTO main_school_lessons_lnp (name) VALUES (:name)");
-            $stmt->execute([':name' => $lessonName]);
+            $stmt = $pdo->prepare("INSERT INTO main_school_lessons_lnp (name,package_type) VALUES (:name,:package_type)");
+            $stmt->execute([':name' => $lessonName, ':package_type' => $packageType]);
 
             $lessonId = $pdo->lastInsertId();
 
@@ -2727,6 +2729,7 @@ WHERE t.id = :id";
             SELECT 
                 ml.id,
                 ml.name,
+                ml.package_type,
                 mlc.class_id
             FROM main_school_lessons_lnp ml
             INNER JOIN mainschool_lesson_class_id_lnp mlc ON mlc.lesson_id = ml.id
@@ -2745,6 +2748,7 @@ WHERE t.id = :id";
                 $response[] = [
                     'id' => (int)$row['id'],
                     'name' => $row['name'],
+                    'package_type' => $row['package_type'],
                     'class_id' => (int)$row['class_id']
                 ];
             }
@@ -2770,7 +2774,8 @@ WHERE t.id = :id";
             SELECT 
                 ml.id,
                 ml.name,
-                mlc.class_id
+                mlc.class_id,
+                ml.package_type
             FROM main_school_lessons_lnp ml
             INNER JOIN mainschool_lesson_class_id_lnp mlc ON mlc.lesson_id = ml.id
             WHERE ml.id = :lesson_id
@@ -2787,6 +2792,7 @@ WHERE t.id = :id";
             $response = [
                 'id' => $results[0]['id'],
                 'name' => $results[0]['name'],
+                'package_type' => $results[0]['package_type'],
                 'classes' => []
             ];
 
@@ -2808,6 +2814,7 @@ WHERE t.id = :id";
         $lessonId = $_POST['lesson_id'] ?? null;
         $classIds = $_POST['class_ids'] ?? [];
         $lessonName = $_POST['lesson_name'] ?? null;
+        $packageType = $_POST['package_type'] ?? null;
 
         if (!$lessonId || !is_numeric($lessonId) || empty($classIds) || !$lessonName) {
             echo json_encode(['status' => 'error', 'message' => 'Geçersiz ders ID veya eksik bilgiler']);
@@ -2818,9 +2825,10 @@ WHERE t.id = :id";
             $pdo->beginTransaction();
 
             // Dersi güncelle
-            $stmt = $pdo->prepare("UPDATE main_school_lessons_lnp SET name = :name WHERE id = :id");
+            $stmt = $pdo->prepare("UPDATE main_school_lessons_lnp SET name = :name, package_type=:package_type WHERE id = :id");
             $stmt->execute([
                 ':name' => $lessonName,
+                ':package_type' => $packageType,
                 ':id' => $lessonId
             ]);
 
@@ -2854,24 +2862,39 @@ WHERE t.id = :id";
         $lessonId = $_POST['lesson_id'] ?? null;
         $unitName = $_POST['unit_name'] ?? null;
         $classId = $_POST['class_id'] ?? null;
-        if (!$lessonId || !$unitName || !$classId) {
-            echo json_encode(['status' => 'error', 'message' => 'Ders ID, birim adı ve sınıf ID gereklidir.']);
+        $unitOrder = $_POST['unit_order'] ?? null;
+        // development_package_ids artık bir dizi olarak gelebilir
+        $developmentPackageIds = $_POST['development_package_ids'] ?? [];
+
+        // Temel zorunlu alan kontrolü
+        if (!$lessonId || !$unitName || !$classId || !isset($unitOrder)) {
+            echo json_encode(['status' => 'error', 'message' => 'Ders ID, birim adı, sınıf ID ve ünite sırası gereklidir.']);
             exit;
+        }
+
+        // Gelişim Paket ID'lerini noktalı virgülle birleştir
+        // Eğer developmentPackageIds boş veya dizi değilse boş string olarak ayarla
+        $packagesToSave = '';
+        if (!empty($developmentPackageIds) && is_array($developmentPackageIds)) {
+            $packagesToSave = implode(';', $developmentPackageIds);
         }
 
         try {
             $pdo->beginTransaction();
 
-            // 1. Birim tablosuna ekle
+            // Birim tablosuna ekle
+            // development_package_id sütununu da dahil ettik
             $stmt = $pdo->prepare("
-                    INSERT INTO main_school_units_lnp (class_id, lesson_id, name) 
-                    VALUES (:class_id, :lesson_id, :name)
-                ");
+                INSERT INTO main_school_units_lnp (class_id, lesson_id, name, unit_order, development_package_id) 
+                VALUES (:class_id, :lesson_id, :name, :unit_order, :development_package_ids)
+            ");
 
             $stmt->execute([
                 ':class_id' => $classId,
                 ':lesson_id' => $lessonId,
-                ':name' => $unitName
+                ':name' => $unitName,
+                ':unit_order' => $unitOrder,
+                ':development_package_ids' => $packagesToSave // Birleştirilmiş paket ID'lerini kaydet
             ]);
 
             $pdo->commit();
@@ -2879,6 +2902,7 @@ WHERE t.id = :id";
             echo json_encode(['status' => 'success', 'message' => 'Ünite başarıyla kaydedildi.']);
         } catch (Exception $e) {
             $pdo->rollBack();
+            error_log("Ünite kaydetme hatası: " . $e->getMessage() . " - Dosya: " . $e->getFile() . " - Satır: " . $e->getLine());
             echo json_encode([
                 'status' => 'error',
                 'message' => 'Bir hata oluştu: ' . $e->getMessage()
@@ -2916,7 +2940,7 @@ WHERE t.id = :id";
             exit;
         }
         try {
-            $stmt = $pdo->prepare("select msul.id as id ,msul.name unit_name,c.id class_id from main_school_units_lnp msul INNER JOIN classes_lnp c on c.id=msul.class_id where msul.id=:id");
+            $stmt = $pdo->prepare("select msul.id as id ,msul.name unit_name,c.id class_id,msul.unit_order,msul.development_package_id,msul.lesson_id from main_school_units_lnp msul INNER JOIN classes_lnp c on c.id=msul.class_id where msul.id=:id");
             $stmt->execute([':id' => $unitId]);
             $unit = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -2935,20 +2959,46 @@ WHERE t.id = :id";
         $unitName = $_POST['unit_name'] ?? null;
         $lessonId = $_POST['lesson_id'] ?? null;
         $classId = $_POST['class_id'] ?? null;
+        $unitOrder = $_POST['unit_order'] ?? null; // Yeni: unit_order eklendi
+        $developmentPackageIds = $_POST['development_package_ids'] ?? []; // Yeni: development_package_ids eklendi
 
-        if (!$unitId || !$unitName || !$lessonId || !$classId) {
-            echo json_encode(['status' => 'error', 'message' => 'Ünite ID, birim adı, ders ID ve sınıf ID gereklidir.']);
+        // Temel doğrulama
+        if (!$unitId || !$unitName || !$lessonId || !$classId || !$unitOrder) {
+            echo json_encode(['status' => 'error', 'message' => 'Ünite ID, birim adı, ders ID, sınıf ID ve birim sırası gereklidir.']);
             exit;
+        }
+
+        // development_package_ids kontrolü ve formatlama
+        // Eğer development_package_ids bir dizi ise, noktalı virgülle ayrılmış bir string'e çevir.
+        // Eğer null veya boş bir dizi ise, boş string olarak kaydet.
+        $developmentPackageIdString = null;
+        if (is_array($developmentPackageIds) && !empty($developmentPackageIds)) {
+            $developmentPackageIdString = implode(';', $developmentPackageIds);
+        } else {
+            $developmentPackageIdString = ''; // Boş dizi veya null ise boş string olarak kaydet
         }
 
         try {
             $pdo->beginTransaction();
 
-            // 1. Birimi güncelle
-            $stmt = $pdo->prepare("UPDATE main_school_units_lnp SET name = :name, lesson_id = :lesson_id WHERE id = :id");
-            $stmt->execute([':name' => $unitName, ':lesson_id' => $lessonId, ':id' => $unitId]);
+            // Üniteyi güncelle
+            // development_package_id ve unit_order alanları eklendi
+            $stmt = $pdo->prepare("UPDATE main_school_units_lnp SET 
+                                name = :unit_name, 
+                                lesson_id = :lesson_id, 
+                                class_id = :class_id, 
+                                unit_order = :unit_order, 
+                                development_package_id = :development_package_id 
+                                WHERE id = :id");
 
-
+            $stmt->execute([
+                ':unit_name' => $unitName,
+                ':lesson_id' => $lessonId,
+                ':class_id' => $classId, // class_id de eklenmeli
+                ':unit_order' => $unitOrder,
+                ':development_package_id' => $developmentPackageIdString, // String olarak kaydet
+                ':id' => $unitId
+            ]);
 
             $pdo->commit();
 
@@ -2973,9 +3023,10 @@ WHERE t.id = :id";
         try {
             $stmt = $pdo->prepare("
             SELECT *
-            FROM mainschool_lesson_class_id_lnp mlc
-            INNER JOIN main_school_units_lnp msu ON msu.lesson_id = mlc.lesson_id
-            WHERE mlc.lesson_id = :lesson_id AND mlc.class_id = :class_id AND msu.class_id=:class_id
+FROM mainschool_lesson_class_id_lnp mlc
+INNER JOIN main_school_units_lnp msu ON msu.lesson_id = mlc.lesson_id
+WHERE mlc.lesson_id = :lesson_id AND mlc.class_id = :class_id AND msu.class_id = :class_id
+ORDER BY msu.unit_order asc
         ");
 
             $stmt->execute([
@@ -4074,7 +4125,117 @@ WHERE t.id = :id";
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
         break;
+    case 'updateContent':
+        try {
+            $pdo->beginTransaction();
 
+            $content_id     = $_POST['content_id'] ?? null;
+            $photo          = $_FILES['photo'] ?? null;
+            $avatar_remove  = $_POST['avatar_remove'] ?? null;
+            $name           = $_POST['name'] ?? null;
+            $short_desc     = $_POST['short_desc'] ?? null;
+            $classes        = $_POST['classes'] ?? null;
+            $lessons        = $_POST['lessons'] ?? null;
+            $units          = $_POST['units'] ?? null;
+            $topics         = $_POST['topics'] ?? null;
+            $sub_topics     = $_POST['sub_topics'] ?? null;
+            $mcontent       = $_POST['mcontent'] ?? null;
+            $video_url       = $_POST['video_url'] ?? null;
+          
+
+            $file_paths     = $_FILES['file_path'] ?? [];
+            $wordWallTitles = $_POST['wordWallTitles'] ?? [];
+            $wordWallUrls   = $_POST['wordWallUrls'] ?? [];
+           
+
+            // Fotoğraf işlemi (örnek)
+            $cover_img_path = null;
+            if ($photo && $photo['error'] === 0) {
+                $uploadDir = '../uploads/contents/';
+                $filename = uniqid() . '_' . basename($photo['name']);
+                $uploadPath = $uploadDir . $filename;
+
+                if (move_uploaded_file($photo['tmp_name'], $uploadPath)) {
+                    $cover_img_path = $uploadPath;
+                }
+            } elseif ($avatar_remove === '1') {
+                $cover_img_path = null; // avatar silinmiş
+            }
+
+            // content_lnp güncelleme
+            $updateStmt = $pdo->prepare("UPDATE school_content_lnp SET 
+        title = ?, 
+        summary = ?, 
+        class_id = ?, 
+        lesson_id = ?, 
+        unit_id = ?, 
+        topic_id = ?, 
+        subtopic_id = ?, 
+        cover_img = ?, 
+        text_content = ? 
+        WHERE id = ?");
+
+            $updateStmt->execute([
+                $name,
+                $short_desc,
+                $classes,
+                $lessons,
+                $units,
+                $topics,
+                $sub_topics,
+                $cover_img_path,
+                $mcontent,
+                $content_id
+            ]);
+
+            $deleteVideoStmt = $pdo->prepare("DELETE FROM school_content_videos_url WHERE school_content_id = ?");
+            $deleteVideoStmt->execute([$content_id]);
+
+            // Sonra yeni kayıt ekle
+            $insertVideoStmt  = $pdo->prepare("INSERT INTO school_content_videos_url (video_url, school_content_id) VALUES (?, ?)");
+            $insertVideoStmt ->execute([
+                $video_url,
+                $content_id
+            ]);
+         
+            // Diğer tabloya ekleme (örnek tablo adı: content_meta)
+          
+            $deleteWordWallStmt = $pdo->prepare("DELETE FROM school_content_wordwall_lnp WHERE school_content_id = ?");
+            $deleteWordWallStmt->execute([$content_id]);
+
+            // // Yeni verileri ekle
+            $insertWordWallStmt = $pdo->prepare("INSERT INTO school_content_wordwall_lnp (school_content_id, wordwall_url, wordwall_title) VALUES (?, ?, ?)");
+
+            foreach ($wordWallUrls as $index => $url) {
+                $title = $wordWallTitles[$index] ?? ''; // eşleşen başlık varsa al
+                if (!empty($url)) {
+                   
+                    $insertWordWallStmt->execute([$content_id, $url, $title]);
+                }
+               
+            }
+
+            // // Dosyaları da saklamak istersen
+            // foreach ($file_paths['name'] ?? [] as $index => $name) {
+            //     if ($file_paths['error'][$index] === 0) {
+            //         $tmpPath = $file_paths['tmp_name'][$index];
+            //         $uploadDir = '../uploads/contents/';
+            //         $filename = uniqid() . '_' . basename($name);
+            //         $uploadPath = $uploadDir . $filename;
+
+            //         if (move_uploaded_file($tmpPath, $uploadPath)) {
+            //             $insertMeta->execute([$content_id, 'file_path', $uploadPath]);
+            //         }
+            //     }
+            // }
+
+            $pdo->commit();
+            echo json_encode(['status' => 'success', 'message' => 'İçerik başarıyla güncellendi.']);
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            echo json_encode(['status' => 'error', 'message' => 'Geçersiz servis']);
+        }
+        break;
 
 
     default:

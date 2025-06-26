@@ -3,7 +3,7 @@
 class Units extends Dbh
 {
 
-	protected function getUnitsList()
+	public function getUnitsList()
 	{
 
 		if ($_SESSION['role'] == 1) {

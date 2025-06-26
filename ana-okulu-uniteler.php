@@ -85,57 +85,70 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     </button>
 
                                                 </div>
-                                                <div class="modal fade" id="addPreSchoolUnitModal" tabindex="-1" aria-labelledby="addPreSchoolUnitModalLabel" aria-hidden="true">
+                                                <div class="modal fade" id="updateUnitModal" tabindex="-1" aria-labelledby="updateUnitModalLabel" aria-hidden="true">
                                                     <div class="modal-dialog">
                                                         <div class="modal-content">
 
-                                                            <!-- Modal Başlık -->
                                                             <div class="modal-header">
-                                                                <h5 class="modal-title" id="exampleModalLabel">Ünite Ekle</h5>
+                                                                <h5 class="modal-title" id="updateUnitModalLabel">Üniteyi Güncelle</h5>
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
                                                             </div>
 
-                                                            <!-- Modal İçeriği -->
                                                             <div class="modal-body">
+                                                                <form id="updateUnitForm">
+                                                                    <input type="hidden" id="unit_id" name="unit_id" value="">
 
-                                                                <div class="mb-3 ">
-                                                                    <?php
-                                                                    $classList = $class->getMainSchoolClassesList();
+                                                                    <div class="mb-3">
+                                                                        <?php
+                                                                        // Bu kısımda $class nesnesinin tanımlı olduğundan ve getMainSchoolClassesList() metodunun çalıştığından emin olun.
+                                                                        // Bu, sınıf listesini veritabanınızdan çeken gerçek PHP kodunuz olmalıdır.
+                                                                        // Örnek olarak bir sınıf listesi oluşturulmuştur.
+                                                                        $classList = [];
+                                                                        if (isset($class) && method_exists($class, 'getMainSchoolClassesList')) {
+                                                                            $classList = $class->getMainSchoolClassesList();
+                                                                        }
+                                                                        ?>
+                                                                        <label for="class_id" class="required form-label">Yaş / Sınıf </label>
+                                                                        <select class="form-select form-control" id="class_id" name="class_id" required>
+                                                                            <option selected disabled value="">Seçiniz...</option>
+                                                                            <?php foreach ($classList as $d): ?>
+                                                                                <option value="<?= htmlspecialchars($d['id']) ?>"><?= htmlspecialchars($d['name']) ?></option>
+                                                                            <?php endforeach; ?>
+                                                                        </select>
+                                                                    </div>
 
-                                                                    ?>
-                                                                    <label for="selectOption" class="required form-label">Yaş </label>
-                                                                    <select class="form-select form-control" id="class_id" name="class_id">
-                                                                        <option selected disabled>Seçiniz...</option>
-                                                                        <?php foreach ($classList as $d): ?>
-                                                                            <option value="<?= htmlspecialchars($d['id']) ?>"><?= htmlspecialchars($d['name']) ?></option>
-                                                                        <?php endforeach; ?>
+                                                                    <div class="mb-3 mt-3">
+                                                                        <label for="lesson_id" class="required form-label">Ders Adı</label>
+                                                                        <select class="form-select form-control" id="lesson_id" name="lesson_id" required>
+                                                                            <option selected disabled value="">Önce sınıf seçiniz...</option>
+                                                                        </select>
+                                                                    </div>
 
+                                                                    <div class="mb-3" id="developmentPackageGroup" style="display: none;">
 
-                                                                    </select>
-                                                                </div>
-                                                                <div class="mb-3 mt-3">
-                                                                    <label for="lesson_id" class=" required form-label">Ders Adı</label>
-                                                                    <select class="form-select form-control" id="lesson_id" name="lesson_id">
-                                                                        <option selected disabled>Önce sınıf seçiniz...</option>
-                                                                    </select>
-                                                                </div>
+                                                                    </div>
 
-                                                                <div class="mb-3 mt-3">
-                                                                    <label for="unitName" class=" required form-label">Ünite Adı</label>
-                                                                    <input type="text" class="form-control" id="unit_name" placeholder="Ünite Adı">
-                                                                </div>
+                                                                    <div class="mb-3 mt-3">
+                                                                        <label for="unit_name" class="required form-label">Ünite Adı</label>
+                                                                        <input type="text" class="form-control" id="unit_name" name="unit_name" placeholder="Ünite Adı" required>
+                                                                    </div>
 
+                                                                    <div class="mb-3 mt-3">
+                                                                        <label class="required fs-6 fw-semibold mb-2">Ünite Sırası</label>
+                                                                        <input type="number" class="form-control" placeholder="Ünite Sırası Girin" name="unit_order" id="unit_order" required>
+                                                                    </div>
+                                                                </form>
                                                             </div>
 
-                                                            <!-- Modal Footer -->
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
-                                                                <button type="button" id="saveUnitBtn" class="btn btn-primary">Kaydet</button>
+                                                                <button type="button" id="updateUnitBtn" class="btn btn-primary">Güncelle</button>
                                                             </div>
 
                                                         </div>
                                                     </div>
                                                 </div>
+
                                                 <!--end::Toolbar-->
                                                 <!--begin::week actions-->
                                                 <div class="d-flex justify-content-end align-items-center d-none" data-kt-customer-table-toolbar="selected">
@@ -157,73 +170,17 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             <!-- Button trigger modal (id değeri burada veriliyor) -->
 
 
-                                            <!-- Modal -->
 
-
-                                            <div class="modal fade" id="updateUnitModal" tabindex="-1" aria-labelledby="updateUnitModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-
-                                                        <!-- Modal Başlık -->
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="exampleModalLabel">Ünite Güncelle</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
-                                                        </div>
-
-                                                        <!-- Modal İçeriği -->
-                                                        <div class="modal-body">
-
-                                                            <div class="mb-3 ">
-                                                                <?php
-                                                                $classList = $class->getMainSchoolClassesList();
-
-                                                                ?>
-                                                                <label for="selectOption" class="required form-label">Yaş </label>
-                                                                <select class="form-select form-control" id="class_id" name="class_id">
-                                                                    <option selected disabled>Seçiniz...</option>
-                                                                    <?php foreach ($classList as $d): ?>
-                                                                        <option value="<?= htmlspecialchars($d['id']) ?>"><?= htmlspecialchars($d['name']) ?></option>
-                                                                    <?php endforeach; ?>
-
-
-                                                                </select>
-                                                            </div>
-                                                            <div class="mb-3 mt-3">
-                                                                <label for="lesson_id" class=" required form-label">Ders Adı</label>
-                                                                <select class="form-select form-control" id="lesson_id" name="lesson_id">
-                                                                    <option selected disabled>Önce sınıf seçiniz...</option>
-                                                                </select>
-                                                            </div>
-
-                                                            <div class="mb-3 mt-3">
-                                                                <label for="unitName" class=" required form-label">Ünite Adı</label>
-                                                                <input type="text" class="form-control" id="unit_name" placeholder="Ünite Adı">
-                                                                <input type="hidden" id="unit_id" value="">
-                                                            </div>
-
-                                                        </div>
-
-                                                        <!-- Modal Footer -->
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
-                                                            <button type="button" id="updateUnitBtn" class="btn btn-primary">Güncelle</button>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-                                            </div>
 
                                             <!--begin::Table-->
                                             <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_customers_table">
                                                 <thead>
                                                     <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                        <th class="w-10px pe-2">
-                                                            <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                                                <input class="form-check-input" type="checkbox" data-kt-check="true" data-kt-check-target="#kt_customers_table .form-check-input" value="1" />
-                                                            </div>
-                                                        </th>
+                                                       
+                                                        <th class="min-w-125px">Sınıf</th>
                                                         <th class="min-w-125px">Ders</th>
                                                         <th class="min-w-125px">Ünite</th>
+                                                        <th class="min-w-125px">Sıra No</th>
 
                                                         <th class="text-end min-w-70px">İşlemler</th>
                                                     </tr>
@@ -232,13 +189,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <?php
                                                     $list = $class->getMainSchoolUnitList();
 
-                                                                        
+
                                                     foreach ($list as $key => $value): ?>
                                                         <tr>
-                                                            <td>
-                                                                <div class="form-check form-check-sm form-check-custom form-check-solid">
-                                                                    <input class="form-check-input" type="checkbox" value="1" />
-                                                                </div>
+                                                            
+                                                              <td>
+                                                                <a href="#" class="text-gray-800 text-hover-primary mb-1">
+                                                                    <?= htmlspecialchars($value['class_name']) ?>
+                                                                </a>
                                                             </td>
                                                             <td>
                                                                 <a href="#" class="text-gray-800 text-hover-primary mb-1">
@@ -248,6 +206,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             <td>
                                                                 <a href="#" class="text-gray-800 text-hover-primary mb-1">
                                                                     <?= htmlspecialchars($value['lesson_name']) ?>
+                                                                </a>
+                                                            </td>
+                                                           
+                                                            <td>
+                                                                <a href="#" class="text-gray-800 text-hover-primary mb-1">
+                                                                    <?= htmlspecialchars($value['unit_order']) ?>
                                                                 </a>
                                                             </td>
 
@@ -340,251 +304,389 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/js/fatih.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                var updateUnitModal = document.getElementById('updateUnitModal');
+    var updateUnitModal = document.getElementById('updateUnitModal');
+    var developmentPackageGroup = document.getElementById('developmentPackageGroup');
 
-                updateUnitModal.addEventListener('show.bs.modal', function(event) {
-                    var button = event.relatedTarget;
-                    var unitId = button.getAttribute('data-id');
+    let currentDevelopmentPackageIds = [];
+    let currentSelectedLessonId = null;
 
-                    // Form alanlarını temizle
-                    updateUnitModal.querySelector('#class_id').value = '';
-                    updateUnitModal.querySelector('#lesson_id').innerHTML = '<option>Yükleniyor...</option>';
-                    updateUnitModal.querySelector('#unit_name').value = '';
+    updateUnitModal.addEventListener('show.bs.modal', function(event) {
+        var button = event.relatedTarget;
+        var unitId = button.getAttribute('data-id');
 
-                    // 1) Önce birim (unit) verisini çek
-                    fetch('includes/ajax.php?service=mainSchoolGetUnit&id=' + unitId)
-                        .then(response => response.json())
-                        .then(unitData => {
-                            if (unitData.status === 'success') {
-                                var classId = unitData.data.class_id;
-                                var selectedLessonId = unitData.data.lesson_id;
+        // Form alanlarını temizle ve sıfırla
+        $('#updateUnitModal #class_id').val('').trigger('change'); // class_id change'i tetikle
+        
+        // lesson_id'yi standart select olarak temizle
+        $('#updateUnitModal #lesson_id').empty().append('<option value="">Dersler Yükleniyor...</option>');
+        $('#updateUnitModal #unit_name').val('');
+        $('#updateUnitModal #unit_order').val('');
 
-                                // Form alanlarını doldur
-                                updateUnitModal.querySelector('#class_id').value = classId;
-                                updateUnitModal.querySelector('#unit_name').value = unitData.data.unit_name;
-                                updateUnitModal.querySelector('#unit_id').value = unitData.data.id;
-                                // 2) Şimdi class_id'ye bağlı lessonları çek
-                                fetch('includes/ajax.php?service=mainSchoolGetLessons', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/x-www-form-urlencoded',
-                                        },
-                                        body: 'class_id=' + encodeURIComponent(classId)
-                                    })
-                                    .then(response => response.json())
-                                    .then(lessonData => {
-                                        var lessonSelect = updateUnitModal.querySelector('#lesson_id');
-                                        lessonSelect.innerHTML = ''; // Temizle
+        // Gelişim paketi grubunu başlangıçta gizle ve temizle
+        if (developmentPackageGroup) {
+            developmentPackageGroup.style.display = 'none';
+            // Select2'yi kaldırıp sonra temizle
+            var devPackageSelect = $('#updateUnitModal #development_package_id');
+            if (devPackageSelect.data('select2')) { // Select2 başlatıldıysa kaldır
+                devPackageSelect.select2('destroy');
+            }
+            devPackageSelect.empty(); 
+        }
 
-                                        if (lessonData.status === 'success' && lessonData.data.length > 0) {
-                                            lessonData.data.forEach(function(lesson) {
-                                                var option = document.createElement('option');
-                                                option.value = lesson.id;
-                                                option.textContent = lesson.name;
+        currentDevelopmentPackageIds = [];
+        currentSelectedLessonId = null;
 
-                                                if (lesson.id == selectedLessonId) {
-                                                    option.selected = true;
-                                                }
+        // 1) Ünite verisini çek
+        fetch('includes/ajax.php?service=mainSchoolGetUnit&id=' + unitId)
+            .then(response => response.json())
+            .then(unitData => {
+                if (unitData.status === 'success') {
+                    var classId = unitData.data.class_id;
+                    currentSelectedLessonId = unitData.data.lesson_id;
+                    currentDevelopmentPackageIds = unitData.data.development_package_id ?
+                        unitData.data.development_package_id.split(';') : [];
 
-                                                lessonSelect.appendChild(option);
-                                            });
-                                        } else {
-                                            lessonSelect.innerHTML = '<option disabled>Ders bulunamadı</option>';
-                                        }
-                                    })
-                                    .catch(err => {
-                                        console.error('Dersler alınamadı', err);
-                                        updateUnitModal.querySelector('#lesson_id').innerHTML = '<option disabled>Hata oluştu</option>';
-                                    });
+                    // Temel form alanlarını doldur
+                    $('#updateUnitModal #unit_id').val(unitData.data.id);
+                    $('#updateUnitModal #unit_name').val(unitData.data.unit_name);
+                    $('#updateUnitModal #unit_order').val(unitData.data.unit_order);
 
+                    // class_id'yi ayarla ve değişimi tetikle
+                    // Bu, dersleri yükleyecektir
+                    $('#updateUnitModal #class_id').val(classId).trigger('change');
 
-                            } else {
-                                alert('Veri alınamadı.');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Sunucu hatası:', error);
-                            alert('Sunucu hatası.');
-                        });
-                });
+                } else {
+                    alert('Ünite verisi alınamadı.');
+                }
+            })
+            .catch(error => {
+                console.error('Sunucu hatası (unitData):', error);
+                alert('Sunucu hatası: ' + error.message);
             });
+    });
 
-            $(document).ready(function() {
+    // --- class_id değişti: Dersleri yükle ---
+    $('#class_id').on('change', function() {
+        var selectedClassId = $(this).val();
+        var lessonSelect = $('#lesson_id');
+        var developmentPackageContainer = $('#developmentPackageGroup');
 
+        // lesson_id'yi standart select olarak temizle ve varsayılan metni ayarla
+        lessonSelect.empty().append('<option value="">Dersler Yükleniyor...</option>');
+        lessonSelect.prop('disabled', true); // Geçici olarak devre dışı bırak
 
-                $('#class_id').on('change', function() {
-                    var selectedClassId = $(this).val();
+        developmentPackageContainer.empty().hide(); // Gelişim paketi alanını temizle ve gizle
 
-                    $.ajax({
-                        url: 'includes/ajax.php?service=mainSchoolGetLessons', // Backend dosyanın yolu
-                        type: 'POST',
-                        data: {
-                            class_id: selectedClassId
-                        },
-                        dataType: 'json', // JSON olarak bekliyoruz
-                        success: function(response) {
-                            if (response.status === 'success') {
-                                var lessonSelect = $('#lesson_id');
-                                lessonSelect.empty(); // Önceki optionları temizle
+        if (!selectedClassId) { // Sınıf seçilmemişse
+            lessonSelect.empty().append('<option value="">Lütfen sınıf seçin.</option>');
+            lessonSelect.prop('disabled', false); // Tekrar etkinleştir
+            return;
+        }
 
-                                if (response.data.length > 0) {
-                                    lessonSelect.append('<option selected disabled>Ders Seçiniz...</option>');
-
-                                    // Gelen datayı option olarak ekle
-                                    $.each(response.data, function(index, lesson) {
-                                        lessonSelect.append(
-                                            $('<option></option>')
-                                            .val(lesson.id)
-                                            .text(lesson.name)
-                                        );
-                                    });
-                                } else {
-                                    lessonSelect.append('<option disabled>Bu sınıfa ait ders bulunamadı.</option>');
-                                }
-                            } else {
-                                alert(response.message);
-                            }
-                        },
-                        error: function() {
-                            alert('Sunucu ile iletişimde hata oluştu!');
-                        }
+        $.ajax({
+            url: 'includes/ajax.php?service=mainSchoolGetLessons',
+            type: 'POST',
+            data: { class_id: selectedClassId },
+            dataType: 'json',
+            success: function(response) {
+                lessonSelect.empty(); // Mevcut seçenekleri temizle
+                if (response.status === 'success' && response.data.length > 0) {
+                    lessonSelect.append('<option value="">Ders Seçiniz...</option>'); // Varsayılan boş seçenek
+                    $.each(response.data, function(index, lesson) {
+                        lessonSelect.append(
+                            $('<option></option>')
+                            .val(lesson.id)
+                            .text(lesson.name)
+                            .data('package-type', lesson.package_type)
+                        );
                     });
-                });
-                const table = $('#kt_customers_table').DataTable();
+                    lessonSelect.prop('disabled', false); // Etkinleştir
 
-                // Arama kutusunu bağla
-                $('[data-kt-customer-table-filter="search"]').on('keyup', function() {
-                    table.search(this.value).draw();
-                });
-                $('#saveUnitBtn').on('click', function() {
-                    const classId = $('#class_id').val();
-                    const lessonId = $('#lesson_id').val();
-                    const unitName = $('#unit_name').val();
-                    console.log({
-                        classId,
-                        lessonId,
-                        unitName
-                    }); // 🔍 debug
-                    // Basit doğrulama
-                    if (!classId || !lessonId || !unitName) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Form Hatası',
-                            text: 'Lütfen tüm alanları doldurun.',
-                            confirmButtonText: 'Tamam'
-                        });
-                        return;
+                    // *** ÖNEMLİ DEĞİŞİKLİK BURADA ***
+                    // Eğer güncelleme modalı içiniz ve önceden seçili bir ders ID'si varsa
+                    if (lessonSelect.closest('#updateUnitModal').length && currentSelectedLessonId) {
+                        // Seçenek gerçekten varsa seçimi yap
+                        if (lessonSelect.find('option[value="' + currentSelectedLessonId + '"]').length) {
+                             lessonSelect.val(currentSelectedLessonId); // Seçimi yap
+                        } else {
+                            console.warn("Önceden seçilmiş ders ID'si " + currentSelectedLessonId + " yüklenen dersler arasında bulunamadı.");
+                        }
+                        // Ders seçimi yapıldıktan sonra değişim olayını manuel olarak tetikle
+                        // Bu, gelişim paketi yükleme mantığını devreye sokacak.
+                        lessonSelect.trigger('change');
+                        currentSelectedLessonId = null; // Kullandıktan sonra sıfırla
+                    } else {
+                        // Eğer güncelleme değilse veya seçili ders yoksa, yine de change'i tetikle
+                        // Gelişim paketi alanının durumunu kontrol etmek için
+                        lessonSelect.trigger('change');
                     }
 
-                    // Form verilerini hazırla
-                    const formData = {
-                        class_id: classId,
-                        lesson_id: lessonId,
-                        unit_name: unitName
-                    };
+                } else {
+                    lessonSelect.append('<option value="">Bu sınıfa ait ders bulunamadı.</option>');
+                    lessonSelect.prop('disabled', true); // Devre dışı bırak
+                }
+            },
+            error: function() {
+                lessonSelect.empty().append('<option value="">Dersler yüklenirken hata oluştu!</option>');
+                lessonSelect.prop('disabled', true);
+                alert('Sunucu ile iletişimde hata oluştu!');
+            }
+        });
+    });
 
-                    // AJAX isteği
-                    $.ajax({
-                        url: 'includes/ajax.php?service=mainSchoolUnitAdd',
-                        type: 'POST',
-                        dataType: 'json',
-                        data: formData,
-                        success: function(response) {
-                            if (response.status === 'success') {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Başarılı',
-                                    text: 'Form başarıyla gönderildi!',
-                                    confirmButtonText: 'Tamam'
-                                }).then(() => {
-                                    location.reload();
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Hata',
-                                    text: response.message || 'Beklenmeyen bir hata oluştu.',
-                                    confirmButtonText: 'Tamam'
-                                });
-                            }
-                        },
-                        error: function(xhr) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Sunucu Hatası',
-                                text: 'Sunucuyla iletişim kurulamadı.',
-                                confirmButtonText: 'Tamam'
-                            });
-                        }
-                    });
-                });
-                $('#updateUnitBtn').on('click', function() {
-                    const lessonId = $('#updateUnitModal #lesson_id').val();
-                    const classId = $('#updateUnitModal #class_id').val();
-                    const unitName = $('#updateUnitModal #unit_name').val();
-                    const unitId = $('#updateUnitModal #unit_id').val(); // Modal açılırken set edilen id
-                    console.log({
-                        lessonId,
-                        classId,
-                        unitName
-                    }); // 🔍 debug
+    // --- lesson_id değişti: package_type'ı kontrol et ve paket listesini yükle ---
+    $('#lesson_id').on('change', function() {
+        var selectedOption = $(this).find('option:selected');
+        var packageType = selectedOption.data('package-type');
+        var selectedLessonId = selectedOption.val();
+        var developmentPackageContainer = $('#developmentPackageGroup');
 
+        developmentPackageContainer.empty().hide(); // Her zaman temizle ve gizle
 
-                    // Basit doğrulama
-                    if (!classId || !unitName || !lessonId) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Form Hatası',
-                            text: 'Lütfen tüm alanları doldurun.',
-                            confirmButtonText: 'Tamam'
+        if (!selectedLessonId) { // Ders seçilmemişse
+            return;
+        }
+
+        if (packageType == 1) {
+            $.ajax({
+                url: 'includes/ajax.php?service=getDevelopmentPackageList',
+                type: 'POST',
+                data: { lesson_id: selectedLessonId },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success' && Array.isArray(response.data) && response.data.length > 0) {
+                        let html = `
+                            <label for="development_package_id" class="required form-label">Gelişim Paketi Seç</label>
+                            <select name="development_package_id[]" id="development_package_id" class="form-select" multiple="multiple">
+                        `;
+                        response.data.forEach(pkg => {
+                            html += `<option value="${pkg.id}">${pkg.name} - ${parseFloat(pkg.price).toFixed(2)}₺</option>`;
                         });
-                        return;
-                    }
+                        html += `
+                            </select>
+                            <div class="form-text">Birden fazla paket seçebilirsiniz.</div>
+                        `;
+                        developmentPackageContainer.html(html).show();
 
-                    // Form verilerini hazırla
-                    const formData = {
-                        unit_id:unitId,
-                        lesson_id: lessonId,
-                        class_id: classId,
-                        unit_name: unitName
-                    };
+                        // Select2'yi yeni oluşturulan elementte başlat (BURAYI KORUYORUZ, Gelişim Paketi Select2 olacak)
+                        var devPackageSelect = $('#development_package_id');
+                        devPackageSelect.select2({
+                            placeholder: "Gelişim Paketi Seçin",
+                            allowClear: true,
+                            tags: false
+                        });
 
-                    // AJAX isteği
-                    $.ajax({
-                        url: 'includes/ajax.php?service=mainSchoolUnitUpdate',
-                        type: 'POST',
-                        dataType: 'json',
-                        data: formData,
-                        success: function(response) {
-                            if (response.status === 'success') {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Başarılı',
-                                    text: 'Form başarıyla gönderildi!',
-                                    confirmButtonText: 'Tamam'
-                                }).then(() => {
-                                    location.reload();
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Hata',
-                                    text: response.message || 'Beklenmeyen bir hata oluştu.',
-                                    confirmButtonText: 'Tamam'
-                                });
-                            }
-                        },
-                        error: function(xhr) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Sunucu Hatası',
-                                text: 'Sunucuyla iletişim kurulamadı.',
-                                confirmButtonText: 'Tamam'
-                            });
+                        // *** ÖNEMLİ DEĞİŞİKLİK BURADA ***
+                        // Sadece güncelleme modalındaysak ve depolanmış değerler varsa uygula
+                        if (devPackageSelect.closest('#updateUnitModal').length && currentDevelopmentPackageIds.length > 0) {
+                            devPackageSelect.val(currentDevelopmentPackageIds).trigger('change');
+                            currentDevelopmentPackageIds = [];
                         }
-                    });
-                })
+
+                    } else {
+                        developmentPackageContainer.html(`
+                            <div class="alert alert-warning" role="alert">
+                                Bu derse ait gelişim paketi bulunamadı.
+                            </div>
+                        `).show();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Hatası (getDevelopmentPackageList):', status, error, xhr.responseText);
+                    alert('Gelişim paketleri yüklenirken bir hata oluştu: ' + error);
+                    developmentPackageContainer.empty().hide();
+                }
             });
+        } else {
+            developmentPackageContainer.empty().hide();
+        }
+    });
+
+    // ... (rest of your existing code for saveUnitBtn, updateUnitBtn, DataTable search remains the same) ...
+
+    const table = $('#kt_customers_table').DataTable();
+    $('[data-kt-customer-table-filter="search"]').on('keyup', function() {
+        table.search(this.value).draw();
+    });
+
+    $('#saveUnitBtn').on('click', function() {
+        const classId = $('#addPreSchoolUnitModal #class_id').val();
+        const lessonId = $('#addPreSchoolUnitModal #lesson_id').val(); // Standart select değeri
+        const unitName = $('#addPreSchoolUnitModal #unit_name').val();
+        const unitOrder = $('#addPreSchoolUnitModal #unit_order').val();
+
+        const selectedLessonOption = $('#addPreSchoolUnitModal #lesson_id').find('option:selected');
+        const packageType = selectedLessonOption.data('package-type');
+
+        let developmentPackageIds = [];
+        if (packageType == 1 && $('#addPreSchoolUnitModal #development_package_id').length > 0) {
+            developmentPackageIds = $('#addPreSchoolUnitModal #development_package_id').val();
+            if (developmentPackageIds === null) {
+                developmentPackageIds = [];
+            }
+        }
+
+        console.log({ classId, lessonId, unitName, unitOrder, packageType, developmentPackageIds });
+
+        if (!classId || !lessonId || !unitName || !unitOrder) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Form Hatası',
+                text: 'Lütfen tüm zorunlu alanları doldurun.',
+                confirmButtonText: 'Tamam'
+            });
+            return;
+        }
+
+        if (packageType == 1 && developmentPackageIds.length === 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Paket Seçimi Hatası',
+                text: 'Bu ders için en az bir gelişim paketi seçmelisiniz.',
+                confirmButtonText: 'Tamam'
+            });
+            return;
+        }
+
+        const formData = {
+            class_id: classId,
+            lesson_id: lessonId,
+            unit_name: unitName,
+            unit_order: unitOrder,
+            ...(packageType == 1 && {
+                development_package_ids: developmentPackageIds
+            })
+        };
+
+        $.ajax({
+            url: 'includes/ajax.php?service=mainSchoolUnitAdd',
+            type: 'POST',
+            dataType: 'json',
+            data: formData,
+            success: function(response) {
+                if (response.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Başarılı',
+                        text: 'Ünite başarıyla eklendi!',
+                        confirmButtonText: 'Tamam'
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Hata',
+                        text: response.message || 'Beklenmeyen bir hata oluştu.',
+                        confirmButtonText: 'Tamam'
+                    });
+                }
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Sunucu Hatası',
+                    text: 'Sunucuyla iletişim kurulamadı. Lütfen daha sonra tekrar deneyin.',
+                    confirmButtonText: 'Tamam'
+                });
+            }
+        });
+    });
+
+    $('#updateUnitBtn').on('click', function() {
+        const unitId = $('#updateUnitModal #unit_id').val();
+        const classId = $('#updateUnitModal #class_id').val();
+        const lessonId = $('#updateUnitModal #lesson_id').val(); // Standart select değeri
+        const unitName = $('#updateUnitModal #unit_name').val();
+        const unitOrder = $('#updateUnitModal #unit_order').val();
+
+        const selectedLessonOption = $('#updateUnitModal #lesson_id').find('option:selected');
+        const packageType = selectedLessonOption.data('package-type');
+
+        let developmentPackageIds = [];
+        if (packageType == 1 && $('#updateUnitModal #development_package_id').length > 0) {
+            developmentPackageIds = $('#updateUnitModal #development_package_id').val();
+            if (developmentPackageIds === null) {
+                developmentPackageIds = [];
+            }
+        }
+
+        console.log({
+            unitId,
+            classId,
+            lessonId,
+            unitName,
+            unitOrder,
+            packageType,
+            developmentPackageIds
+        });
+
+        if (!classId || !unitName || !lessonId || !unitOrder) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Form Hatası',
+                text: 'Lütfen tüm alanları doldurun.',
+                confirmButtonText: 'Tamam'
+            });
+            return;
+        }
+
+        if (packageType == 1 && developmentPackageIds.length === 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Paket Seçimi Hatası',
+                text: 'Bu ders için en az bir gelişim paketi seçmelisiniz.',
+                confirmButtonText: 'Tamam'
+            });
+            return;
+        }
+
+        const formData = {
+            unit_id: unitId,
+            class_id: classId,
+            lesson_id: lessonId,
+            unit_name: unitName,
+            unit_order: unitOrder,
+            ...(packageType == 1 && {
+                development_package_ids: developmentPackageIds
+            })
+        };
+
+        $.ajax({
+            url: 'includes/ajax.php?service=mainSchoolUnitUpdate',
+            type: 'POST',
+            dataType: 'json',
+            data: formData,
+            success: function(response) {
+                if (response.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Başarılı',
+                        text: 'Ünite başarıyla güncellendi!',
+                        confirmButtonText: 'Tamam'
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Hata',
+                        text: response.message || 'Beklenmeyen bir hata oluştu.',
+                        confirmButtonText: 'Tamam'
+                    });
+                }
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Sunucu Hatası',
+                    text: 'Sunucuyla iletişim kurulamadı.',
+                    confirmButtonText: 'Tamam'
+                });
+            }
+        });
+    });
+});
         </script>
 
 

@@ -77,6 +77,9 @@ class ShowContents extends GetContent
                                 data-kt-menu="true">
                                 <!--begin::Menu item-->
                                 <div class="menu-item px-3">
+                                    <a href="./icerik-guncelle/' . $value['slug'] . '" class="menu-link px-3">Güncelle</a>
+                                </div>
+                                <div class="menu-item px-3">
                                     <a href="./icerik-detay/' . $value['slug'] . '" class="menu-link px-3">Görüntüle</a>
                                 </div>
                                 <!--end::Menu item-->

@@ -318,56 +318,56 @@ var KTModalCustomersAdd = function () {
 			const selectedLesson = e.params.data;
 
 			if (selectedLesson.package_type === 1) {
-	$.ajax({
-		url: 'includes/ajax.php?service=getDevelopmentPackageList',
-		type: 'POST',
-		data: { lesson_id: selectedLesson.id },
-		success: function (response) {
-			try {
-				const json = typeof response === 'string' ? JSON.parse(response) : response;
+				$.ajax({
+					url: 'includes/ajax.php?service=getDevelopmentPackageList',
+					type: 'POST',
+					data: { lesson_id: selectedLesson.id },
+					success: function (response) {
+						try {
+							const json = typeof response === 'string' ? JSON.parse(response) : response;
 
-				if (json.status === 'success' && Array.isArray(json.data) && json.data.length > 0) {
-					let html = `<label class="form-label required">Gelişim Paketi Seç</label>
+							if (json.status === 'success' && Array.isArray(json.data) && json.data.length > 0) {
+								let html = `<label class="form-label required">Gelişim Paketi Seç</label>
 						<select name="development_package_id[]" id="development_package_id" class="form-select" multiple>`;
 
-					json.data.forEach(pkg => {
-						html += `<option value="${pkg.id}">${pkg.name} - ${parseFloat(pkg.price).toFixed(2)}₺</option>`;
-					});
+								json.data.forEach(pkg => {
+									html += `<option value="${pkg.id}">${pkg.name} - ${parseFloat(pkg.price).toFixed(2)}₺</option>`;
+								});
 
-					html += `</select>`;
+								html += `</select>`;
 
-					$('#develeopmentPackage').html(html).show(); // göster
-					
-					// Select2 uygula
-					$('#development_package_id').select2({
-						placeholder: "Gelişim Paketi Seçin",
-						allowClear: true
-					});
-				} else {
-					$('#develeopmentPackage').html(`<div class="text-danger">Gelişim paketi bulunamadı.</div>`).show();
-				}
-			} catch (err) {
-				console.error('JSON Parse Hatası:', err);
-				$('#develeopmentPackage').html(`<div class="text-danger">Veri işlenemedi.</div>`).show();
+								$('#develeopmentPackage').html(html).show(); // göster
+
+								// Select2 uygula
+								$('#development_package_id').select2({
+									placeholder: "Gelişim Paketi Seçin",
+									allowClear: true
+								});
+							} else {
+								$('#develeopmentPackage').html(`<div class="text-danger">Gelişim paketi bulunamadı.</div>`).show();
+							}
+						} catch (err) {
+							console.error('JSON Parse Hatası:', err);
+							$('#develeopmentPackage').html(`<div class="text-danger">Veri işlenemedi.</div>`).show();
+						}
+					},
+					error: function (xhr) {
+						Swal.fire({
+							text: "İşlem sırasında hata oluştu!",
+							icon: "error",
+							buttonsStyling: false,
+							confirmButtonText: "Tamam, anladım!",
+							customClass: {
+								confirmButton: "btn btn-primary"
+							}
+						});
+						$('#develeopmentPackage').html('').hide();
+					}
+				});
+			} else {
+				// Eğer package_type 1 değilse development package alanını gizle
+				$('#develeopmentPackage').html('').hide();
 			}
-		},
-		error: function (xhr) {
-			Swal.fire({
-				text: "İşlem sırasında hata oluştu!",
-				icon: "error",
-				buttonsStyling: false,
-				confirmButtonText: "Tamam, anladım!",
-				customClass: {
-					confirmButton: "btn btn-primary"
-				}
-			});
-			$('#develeopmentPackage').html('').hide();
-		}
-	});
-} else {
-	// Eğer package_type 1 değilse development package alanını gizle
-	$('#develeopmentPackage').html('').hide();
-}
 
 
 

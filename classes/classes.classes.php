@@ -2,10 +2,67 @@
 
 class Classes extends Dbh
 {
-	public function getCoachStudents($coach_user_id) {
-    if ($coach_user_id == 1) {
-        // Tüm öğrencileri getir (her öğrenci için tek kayıt)
-        $stmt = $this->connect()->prepare('
+	public function getLessonsList($search_class_id)
+	{
+		$stmt = $this->connect()->prepare('SELECT * FROM lessons_lnp');
+		if (!$stmt->execute()) {
+			$stmt = null;
+			exit();
+		}
+		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		$filtered = array_filter($data, function ($row) use ($search_class_id) {
+			$classIds = explode(';', $row['class_id']);
+			return in_array($search_class_id, $classIds);
+		});
+
+		return array_values($filtered);
+	}
+	public function getUnitsList($class_id, $lesson_id)
+	{
+		$stmt = $this->connect()->prepare('SELECT * FROM units_lnp WHERE class_id = ? AND lesson_id = ?');
+		if (!$stmt->execute([$class_id, $lesson_id])) {
+			$stmt = null;
+			exit();
+		}
+		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		return $data;
+	}
+	public function getTopicsList($class_id, $lesson_id, $unit_id)
+	{
+		$stmt = $this->connect()->prepare('SELECT * FROM topics_lnp WHERE class_id = ? AND lesson_id = ? AND unit_id = ?');
+		if (!$stmt->execute([$class_id, $lesson_id, $unit_id])) {
+			$stmt = null;
+			exit();
+		}
+		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		return $data;
+	}
+	public function getSubtopicsList($class_id, $lesson_id, $unit_id, $topic_id)
+	{
+		$stmt = $this->connect()->prepare('SELECT * FROM subtopics_lnp WHERE class_id = ? AND lesson_id = ? AND unit_id = ? AND topic_id = ?');
+		if (!$stmt->execute([$class_id, $lesson_id, $unit_id, $topic_id])) {
+			$stmt = null;
+			exit();
+		}
+		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		return $data;
+	}
+	public function getContent($slug)
+	{
+		$stmt = $this->connect()->prepare('SELECT * FROM school_content_lnp WHERE slug = ?');
+		if (!$stmt->execute([$slug])) {
+			$stmt = null;
+			exit();
+		}
+		$data = $stmt->fetch(PDO::FETCH_ASSOC);
+		return $data;
+	}
+	public function getCoachStudents($coach_user_id)
+	{
+		if ($coach_user_id == 1) {
+			// Tüm öğrencileri getir (her öğrenci için tek kayıt)
+			$stmt = $this->connect()->prepare('
             WITH ranked_requests AS (
                 SELECT 
                     u.id AS user_id,
@@ -28,13 +85,13 @@ class Classes extends Dbh
             FROM ranked_requests
             WHERE rn = 1
         ');
-        
-        if (!$stmt->execute()) {
-            return [];
-        }
-    } else {
-        // Belirli öğretmene göre filtrele (her öğrenci için tek kayıt)
-        $stmt = $this->connect()->prepare('
+
+			if (!$stmt->execute()) {
+				return [];
+			}
+		} else {
+			// Belirli öğretmene göre filtrele (her öğrenci için tek kayıt)
+			$stmt = $this->connect()->prepare('
             WITH ranked_requests AS (
                 SELECT 
                     u.id AS user_id,
@@ -59,13 +116,13 @@ class Classes extends Dbh
             WHERE rn = 1
         ');
 
-        if (!$stmt->execute([$coach_user_id])) {
-            return [];
-        }
-    }
+			if (!$stmt->execute([$coach_user_id])) {
+				return [];
+			}
+		}
 
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
 
 
 	public function privateLessonRemainingLimit($user_id)
@@ -112,7 +169,7 @@ class Classes extends Dbh
             ) AS remaining
         FROM extra_package_payments_lnp epp
         INNER JOIN extra_packages_lnp ep ON ep.id = epp.package_id
-        WHERE epp.user_id = :user_id;
+        WHERE ep.type='Özel Ders' and epp.user_id = :user_id;
     ";
 
 		$stmt1 = $this->connect()->prepare($sql1);
@@ -792,7 +849,7 @@ WHERE t.id = :id";
 	public function getMainSchoolUnitList()
 	{
 
-		$stmt = $this->connect()->prepare('SELECT mu.name as unit_name, mu.id as id, ml.name as lesson_name FROM `main_school_units_lnp` mu inner JOIN main_school_lessons_lnp ml on ml.id=mu.lesson_id; ');
+		$stmt = $this->connect()->prepare('SELECT mu.name as unit_name, mu.id as id, ml.name as lesson_name,mu.unit_order, mc.name as class_name FROM `main_school_units_lnp` mu inner JOIN main_school_lessons_lnp ml on ml.id=mu.lesson_id inner JOIN classes_lnp mc on mc.id=mu.class_id ORDER BY mu.unit_order ASC ');
 
 		if (!$stmt->execute(array())) {
 			$stmt = null;

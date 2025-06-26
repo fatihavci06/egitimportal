@@ -154,11 +154,7 @@ $chooseLesson = new ShowLesson();
                         </div>
                         <div class="fv-row mb-7" id="develeopmentPackage">
                             <!--begin::Label-->
-                            <label class="required fs-6 fw-semibold mb-2">Paket Seçimi</label>
-                            <!--end::Label-->
-                            <!--begin::Input-->
-
-                            </select>
+                           
                             <!--end::Input-->
                         </div>
                         <!--end::Input group-->

@@ -2,7 +2,7 @@
 
 class Lessons extends Dbh {
 
-	protected function getLessonsList(){
+	public function getLessonsList(){
 
 		$stmt = $this->connect()->prepare('SELECT id, name, slug, class_id FROM lessons_lnp');
 
