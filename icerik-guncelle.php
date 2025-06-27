@@ -31,7 +31,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 	<!--end::Head-->
 	<!--begin::Body-->
 
-	<body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
+	<body data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
 		<!--begin::Theme mode setup on page load-->
 		<script>
 			var defaultThemeMode = "light";
@@ -269,10 +269,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																	<!-- Tüm butonlar yan yana -->
 																	<div class="col-md-4 text-end">
 																		<div class="d-flex justify-content-end gap-2">
-																			<button class="btn btn-sm btn-success update-description-btn">Güncelle</button>
+																			<button type="button" class="btn btn-sm btn-success update-description-btn">Güncelle</button>
 																			<a class="btn btn-sm btn-secondary"
 																				href="<?= str_replace('../', '', $file['file_path']) ?>" target="_blank">Görüntüle</a>
-																			<button class="btn btn-sm btn-danger delete-file-btn">Sil</button>
+																			<button type="button" class="btn btn-sm btn-danger delete-file-btn">Sil</button>
 																		</div>
 																	</div>
 																</div>
@@ -386,10 +386,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 		<script src="assets/js/custom/utilities/modals/users-search.js"></script>
 		<script>
 			$(document).ready(function() {
+				// TinyMCE editörünü başlat
 				tinymce.init({
 					selector: '.tinymce-editor',
 					// diğer ayarlar...
 				});
+
 				// Select2 kütüphanesini kullanıyorsanız başlatın (eğer zaten başlatılmadıysa)
 				if ($.fn.select2) {
 					$('#classes').select2();
@@ -415,7 +417,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 					if (classId) {
 						$.ajax({
-							url: 'includes/ajax.php?service=getLessonList', // Dersleri çekecek PHP dosyasının yolu
+							url: 'includes/ajax.php?service=getLessonList',
 							type: 'GET',
 							data: {
 								class_id: classId
@@ -427,11 +429,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 										lessonsSelect.append('<option value="' + lesson.id + '">' + lesson.name + '</option>');
 									});
 								}
-								lessonsSelect.trigger('change'); // Select2'nin güncellemesini tetikle
+								lessonsSelect.trigger('change');
 							},
 							error: function(xhr, status, error) {
 								console.error("Dersler çekilirken hata oluştu:", status, error);
-								alert("Dersler yüklenirken bir hata oluştu. Lütfen tekrar deneyin.");
+								Swal.fire({ // alert yerine Swal.fire
+									icon: 'error',
+									text: "Dersler yüklenirken bir hata oluştu. Lütfen tekrar deneyin."
+								});
 							}
 						});
 					}
@@ -440,7 +445,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 				// Ders seçimi değiştiğinde üniteleri çek
 				$('#lessons').on('change', function() {
 					var lessonId = $(this).val();
-					var classId = $('#classes').val(); // Ünite çekerken sınıf ID'si de gerekebilir
+					var classId = $('#classes').val();
 					var unitsSelect = $('#units');
 					var topicsSelect = $('#topics');
 					var subTopicsSelect = $('#sub_topics');
@@ -452,7 +457,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 					if (lessonId && classId) {
 						$.ajax({
-							url: 'includes/ajax.php?service=getUnits', // Üniteleri çekecek PHP dosyasının yolu
+							url: 'includes/ajax.php?service=getUnits',
 							type: 'GET',
 							data: {
 								class_id: classId,
@@ -465,11 +470,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 										unitsSelect.append('<option value="' + unit.id + '">' + unit.name + '</option>');
 									});
 								}
-								unitsSelect.trigger('change'); // Select2'nin güncellemesini tetikle
+								unitsSelect.trigger('change');
 							},
 							error: function(xhr, status, error) {
 								console.error("Üniteler çekilirken hata oluştu:", status, error);
-								alert("Üniteler yüklenirken bir hata oluştu. Lütfen tekrar deneyin.");
+								Swal.fire({ // alert yerine Swal.fire
+									icon: 'error',
+									text: "Üniteler yüklenirken bir hata oluştu. Lütfen tekrar deneyin."
+								});
 							}
 						});
 					}
@@ -478,8 +486,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 				// Ünite seçimi değiştiğinde konuları çek
 				$('#units').on('change', function() {
 					var unitId = $(this).val();
-					var lessonId = $('#lessons').val(); // Konu çekerken ders ID'si de gerekebilir
-					var classId = $('#classes').val(); // Konu çekerken sınıf ID'si de gerekebilir
+					var lessonId = $('#lessons').val();
+					var classId = $('#classes').val();
 					var topicsSelect = $('#topics');
 					var subTopicsSelect = $('#sub_topics');
 
@@ -489,7 +497,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 					if (unitId && lessonId && classId) {
 						$.ajax({
-							url: 'includes/ajax.php?service=getTopics', // Konuları çekecek PHP dosyasının yolu
+							url: 'includes/ajax.php?service=getTopics',
 							type: 'GET',
 							data: {
 								class_id: classId,
@@ -503,11 +511,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 										topicsSelect.append('<option value="' + topic.id + '">' + topic.name + '</option>');
 									});
 								}
-								topicsSelect.trigger('change'); // Select2'nin güncellemesini tetikle
+								topicsSelect.trigger('change');
 							},
 							error: function(xhr, status, error) {
 								console.error("Konular çekilirken hata oluştu:", status, error);
-								alert("Konular yüklenirken bir hata oluştu. Lütfen tekrar deneyin.");
+								Swal.fire({ // alert yerine Swal.fire
+									icon: 'error',
+									text: "Konular yüklenirken bir hata oluştu. Lütfen tekrar deneyin."
+								});
 							}
 						});
 					}
@@ -525,7 +536,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 					if (topicId && unitId && lessonId && classId) {
 						$.ajax({
-							url: 'includes/ajax.php?service=getSubtopics', // Alt konuları çekecek PHP dosyasının yolu
+							url: 'includes/ajax.php?service=getSubtopics',
 							type: 'GET',
 							data: {
 								class_id: classId,
@@ -540,7 +551,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 										subTopicsSelect.append('<option value="' + subTopic.id + '">' + subTopic.name + '</option>');
 									});
 								}
-								subTopicsSelect.trigger('change'); // Select2'nin güncellemesini tetikle
+								subTopicsSelect.trigger('change');
 							},
 							error: function(xhr, status, error) {
 								console.error("Alt konular çekilirken hata oluştu:", status, error);
@@ -555,15 +566,16 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 				// ilgili dropdown'ları doldurmak içindir.
 				// PHP'den gelen $data['class_id'], $data['lesson_id'], $data['unit_id'] değerlerini kullanır.
 
-				var initialClassId = $('#classes').val();
-				var initialLessonId = "<?= htmlspecialchars($data['lesson_id'] ?? '') ?>";
-				var initialUnitId = "<?= htmlspecialchars($data['unit_id'] ?? '') ?>";
-				var initialTopicId = "<?= htmlspecialchars($data['topic_id'] ?? '') ?>";
-				var initialSubTopicId = "<?= htmlspecialchars($data['subtopic_id'] ?? '') ?>";
-
-
-
-
+				// Bu değişkenler PHP tarafından doldurulur, JavaScript'te kullanılamaz.
+				// Eğer sayfa yüklendiğinde bu değerlere göre otomatik seçim yapmak istiyorsanız
+				// ilgili PHP değişkenlerinin inputlara value olarak atanması gerekir ve
+				// ardından o inputlar üzerinden change event'i tetiklenmelidir.
+				// Örneğin: $('#classes').val(initialClassId).trigger('change');
+				// var initialClassId = $('#classes').val();
+				// var initialLessonId = "<?= htmlspecialchars($data['lesson_id'] ?? '') ?>";
+				// var initialUnitId = "<?= htmlspecialchars($data['unit_id'] ?? '') ?>";
+				// var initialTopicId = "<?= htmlspecialchars($data['topic_id'] ?? '') ?>";
+				// var initialSubTopicId = "<?= htmlspecialchars($data['subtopic_id'] ?? '') ?>";
 
 
 				// İçerik türü seçiminin mantığı
@@ -592,6 +604,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 					$('input[name="secim"][value="' + initialSelectedOption + '"]').trigger('change');
 				} else {
 					// Eğer hiçbiri seçili değilse ve veri varsa, ilk uygun olanı işaretle
+					// Bu kısım, PHP'den gelen $data değişkenlerinin doldurulmuş olması durumunda çalışır.
+					// Örneğin: <input type="hidden" id="initialVideoLink" value="<?= htmlspecialchars($data['video_link'] ?? '') ?>">
+					// gibi hidden inputlar ekleyerek bu değerleri JavaScript'e taşıyabilirsiniz.
 					if ("<?= !empty($data['video_link']) ? 'video_link' : '' ?>" === 'video_link') {
 						$('input[name="secim"][value="video_link"]').prop('checked', true).trigger('change');
 					} else if ("<?= !empty($data['file_path']) ? 'file_path' : '' ?>" === 'file_path') {
@@ -605,16 +620,17 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 
 				// WordWall iframe linkleri için dinamik alan ekleme/silme
-				var dynamicFieldIndex = <?= !empty($interactiveGames) ? count($interactiveGames) : 0 ?>; // PHP'den gelen mevcut oyun sayısını başlangıç indeksi olarak alıyoruz
+				// PHP'den gelen mevcut oyun sayısını başlangıç indeksi olarak alıyoruz
+				var dynamicFieldIndex = <?= !empty($interactiveGames) ? count($interactiveGames) : 0 ?>;
 
 				$('#addField').on('click', function() {
 					var newField = `
-					<div class="input-group mb-2" data-index="${dynamicFieldIndex}">
-						<input type="text" name="wordWallTitles[]" class="form-control me-2" placeholder="Başlık">
-						<input type="text" name="wordWallUrls[]" class="form-control me-2" placeholder="URL">
-						<button type="button" class="btn btn-danger removeField">Sil</button>
-					</div>
-					`;
+                <div class="input-group mb-2" data-index="${dynamicFieldIndex}">
+                    <input type="text" name="wordWallTitles[]" class="form-control me-2" placeholder="Başlık">
+                    <input type="text" name="wordWallUrls[]" class="form-control me-2" placeholder="URL">
+                    <button type="button" class="btn btn-danger removeField">Sil</button>
+                </div>
+            `;
 					$('#dynamicFields').append(newField);
 					dynamicFieldIndex++;
 				});
@@ -631,11 +647,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 					$.each(this.files, function(index, file) {
 						var fileName = file.name;
 						var descriptionInput = `
-                <div class="mb-2">
-                    <label for="file_description_${index}">${fileName} için Açıklama:</label>
-                    <input type="text" class="form-control" name="file_descriptions[]" id="file_description_${index}" placeholder="Açıklama girin">
-                </div>
-            `;
+                    <div class="mb-2">
+                        <label for="file_description_${index}">${fileName} için Açıklama:</label>
+                        <input type="text" class="form-control" name="file_descriptions[]" id="file_description_${index}" placeholder="Açıklama girin">
+                    </div>
+                `;
 						fileDescriptionsDiv.append(descriptionInput);
 					});
 				});
@@ -646,29 +662,47 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 					const fileWrapper = button.closest('[data-file-id]');
 					const fileId = fileWrapper.data('file-id');
 
-					if (confirm("Bu dosyayı silmek istediğinizden emin misiniz?")) {
-						$.ajax({
-							url: 'includes/ajax.php?service=deleteContentFile',
-							type: 'POST',
-							data: {
-								id: fileId
-							},
-							dataType: 'json',
-							success: function(response) {
-								if (response.success) {
-									alert(response.message);
-									location.reload(); // Sayfayı yenile (aynı sayfada kalır)
-								} else {
-									alert(response.message);
+					Swal.fire({ // alert yerine Swal.fire
+						title: 'Emin misiniz?',
+						text: "Bu dosyayı silmek istediğinizden emin misiniz?",
+						icon: 'warning',
+						showCancelButton: true,
+						confirmButtonColor: '#d33',
+						cancelButtonColor: '#3085d6',
+						confirmButtonText: 'Evet, Sil!',
+						cancelButtonText: 'İptal'
+					}).then((result) => {
+						if (result.isConfirmed) {
+							$.ajax({
+								url: 'includes/ajax.php?service=deleteContentFile',
+								type: 'POST',
+								data: {
+									id: fileId
+								},
+								dataType: 'json',
+								success: function(response) {
+									
+										Swal.fire({
+											icon: 'success',
+											text: response.message || 'Dosya başarıyla silindi.'
+										}).then(() => {
+											location.reload(); // Sadece bu olsun
+										});
+									
+								},
+								error: function(xhr, status, error) {
+									console.error("Dosya silinirken AJAX hatası:", status, error);
+									Swal.fire({
+										icon: 'error',
+										text: "Dosya silinirken sunucu hatası oluştu."
+									});
 								}
-							},
-							error: function(xhr, status, error) {
-								console.error("Dosya silinirken AJAX hatası:", status, error);
-								alert("Dosya silinirken sunucu hatası oluştu.");
-							}
-						});
-					}
+							});
+						}
+					});
 				});
+
+				// Dosya açıklaması güncelleme düğmeleri için olay dinleyicisi
 				document.querySelectorAll('.update-description-btn').forEach(button => {
 					button.addEventListener('click', async function() {
 						const wrapper = this.closest('[data-file-id]');
@@ -700,41 +734,29 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 					});
 				});
 
-
-
 				const submitButton = document.getElementById('updateContent');
-				// Get the form element (still needed to easily get all form data)
-				const form = document.getElementById('kt_modal_add_content_form');
+				const form = document.getElementById('kt_modal_add_content_form'); // Form elementini al
 
-				if (submitButton) {
-					// Add click event listener to the button
+				if (submitButton && form) { // Hem butonun hem de formun varlığını kontrol et
 					submitButton.addEventListener('click', function(e) {
-						e.preventDefault(); // Prevent default button action (e.g., if it's inside a form)
+						e.preventDefault(); // Varsayılan buton eylemini engelle
 
-						// Show loading indication on the button
 						submitButton.setAttribute('data-kt-indicator', 'on');
 						submitButton.disabled = true;
 
-						// Collect all form data using FormData
-						tinymce.triggerSave();
+						tinymce.triggerSave(); // TinyMCE içeriğini textareaya kaydet
 
-						// Form verisini hazırla
 						const formData = new FormData(form);
 
-						// Conditional Data Handling based on radio button selection
-						const selectedOption = form.querySelector('input[name="secim"]:checked');
-
-
-						// AJAX Request
+						// AJAX İsteği
 						$.ajax({
-							url: 'includes/ajax.php?service=updateContent', // Your backend endpoint for updating content
+							url: 'includes/ajax.php?service=updateContent', // İçeriği güncelleyecek PHP endpoint'i
 							type: 'POST',
 							data: formData,
-							processData: false, // Essential for FormData
-							contentType: false, // Essential for FormData
-							dataType: 'json', // Expecting JSON response
+							processData: false, // FormData için gerekli
+							contentType: false, // FormData için gerekli
+							dataType: 'json', // JSON yanıtı bekleniyor
 							success: function(response) {
-								// Remove loading indication
 								submitButton.removeAttribute('data-kt-indicator');
 								submitButton.disabled = false;
 
@@ -749,9 +771,15 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 										}
 									}).then(function(result) {
 										if (result.isConfirmed) {
+											// Yönlendirme mantığı: Eğer 'data-kt-redirect' varsa yönlendir.
+											// Aksi takdirde, mevcut sayfada kalırız veya isteğe bağlı olarak başka bir şey yaparız.
 											const redirectUrl = form.getAttribute('data-kt-redirect');
 											if (redirectUrl) {
 												window.location.href = redirectUrl;
+											} else {
+												// Eğer özel bir yönlendirme URL'si tanımlanmamışsa
+												// mevcut sayfayı yenilemek yerine, sadece başarılı olduğunu bildirip kalabiliriz.
+												// location.reload(); // Sayfayı yenilemek isterseniz bu satırı etkinleştirin.
 											}
 										}
 									});
@@ -768,7 +796,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 								}
 							},
 							error: function(xhr, status, error) {
-								// Remove loading indication
 								submitButton.removeAttribute('data-kt-indicator');
 								submitButton.disabled = false;
 
@@ -782,7 +809,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 										errorMessage = errorResponse.message;
 									}
 								} catch (e) {
-									// responseText was not valid JSON
+									// responseText geçerli bir JSON değilse
 								}
 
 								Swal.fire({
@@ -798,7 +825,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 						});
 					});
 				}
-
 			});
 		</script>
 		<!--end::Custom Javascript-->

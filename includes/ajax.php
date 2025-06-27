@@ -4226,7 +4226,7 @@ ORDER BY msu.unit_order asc
 
             // Açıklamaları formdan al
 
-
+            
             // Veritabanına hazırlık
             $insertFileStmt = $pdo->prepare("INSERT INTO school_content_files_lnp (school_content_id, file_path, description) VALUES (?, ?, ?)");
 
