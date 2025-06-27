@@ -506,7 +506,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
             function fetchLessonsForClass(classId) {
                 if (classId !== '') {
                     $.ajax({
-                        url: 'includes/ajax.php?service=getLessonList',
+                        url: 'includes/ajax.php?service=getLessonList1',
                         type: 'POST',
                         data: {
                             class_id: classId
@@ -514,13 +514,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         dataType: 'json',
                         success: function(response) {
                             var lessonSelect = $('#lesson_id');
-                            $('#option_count').val(response.data.option_count); // response.data bir dizi
-                            console.log(response.data);
+                            $('#option_count').val(response.data.optionCount); // response.data bir dizi
+                            console.log(response.data.optionCount);
 
                             lessonSelect.empty();
                             lessonSelect.append('<option value="">Ders seçiniz</option>');
 
-                            $.each(response.data, function(index, lesson) {
+                            $.each(response.data.lessons, function(index, lesson) {
                                 lessonSelect.append('<option value="' + lesson.id + '">' + lesson.name + '</option>');
                             });
                         },

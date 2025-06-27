@@ -1335,7 +1335,7 @@ switch ($service) {
             exit();
         }
         break;
-    case 'getLessonList':
+    case 'getLessonList1':
         $classId = $_POST['class_id'] ?? null;
         if (!$classId || !is_numeric($classId)) {
 
@@ -1371,7 +1371,7 @@ switch ($service) {
             ]);
             $optionCount = $stmt2->fetch(PDO::FETCH_ASSOC);
             $data['optionCount'] = $optionCount['option_count'] ?? 3;
-
+           
             if ($data) {
                 echo json_encode(['status' => 'success', 'data' => $data]);
             } else {
