@@ -514,7 +514,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         dataType: 'json',
                         success: function(response) {
                             var lessonSelect = $('#lesson_id');
-                            $('#option_count').val(response.data.length); // response.data bir dizi
+                            $('#option_count').val(response.data.option_count); // response.data bir dizi
+                            console.log(response.data);
 
                             lessonSelect.empty();
                             lessonSelect.append('<option value="">Ders seçiniz</option>');

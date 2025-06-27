@@ -1186,8 +1186,10 @@ switch ($service) {
 
         try {
             // class_id'ye göre dersleri getiriyoruz
-            $stmt = $pdo->prepare("SELECT id, name FROM `lessons_lnp` WHERE class_id = :class_id ORDER BY name ASC");
-            $stmt->bindParam(':class_id', $classId, PDO::PARAM_INT);
+            $likeClassId = "%;$classId;%";
+
+            $stmt = $pdo->prepare("SELECT id, name FROM `lessons_lnp` WHERE CONCAT(';', class_id, ';') LIKE :class_id ORDER BY name ASC");
+            $stmt->bindParam(':class_id', $likeClassId, PDO::PARAM_STR);
             $stmt->execute();
             $lessons = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
