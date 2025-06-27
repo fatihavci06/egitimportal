@@ -2965,8 +2965,8 @@ WHERE t.id = :id";
         $developmentPackageIds = $_POST['development_package_ids'] ?? []; // Yeni: development_package_ids eklendi
 
         // Temel doğrulama
-        if (!$unitId || !$unitName || !$lessonId || !$classId || !$unitOrder) {
-            echo json_encode(['status' => 'error', 'message' => 'Ünite ID, birim adı, ders ID, sınıf ID ve birim sırası gereklidir.']);
+        if (!$unitId || !$unitName || !$lessonId || !$classId ) {
+            echo json_encode(['status' => 'error', 'message' => 'Ünite ,  ders  sınıf zorunludur .']);
             exit;
         }
 
