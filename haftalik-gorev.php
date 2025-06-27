@@ -3,7 +3,7 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] == 3 or  $_SESSION['role'] == 4)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 2 or  $_SESSION['role'] == 3 or  $_SESSION['role'] == 4)) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
     include "classes/weekly.classes.php";
@@ -115,15 +115,27 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                             <!--begin::Content-->
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <!--begin::Content container-->
-                                <div id="kt_app_content_container" class="app-container container-fluid">
+                                <div id="kt_app_content_container" class="app-container container-fluid row">
                                     <!--begin::Card-->
-                                    <div class="card">
+                                    <div class="card col-lg-6">
 
                                         <!--begin::Card body-->
                                         <div class="card-body pt-0">
                                             <!--begin::Table-->
                                             <div id="eventResults" class="mt-4">
 
+                                            </div>
+                                            <!--end::Table-->
+                                        </div>
+                                        <!--end::Card body-->
+                                    </div>
+                                    <div class="card col-lg-6">
+
+                                        <!--begin::Card body-->
+                                        <div class="card-body pt-0">
+                                            <!--begin::Table-->
+                                            <div id="eventResultsTest" class="mt-4">
+                                                sa
                                             </div>
                                             <!--end::Table-->
                                         </div>
@@ -513,6 +525,18 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                 } else {
                     $('#class_id').removeClass('is-invalid');
                 }
+                if (!lessonId || lessonId === '') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Uyarı',
+                        text: 'Lütfen bir ders seçiniz.',
+                        confirmButtonText: 'Tamam'
+                    });
+                    $('#lesson_id').addClass('is-invalid'); // Bootstrap ile görsel uyarı
+                    return; // Filtreleme işlemini durdur
+                } else {
+                    $('#lesson_id').removeClass('is-invalid');
+                }
                 var classId = $('#class_id').val();
                 var lessonId = $('#lesson_id').val();
                 var unitId = $('#unit_id').val();
@@ -536,7 +560,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                     dataType: 'json', // Expecting JSON response from the PHP script
                     success: function(response) {
                         // Handle success response from PHP
-                        console.log('çalıştı')
+                        console.log(response)
                         if (response.status === 'success') {
                             var eventList = response.data;
                             console.log('Events:', eventList);
@@ -554,7 +578,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                             function formatDate(dateString) {
                                 const date = new Date(dateString);
                                 const options = {
-                                    month: 'short',
+                                    month: 'long', // ✅ "short" yerine "long"
                                     day: 'numeric'
                                 };
                                 return date.toLocaleDateString('tr-TR', options);
@@ -576,30 +600,58 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                             });
 
                             for (const key in grouped) {
-
-                                // if(topicId !== ''){
-                                //     html += `<div>${topicId} konusunun alt konusu yok!</div>`
-                                // }
-
-                                html += `<h5 class="text-center event-month">${capitalize(key)}</h5>`;
+                                html += `<h2 class="text-center event-month mt-4 mb-4">${capitalize(key)}</h2>`;
 
                                 grouped[key].forEach(event => {
                                     html += `
-                                        <div class="event-list">
-                                            <div class="event-body my-4">
-                                                <div class="event-date">
-                                                    ${formatDate(event.start)} - ${formatDate(event.end)}
+                                        <div class="card mb-3 shadow-sm event-card">
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <i class="fas fa-calendar-alt text-primary me-2"></i>
+                                                    <h6 class="card-subtitle text-muted flex-grow-1 mb-0">
+                                                        <small style="font-size: 1.4rem;"> 
+                                                            ${formatDate(event.start)} - ${formatDate(event.end)}
+                                                        </small>
+                                                    </h6>
                                                 </div>
-                                                <div class="event-unit-name">
-                                                    ${event.name}
-                                                </div>
+                                                <h5 class="card-title text-dark mb-0" style="font-size: 1.75rem;">${event.name}</h5> 
                                             </div>
                                         </div>
-                                        `;
+                                    `;
                                 });
                             }
 
                             $('#eventResults').html(html);
+                            if (Array.isArray(response.testData) && response.testData.length > 0) {
+                                let testHtml = '<h2 class="text-center event-month mt-4 mb-4">Testler</h2>';
+
+                                response.testData.forEach(test => {
+                                    testHtml += `
+            <div class="card mb-3 shadow-sm border-start border-3 border-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <i class="fas fa-vial text-danger me-2"></i>
+                            <strong style="font-size: 1.3rem;">${test.test_title}</strong>
+                        </div>
+                        <a href="ogrenci-test-coz.php?id=${test.id}" target="_blank" class="btn btn-success btn-sm">
+                            Sınava Gir
+                        </a>
+                    </div>
+                    <div class="text-muted" style="font-size: 1.2rem;">
+                        <i class="fas fa-clock me-1"></i>
+                        ${formatDate(test.start_date)} - ${formatDate(test.end_date)} 
+                        <span class="badge bg-${test.label === 'Tarihi Geçmiş' ? 'danger' : 'success'} ms-2">${test.label}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+                                });
+
+                                $('#eventResultsTest').html(testHtml);
+                            } else {
+                                $('#eventResultsTest').html(`<div class="alert alert-warning">Henüz sınav tanımlanmamış.</div>`);
+                            }
 
                         } else {
                             alert('Filtreleme başarısız: ' + response.message);

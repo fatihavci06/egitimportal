@@ -79,7 +79,7 @@ if (!defined('GUARD')) {
                 <!--end::Search-->
             </div>
             <!--begin::Notifications-->
-            <?php include_once "includes/views/notifications-announcements.php" ?>
+            <?php include "includes/views/notifications-announcements.php" ?>
             <!--end::Notifications-->
             <!--begin::Quick links-->
             <?php // include_once "views/quick_links.php" ?>
