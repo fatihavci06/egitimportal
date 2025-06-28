@@ -87,7 +87,7 @@ $timeSpendInfo = $timeSpend->getTimeSpend($userInfo["id"]);
         $schoolInfo = $school->getOneSchoolById($userInfo['school_id']);
         // ogretmen profilim sayfasi
         require_once "views/profile/profilim-ogretmenler.php";
-        
+
     } elseif ($_SESSION["role"] == 3) {
 
         require_once "views/profile/profilim-koordinator.php";
@@ -95,6 +95,10 @@ $timeSpendInfo = $timeSpend->getTimeSpend($userInfo["id"]);
     } elseif ($_SESSION["role"] == 5) {
 
         require_once "views/profile/profilim-veli.php";
+
+    } elseif ($_SESSION["role"] == 8) {
+
+        require_once "views/profile/profilim-okul-admin.php";
 
     } elseif ($_SESSION["role"] == 10002) {
 

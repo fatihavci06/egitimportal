@@ -3,9 +3,9 @@ if (!isset($userInfo)) {
     throw new Exception("userInfo not provided");
 }
 
-if(empty($userInfo['photo'])){
+if (empty($userInfo['photo'])) {
     $photoPath = 'assets/media/avatars/blank.png';
-}else{
+} else {
     $photoPath = 'assets/media/profile/' . $userInfo['photo'];
 }
 ?>
@@ -31,39 +31,50 @@ if(empty($userInfo['photo'])){
                         <i class="fa-solid fa-school fs-4 me-1"></i>
                         <?= $schoolInfo['name'] ?? '-' ?>
                     </span>
-                    <?php if(isset($userInfo['className'])){
-                        $spanText=$userInfo['className'] ?? "-"; 
+                    <?php if (isset($userInfo['className'])) {
+                        $spanText = $userInfo['className'] ?? "-";
                         echo ' 
                         <span class="d-flex align-items-center text-gray-500 me-5 mb-2">
                             <i class="fa-solid fa-table fs-4 me-1"></i>
-                            '.$spanText.'
+                            ' . $spanText . '
                         </span>';
                     }
                     ?>
                     </span>
-                    <?php if(isset($userInfo['lessonName'])){
-                        $spanText=$userInfo['lessonName'] ?? "-"; 
+                    <?php if (isset($userInfo['lessonName'])) {
+                        $spanText = $userInfo['lessonName'] ?? "-";
                         echo ' 
                         <span class="d-flex align-items-center text-gray-500 me-5 mb-2">
                             <i class="fa-solid fa-table fs-4 me-1"></i>
-                            '.$spanText.'
+                            ' . $spanText . '
                         </span>';
                     }
                     ?>
-                    <a href="tel:<?php echo $userInfo['telephone']; ?>"
+                    <?php
+                    $spanText = (isset($userInfo['telephone']) && !($userInfo['telephone'] == '')) ? $userInfo['telephone'] : $userInfo['childPhone'] ?? "-";
+                    echo ' 
+
+                    <a href="tel:' . $spanText . '"
                         class="d-flex align-items-center text-gray-500 text-hover-primary me-5 mb-2">
                         <i class="fa-solid fa-phone fs-4 me-1"></i>
-                        <?php echo $userInfo['telephone']; ?>
+                        ' . $spanText . '
                     </a>
-                    <a href="mailto:<?php echo $userInfo['email']; ?>"
+                    ';
+                    ?>
+                    <?php
+                    $spanText = (isset($userInfo['email']) && !($userInfo['email'] == '')) ? $userInfo['email'] : $userInfo['childEmail'] ?? "-";
+                    echo ' 
+
+                    <a href="mailto:' . $spanText . '"
                         class="d-flex align-items-center text-gray-500 text-hover-primary mb-2">
                         <i class="ki-duotone ki-sms fs-4 me-1">
                             <span class="path1"></span>
                             <span class="path2"></span>
                         </i>
-                        <?php echo $userInfo['email']; ?>
-                    </a>
-
+                        ' . $spanText . '
+                       </a>
+                    ';
+                    ?>
                 </div>
 
                 <div class="d-flex flex-wrap fw-semibold fs-6 mb-4 pe-2 mt-3 mb-2">
