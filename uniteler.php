@@ -101,7 +101,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                                                         <!--end::Separator-->
                                                         <!--begin::Content-->
                                                         <div class="px-7 py-5">
-                                                            <form action="" method="GET">
+                                                            <form action="" id="filtreleme" method="GET" class="form">
                                                             <!--begin::Input group-->
                                                             <div class="mb-10">
                                                                 <!--begin::Label-->
@@ -116,18 +116,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                                                                 <!--end::Input-->
                                                             </div>
                                                             <!--end::Input group-->
-                                                            <div class="mb-10">
-                                                                <!--begin::Label-->
-                                                                <label class="form-label fs-5 fw-semibold mb-3">Ders:</label>
-                                                                <!--end::Label-->
-                                                                <!--begin::Input-->
-                                                                <select class="form-select form-select-solid fw-bold" name="ders" data-kt-select2="true" data-placeholder="Ders Seçin" data-allow-clear="true" data-kt-customer-table-filter="lesson" data-dropdown-parent="#kt-toolbar-filter">
-                                                                    <option></option>
-                                                                        <?php $students->getLessonListwithId(); ?>
-                                                                </select>
-                                                                <!--end::Input-->
-                                                            </div>
-                                                            <!--end::Input group-->
                                                             <!--begin::Input group-->
                                                             <div class="mb-10">
                                                                 <!--begin::Label-->
@@ -137,7 +125,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                                                                 <div class="d-flex flex-column flex-wrap fw-semibold">
 
                                                                     <!--begin::Input-->
-                                                                    <select class="form-select form-select-solid fw-bold" name="sinif" data-kt-select2="true" data-placeholder="Sınıf" data-allow-clear="true" data-kt-customer-table-filter="student_class" data-dropdown-parent="#kt-toolbar-filter">
+                                                                    <select class="form-select form-select-solid fw-bold" id="sinif" name="sinif" data-kt-select2="true" data-placeholder="Sınıf" data-allow-clear="true" data-kt-customer-table-filter="student_class" data-dropdown-parent="#kt-toolbar-filter">
                                                                         <option></option>
                                                                         <?php $students->getClassDropdownListWithId(); ?>
                                                                     </select>
@@ -147,9 +135,20 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                                                                 <!--end::Options-->
                                                             </div>
                                                             <!--end::Input group-->
+                                                            <!--begin::Input group-->
+                                                            <div class="mb-10">
+                                                                <!--begin::Label-->
+                                                                <label class="form-label fs-5 fw-semibold mb-3">Ders:</label>
+                                                                <!--end::Label-->
+                                                                <!--begin::Input-->
+                                                                <select class="form-select form-select-solid fw-bold" id="ders" name="ders" data-kt-select2="true" data-placeholder="Ders Seçin" data-allow-clear="true" data-kt-customer-table-filter="lesson" data-dropdown-parent="#kt-toolbar-filter">
+                                                                </select>
+                                                                <!--end::Input-->
+                                                            </div>
+                                                            <!--end::Input group-->
                                                             <!--begin::Actions-->
                                                             <div class="d-flex justify-content-end">
-                                                                <a href="uniteler"><button type="submit" class="btn btn-light btn-active-light-primary me-2">Temizle</button></a>
+                                                                <a href="uniteler"><button type="button" class="btn btn-light btn-active-light-primary me-2">Temizle</button></a>
                                                                 <a href=""><button type="submit" class="btn btn-primary">Uygula</button></a>
                                                             </div>
                                                             <!--end::Actions-->

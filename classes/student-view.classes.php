@@ -55,6 +55,10 @@ class ShowStudent extends Student
 
         foreach ($schoolInfo as $key => $value) {
 
+            if($value['id'] == 10 || $value['id'] == 11 || $value['id'] == 12) {
+                continue;
+            }
+
             $classList .= '<option value="' . $value['id'] . '">' . $value['name'] . '</option>';
         }
         echo $classList;
@@ -1073,7 +1077,9 @@ class ShowStudent extends Student
     public function showAdditionalPackageListForStudentDetails($id)
     {
 
-        $packagesInfo = $this->getStudentAdditionalPackagesWithName($id);
+        /* $packagesInfo = $this->getStudentAdditionalPackagesWithName($id); */
+
+        $packagesInfo = $this->getExtraPackageMyList($id);
 
         $dateFormat = new DateFormat();
 
@@ -1085,7 +1091,7 @@ class ShowStudent extends Student
                                 </td>
                             </tr>';
         } else {
-            foreach ($packagesInfo as $value) {
+            /* foreach ($packagesInfo as $value) {
 
                 $packagesList .= '<tr>
                                     <td class="ps-0">
@@ -1096,6 +1102,29 @@ class ShowStudent extends Student
                                     </td>
                                     <td class="text-end pe-0">
                                         <span class="text-gray-800 fw-bold d-block fs-6">' . $dateFormat->changeDate($value['end_date']) . '</span>
+                                    </td>
+                                </tr>';
+            } */
+           foreach ($packagesInfo as $value) {
+
+                if ($value['type'] == 'Özel Ders') {
+                    $yazisi = $value['end_date'] . ' adet';
+                } else {
+                    $yazisi = $dateFormat->changeDate($value['end_date']);
+                }
+
+                $packagesList .= '<tr>
+                                    <td class="ps-0">
+                                        ' . $value['type'] . '
+                                    </td>
+                                    <td>
+                                        ' . $value['adet'] . '
+                                    </td>
+                                    <td>
+                                        <span class="text-gray-800 fw-bold d-block fs-6 ps-0 text-end">' . str_replace('.', ',', strval($value['total_amount'])) . '₺</span>
+                                    </td>
+                                    <td class="text-end pe-0">
+                                        <span class="text-gray-800 fw-bold d-block fs-6">' . $yazisi . '</span>
                                     </td>
                                 </tr>';
             }
@@ -1240,6 +1269,55 @@ class ShowStudent extends Student
                                         ' . $value['meet_date'] . '
                                     </td>
                                     <td>' . $status . '</td>
+                                </tr>';
+
+            echo $privateLessons;
+        }
+    }
+
+    public function showprivateLessonsforFirstPage($id)
+    {
+
+        $showPrivateLessons = new Classes();
+        $data = $showPrivateLessons->getPrivateLessonRequestList($id);
+
+        foreach ($data as $key => $value) {
+            switch ($value['request_status']) {
+                case 0:
+                    $status = 'Beklemede';
+                    break;
+                case 1:
+                    $status = 'Onaylandı';
+                    break;
+                case 2:
+                    $status = 'Reddedildi';
+                    break;
+                case 3:
+                    $status = 'Öğretmen Atandı';
+                    break;
+                case 4:
+                    $status = 'Tamamlandı';
+                    break;
+                case 5:
+                    $status = 'İptal Edildi';
+                    break;
+            }
+
+            $privateLessons = '
+                                <tr>
+                                    <td>
+                                        ' . $value['class_name'] . '
+                                    </td>
+                                    <td>
+                                        ' . $value['lesson_name'] . '
+                                    </td>
+                                    <td>
+                                        ' . $value['teacher_full_name'] . '
+                                    </td>
+                                    <td class="text-end">
+                                        ' . $value['meet_date'] . '
+                                    </td>
+                                    <td class="text-end">' . $status . '</td>
                                 </tr>';
 
             echo $privateLessons;

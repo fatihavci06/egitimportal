@@ -129,12 +129,80 @@ class GetContent extends Dbh
 	public function getAllContents()
 	{
 		if ($_SESSION['role'] == 1) {
-			$stmt = $this->connect()->prepare('SELECT school_content_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName, subtopics_lnp.name AS subTopicName FROM school_content_lnp LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id ORDER BY school_content_lnp.id DESC');
+
+			$filtre_durum = isset($_GET['durum']) ? $_GET['durum'] : '';
+			$filtre_ders = isset($_GET['ders']) ? $_GET['ders'] : '';
+			$filtre_sinif = isset($_GET['sinif']) ? $_GET['sinif'] : '';
+			$filtre_unite = isset($_GET['unite']) ? $_GET['unite'] : '';
+			$filtre_konu = isset($_GET['konu']) ? $_GET['konu'] : '';
+			$filtre_alt_konu = isset($_GET['altkonu']) ? $_GET['altkonu'] : '';
+
+			$sql = 'SELECT school_content_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName, subtopics_lnp.name AS subTopicName FROM school_content_lnp LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id';
+
+			$whereClauses = [];
+			$parameters = [];
+
+			// Durum filtresi varsa ekle
+			if (!empty($filtre_durum)) {
+				if($filtre_durum == 'aktif') {
+					$filtre_durum = 1;
+				} elseif ($filtre_durum == 'pasif') {
+					$filtre_durum = 0;
+				}
+				$whereClauses[] = "school_content_lnp.active = ?";
+				$parameters[] = $filtre_durum;
+			}
+
+			// Ders filtresi varsa ekle
+			if (!empty($filtre_ders)) {
+				$whereClauses[] = "school_content_lnp.lesson_id = ?";
+				$parameters[] = $filtre_ders;
+			}
+
+			// Sınıf filtresi varsa ekle
+			if (!empty($filtre_sinif)) {
+				$whereClauses[] = "school_content_lnp.class_id = ?";
+				$parameters[] = $filtre_sinif;
+			}
+
+			// Ünite filtresi varsa ekle
+			if (!empty($filtre_unite)) {
+				$whereClauses[] = "school_content_lnp.unit_id = ?";
+				$parameters[] = $filtre_unite;
+			}
+
+			// Konu filtresi varsa ekle
+			if (!empty($filtre_konu)) {
+				$whereClauses[] = "school_content_lnp.topic_id = ?";
+				$parameters[] = $filtre_konu;
+			}
+
+			// Alt konu filtresi varsa ekle
+			if (!empty($filtre_alt_konu)) {
+				$whereClauses[] = "school_content_lnp.subtopic_id = ?";
+				$parameters[] = $filtre_alt_konu;
+			}
+
+			// WHERE koşulları varsa sorguya ekle
+			if (!empty($whereClauses)) {
+				$sql .= " WHERE " . implode(" AND ", $whereClauses);
+			}
+
+			$sql .= " ORDER BY school_content_lnp.id DESC";
+
+			$stmt = $this->connect()->prepare($sql);
+
+			if (!$stmt->execute($parameters)) {
+				$stmt = null;
+				exit();
+			}
+
+			/* $stmt = $this->connect()->prepare('SELECT school_content_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName, subtopics_lnp.name AS subTopicName FROM school_content_lnp LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id ORDER BY school_content_lnp.id DESC');
 
 			if (!$stmt->execute()) {
 				$stmt = null;
 				exit();
-			}
+			} */
 		} elseif ($_SESSION['role'] == 3) {
 			$school = $_SESSION['school_id'];
 			$stmt = $this->connect()->prepare('SELECT school_content_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName, subtopics_lnp.name AS subTopicName FROM school_content_lnp LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id WHERE school_content_lnp.school_id = ? ORDER BY school_content_lnp.id DESC');

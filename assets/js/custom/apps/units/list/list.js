@@ -8,6 +8,7 @@ var KTCustomersList = function () {
     var filterLesson;
     var filterStudentClass;
     var table
+    var form; // Declare form here
 
     // Private functions
     var initCustomerList = function () {
@@ -41,6 +42,53 @@ var KTCustomersList = function () {
         });
     }
 
+    // Function to handle the class change logic
+    var handleClassChange = function () {
+        // Ensure form and the select element exist
+        if (form && form.querySelector('[name="sinif"]')) {
+            $(form.querySelector('[name="sinif"]')).on('change', function () {
+                var classChoose = $("#sinif").val();
+
+                $.ajax({
+                    allowClear: true,
+                    type: "POST",
+                    url: "includes/select_for_lesson.inc.php",
+                    data: { class: classChoose },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.length > 0) {
+                            $('#ders').select2('destroy');
+                            $('#ders').html('<option value="">Ders Yok</option>');
+                            $('#ders').select2({ data: data });
+                        } else {
+                            // Re-initialize select2 correctly after clearing
+                            $('#sinif').select2('destroy'); // This line might be unintended, usually you wouldn't destroy the sinif select2 on ders/unite change
+                            $('#ders').select2('destroy');
+                            $('#ders').html('<option value="">Ders Yok</option>');
+                        }
+                    },
+                    error: function (xhr, status, error, response) {
+                        Swal.fire({
+                            text: error.responseText + ' ' + xhr.responseText,
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Tamam, anladım!",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        }).then(function (result) {
+                            if (result.isConfirmed) {
+                                // Assuming submitButton is defined in this scope or globally accessible
+                                // submitButton.disabled = false; // Uncomment and define submitButton if needed
+                            }
+                        });
+                    }
+                });
+            });
+        }
+
+    }
+
     // Search Datatable --- official docs reference: https://datatables.net/reference/api/search()
     var handleSearchDatatable = () => {
         const filterSearch = document.querySelector('[data-kt-customer-table-filter="search"]');
@@ -48,7 +96,7 @@ var KTCustomersList = function () {
             datatable.search(e.target.value).draw();
         });
     }
-
+/* 
     // Filter Datatable
     var handleFilterDatatable = () => {
         // Select filter options
@@ -78,13 +126,13 @@ var KTCustomersList = function () {
             });*/
 
             // Build filter string from filter options
-            const filterString = statusValue + ' ' + lessonValue + ' ' + classValue;
+            /* const filterString = statusValue + ' ' + lessonValue + ' ' + classValue;
 
             // Filter datatable --- official docs reference: https://datatables.net/reference/api/search()
             datatable.search(filterString).draw();
         });
     }
-
+ */
     // Passive unit
     var handleDeleteRows = () => {
         // Select all delete buttons
@@ -227,7 +275,7 @@ var KTCustomersList = function () {
     }
 
     // Reset Filter
-    var handleResetForm = () => {
+    /* var handleResetForm = () => {
         // Select reset button
         const resetButton = document.querySelector('[data-kt-customer-table-filter="reset"]');
 
@@ -245,7 +293,7 @@ var KTCustomersList = function () {
             // Reset datatable --- official docs reference: https://datatables.net/reference/api/search()
             datatable.search('').draw();
         });
-    }
+    } */
 
     // Init toggle toolbar
     var initToggleToolbar = () => {
@@ -354,17 +402,24 @@ var KTCustomersList = function () {
     return {
         init: function () {
             table = document.querySelector('#kt_customers_table');
+            form = document.querySelector('#filtreleme'); // Assign form here
 
             if (!table) {
+                console.warn('Table #kt_customers_table not found.');
                 return;
+            }
+            if (!form) {
+                console.warn('Form #filtreleme not found.');
+                // Don't return, as other functionalities might still work
             }
 
             initCustomerList();
             initToggleToolbar();
             handleSearchDatatable();
-            handleFilterDatatable();
+            /* handleFilterDatatable(); */
             handleDeleteRows();
-            handleResetForm();
+            /* handleResetForm(); */
+            handleClassChange(); // Call the new function here
         }
     }
 }();

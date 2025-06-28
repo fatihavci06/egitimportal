@@ -468,15 +468,18 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																			<thead>
 																				<tr
 																					class="fs-7 fw-bold text-gray-500 border-bottom-0">
+																					<th style="width: 25%;"
+																						class="ps-0">PAKET TÜRÜ
+																					</th>
+																					<th style="width: 25%;"
+																						class="ps-0">SÜRE / ADET
+																					</th>
+																					<th style="width: 25%;"
+																						class="text-end">FİYATI
+																					</th>
 																					<th style="width: 50%;"
-																						class="ps-0 min-w-200px">PAKET ADI
-																					</th>
-																					<th style="width: 25%;"
-																						class="text-end min-w-100px">FİYATI
-																					</th>
-																					<th style="width: 25%;"
-																						class="pe-0 text-end min-w-100px">
-																						BİTİŞ TARİHİ</th>
+																						class="pe-0 text-end">
+																						BİTİŞ TARİHİ / KALAN</th>
 																				</tr>
 																			</thead>
 																			<!--end::Table head-->
@@ -513,59 +516,44 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 														</div>
 														<!--end::Header-->
 														<!--begin::Body-->
-														<div class="card-body pt-5">
-															<!--begin::Items-->
-															<div class="">
-																<!--begin::Item-->
-																<div class="d-flex flex-stack">
-																	<!--begin::Section-->
-																	<div class="d-flex align-items-center me-5">
-																		<!--begin::Flag-->
-																		<i
-																			class="fa-solid fa-person-chalkboard text-muted fs-1 me-8"></i>
-																		<!--end::Flag-->
-																		<!--begin::Content-->
-																		<div class="me-5">
-																			<!--begin::Title-->
-																			<a href="#"
-																				class="text-gray-800 fw-bold text-hover-primary fs-6">Özel
-																				Ders</a>
-																			<!--end::Title-->
-																			<!--begin::Desc-->
-																			<span
-																				class="text-gray-500 fw-semibold fs-7 d-block text-start ps-0">Öğretmen</span>
-																			<!--end::Desc-->
-																		</div>
-																		<!--end::Content-->
-																	</div>
-																	<!--end::Section-->
-																	<!--begin::Wrapper-->
-																	<div class="d-flex align-items-center">
-																		<!--begin::Number-->
-																		<span
-																			class="text-gray-800 fw-bold fs-4 me-3">45</span>
-																		<!--end::Number-->
-																		<!--begin::Info-->
-																		<div class="m-0">
-																			<!--begin::Label-->
-																			<span class="badge badge-light-success fs-base">
-																				<i
-																					class="ki-duotone ki-arrow-up fs-5 text-success ms-n1">
-																					<span class="path1"></span>
-																					<span class="path2"></span>
-																				</i>Dk</span>
-																			<!--end::Label-->
-																		</div>
-																		<!--end::Info-->
-																	</div>
-																	<!--end::Wrapper-->
-																</div>
-																<!--end::Item-->
-																<!--begin::Separator-->
-																<div class="separator separator-dashed my-3"></div>
-																<!--end::Separator-->
+														<div class="card-body pt-5"><!--begin::Table container-->
+															<div class="table-responsive">
+																<!--begin::Table-->
+																<table
+																	class="table table-row-dashed align-middle gs-0 gy-4 my-0">
+																	<!--begin::Table head-->
+																	<thead>
+																		<tr
+																			class="fs-7 fw-bold text-gray-500 border-bottom-0">
+																			<th style="width: 20%;"
+																				class="ps-0">SINIF
+																			</th>
+																			<th style="width: 20%;"
+																				class="ps-0">DERS
+																			</th>
+																			<th style="width: 20%;"
+																				class="ps-0">ÖĞRETMEN
+																			</th>
+																			<th style="width: 20%;"
+																				class="text-end">ZAMAN
+																			</th>
+																			<th style="width: 20%;"
+																				class="pe-0 text-end">
+																				DURUM</th>
+																		</tr>
+																	</thead>
+																	<!--end::Table head-->
+																	<!--begin::Table body-->
+																	<tbody> 
+																		
+																		<?php $student->showprivateLessonsforFirstPage($getStudentId); ?>
+
+																	</tbody>
+																	<!--end::Table body-->
+																</table>
+																<!--end::Table-->
 															</div>
-															<!--end::Items-->
+															<!--end::Table container-->
 														</div>
 														<!--end: Card Body-->
 													</div>
@@ -1002,5 +990,5 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 </html>
 <?php } else {
-	header("location: index");
+	header("location: ../index");
 }

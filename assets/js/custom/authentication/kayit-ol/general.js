@@ -254,6 +254,41 @@ var KTSignupGeneral = function () {
                                 message: 'KVKK Metnini onaylamanız gerekiyor'
                             }
                         }
+                    },
+                    'toc': {
+                        validators: {
+                            notEmpty: {
+                                message: 'KVKK Metnini onaylamanız gerekiyor'
+                            }
+                        }
+                    },
+                    's_sozlesmesi': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Mesafeli Satış Sözleşmesini onaylamanız gerekiyor'
+                            }
+                        }
+                    },
+                    's_sozlesmesi': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Mesafeli Satış Sözleşmesini onaylamanız gerekiyor'
+                            }
+                        }
+                    },
+                    'iptal_iade': {
+                        validators: {
+                            notEmpty: {
+                                message: 'İptal İade Prosedürlerini onaylamanız gerekiyor'
+                            }
+                        }
+                    },
+                    'gizlilik': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Gizlilik, Güvenlik Politikasını onaylamanız gerekiyor'
+                            }
+                        }
                     }
                 },
                 plugins: {

@@ -345,10 +345,40 @@ include_once "views/pages-head.php";
 							</div>
 
 							<!--begin::Input group-->
-							<div class="fv-row mb-10">
+							<div class="fv-row mb-5">
 								<label class="form-check form-check-custom form-check-solid form-check-inline">
 									<input class="form-check-input" type="checkbox" name="toc" value="0" />
-									<span class="form-check-label fw-semibold text-gray-700 fs-6"><a href="assets/pdf/kvkk-sozlesmesi.pdf" target="_blank" class="ms-1 link-primary">KVKK Metnini</a>
+									<span class="form-check-label fw-semibold text-gray-700 fs-6"><a href="https://lineupcampus.com/wp-content/uploads/2025/06/lineup-campus-kvkk.pdf" target="_blank" class="ms-1 link-primary">KVKK Metnini</a>
+										onaylıyorum.</span>
+								</label>
+							</div>
+							<!--end::Input group-->
+
+							<!--begin::Input group-->
+							<div class="fv-row mb-5">
+								<label class="form-check form-check-custom form-check-solid form-check-inline">
+									<input class="form-check-input" type="checkbox" name="s_sozlesmesi" value="0" />
+									<span class="form-check-label fw-semibold text-gray-700 fs-6"><a href="https://lineupcampus.com/wp-content/uploads/2025/06/lineup-campus-mesafeli-satis-sozlesmesi.pdf" target="_blank" class="ms-1 link-primary">Mesafeli Satış Sözleşmesini </a>
+										onaylıyorum.</span>
+								</label>
+							</div>
+							<!--end::Input group-->
+
+							<!--begin::Input group-->
+							<div class="fv-row mb-5">
+								<label class="form-check form-check-custom form-check-solid form-check-inline">
+									<input class="form-check-input" type="checkbox" name="iptal_iade" value="0" />
+									<span class="form-check-label fw-semibold text-gray-700 fs-6"><a href="https://lineupcampus.com/wp-content/uploads/2025/06/lineup-campus-mesafeli-satis-sozlesmesi.pdf" target="_blank" class="ms-1 link-primary">İptal İade Prosedürlerini</a>
+										onaylıyorum.</span>
+								</label>
+							</div>
+							<!--end::Input group-->
+
+							<!--begin::Input group-->
+							<div class="fv-row mb-10">
+								<label class="form-check form-check-custom form-check-solid form-check-inline">
+									<input class="form-check-input" type="checkbox" name="gizlilik" value="0" />
+									<span class="form-check-label fw-semibold text-gray-700 fs-6"><a href="https://lineupcampus.com/wp-content/uploads/2025/06/lineup-campus-veli-aydinlatma-metni.pdf" target="_blank" class="ms-1 link-primary">Gizlilik, Güvenlik Politikasını</a>
 										onaylıyorum.</span>
 								</label>
 							</div>

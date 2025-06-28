@@ -204,8 +204,10 @@ class ShowTopic extends Topics
 
     public function getTopicList()
     {
+/* 
+        $topicInfo = $this->getTopicsList(); */
 
-        $topicInfo = $this->getTopicsList();
+        $topicInfo = $this->getTopicsListWithFilter();
 
         $dateFormat = new DateFormat();
 

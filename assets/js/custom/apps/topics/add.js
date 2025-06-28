@@ -276,7 +276,8 @@ var KTModalCustomersAdd = function () {
 												submitButton.disabled = false;
 
 												// Redirect to customers list page
-												window.location = form.getAttribute("data-kt-redirect");
+												//window.location = form.getAttribute("data-kt-redirect");
+												window.location.reload();
 											}
 										});
 									} else {
