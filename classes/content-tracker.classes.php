@@ -88,7 +88,7 @@ class ContentTracker
             return [];
         }
     }
-   public function getSchoolContentAnalyticsOverall($user_id)
+    public function getSchoolContentAnalyticsOverall($user_id)
     {
         $sql = "
             SELECT 
@@ -174,7 +174,7 @@ class ContentTracker
             if (!empty($sums)) {
                 $total_points = $sums['total_wordwalls'] + $sums['total_files'] + $sums['total_videos'] + count($results);
                 $result_points = $sums['viewed_wordwalls'] + $sums['downloaded_files'] + $sums['completed_videos'] + $sums['content_visited'];
-                $percentage = floor(($result_points / $total_points) * 100);
+                $percentage = $this->getFirstThreeDecimalDigits(($result_points / $total_points) * 100);
 
             }
             return $percentage;
@@ -184,7 +184,7 @@ class ContentTracker
         }
     }
 
-    public function getSchoolContentAnalyticsByLessonId($user_id, $lesson_id)
+    public function getSchoolContentAnalyticsByLessonId($user_id, $class_id, $lesson_id)
     {
         $sql = "
             SELECT 
@@ -238,7 +238,7 @@ class ContentTracker
             LEFT JOIN school_content_wordwall_lnp scw ON sc.id = scw.school_content_id
             LEFT JOIN wordwall_views wv ON scw.id = wv.wordwall_id AND wv.user_id = ?
 
-            WHERE sc.lesson_id = ?
+            WHERE sc.class_id = ? AND sc.lesson_id = ? 
             AND sc.active = 1
 
             GROUP BY 
@@ -251,7 +251,7 @@ class ContentTracker
 
         try {
             $stmt = $this->db->prepare($sql);
-            $stmt->execute([$user_id, $user_id, $user_id, $user_id, $lesson_id]);
+            $stmt->execute([$user_id, $user_id, $user_id, $user_id, $class_id, $lesson_id]);
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             $sums = [];
@@ -271,7 +271,7 @@ class ContentTracker
             if (!empty($sums)) {
                 $total_points = $sums['total_wordwalls'] + $sums['total_files'] + $sums['total_videos'] + count($results);
                 $result_points = $sums['viewed_wordwalls'] + $sums['downloaded_files'] + $sums['completed_videos'] + $sums['content_visited'];
-                $percentage = floor(($result_points / $total_points) * 100);
+                $percentage = $this->getFirstThreeDecimalDigits(($result_points / $total_points) * 100);
 
             }
             return $percentage;
@@ -280,7 +280,7 @@ class ContentTracker
             return [];
         }
     }
-    public function getSchoolContentAnalyticsByUnitId($user_id, $unit_id)
+    public function getSchoolContentAnalyticsByUnitId($user_id, $class_id, $lesson_id, $unit_id)
     {
         $sql = "
             SELECT 
@@ -334,7 +334,7 @@ class ContentTracker
             LEFT JOIN school_content_wordwall_lnp scw ON sc.id = scw.school_content_id
             LEFT JOIN wordwall_views wv ON scw.id = wv.wordwall_id AND wv.user_id = ?
 
-            WHERE sc.unit_id = ?
+            WHERE sc.class_id = ? AND sc.lesson_id = ? AND sc.unit_id = ?
             AND sc.active = 1
 
             GROUP BY 
@@ -347,7 +347,7 @@ class ContentTracker
 
         try {
             $stmt = $this->db->prepare($sql);
-            $stmt->execute([$user_id, $user_id, $user_id, $user_id, $unit_id]);
+            $stmt->execute([$user_id, $user_id, $user_id, $user_id, $class_id, $lesson_id, $unit_id]);
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             $sums = [];
@@ -367,7 +367,7 @@ class ContentTracker
             if (!empty($sums)) {
                 $total_points = $sums['total_wordwalls'] + $sums['total_files'] + $sums['total_videos'] + count($results);
                 $result_points = $sums['viewed_wordwalls'] + $sums['downloaded_files'] + $sums['completed_videos'] + $sums['content_visited'];
-                $percentage = floor(($result_points / $total_points) * 100);
+                $percentage = $this->getFirstThreeDecimalDigits(($result_points / $total_points) * 100);
 
             }
             return $percentage;
@@ -376,8 +376,7 @@ class ContentTracker
             return [];
         }
     }
-
-    public function getSchoolContentAnalyticsByTopicId($user_id, $topic_id)
+    public function getSchoolContentAnalyticsByTopicId($user_id, $class_id, $lesson_id, $unit_id, $topic_id)
     {
         $sql = "
             SELECT 
@@ -431,7 +430,7 @@ class ContentTracker
             LEFT JOIN school_content_wordwall_lnp scw ON sc.id = scw.school_content_id
             LEFT JOIN wordwall_views wv ON scw.id = wv.wordwall_id AND wv.user_id = ?
 
-            WHERE sc.topic_id = ?
+            WHERE sc.class_id = ? AND sc.lesson_id = ? AND sc.unit_id = ? AND sc.topic_id = ?
             AND sc.active = 1
 
             GROUP BY 
@@ -444,7 +443,7 @@ class ContentTracker
 
         try {
             $stmt = $this->db->prepare($sql);
-            $stmt->execute([$user_id, $user_id, $user_id, $user_id, $topic_id]);
+            $stmt->execute([$user_id, $user_id, $user_id, $user_id, $class_id, $lesson_id, $unit_id, $topic_id]);
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             $sums = [];
@@ -464,7 +463,7 @@ class ContentTracker
             if (!empty($sums)) {
                 $total_points = $sums['total_wordwalls'] + $sums['total_files'] + $sums['total_videos'] + count($results);
                 $result_points = $sums['viewed_wordwalls'] + $sums['downloaded_files'] + $sums['completed_videos'] + $sums['content_visited'];
-                $percentage = floor(($result_points / $total_points) * 100);
+                $percentage = $this->getFirstThreeDecimalDigits(($result_points / $total_points) * 100);
 
             }
             return $percentage;
@@ -473,7 +472,7 @@ class ContentTracker
             return [];
         }
     }
-    public function getSchoolContentAnalyticsBySubtopicId($user_id, $subtopic_id)
+    public function getSchoolContentAnalyticsBySubtopicId($user_id, $class_id, $lesson_id, $unit_id, $topic_id, $subtopic_id)
     {
         $sql = "
             SELECT 
@@ -527,7 +526,7 @@ class ContentTracker
             LEFT JOIN school_content_wordwall_lnp scw ON sc.id = scw.school_content_id
             LEFT JOIN wordwall_views wv ON scw.id = wv.wordwall_id AND wv.user_id = ?
 
-            WHERE sc.subtopic_id = ?
+            WHERE sc.class_id = ? AND sc.lesson_id = ? AND sc.unit_id = ? AND sc.topic_id = ? AND sc.subtopic_id = ?
             AND sc.active = 1
 
             GROUP BY 
@@ -540,7 +539,7 @@ class ContentTracker
 
         try {
             $stmt = $this->db->prepare($sql);
-            $stmt->execute([$user_id, $user_id, $user_id, $user_id, $subtopic_id]);
+            $stmt->execute([$user_id, $user_id, $user_id, $user_id, $class_id, $lesson_id, $unit_id, $topic_id, $subtopic_id]);
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             $sums = [];
@@ -560,7 +559,7 @@ class ContentTracker
             if (!empty($sums)) {
                 $total_points = $sums['total_wordwalls'] + $sums['total_files'] + $sums['total_videos'] + count($results);
                 $result_points = $sums['viewed_wordwalls'] + $sums['downloaded_files'] + $sums['completed_videos'] + $sums['content_visited'];
-                $percentage = floor(($result_points / $total_points) * 100);
+                $percentage = $this->getFirstThreeDecimalDigits(($result_points / $total_points) * 100);
 
             }
             return $percentage;
@@ -568,6 +567,12 @@ class ContentTracker
         } catch (PDOException $e) {
             return [];
         }
+    }
+    function getFirstThreeDecimalDigits($number)
+    {
+
+        $truncated = (int) ($number * 100);
+        return $truncated / 100;
     }
 
 }
