@@ -88,6 +88,7 @@ $timeSpendInfo = $timeSpend->getTimeSpend($userInfo["id"]);
         // ogretmen profilim sayfasi
         require_once "views/profile/profilim-ogretmenler.php";
 
+
     } elseif ($_SESSION["role"] == 3) {
 
         require_once "views/profile/profilim-koordinator.php";
@@ -140,7 +141,7 @@ $timeSpendInfo = $timeSpend->getTimeSpend($userInfo["id"]);
     <script src="assets/js/widgets.bundle.js"></script>
     <script src="assets/js/custom/widgets.js"></script>
     <script src="assets/js/custom/apps/chat/chat.js"></script>
-    <script src="assets/js/custom/utilities/modals/upgrade-plan.js"></script>
+    <!-- <script src="assets/js/custom/utilities/modals/upgrade-plan.js"></script>
     <script src="assets/js/custom/utilities/modals/create-account.js"></script>
     <script src="assets/js/custom/utilities/modals/create-app.js"></script>
     <script src="assets/js/custom/utilities/modals/offer-a-deal/type.js"></script>
@@ -148,9 +149,15 @@ $timeSpendInfo = $timeSpend->getTimeSpend($userInfo["id"]);
     <script src="assets/js/custom/utilities/modals/offer-a-deal/finance.js"></script>
     <script src="assets/js/custom/utilities/modals/offer-a-deal/complete.js"></script>
     <script src="assets/js/custom/utilities/modals/offer-a-deal/main.js"></script>
-    <script src="assets/js/custom/utilities/modals/users-search.js"></script>
+    <script src="assets/js/custom/utilities/modals/users-search.js"></script> -->
 
     <script src="assets/js/custom/apps/profile/trackprogress.js"></script>
+    <?php
+    if ($_SESSION["role"] == 4 || $_SESSION["role"] == 10001 || $_SESSION["role"] == 9 || $_SESSION["role"] == 10) {
+        echo '<script src="assets/js/custom/apps/teacher-details/curriculum.js"></script>';
+    }
+    ?>
+
 
 </body>
 
