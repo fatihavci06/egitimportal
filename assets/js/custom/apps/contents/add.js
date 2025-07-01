@@ -413,6 +413,20 @@ var KTModalCustomersAdd = function () {
 		submitButton.addEventListener('click', function (e) {
 			e.preventDefault();
 
+			// icerik-ekle sayfasının JS kodunun başında, veya init fonksiyonu içinde:
+			let redirectUrl = 'icerikler'; // Varsayılan bir dönüş URL'si
+
+			// URL'den 'return_url' parametresini oku
+			const urlParams = new URLSearchParams(window.location.search);
+			if (urlParams.has('return_url')) {
+				// URL kodlanmış olduğu için decodeURIComponent kullanıyoruz
+				redirectUrl = decodeURIComponent(urlParams.get('return_url'));
+			} else if (document.referrer && document.referrer.includes('icerikler')) {
+				// Eğer return_url yoksa ama referrer icerikler sayfası ise onu kullan
+				// (Bu bir yedek olabilir, ama return_url daha güvenilirdir.)
+				redirectUrl = document.referrer;
+			}
+
 			// Validate form before submit
 			if (validator) {
 				validator.validate().then(function (status) {
@@ -492,7 +506,9 @@ var KTModalCustomersAdd = function () {
 												submitButton.disabled = false;
 
 												// Redirect to customers list page
-												window.location = form.getAttribute("data-kt-redirect");
+												/* window.location = form.getAttribute("data-kt-redirect"); */
+
+												window.location.href = redirectUrl;
 											}
 										});
 									} else {

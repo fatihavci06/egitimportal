@@ -171,6 +171,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 OR $_SESSION['role'] ==
 																		<th class="min-w-100px">Konu Adı</th>
 																		<th class="min-w-100px">Ders</th>
 																		<th class="min-w-100px">Sınıf</th>
+																		<th class="min-w-100px">Durum</th>
 																		<th class="text-end min-w-100px pe-4">İşlemler</th>
 																	</tr>
 																</thead>
@@ -220,6 +221,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 OR $_SESSION['role'] ==
 																		<th class="min-w-100px">Alt Konu Adı</th>
 																		<th class="min-w-100px">Ders</th>
 																		<th class="min-w-100px">Sınıf</th>
+																		<th class="min-w-100px">Durum</th>
 																		<th class="text-end min-w-100px pe-4">İşlemler</th>
 																	</tr>
 																</thead>

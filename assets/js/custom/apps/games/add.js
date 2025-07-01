@@ -188,8 +188,8 @@ var KTModalCustomersAdd = function () {
 				icon: "warning",
 				showCancelButton: true,
 				buttonsStyling: false,
-				confirmButtonText: "Yes, cancel it!",
-				cancelButtonText: "No, return",
+				confirmButtonText: "Evet, iptal et!",
+				cancelButtonText: "Hayır, geri dön",
 				customClass: {
 					confirmButton: "btn btn-primary",
 					cancelButton: "btn btn-active-light"
@@ -200,10 +200,10 @@ var KTModalCustomersAdd = function () {
 					modal.hide(); // Hide modal				
 				} else if (result.dismiss === 'cancel') {
 					Swal.fire({
-						text: "Your form has not been cancelled!.",
+						text: "Formunuz iptal edilmedi.",
 						icon: "error",
 						buttonsStyling: false,
-						confirmButtonText: "Ok, got it!",
+						confirmButtonText: "Tamam, anladım!",
 						customClass: {
 							confirmButton: "btn btn-primary",
 						}
@@ -220,8 +220,8 @@ var KTModalCustomersAdd = function () {
 				icon: "warning",
 				showCancelButton: true,
 				buttonsStyling: false,
-				confirmButtonText: "Yes, cancel it!",
-				cancelButtonText: "No, return",
+				confirmButtonText: "Evet, iptal et!",
+				cancelButtonText: "Hayır, geri dön",
 				customClass: {
 					confirmButton: "btn btn-primary",
 					cancelButton: "btn btn-active-light"
@@ -232,10 +232,10 @@ var KTModalCustomersAdd = function () {
 					modal.hide(); // Hide modal				
 				} else if (result.dismiss === 'cancel') {
 					Swal.fire({
-						text: "Your form has not been cancelled!.",
+						text: "Formunuz iptal edilmedi.",
 						icon: "error",
 						buttonsStyling: false,
-						confirmButtonText: "Ok, got it!",
+						confirmButtonText: "Tamam, anladım!",
 						customClass: {
 							confirmButton: "btn btn-primary",
 						}

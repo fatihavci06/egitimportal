@@ -3,7 +3,7 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 2 or  $_SESSION['role'] == 3 or  $_SESSION['role'] == 4)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] == 3 or  $_SESSION['role'] == 4)) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
     include "classes/weekly.classes.php";
@@ -116,8 +116,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid row">
+                                    <?php if ($_SESSION['role'] == 1){
+                                        $column = 'col-lg-12';
+                                    } else {
+                                        $column = 'col-lg-6';
+                                    } ?>
                                     <!--begin::Card-->
-                                    <div class="card col-lg-6">
+                                    <div class="card <?php echo $column; ?>">
 
                                         <!--begin::Card body-->
                                         <div class="card-body pt-0">
@@ -129,18 +134,20 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         </div>
                                         <!--end::Card body-->
                                     </div>
+                                     <?php if ($_SESSION['role'] != 1){ ?>
                                     <div class="card col-lg-6">
 
                                         <!--begin::Card body-->
                                         <div class="card-body pt-0">
                                             <!--begin::Table-->
                                             <div id="eventResultsTest" class="mt-4">
-                                                sa
+                                                
                                             </div>
                                             <!--end::Table-->
                                         </div>
                                         <!--end::Card body-->
                                     </div>
+                                    <?php } ?>
                                     <!--end::Card-->
                                     <!--begin::Modals-->
                                     <!--begin::Modal - Customers - Add-->
@@ -150,111 +157,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         //include_once "views/weekly/add_unit_teacher.php";
                                     } ?>
                                     <!--end::Modal - Customers - Add-->
-                                    <!--begin::Modal - Adjust Balance-->
-                                    <div class="modal fade" id="kt_customers_export_modal" tabindex="-1" aria-hidden="true">
-                                        <!--begin::Modal dialog-->
-                                        <div class="modal-dialog modal-dialog-centered mw-650px">
-                                            <!--begin::Modal content-->
-                                            <div class="modal-content">
-                                                <!--begin::Modal header-->
-                                                <div class="modal-header">
-                                                    <!--begin::Modal title-->
-                                                    <h2 class="fw-bold">Export Customers</h2>
-                                                    <!--end::Modal title-->
-                                                    <!--begin::Close-->
-                                                    <div id="kt_customers_export_close" class="btn btn-icon btn-sm btn-active-icon-primary">
-                                                        <i class="ki-duotone ki-cross fs-1">
-                                                            <span class="path1"></span>
-                                                            <span class="path2"></span>
-                                                        </i>
-                                                    </div>
-                                                    <!--end::Close-->
-                                                </div>
-                                                <!--end::Modal header-->
-                                                <!--begin::Modal body-->
-                                                <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
-                                                    <!--begin::Form-->
-                                                    <form id="kt_customers_export_form" class="form" action="#">
-                                                        <!--begin::Input group-->
-                                                        <div class="fv-row mb-10">
-                                                            <!--begin::Label-->
-                                                            <label class="fs-5 fw-semibold form-label mb-5">Select Export Format:</label>
-                                                            <!--end::Label-->
-                                                            <!--begin::Input-->
-                                                            <select data-control="select2" data-placeholder="Select a format" data-hide-search="true" name="format" class="form-select form-select-solid">
-                                                                <option value="excell">Excel</option>
-                                                                <option value="pdf">PDF</option>
-                                                                <option value="cvs">CVS</option>
-                                                                <option value="zip">ZIP</option>
-                                                            </select>
-                                                            <!--end::Input-->
-                                                        </div>
-                                                        <!--end::Input group-->
-                                                        <!--begin::Input group-->
-                                                        <div class="fv-row mb-10">
-                                                            <!--begin::Label-->
-                                                            <label class="fs-5 fw-semibold form-label mb-5">Select Date Range:</label>
-                                                            <!--end::Label-->
-                                                            <!--begin::Input-->
-                                                            <input class="form-control form-control-solid" placeholder="Pick a date" name="date" />
-                                                            <!--end::Input-->
-                                                        </div>
-                                                        <!--end::Input group-->
-                                                        <!--begin::Row-->
-                                                        <div class="row fv-row mb-15">
-                                                            <!--begin::Label-->
-                                                            <label class="fs-5 fw-semibold form-label mb-5">Payment Type:</label>
-                                                            <!--end::Label-->
-                                                            <!--begin::Radio group-->
-                                                            <div class="d-flex flex-column">
-                                                                <!--begin::Radio button-->
-                                                                <label class="form-check form-check-custom form-check-sm form-check-solid mb-3">
-                                                                    <input class="form-check-input" type="checkbox" value="1" checked="checked" name="payment_type" />
-                                                                    <span class="form-check-label text-gray-600 fw-semibold">All</span>
-                                                                </label>
-                                                                <!--end::Radio button-->
-                                                                <!--begin::Radio button-->
-                                                                <label class="form-check form-check-custom form-check-sm form-check-solid mb-3">
-                                                                    <input class="form-check-input" type="checkbox" value="2" checked="checked" name="payment_type" />
-                                                                    <span class="form-check-label text-gray-600 fw-semibold">Visa</span>
-                                                                </label>
-                                                                <!--end::Radio button-->
-                                                                <!--begin::Radio button-->
-                                                                <label class="form-check form-check-custom form-check-sm form-check-solid mb-3">
-                                                                    <input class="form-check-input" type="checkbox" value="3" name="payment_type" />
-                                                                    <span class="form-check-label text-gray-600 fw-semibold">Mastercard</span>
-                                                                </label>
-                                                                <!--end::Radio button-->
-                                                                <!--begin::Radio button-->
-                                                                <label class="form-check form-check-custom form-check-sm form-check-solid">
-                                                                    <input class="form-check-input" type="checkbox" value="4" name="payment_type" />
-                                                                    <span class="form-check-label text-gray-600 fw-semibold">American Express</span>
-                                                                </label>
-                                                                <!--end::Radio button-->
-                                                            </div>
-                                                            <!--end::Input group-->
-                                                        </div>
-                                                        <!--end::Row-->
-                                                        <!--begin::Actions-->
-                                                        <div class="text-center">
-                                                            <button type="reset" id="kt_customers_export_cancel" class="btn btn-light btn-sm me-3">Discard</button>
-                                                            <button type="submit" id="kt_customers_export_submit" class="btn btn-primary btn-sm">
-                                                                <span class="indicator-label">Submit</span>
-                                                                <span class="indicator-progress">Please wait...
-                                                                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                                                            </button>
-                                                        </div>
-                                                        <!--end::Actions-->
-                                                    </form>
-                                                    <!--end::Form-->
-                                                </div>
-                                                <!--end::Modal body-->
-                                            </div>
-                                            <!--end::Modal content-->
-                                        </div>
-                                        <!--end::Modal dialog-->
-                                    </div>
-                                    <!--end::Modal - New Card-->
                                     <!--end::Modals-->
                                 </div>
                                 <!--end::Content container-->
@@ -609,12 +511,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <div class="d-flex align-items-center mb-2">
                                                     <i class="fas fa-calendar-alt text-primary me-2"></i>
                                                     <h6 class="card-subtitle text-muted flex-grow-1 mb-0">
-                                                        <small style="font-size: 1.4rem;"> 
+                                                        <small style="font-size: 1.2rem;"> 
                                                             ${formatDate(event.start)} - ${formatDate(event.end)}
                                                         </small>
                                                     </h6>
                                                 </div>
-                                                <h5 class="card-title text-dark mb-0" style="font-size: 1.75rem;">${event.name}</h5> 
+                                                <h5 class="card-title text-dark mb-0" style="font-size: 1.3rem;">${event.name}</h5> 
                                             </div>
                                         </div>
                                     `;

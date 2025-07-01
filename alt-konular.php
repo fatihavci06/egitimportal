@@ -196,7 +196,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <!--end::Filter-->
                                                     <?php } ?>
                                                     <!--begin::Add school-->
-                                                    <a href="altkonu-ekle"><button type="button" class="btn btn-primary btn-sm h-100">Alt Konu Ekle</button></a>
+                                                    <a href="altkonu-ekle?return_url=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>"><button type="button" class="btn btn-primary btn-sm h-100">Alt Konu Ekle</button></a>
                                                     <!--end::Add school-->
                                                 </div>
                                                 <!--end::Toolbar-->

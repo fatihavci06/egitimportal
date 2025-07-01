@@ -3,7 +3,7 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] == 2 or  $_SESSION['role'] == 10002)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] == 5 or $_SESSION['role'] == 10002)) {
     include "classes/dbh.classes.php";
     include "classes/classes.classes.php";
     include "classes/classes-view.classes.php";
@@ -14,6 +14,19 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
     $weekly = new ShowWeekly();
     $chooseLesson = new ShowLesson();
     include_once "views/pages-head.php";
+
+    if($_SESSION['role'] == 5){
+        
+        include "classes/userslist.classes.php";
+        $user = new User();
+        $studentClass = $user->getStudentDataWithParentId($_SESSION['id']);
+
+        $classId = $studentClass[0]['class_id'] ?? null;
+        
+    }else{
+        $classId = $_SESSION['class_id'];
+    }
+
 ?>
     <!--end::Head-->
     <!--begin::Body-->
@@ -63,11 +76,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <div class="row">
                                         <div class="col-lg-4">
-                                            <input type="hidden" name="classId" id="classId" value="<?= $_SESSION['class_id'] ?>">
+                                            <input type="hidden" name="classId" id="classId" value="<?= $classId ?>">
                                             <label class="required fs-6 fw-semibold mb-2" for="lesson_id">Dersler</label>
                                             <select class="form-select" id="lesson_id" required>
-                                                <option value="">Ders seçiniz</option>
-                                                <?= $chooseLesson->getLessonSelectListForweeklyList($_SESSION['class_id']); ?>
+                                                <option value="">Ders seçiniz </option>
+                                                <?= $chooseLesson->getLessonSelectListForweeklyList($classId); ?>
                                             </select>
                                         </div>
 
@@ -106,9 +119,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                             <!--begin::Content-->
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <!--begin::Content container-->
-                                <div id="kt_app_content_container" class="app-container container-fluid">
+                                <div id="kt_app_content_container" class="app-container container-fluid row">
+                                    <?php if ($_SESSION['role'] == 1){
+                                        $column = 'col-lg-12';
+                                    } else {
+                                        $column = 'col-lg-6';
+                                    } ?>
                                     <!--begin::Card-->
-                                    <div class="card">
+                                    <div class="card <?php echo $column; ?>">
 
                                         <!--begin::Card body-->
                                         <div class="card-body pt-0">
@@ -120,6 +138,20 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                                         </div>
                                         <!--end::Card body-->
                                     </div>
+                                     <?php if ($_SESSION['role'] != 1){ ?>
+                                    <div class="card col-lg-6">
+
+                                        <!--begin::Card body-->
+                                        <div class="card-body pt-0">
+                                            <!--begin::Table-->
+                                            <div id="eventResultsTest" class="mt-4">
+                                                
+                                            </div>
+                                            <!--end::Table-->
+                                        </div>
+                                        <!--end::Card body-->
+                                    </div>
+                                    <?php } ?>
                                     <!--end::Card-->
                                     <!--begin::Modals-->
                                     <!--begin::Modal - Customers - Add-->
@@ -129,111 +161,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                                         //include_once "views/weekly/add_unit_teacher.php";
                                     } ?>
                                     <!--end::Modal - Customers - Add-->
-                                    <!--begin::Modal - Adjust Balance-->
-                                    <div class="modal fade" id="kt_customers_export_modal" tabindex="-1" aria-hidden="true">
-                                        <!--begin::Modal dialog-->
-                                        <div class="modal-dialog modal-dialog-centered mw-650px">
-                                            <!--begin::Modal content-->
-                                            <div class="modal-content">
-                                                <!--begin::Modal header-->
-                                                <div class="modal-header">
-                                                    <!--begin::Modal title-->
-                                                    <h2 class="fw-bold">Export Customers</h2>
-                                                    <!--end::Modal title-->
-                                                    <!--begin::Close-->
-                                                    <div id="kt_customers_export_close" class="btn btn-icon btn-sm btn-active-icon-primary">
-                                                        <i class="ki-duotone ki-cross fs-1">
-                                                            <span class="path1"></span>
-                                                            <span class="path2"></span>
-                                                        </i>
-                                                    </div>
-                                                    <!--end::Close-->
-                                                </div>
-                                                <!--end::Modal header-->
-                                                <!--begin::Modal body-->
-                                                <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
-                                                    <!--begin::Form-->
-                                                    <form id="kt_customers_export_form" class="form" action="#">
-                                                        <!--begin::Input group-->
-                                                        <div class="fv-row mb-10">
-                                                            <!--begin::Label-->
-                                                            <label class="fs-5 fw-semibold form-label mb-5">Select Export Format:</label>
-                                                            <!--end::Label-->
-                                                            <!--begin::Input-->
-                                                            <select data-control="select2" data-placeholder="Select a format" data-hide-search="true" name="format" class="form-select form-select-solid">
-                                                                <option value="excell">Excel</option>
-                                                                <option value="pdf">PDF</option>
-                                                                <option value="cvs">CVS</option>
-                                                                <option value="zip">ZIP</option>
-                                                            </select>
-                                                            <!--end::Input-->
-                                                        </div>
-                                                        <!--end::Input group-->
-                                                        <!--begin::Input group-->
-                                                        <div class="fv-row mb-10">
-                                                            <!--begin::Label-->
-                                                            <label class="fs-5 fw-semibold form-label mb-5">Select Date Range:</label>
-                                                            <!--end::Label-->
-                                                            <!--begin::Input-->
-                                                            <input class="form-control form-control-solid" placeholder="Pick a date" name="date" />
-                                                            <!--end::Input-->
-                                                        </div>
-                                                        <!--end::Input group-->
-                                                        <!--begin::Row-->
-                                                        <div class="row fv-row mb-15">
-                                                            <!--begin::Label-->
-                                                            <label class="fs-5 fw-semibold form-label mb-5">Payment Type:</label>
-                                                            <!--end::Label-->
-                                                            <!--begin::Radio group-->
-                                                            <div class="d-flex flex-column">
-                                                                <!--begin::Radio button-->
-                                                                <label class="form-check form-check-custom form-check-sm form-check-solid mb-3">
-                                                                    <input class="form-check-input" type="checkbox" value="1" checked="checked" name="payment_type" />
-                                                                    <span class="form-check-label text-gray-600 fw-semibold">All</span>
-                                                                </label>
-                                                                <!--end::Radio button-->
-                                                                <!--begin::Radio button-->
-                                                                <label class="form-check form-check-custom form-check-sm form-check-solid mb-3">
-                                                                    <input class="form-check-input" type="checkbox" value="2" checked="checked" name="payment_type" />
-                                                                    <span class="form-check-label text-gray-600 fw-semibold">Visa</span>
-                                                                </label>
-                                                                <!--end::Radio button-->
-                                                                <!--begin::Radio button-->
-                                                                <label class="form-check form-check-custom form-check-sm form-check-solid mb-3">
-                                                                    <input class="form-check-input" type="checkbox" value="3" name="payment_type" />
-                                                                    <span class="form-check-label text-gray-600 fw-semibold">Mastercard</span>
-                                                                </label>
-                                                                <!--end::Radio button-->
-                                                                <!--begin::Radio button-->
-                                                                <label class="form-check form-check-custom form-check-sm form-check-solid">
-                                                                    <input class="form-check-input" type="checkbox" value="4" name="payment_type" />
-                                                                    <span class="form-check-label text-gray-600 fw-semibold">American Express</span>
-                                                                </label>
-                                                                <!--end::Radio button-->
-                                                            </div>
-                                                            <!--end::Input group-->
-                                                        </div>
-                                                        <!--end::Row-->
-                                                        <!--begin::Actions-->
-                                                        <div class="text-center">
-                                                            <button type="reset" id="kt_customers_export_cancel" class="btn btn-light btn-sm me-3">Discard</button>
-                                                            <button type="submit" id="kt_customers_export_submit" class="btn btn-primary btn-sm">
-                                                                <span class="indicator-label">Submit</span>
-                                                                <span class="indicator-progress">Please wait...
-                                                                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                                                            </button>
-                                                        </div>
-                                                        <!--end::Actions-->
-                                                    </form>
-                                                    <!--end::Form-->
-                                                </div>
-                                                <!--end::Modal body-->
-                                            </div>
-                                            <!--end::Modal content-->
-                                        </div>
-                                        <!--end::Modal dialog-->
-                                    </div>
-                                    <!--end::Modal - New Card-->
                                     <!--end::Modals-->
                                 </div>
                                 <!--end::Content container-->
@@ -406,6 +333,21 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
 
             // Filtreleme butonu tıklaması
             $('#filterButton').on('click', function() {
+                var lessonId = $('#lesson_id').val();
+                
+                
+                if (!lessonId || lessonId === '') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Uyarı',
+                        text: 'Lütfen bir ders seçiniz.',
+                        confirmButtonText: 'Tamam'
+                    });
+                    $('#lesson_id').addClass('is-invalid'); // Bootstrap ile görsel uyarı
+                    return; // Filtreleme işlemini durdur
+                } else {
+                    $('#lesson_id').removeClass('is-invalid');
+                }
 
                 var classId = $('#classId').val();
                 var lessonId = $('#lesson_id').val();
@@ -428,6 +370,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                     dataType: 'json', // Expecting JSON response from the PHP script
                     success: function(response) {
                         // Handle success response from PHP
+                        console.log(response)
                         if (response.status === 'success') {
                             var eventList = response.data;
                             console.log('Events:', eventList);
@@ -445,7 +388,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                             function formatDate(dateString) {
                                 const date = new Date(dateString);
                                 const options = {
-                                    month: 'short',
+                                    month: 'long', // ✅ "short" yerine "long"
                                     day: 'numeric'
                                 };
                                 return date.toLocaleDateString('tr-TR', options);
@@ -461,53 +404,64 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                             let html = '';
 
                             eventList.forEach(event => {
-
                                 const key = getMonthYear(event.start);
                                 if (!grouped[key]) grouped[key] = [];
                                 grouped[key].push(event);
                             });
 
                             for (const key in grouped) {
-                                html += `<h5 class="text-center event-month">${capitalize(key)}</h5>`;
+                                html += `<h2 class="text-center event-month mt-4 mb-4">${capitalize(key)}</h2>`;
 
                                 grouped[key].forEach(event => {
-                                    let eventName = '';
-                                    if (topicId !== '') {
-                                        eventName += `<div class="event-name">
-                                                   <a href="alt-konu/${event.slug}">
-                                                       ${event.name}
-                                                    </a>
-                                                </div>`
-                                    } else if (unitId !== '') {
-                                        eventName += `<div class="event-name">
-                                                   <a href="konu/${event.slug}">
-                                                       ${event.name}
-                                                    </a>
-                                                </div>`
-                                    } else if (lessonId !== '') {
-                                        eventName += `<div class="event-name">
-                                                   <a href="unite/${event.slug}">
-                                                       ${event.name}
-                                                    </a>
-                                                </div>`
-                                    } else {
-                                        eventName += `<div class = "event-name" >${event.name}</div>`
-                                    }
                                     html += `
-                                        <div class="event-list">
-                                            <div class="event-body my-4">
-                                                <div class="event-date">
-                                                    ${formatDate(event.start)} - ${formatDate(event.end)}
+                                        <div class="card mb-3 shadow-sm event-card">
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <i class="fas fa-calendar-alt text-primary me-2"></i>
+                                                    <h6 class="card-subtitle text-muted flex-grow-1 mb-0">
+                                                        <small style="font-size: 1.2rem;"> 
+                                                            ${formatDate(event.start)} - ${formatDate(event.end)}
+                                                        </small>
+                                                    </h6>
                                                 </div>
-                                                    ${eventName}
+                                                <h5 class="card-title text-dark mb-0" style="font-size: 1.3rem;">${event.name}</h5> 
                                             </div>
                                         </div>
-                                        `;
+                                    `;
                                 });
                             }
 
-
                             $('#eventResults').html(html);
+                            if (Array.isArray(response.testData) && response.testData.length > 0) {
+                                let testHtml = '<h2 class="text-center event-month mt-4 mb-4">Testler</h2>';
+
+                                response.testData.forEach(test => {
+                                    testHtml += `
+            <div class="card mb-3 shadow-sm border-start border-3 border-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <i class="fas fa-vial text-danger me-2"></i>
+                            <strong style="font-size: 1.3rem;">${test.test_title}</strong>
+                        </div>
+                        <a href="ogrenci-test-coz.php?id=${test.id}" target="_blank" class="btn btn-success btn-sm">
+                            Sınava Gir
+                        </a>
+                    </div>
+                    <div class="text-muted" style="font-size: 1.2rem;">
+                        <i class="fas fa-clock me-1"></i>
+                        ${formatDate(test.start_date)} - ${formatDate(test.end_date)} 
+                        <span class="badge bg-${test.label === 'Tarihi Geçmiş' ? 'danger' : 'success'} ms-2">${test.label}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+                                });
+
+                                $('#eventResultsTest').html(testHtml);
+                            } else {
+                                $('#eventResultsTest').html(`<div class="alert alert-warning">Henüz sınav tanımlanmamış.</div>`);
+                            }
 
                         } else {
                             alert('Filtreleme başarısız: ' + response.message);

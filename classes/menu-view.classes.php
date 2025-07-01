@@ -3,12 +3,30 @@
 class ShowMenu extends Menus
 {
 
+    // GET Name
+
+    public function getTitleNormal()
+    {
+        $link = "$_SERVER[REQUEST_URI]";
+        $active_slug = htmlspecialchars(basename($link, ".php"));
+
+        $name = $this->getTitleNames($active_slug);
+
+        echo $name['name'];
+    }
+
     // Get Page Name
 
     public function getTitle()
     {
         $link = "$_SERVER[REQUEST_URI]";
         $active_slug = htmlspecialchars(basename($link, ".php"));
+        // URL'yi ayrıştır
+        $parsed_url = parse_url($active_slug);
+
+        // Sadece yol (path) kısmını al
+        $active_slug = $parsed_url['path'];
+
         $menuInfo = $this->getOneMenu($active_slug);
 
         $lessonTitleInfo = $this->getLessonTitle($active_slug);
@@ -45,6 +63,8 @@ class ShowMenu extends Menus
             }
         } elseif ($active_slug == 'oyun') {
             $pageTitle = 'Oyunlar';
+        } elseif ($active_slug == 'icerik-ekle') {
+            $pageTitle = 'İçerik Ekle';
         }
 
         $questionmark = strpos($pageTitle, '?');
@@ -113,7 +133,7 @@ class ShowMenu extends Menus
                                 </span>
                                 <!--end:Menu link-->
                                 <!--begin:Menu sub-->
-                                <div class="menu-sub menu-sub-accordion '.$show2.'" style="'.$style.'">';
+                                <div class="menu-sub menu-sub-accordion ' . $show2 . '" style="' . $style . '">';
 
 
 

@@ -111,6 +111,21 @@ class User extends Dbh
 		$stmt = null;
 	}
 
+	public function getStudentDataWithParentId($user_id){
+		$stmt = $this->connect()->prepare('SELECT * FROM users_lnp WHERE active = ? AND role = ? AND parent_id = ?');
+
+		if (!$stmt->execute(array("1", "2", $user_id))) {
+			$stmt = null;
+			exit();
+		}
+
+		$studentData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $studentData;
+
+		$stmt = null;
+	}
+
 	public function getlnpAdmin()
 	{
 		$stmt = $this->connect()->prepare('SELECT email FROM users_lnp WHERE school_id = ? AND role = ?');

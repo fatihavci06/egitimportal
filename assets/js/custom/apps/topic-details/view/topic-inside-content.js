@@ -67,7 +67,7 @@ var KTCustomerViewPaymentTable = function () {
 
                 // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
                 Swal.fire({
-                    text: customerName + " isimli alt konuyu " + activeStatus + " yapmak istediğinizden emin misiniz?",
+                    text: customerName + " isimli içeriği " + activeStatus + " yapmak istediğinizden emin misiniz?",
                     icon: "warning",
                     showCancelButton: true,
                     buttonsStyling: false,
@@ -82,7 +82,7 @@ var KTCustomerViewPaymentTable = function () {
 
                         $.ajax({
                             type: "POST",
-                            url: "includes/update_active_subtopic.inc.php",
+                            url: "includes/update_active_content.inc.php",
                             data: {
                                 id: fileId,
                                 statusVal: statusVal,
@@ -92,7 +92,7 @@ var KTCustomerViewPaymentTable = function () {
                                 if (response.status === "success") {
 
                                     Swal.fire({
-                                        text: customerName + " adlı alt konu " + activeStatus + " hale gelmiştir!.",
+                                        text: customerName + " adlı içerik " + activeStatus + " hale gelmiştir!.",
                                         icon: "success",
                                         buttonsStyling: false,
                                         confirmButtonText: "Tamam, anladım!",
