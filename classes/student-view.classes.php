@@ -209,7 +209,7 @@ class ShowStudent extends Student
         }
         echo $studentList;
     }
-    public function getStudentProgressList()
+    public function getStudentsProgressList()
     {
 
         $schoolInfo = $this->getStudentsList();
@@ -263,13 +263,19 @@ class ShowStudent extends Student
                         <td class="text-end">
                             <span class="fw-bold fs-6">' . $scoreT . '%</span>
                         </td>
-
+                        <td class="text-center">
+                            <a href="./icerik-ilerleme-takip/' . $value['id'] . '" class="text-gray-800 text-hover-primary mb-1"> 
+                            <i class="ki-duotone ki-chart-line text-gray-900 fs-2tx">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i></a>
+                        </td>
                     </tr>
                 ';
         }
         echo $studentList;
     }
-    public function getStudentProgressListForParent($userID)
+    public function getStudentsProgressListForParent($userID)
     {
 
         $schoolInfo = $this->getStudentsListForParent($userID);
@@ -330,7 +336,66 @@ class ShowStudent extends Student
         }
         echo $studentList;
     }
+    public function getStudentProgress($userId, $classId)
+    {
+        $schoolInfo = $this->getStudentsList();
 
+        $dateFormat = new DateFormat();
+        $studentList = '';
+
+        require_once "content-tracker.classes.php";
+        $contentObj = new ContentTracker();
+
+        $items = $contentObj->getSchoolContentAnalyticsListByUserId($userId, $classId);
+
+        //     echo "<pre>";
+        //     var_dump([$items]);
+        //     echo "</pre>";
+        // die();
+
+        foreach ($items as $key => $value) {
+
+
+            $placeholder = "placeholder";
+
+            $topic_name = $value['topic_name'] ?? '-';
+            $subtopic_name = $value['subtopic_name'] ?? '-';
+
+            $content_visited = ($value['content_visited'] == 0) ? '<span class="badge badge-light-danger">Hayır</span>' : '<span class="badge badge-light-success">Evet</span>';
+
+            $videos = ($value['total_videos'] == 0) ? '-' : $value['completed_videos'] . '/' . $value['total_videos'];
+            $files = ($value['total_files'] == 0) ? '-' : '' . $value['downloaded_files'] . '/' . $value['total_files'] . '';
+            $wordwalls = ($value['total_wordwalls'] == 0) ? '-' : '' . $value['viewed_wordwalls'] . '/' . $value['total_wordwalls'] . '';
+
+            $studentList .= '
+                    <tr>
+                        <td>
+                            <a href="./icerik-detay/' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
+                        </td>
+                        <td>
+                            ' . $topic_name . '
+                        </td>
+                        <td>
+                            ' . $subtopic_name . '
+                        </td>
+
+                        <td>
+                            ' . $content_visited . '
+                        </td>
+                        <td>
+                            <span class="fw-bold fs-6">' . $videos . '</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold fs-6">' . $files . '</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold fs-6">' . $wordwalls . '</span>
+                        </td>
+                    </tr>
+                ';
+        }
+        echo $studentList;
+    }
     // Get Waiting Money Transfer Student List
 
     public function getWaitingStudentList()
@@ -1155,27 +1220,27 @@ class ShowStudent extends Student
         } else {/* 
 foreach ($packagesInfo as $value) {
 
-    if($value['packageType'] == 'Özel Ders'){
-        $yazisi = 'adet';
-    } else {
-        $yazisi = $value['packageLimit'] . ' aylık';
-    }
+if($value['packageType'] == 'Özel Ders'){
+$yazisi = 'adet';
+} else {
+$yazisi = $value['packageLimit'] . ' aylık';
+}
 
-    $totalPrice += $value['total_amount'];
+$totalPrice += $value['total_amount'];
 
-    $packagesList .= '<tr>
-                        <td>
-                            <a href="paket-detay?id=' . $value['id'] . '" class="text-hover-primary text-gray-600">' . $value['packageName'] . '</a>
-                        </td>
-                        <td>
-                            ' . $value['packageType'] . '
-                        </td>
-                        <td>
-                            ' . $yazisi . '
-                        </td>
-                        <td>' . str_replace('.', ',', strval($value['total_amount'])) . '₺</td>
-                        <td class="text-end">' . $dateFormat->changeDate($value['end_date']) . '</td>
-                    </tr>';
+$packagesList .= '<tr>
+<td>
+<a href="paket-detay?id=' . $value['id'] . '" class="text-hover-primary text-gray-600">' . $value['packageName'] . '</a>
+</td>
+<td>
+' . $value['packageType'] . '
+</td>
+<td>
+' . $yazisi . '
+</td>
+<td>' . str_replace('.', ',', strval($value['total_amount'])) . '₺</td>
+<td class="text-end">' . $dateFormat->changeDate($value['end_date']) . '</td>
+</tr>';
 } */
             foreach ($packagesInfo as $value) {
 

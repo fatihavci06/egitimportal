@@ -244,7 +244,8 @@ class Student extends Dbh
 
 		$children = $getChild->fetchAll(PDO::FETCH_ASSOC);
 
-		if (empty($children)) return;
+		if (empty($children))
+			return;
 
 		foreach ($children as $value) {
 			$childId = $value['child_id'];
@@ -334,7 +335,8 @@ class Student extends Dbh
 
 		$child = $getChild->fetch(PDO::FETCH_ASSOC);
 
-		if (empty($child)) return [];
+		if (empty($child))
+			return [];
 
 		$stmt = $this->connect()->prepare('SELECT id FROM users_lnp WHERE username = ? AND id = ?');
 
@@ -375,6 +377,21 @@ class Student extends Dbh
 		$studentInfo = $stmt->fetch(PDO::FETCH_ASSOC);
 		return $studentInfo;
 		$stmt = null;
+	}
+
+	public function getStudentByIdAndRole($id)
+	{
+		try {
+			$stmt = $this->connect()->prepare('SELECT * FROM users_lnp WHERE id = ? AND role = 2');
+
+			$stmt->execute(array($id));
+			$studentInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+
+			return $studentInfo;
+
+		} catch (PDOException $e) {
+			return null;
+		}
 	}
 
 	public function getStudentPackages($id)
