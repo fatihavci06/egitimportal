@@ -1,5 +1,7 @@
 <?php
 
+include_once 'classes/dateformat.classes.php';
+
 class ShowLogs extends LoginLogs
 {
 
@@ -7,7 +9,16 @@ class ShowLogs extends LoginLogs
     {
         $logsInfo = $this->getLogsList();
 
+        $dateFormat = new DateFormat();
+
         foreach ($logsInfo as $key => $value):
+
+            if ($value['logoutTime'] == null) {
+                $logoutTime = '-';
+            } else {
+                $logoutTime =  $dateFormat->changeDateHour($value['logoutTime']);
+            }
+
             $logList = '
              <tr>
                         <td>
@@ -15,9 +26,6 @@ class ShowLogs extends LoginLogs
                         </td>
                         <td>
                             ' . $value['deviceType'] . '
-                        </td>
-                        <td>
-                            ' . $value['deviceModel'] . '
                         </td>
                         <td>
                             ' . $value['deviceOs'] . '
@@ -32,10 +40,10 @@ class ShowLogs extends LoginLogs
                         '  . $value['ipAddress'] . '
                         </td>
                         <td>
-                        '  . $value['loginTime'] . '
+                        '  . $dateFormat->changeDateHour($value['loginTime']) . '
                         </td>
                         <td>
-                        '  . $value['logoutTime'] . '
+                        '  . $logoutTime . '
                         </td>
                        
                     </tr>

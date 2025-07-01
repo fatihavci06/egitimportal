@@ -5,14 +5,18 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 	// Grabbing the date
 	$email = $_POST['email'];
 	$password = $_POST['password'];
-	$screenSize = $_POST['resolution'];
+	$screenSize = $_POST['screen_size'];
+	$deviceModel = $_POST['device_model'];
+	$deviceType = $_POST['device_type'];
+	$browser = $_POST['browser'];
+	$os = $_POST['device_os'];
 
 	// Instantiate SignupContr class
 	include_once "../classes/dbh.classes.php";
 	include_once "../classes/login.classes.php";
 	include_once "../classes/login-contr.classes.php";
-		
-	$login = new LoginContr($email, $password, $screenSize);
+
+	$login = new LoginContr($email, $password, $screenSize, $deviceModel, $deviceType, $browser, $os);
 
 	// Running error handlers and user login
 	$login->loginUser();

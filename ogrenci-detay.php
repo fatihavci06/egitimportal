@@ -175,6 +175,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																	<i class="fa-solid fa-school fs-4 me-1"></i>
 																	<?php echo $schoolInfo['name']; ?>
 																</span>
+																<span
+																	class="d-flex align-items-center text-gray-500 me-5 mb-2">
+																	<i class="fa-solid fa-chalkboard-user fs-4 me-1"></i>
+																	<?php echo $studentInfo['className']; ?>
+																</span>
 																<a href="tel:<?php echo $studentInfo['telephone']; ?>"
 																	class="d-flex align-items-center text-gray-500 text-hover-primary me-5 mb-2">
 																	<i class="fa-solid fa-phone fs-4 me-1"></i>
@@ -303,7 +308,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 												<!--begin::Nav item-->
 												<li class="nav-item mt-2">
 													<a class="nav-link text-active-primary ms-0 me-10 py-5"
-														data-bs-toggle="pill" href="#paketler">Paketler</a>
+														data-bs-toggle="pill" href="#paketler">Satın Almalar</a>
 												</li>
 												<!--end::Nav item-->
 												<!--begin::Nav item-->
@@ -898,7 +903,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 															<thead class="border-gray-200 fs-5 fw-semibold bg-lighten">
 																<tr>
 																	<th class="min-w-250px">Cihaz Tipi</th>
-																	<th class="min-w-100px">Cihaz Modeli</th>
 																	<th class="min-w-150px">İşletim Sistemi</th>
 																	<th class="min-w-150px">Tarayıcı</th>
 																	<th class="min-w-150px">Ekran Çözünürlüğü</th>

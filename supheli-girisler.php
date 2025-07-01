@@ -92,7 +92,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <thead>
                                                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                                                             <th class="min-w-125px">Cihaz Tipi</th>
-                                                            <th class="min-w-125px">Cihaz Modeli</th>
                                                             <th class="min-w-125px">İşletim Sistemi</th>
                                                             <th class="min-w-125px">Tarayıcı</th>
                                                             <th class="min-w-125px">Çözünürlük</th>

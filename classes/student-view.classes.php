@@ -1521,9 +1521,6 @@ foreach ($packagesInfo as $value) {
                                     <td>
                                         ' . $value['deviceType'] . '
                                     </td>
-                                    <td>
-                                        ' . $value['deviceModel'] . '
-                                    </td>
                                     <td>' . $value['deviceOs'] . '</td>
                                     <td>' . $value['browser'] . '</td>
                                     <td>' . $value['resolution'] . '</td>

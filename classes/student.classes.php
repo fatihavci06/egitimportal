@@ -504,7 +504,7 @@ class Student extends Dbh
 
 	public function getStudentAdditionalPackages($id)
 	{
-		$stmt = $this->connect()->prepare('SELECT * FROM additional_package_payments_lnp WHERE user_id = ?');
+		$stmt = $this->connect()->prepare('SELECT * FROM extra_package_payments_lnp WHERE user_id = ?');
 
 		if (!$stmt->execute(array($id))) {
 			$stmt = null;
@@ -533,7 +533,7 @@ class Student extends Dbh
 	public function getOneStudent($student_id)
 	{
 
-		$stmt = $this->connect()->prepare('SELECT users_lnp.*, schools_lnp.name AS schoolName FROM users_lnp INNER JOIN schools_lnp ON users_lnp.school_id = schools_lnp.id WHERE users_lnp.id = ?');
+		$stmt = $this->connect()->prepare('SELECT users_lnp.*, schools_lnp.name AS schoolName, classes_lnp.name AS className FROM users_lnp INNER JOIN schools_lnp ON users_lnp.school_id = schools_lnp.id INNER JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id WHERE users_lnp.id = ?');
 
 		if (!$stmt->execute(array($student_id))) {
 			$stmt = null;
