@@ -50,43 +50,6 @@ var KTCustomersList = function () {
         });
     }
 
-    // Filter Datatable
-    var handleFilterDatatable = () => {
-        // Select filter options
-        filterStatus = $('[data-kt-customer-table-filter="status"]');
-        filterSchool = $('[data-kt-customer-table-filter="school"]');
-        filterClass = document.querySelectorAll('[data-kt-customer-table-filter="student_class"] [name="student_class"]');
-        const filterButton = document.querySelector('[data-kt-customer-table-filter="filter"]');
-
-        // Filter datatable on submit
-        filterButton.addEventListener('click', function () {
-            // Get filter values
-            const statusValue = filterStatus.val();
-            const schoolValue = filterSchool.val();
-            let paymentValue = '';
-
-            // Get payment value
-            filterClass.forEach(r => {
-                if (r.checked) {
-                    paymentValue = r.value;
-                }
-
-                // Reset payment value if "All" is selected
-                if (paymentValue === 'all') {
-                    paymentValue = '';
-                }
-            });
-
-            // Build filter string from filter options
-
-            const filterString = schoolValue + ' ' + statusValue + ' ' + paymentValue;
-
-            /* const filterString = paymentValue; */
-
-            // Filter datatable --- official docs reference: https://datatables.net/reference/api/search()
-            datatable.search(filterString).draw();
-        });
-    }
 
     // Delete customer
     var handleDeleteRows = () => {
@@ -222,23 +185,6 @@ var KTCustomersList = function () {
         });
     }
 
-    // Reset Filter
-    var handleResetForm = () => {
-        // Select reset button
-        const resetButton = document.querySelector('[data-kt-customer-table-filter="reset"]');
-
-        // Reset datatable
-        resetButton.addEventListener('click', function () {
-            // Reset month
-            filterStatus.val(null).trigger('change');
-
-            // Reset payment type
-            filterClass[0].checked = true;
-
-            // Reset datatable --- official docs reference: https://datatables.net/reference/api/search()
-            datatable.search('').draw();
-        });
-    }
 
     // Init toggle toolbar
     var initToggleToolbar = () => {
@@ -264,7 +210,6 @@ var KTCustomersList = function () {
     const toggleToolbars = () => {
         // Define variables
         const toolbarBase = document.querySelector('[data-kt-customer-table-toolbar="base"]');
-        const toolbarSelected = document.querySelector('[data-kt-customer-table-toolbar="selected"]');
         const selectedCount = document.querySelector('[data-kt-customer-table-select="selected_count"]');
 
         // Select refreshed checkbox DOM elements 
@@ -286,10 +231,8 @@ var KTCustomersList = function () {
         if (checkedState) {
             selectedCount.innerHTML = count;
             toolbarBase.classList.add('d-none');
-            toolbarSelected.classList.remove('d-none');
         } else {
             toolbarBase.classList.remove('d-none');
-            toolbarSelected.classList.add('d-none');
         }
     }
 
@@ -305,9 +248,7 @@ var KTCustomersList = function () {
             initCustomerList();
             initToggleToolbar();
             handleSearchDatatable();
-            handleFilterDatatable();
             handleDeleteRows();
-            handleResetForm();
         }
     }
 }();

@@ -192,26 +192,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <!--end::Menu 1-->
                                                     <!--end::Filter-->
                                                 <?php } ?>
-                                                <!--begin::Add school-->
-                                                <?php if ($_SESSION['role'] == 1) { ?><button type="button"
-                                                        class="btn btn-primary" data-bs-toggle="modal"
-                                                        data-bs-target="#kt_modal_add_customer">Öğrenci
-                                                        Ekle</button><?php } ?>
-                                                <!--end::Add school-->
+                    
                                             </div>
                                             <!--end::Toolbar-->
-                                            <!--begin::Group actions-->
-                                            <div class="d-flex justify-content-end align-items-center d-none"
-                                                data-kt-customer-table-toolbar="selected">
-                                                <div class="fw-bold me-5">
-                                                    <span class="me-2"
-                                                        data-kt-customer-table-select="selected_count"></span>Seçildi
-                                                </div>
-                                                <button type="button" class="btn btn-danger"
-                                                    data-kt-customer-table-select="delete_selected">Seçilenleri Pasif
-                                                    Yap</button>
-                                            </div>
-                                            <!--end::Group actions-->
                                         </div>
                                         <!--end::Card toolbar-->
                                     </div>
@@ -224,18 +207,20 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             <thead>
                                                 <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                                                     <th class="min-w-125px">Öğrenci Adı</th>
-                                                    <th class="min-w-125px">Sınıfı</th>
-                                                    <th class="min-w-125px">Okulu</th>
-                                                    <th class="min-w-125px text-end">Tamamlama</th>
-                                                    <th class="min-w-125px text-end">Başarı</th>
+                                                    <th class="min-w-100px">Sınıfı</th>
+                                                    <th class="min-w-100px">Okulu</th>
+                                                    <th class="min-w-80px text-end">Tamamlama</th>
+                                                    <th class="min-w-80px text-end">Başarı</th>
+                                                    <th class="min-w-120px text-end">İlerleme detayı</th>
+
                                                 </tr>
                                             </thead>
                                             <tbody class="fw-semibold text-gray-600">
                                                 <?php
                                                 if ($_SESSION['role'] == 5):
-                                                    $students->getStudentProgressListForParent($_SESSION['id']);
+                                                    $students->getStudentsProgressListForParent($_SESSION['id']);
                                                 else:
-                                                    $students->getStudentProgressList();
+                                                    $students->getStudentsProgressList();
                                                 endif;
                                                 ?>
                                             </tbody>
@@ -244,16 +229,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                     </div>
                                     <!--end::Card body-->
                                 </div>
-                                <!--end::Card-->
-                                <!--begin::Modals-->
-                                <!--begin::Modal - Customers - Add-->
-                                <?php if ($_SESSION['role'] == 1) {
-                                    include_once "views/student/add_student.php";
-                                } else {
-                                    include_once "views/student/add_student_school.php";
-                                } ?>
-                                <!--end::Modal - Customers - Add-->
-                                <!--end::Modals-->
                             </div>
                             <!--end::Content container-->
                         </div>
