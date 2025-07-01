@@ -105,7 +105,7 @@ var KTStudentProgress = function () {
             if ($("#lessons").val()) {
                 sendAjaxRequest("includes/select_for_unit.inc.php", requestData, function (data) {
                     updateSelectWhenChange('#units', data, 'Ünite Yok');
-                    // updateSelectWhenChange('#topics', [], 'Konu Yok');
+                    updateSelectWhenChange('#topics', [], 'Konu Yok');
                     // updateSelectWhenChange('#subtopics', [], 'Altkonu Yok');
                 });
             }

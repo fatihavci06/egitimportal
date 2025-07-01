@@ -83,10 +83,10 @@ function doLessons($school_id, $class_id, $lesson_id, $unit_id, $student_id)
     foreach ($items as $item) {
 
 
-        $subItems = getTopicsByUnitId($school_id, $class_id, $lesson_id, $unit_id);
+        $subItems = getTopicsByUnitId($school_id, $class_id, $lesson_id, $item['id']);
         $subItemsCount = 0;
         $subItemsCount = count($subItems);
-        $percentage = $contentObj->getSchoolContentAnalyticsByUnitId($student_id, $item['id']);
+        $percentage = $contentObj->getSchoolContentAnalyticsByUnitId($student_id, $class_id, $lesson_id, $item['id']);
         $percentageW = ($percentage == null) ? 0 : $percentage;
         $percentageT = ($percentage == null) ? '-' : $percentage;
 
@@ -101,7 +101,7 @@ function doLessons($school_id, $class_id, $lesson_id, $unit_id, $student_id)
                             <div class="d-flex align-items-center flex-row-fluid ">
                                 <div class="flex-grow-1 me-2">
                                     <a href="' . $student_id . '" class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $item['name'] . '</a>
-                                    <span class="text-muted fw-semibold d-block fs-7">' . $subItemsCount . ' Konu</span>
+                                    <span class="text-muted fw-semibold d-block fs-7">' . $subItemsCount . ' Konu </span>
                                 </div>
                                 <div class="d-flex align-items-center w-100px w-sm-200px flex-column mt-3">
                                     <div class="d-flex justify-content-between w-100 mt-auto mb-2">
@@ -172,10 +172,10 @@ function doUnits($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $studen
     foreach ($items as $item) {
 
 
-        $subItems = getSubtopicsByTopicId($school_id, $class_id, $lesson_id, $unit_id, $topic_id);
+        $subItems = getSubtopicsByTopicId($school_id, $class_id, $lesson_id, $unit_id, $item['id']);
         $subItemsCount = 0;
         $subItemsCount = count($subItems);
-        $percentage = $contentObj->getSchoolContentAnalyticsByTopicId($student_id, $item['id']);
+        $percentage = $contentObj->getSchoolContentAnalyticsByTopicId($student_id, $class_id, $lesson_id, $unit_id, $item['id']);
         $percentageW = ($percentage == null) ? 0 : $percentage;
         $percentageT = ($percentage == null) ? '-' : $percentage;
 
@@ -190,7 +190,7 @@ function doUnits($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $studen
                             <div class="d-flex align-items-center flex-row-fluid ">
                                 <div class="flex-grow-1 me-2">
                                     <a href="' . $student_id . '" class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $item['name'] . '</a>
-                                    <span class="text-muted fw-semibold d-block fs-7">' . $subItemsCount . ' Konu</span>
+                                    <span class="text-muted fw-semibold d-block fs-7">' . $subItemsCount . ' Altkonu</span>
                                 </div>
                                 <div class="d-flex align-items-center w-100px w-sm-200px flex-column mt-3">
                                     <div class="d-flex justify-content-between w-100 mt-auto mb-2">
@@ -221,7 +221,7 @@ function doUnits($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $studen
                                 <h3 class="card-title align-items-start flex-column">
                                     <span class="card-label fw-bold text-gray-900">' . $itemModel['name'] . '</span>
                                     
-                                    <span class="text-muted fw-semibold d-block fs-7">' . $itemsCount . ' Ünite</span>
+                                    <span class="text-muted fw-semibold d-block fs-7">' . $itemsCount . ' Konu</span>
                                 </h3>
                             </div>
                             <div class="card-body pt-6">
@@ -264,7 +264,7 @@ function doTopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $subto
         // $subItems = getSubtopicsByTopicId($school_id, $class_id, $lesson_id, $unit_id, $topic_id);
         // $subItemsCount = 0;
         // $subItemsCount = count($subItems);
-        $percentage = $contentObj->getSchoolContentAnalyticsBySubtopicId($student_id, $item['id']);
+        $percentage = $contentObj->getSchoolContentAnalyticsBySubtopicId($student_id, $class_id, $lesson_id, $unit_id, $topic_id, $item['id']);
         $percentageW = ($percentage == null) ? 0 : $percentage;
         $percentageT = ($percentage == null) ? '-' : $percentage;
 
@@ -310,7 +310,7 @@ function doTopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $subto
                                 <h3 class="card-title align-items-start flex-column">
                                     <span class="card-label fw-bold text-gray-900">' . $itemModel['name'] . '</span>
                                     
-                                    <span class="text-muted fw-semibold d-block fs-7">' . $itemsCount . ' Konu</span>
+                                    <span class="text-muted fw-semibold d-block fs-7">' . $itemsCount . ' Altkonu</span>
                                 </h3>
                             </div>
                             <div class="card-body pt-6">
@@ -346,7 +346,7 @@ function doSubtopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $su
 
     // foreach ($items as $item) {
 
-    $percentage = $contentObj->getSchoolContentAnalyticsBySubtopicId($student_id, $topic_id);
+    $percentage = $contentObj->getSchoolContentAnalyticsBySubtopicId($student_id, $class_id, $lesson_id, $unit_id, $topic_id, $subtopic_id);
     $percentageW = ($percentage == null) ? 0 : $percentage;
     $percentageT = ($percentage == null) ? '-' : $percentage;
 

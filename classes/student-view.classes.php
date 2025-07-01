@@ -55,7 +55,7 @@ class ShowStudent extends Student
 
         foreach ($schoolInfo as $key => $value) {
 
-            if($value['id'] == 10 || $value['id'] == 11 || $value['id'] == 12) {
+            if ($value['id'] == 10 || $value['id'] == 11 || $value['id'] == 12) {
                 continue;
             }
 
@@ -242,7 +242,7 @@ class ShowStudent extends Student
             $percentageW = ($percentage == null) ? 0 : $percentage;
             $percentageT = ($percentage == null) ? '-' : $percentage;
 
-            $score = $gradeObj->getGradeOverall($value['id'],);
+            $score = $gradeObj->getGradeOverall($value['id'], );
             $scoreW = ($score == null) ? 0 : $score;
             $scoreT = ($score == null) ? '-' : $score;
 
@@ -258,7 +258,7 @@ class ShowStudent extends Student
                             ' . $value['schoolName'] . '
                         </td>
                         <td class="text-end">
-                            <span class="fw-bold fs-6">' . $percentageT . '%</span>
+                            <span class="fw-bold fs-6">' . $percentage . '%</span>
                         </td>
                         <td class="text-end">
                             <span class="fw-bold fs-6">' . $scoreT . '%</span>
@@ -303,7 +303,7 @@ class ShowStudent extends Student
             $percentageW = ($percentage == null) ? 0 : $percentage;
             $percentageT = ($percentage == null) ? '-' : $percentage;
 
-            $score = $gradeObj->getGradeOverall($value['id'],);
+            $score = $gradeObj->getGradeOverall($value['id'], );
             $scoreW = ($score == null) ? 0 : $score;
             $scoreT = ($score == null) ? '-' : $score;
 
@@ -930,7 +930,7 @@ class ShowStudent extends Student
                 $unitData = $this->getUnits($lesson_id, $class_id, $school_id);
                 $unitCount = count($unitData);
 
-                $result = $contentObj->getSchoolContentAnalyticsByLessonId($studentId, $lesson_id);
+                $result = $contentObj->getSchoolContentAnalyticsByLessonId($studentId, $class_id, $lesson_id);
                 $resultW = ($result == null) ? 0 : $result;
                 $resultT = ($result == null) ? '-' : $result;
 
@@ -1105,7 +1105,7 @@ class ShowStudent extends Student
                                     </td>
                                 </tr>';
             } */
-           foreach ($packagesInfo as $value) {
+            foreach ($packagesInfo as $value) {
 
                 if ($value['type'] == 'Özel Ders') {
                     $yazisi = $value['end_date'] . ' adet';
@@ -1153,30 +1153,30 @@ class ShowStudent extends Student
                                 </td>
                             </tr>';
         } else {/* 
-            foreach ($packagesInfo as $value) {
+foreach ($packagesInfo as $value) {
 
-                if($value['packageType'] == 'Özel Ders'){
-                    $yazisi = 'adet';
-                } else {
-                    $yazisi = $value['packageLimit'] . ' aylık';
-                }
+    if($value['packageType'] == 'Özel Ders'){
+        $yazisi = 'adet';
+    } else {
+        $yazisi = $value['packageLimit'] . ' aylık';
+    }
 
-                $totalPrice += $value['total_amount'];
+    $totalPrice += $value['total_amount'];
 
-                $packagesList .= '<tr>
-                                    <td>
-                                        <a href="paket-detay?id=' . $value['id'] . '" class="text-hover-primary text-gray-600">' . $value['packageName'] . '</a>
-                                    </td>
-                                    <td>
-                                        ' . $value['packageType'] . '
-                                    </td>
-                                    <td>
-                                        ' . $yazisi . '
-                                    </td>
-                                    <td>' . str_replace('.', ',', strval($value['total_amount'])) . '₺</td>
-                                    <td class="text-end">' . $dateFormat->changeDate($value['end_date']) . '</td>
-                                </tr>';
-            } */
+    $packagesList .= '<tr>
+                        <td>
+                            <a href="paket-detay?id=' . $value['id'] . '" class="text-hover-primary text-gray-600">' . $value['packageName'] . '</a>
+                        </td>
+                        <td>
+                            ' . $value['packageType'] . '
+                        </td>
+                        <td>
+                            ' . $yazisi . '
+                        </td>
+                        <td>' . str_replace('.', ',', strval($value['total_amount'])) . '₺</td>
+                        <td class="text-end">' . $dateFormat->changeDate($value['end_date']) . '</td>
+                    </tr>';
+} */
             foreach ($packagesInfo as $value) {
 
                 $totalPrice += $value['total_amount'];
@@ -1397,7 +1397,7 @@ class ShowStudent extends Student
                     $topicData = $this->getTopics($lesson_id, $class_id, $school_id, $unit['id']);
                     $topicCount = count($topicData);
 
-                    $result = $contentObj->getSchoolContentAnalyticsByUnitId($getStudentId, $unit['id']);
+                    $result = $contentObj->getSchoolContentAnalyticsByUnitId($getStudentId, $class_id, $lesson_id, $unit['id']);
                     $resultW = ($result == null) ? 0 : $result;
                     $resultT = ($result == null) ? '-' : $result;
 

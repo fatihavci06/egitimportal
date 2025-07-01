@@ -640,7 +640,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																		</select>
 																	</div>
 																</div>
-																<div class="row mt-4">
+																<!-- <div class="row mt-4">
 
 																	<div class="col-lg-10">
 																		<label class="fs-6 fw-semibold mb-2"
@@ -651,7 +651,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																			<option value="">Seçiniz</option>
 																		</select>
 																	</div>
-																</div>
+																</div> -->
 																<div class=" mt-4">
 
 																	<button type="submit"
