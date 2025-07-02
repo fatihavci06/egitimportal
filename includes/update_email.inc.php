@@ -11,6 +11,8 @@ $user = $userObj->getUserById($_SESSION['id']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
+    $isNew = $userObj->getUserById($_SESSION['id']);
+    $db = (new dbh())->connect();
 
     if (!$email) {
         echo json_encode([
@@ -27,6 +29,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
 
     }
+    if (emailExists($email)) {
+        echo json_encode([
+            'status' => 'fail',
+            'message' => 'Girilen e-posta sistemde mevcuttur.'
+        ]);
+        exit;
+
+    }
 
     $verificationCode = rand(100000, 999999);
 
@@ -34,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $date->modify('+1 hour');
     $expiresAt = $date->format('Y-m-d H:i:s');
 
-    $db = (new dbh())->connect();
 
     $db->prepare("DELETE FROM email_verifications_lnp WHERE user_id = ?")->execute([$user['id']]);
 
@@ -58,4 +67,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'message' => 'Doğrulama kodu gönderildi.'
     ]);
     exit();
+}
+function emailExists($email)
+{
+    $db = (new dbh())->connect();
+
+    $sql = "SELECT 1 FROM users_lnp WHERE email = :email LIMIT 1";
+    $stmt = $db->prepare($sql);
+    $stmt->execute([':email' => $email]);
+
+    return $stmt->fetchColumn() !== false;
 }

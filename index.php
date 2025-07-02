@@ -77,7 +77,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 								<!--begin::Heading-->
 								<!--begin::Input group-->
 								<div class="fv-row mb-10">
-									<input type="hidden" id="screenSize" name="resolution" class="screen">
 									<!--begin::Label-->
 									<label class="form-label fs-6 fw-bold text-gray-900">E-Posta ya da Kullanıcı Adı</label>
 									<!--end::Label-->
@@ -107,6 +106,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 									</div>
 									<!--end::Input-->
 								</div>
+								<input type="hidden" name="device_os" id="deviceOsInput">
+								<input type="hidden" name="browser" id="browserInput">
+								<input type="hidden" name="device_type" id="deviceTypeInput">
+								<input type="hidden" name="device_model" id="deviceModelInput">
+								<input type="hidden" name="screen_size" id="screenSizeInput">
 								<!--end::Input group-->
 								<!--begin::Actions-->
 								<div class="text-center">
@@ -150,6 +154,19 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 		<script>
 
 		</script>
+
+		<script>
+        // UA-Parser.js'yi başlat
+        var parser = new UAParser();
+        var result = parser.getResult();
+
+        // Bilgileri gizli input alanlarına doldur
+        document.getElementById('deviceOsInput').value = result.os.name || '';
+        document.getElementById('browserInput').value = result.browser.name || '';
+        document.getElementById('deviceTypeInput').value = result.device.type || 'Desktop'; // Telefon, tablet, masaüstü vb.
+        document.getElementById('deviceModelInput').value = result.device.model || 'Unknown';
+        document.getElementById('screenSizeInput').value = window.screen.width + 'x' + window.screen.height;
+    </script>
 		<!--end::Global Javascript Bundle-->
 		<!--begin::Custom Javascript(used for this page only)-->
 		<!--<script src="assets/js/custom/authentication/sign-in/general.js"></script>-->

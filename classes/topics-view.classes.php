@@ -204,8 +204,10 @@ class ShowTopic extends Topics
 
     public function getTopicList()
     {
+        /* 
+        $topicInfo = $this->getTopicsList(); */
 
-        $topicInfo = $this->getTopicsList();
+        $topicInfo = $this->getTopicsListWithFilter();
 
         $dateFormat = new DateFormat();
 
@@ -284,12 +286,12 @@ class ShowTopic extends Topics
         }
     }
 
-     public function getTopicListForFilter()
+    public function getTopicListForFilter()
     {
 
         $topicInfo = $this->getTopicsList();
 
-         foreach ($topicInfo as $key => $value) {
+        foreach ($topicInfo as $key => $value) {
 
             $topicList = '
                     <option value="' . $value['id'] . '">' . $value['name'] . '</option>
@@ -1089,14 +1091,38 @@ class ShowTopic extends Topics
         $topicInfo = $this->getTopicsByUnitIdWithDetails($unitId);
 
         foreach ($topicInfo as $key => $value) {
+
+
+            if ($value['active'] == 1) {
+                $aktifArama = 'data-filter="Aktif"';
+                $aktifYazi = '<span class="badge badge-light-success">Aktif</span>';
+            } else {
+                $aktifArama = 'data-filter="Passive"';
+                $aktifYazi = '<span class="badge badge-light-danger">Pasif</span>';
+            }
+
+            $alter_button = $value['active'] ? "Pasif Yap" : "Aktif Yap";
+
+            if ($_SESSION['role'] == 4) {
+                $passiveButton = '';
+            } else {
+                $passiveButton = '
+                                <!--begin::Menu item-->
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">' . $alter_button . '</a>
+                                </div>
+                                <!--end::Menu item-->';
+            }
+
             $topicData = '<tr>
-                                <td>
+                                <td data-file-id="' . $value['id'] . '">
                                     <a href="./konu-detay/' . $value['slug'] . '" class="text-gray-600 text-hover-primary mb-1"> ' . $value['name'] .  '</a>
                                 </td>
                                 <td>
                                     ' . $value['lessonName'] . '</a>
                                 </td>
                                 <td>' . $value['className'] . '</td>
+                                <td>' . $aktifYazi . '</td>
                                 <td class="pe-0 text-end">
                                     <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                         data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
@@ -1111,7 +1137,7 @@ class ShowTopic extends Topics
                                         <!--end::Menu item-->
                                         <!--begin::Menu item-->
                                         <div class="menu-item px-3">
-                                            <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
+                                            <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">'. $alter_button .'</a>
                                         </div>
                                         <!--end::Menu item-->
                                     </div>
@@ -2167,14 +2193,37 @@ class ShowSubTopic extends SubTopics
         $topicInfo = $this->getSubTopicsByUnitIdWithDetails($unitId);
 
         foreach ($topicInfo as $key => $value) {
+
+            if ($value['active'] == 1) {
+                $aktifArama = 'data-filter="Aktif"';
+                $aktifYazi = '<span class="badge badge-light-success">Aktif</span>';
+            } else {
+                $aktifArama = 'data-filter="Passive"';
+                $aktifYazi = '<span class="badge badge-light-danger">Pasif</span>';
+            }
+
+            $alter_button = $value['active'] ? "Pasif Yap" : "Aktif Yap";
+
+            if ($_SESSION['role'] == 4) {
+                $passiveButton = '';
+            } else {
+                $passiveButton = '
+                                <!--begin::Menu item-->
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">' . $alter_button . '</a>
+                                </div>
+                                <!--end::Menu item-->';
+            }
+
             $topicData = '<tr>
-                                <td>
+                                <td data-file-id="' . $value['id'] . '">
                                     <a href="./alt-konu-detay/' . $value['slug'] . '" class="text-gray-600 text-hover-primary mb-1"> ' . $value['name'] .  '</a>
                                 </td>
                                 <td>
                                     ' . $value['lessonName'] . '</a>
                                 </td>
                                 <td>' . $value['className'] . '</td>
+                                <td>' . $aktifYazi . '</td>
                                 <td class="pe-0 text-end">
                                     <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                         data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
@@ -2189,7 +2238,7 @@ class ShowSubTopic extends SubTopics
                                         <!--end::Menu item-->
                                         <!--begin::Menu item-->
                                         <div class="menu-item px-3">
-                                            <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
+                                            <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row2">' . $alter_button . '</a>
                                         </div>
                                         <!--end::Menu item-->
                                     </div>
@@ -2215,8 +2264,32 @@ class ShowSubTopic extends SubTopics
         $topicInfo = $this->getSubTopicsByTopicIdWithDetails($unitId);
 
         foreach ($topicInfo as $key => $value) {
+
+
+            if ($value['active'] == 1) {
+                $aktifArama = 'data-filter="Aktif"';
+                $aktifYazi = '<span class="badge badge-light-success">Aktif</span>';
+            } else {
+                $aktifArama = 'data-filter="Passive"';
+                $aktifYazi = '<span class="badge badge-light-danger">Pasif</span>';
+            }
+
+            $alter_button = $value['active'] ? "Pasif Yap" : "Aktif Yap";
+
+            if ($_SESSION['role'] == 4) {
+                $passiveButton = '';
+            } else {
+                $passiveButton = '
+                                <!--begin::Menu item-->
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">' . $alter_button . '</a>
+                                </div>
+                                <!--end::Menu item-->';
+            }
+
+
             $topicData = '<tr>
-                                <td>
+                                <td data-file-id="' . $value['id'] . '">
                                     <a href="./alt-konu-detay/' . $value['slug'] . '" class="text-gray-600 text-hover-primary mb-1"> ' . $value['name'] .  '</a>
                                 </td>
                                 <td>
@@ -2224,6 +2297,7 @@ class ShowSubTopic extends SubTopics
                                 </td>
                                 <td>' . $value['className'] . '</td>
                                 <td>' . $value['topicName'] . '</td>
+                                <td>' . $aktifYazi . '</td>
                                 <td class="pe-0 text-end">
                                     <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                         data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
@@ -2237,9 +2311,7 @@ class ShowSubTopic extends SubTopics
                                         </div>
                                         <!--end::Menu item-->
                                         <!--begin::Menu item-->
-                                        <div class="menu-item px-3">
-                                            <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
-                                        </div>
+                                        ' . $passiveButton . '
                                         <!--end::Menu item-->
                                     </div>
                                     <!--end::Menu-->
@@ -2263,8 +2335,31 @@ class ShowSubTopic extends SubTopics
         $topicInfo = $this->getContentsByTopicIdWithDetails($unitId);
 
         foreach ($topicInfo as $key => $value) {
+
+
+            if ($value['active'] == 1) {
+                $aktifArama = 'data-filter="Aktif"';
+                $aktifYazi = '<span class="badge badge-light-success">Aktif</span>';
+            } else {
+                $aktifArama = 'data-filter="Passive"';
+                $aktifYazi = '<span class="badge badge-light-danger">Pasif</span>';
+            }
+
+            $alter_button = $value['active'] ? "Pasif Yap" : "Aktif Yap";
+
+            if ($_SESSION['role'] == 4) {
+                $passiveButton = '';
+            } else {
+                $passiveButton = '
+                                <!--begin::Menu item-->
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">' . $alter_button . '</a>
+                                </div>
+                                <!--end::Menu item-->';
+            }
+
             $topicData = '<tr>
-                                <td>
+                                <td data-file-id="' . $value['id'] . '">
                                     <a href="./icerik-detay/' . $value['slug'] . '" class="text-gray-600 text-hover-primary mb-1"> ' . $value['title'] .  '</a>
                                 </td>
                                 <td>
@@ -2272,6 +2367,7 @@ class ShowSubTopic extends SubTopics
                                 </td>
                                 <td>' . $value['className'] . '</td>
                                 <td>' . $value['topicName'] . '</td>
+                                <td>' . $aktifYazi . '</td>
                                 <td class="pe-0 text-end">
                                     <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                         data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
@@ -2281,13 +2377,14 @@ class ShowSubTopic extends SubTopics
                                         data-kt-menu="true">
                                         <!--begin::Menu item-->
                                         <div class="menu-item px-3">
+                                            <a href="./icerik-guncelle/' . $value['slug'] . '" class="menu-link px-3">Güncelle</a>
+                                        </div>
+                                        <div class="menu-item px-3">
                                             <a href="./icerik-detay/' . $value['slug'] . '" class="menu-link px-3">Görüntüle</a>
                                         </div>
                                         <!--end::Menu item-->
                                         <!--begin::Menu item-->
-                                        <div class="menu-item px-3">
-                                            <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
-                                        </div>
+                                        ' . $passiveButton . '
                                         <!--end::Menu item-->
                                     </div>
                                     <!--end::Menu-->

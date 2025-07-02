@@ -55,6 +55,10 @@ class ShowStudent extends Student
 
         foreach ($schoolInfo as $key => $value) {
 
+            if ($value['id'] == 10 || $value['id'] == 11 || $value['id'] == 12) {
+                continue;
+            }
+
             $classList .= '<option value="' . $value['id'] . '">' . $value['name'] . '</option>';
         }
         echo $classList;
@@ -205,7 +209,7 @@ class ShowStudent extends Student
         }
         echo $studentList;
     }
-    public function getStudentProgressList()
+    public function getStudentsProgressList()
     {
 
         $schoolInfo = $this->getStudentsList();
@@ -238,7 +242,7 @@ class ShowStudent extends Student
             $percentageW = ($percentage == null) ? 0 : $percentage;
             $percentageT = ($percentage == null) ? '-' : $percentage;
 
-            $score = $gradeObj->getGradeOverall($value['id'],);
+            $score = $gradeObj->getGradeOverall($value['id'], );
             $scoreW = ($score == null) ? 0 : $score;
             $scoreT = ($score == null) ? '-' : $score;
 
@@ -254,18 +258,24 @@ class ShowStudent extends Student
                             ' . $value['schoolName'] . '
                         </td>
                         <td class="text-end">
-                            <span class="fw-bold fs-6">' . $percentageT . '%</span>
+                            <span class="fw-bold fs-6">' . $percentage . '%</span>
                         </td>
                         <td class="text-end">
                             <span class="fw-bold fs-6">' . $scoreT . '%</span>
                         </td>
-
+                        <td class="text-center">
+                            <a href="./icerik-ilerleme-takip/' . $value['id'] . '" class="text-gray-800 text-hover-primary mb-1"> 
+                            <i class="ki-duotone ki-chart-line text-gray-900 fs-2tx">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i></a>
+                        </td>
                     </tr>
                 ';
         }
         echo $studentList;
     }
-    public function getStudentProgressListForParent($userID)
+    public function getStudentsProgressListForParent($userID)
     {
 
         $schoolInfo = $this->getStudentsListForParent($userID);
@@ -299,7 +309,7 @@ class ShowStudent extends Student
             $percentageW = ($percentage == null) ? 0 : $percentage;
             $percentageT = ($percentage == null) ? '-' : $percentage;
 
-            $score = $gradeObj->getGradeOverall($value['id'],);
+            $score = $gradeObj->getGradeOverall($value['id'], );
             $scoreW = ($score == null) ? 0 : $score;
             $scoreT = ($score == null) ? '-' : $score;
 
@@ -326,7 +336,66 @@ class ShowStudent extends Student
         }
         echo $studentList;
     }
+    public function getStudentProgress($userId, $classId)
+    {
+        $schoolInfo = $this->getStudentsList();
 
+        $dateFormat = new DateFormat();
+        $studentList = '';
+
+        require_once "content-tracker.classes.php";
+        $contentObj = new ContentTracker();
+
+        $items = $contentObj->getSchoolContentAnalyticsListByUserId($userId, $classId);
+
+        //     echo "<pre>";
+        //     var_dump([$items]);
+        //     echo "</pre>";
+        // die();
+
+        foreach ($items as $key => $value) {
+
+
+            $placeholder = "placeholder";
+
+            $topic_name = $value['topic_name'] ?? '-';
+            $subtopic_name = $value['subtopic_name'] ?? '-';
+
+            $content_visited = ($value['content_visited'] == 0) ? '<span class="badge badge-light-danger">Hayır</span>' : '<span class="badge badge-light-success">Evet</span>';
+
+            $videos = ($value['total_videos'] == 0) ? '-' : $value['completed_videos'] . '/' . $value['total_videos'];
+            $files = ($value['total_files'] == 0) ? '-' : '' . $value['downloaded_files'] . '/' . $value['total_files'] . '';
+            $wordwalls = ($value['total_wordwalls'] == 0) ? '-' : '' . $value['viewed_wordwalls'] . '/' . $value['total_wordwalls'] . '';
+
+            $studentList .= '
+                    <tr>
+                        <td>
+                            <a href="./icerik-detay/' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
+                        </td>
+                        <td>
+                            ' . $topic_name . '
+                        </td>
+                        <td>
+                            ' . $subtopic_name . '
+                        </td>
+
+                        <td>
+                            ' . $content_visited . '
+                        </td>
+                        <td>
+                            <span class="fw-bold fs-6">' . $videos . '</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold fs-6">' . $files . '</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold fs-6">' . $wordwalls . '</span>
+                        </td>
+                    </tr>
+                ';
+        }
+        echo $studentList;
+    }
     // Get Waiting Money Transfer Student List
 
     public function getWaitingStudentList()
@@ -926,7 +995,7 @@ class ShowStudent extends Student
                 $unitData = $this->getUnits($lesson_id, $class_id, $school_id);
                 $unitCount = count($unitData);
 
-                $result = $contentObj->getSchoolContentAnalyticsByLessonId($studentId, $lesson_id);
+                $result = $contentObj->getSchoolContentAnalyticsByLessonId($studentId, $class_id, $lesson_id);
                 $resultW = ($result == null) ? 0 : $result;
                 $resultT = ($result == null) ? '-' : $result;
 
@@ -1073,7 +1142,9 @@ class ShowStudent extends Student
     public function showAdditionalPackageListForStudentDetails($id)
     {
 
-        $packagesInfo = $this->getStudentAdditionalPackagesWithName($id);
+        /* $packagesInfo = $this->getStudentAdditionalPackagesWithName($id); */
+
+        $packagesInfo = $this->getExtraPackageMyList($id);
 
         $dateFormat = new DateFormat();
 
@@ -1085,7 +1156,7 @@ class ShowStudent extends Student
                                 </td>
                             </tr>';
         } else {
-            foreach ($packagesInfo as $value) {
+            /* foreach ($packagesInfo as $value) {
 
                 $packagesList .= '<tr>
                                     <td class="ps-0">
@@ -1096,6 +1167,29 @@ class ShowStudent extends Student
                                     </td>
                                     <td class="text-end pe-0">
                                         <span class="text-gray-800 fw-bold d-block fs-6">' . $dateFormat->changeDate($value['end_date']) . '</span>
+                                    </td>
+                                </tr>';
+            } */
+            foreach ($packagesInfo as $value) {
+
+                if ($value['type'] == 'Özel Ders') {
+                    $yazisi = $value['end_date'] . ' adet';
+                } else {
+                    $yazisi = $dateFormat->changeDate($value['end_date']);
+                }
+
+                $packagesList .= '<tr>
+                                    <td class="ps-0">
+                                        ' . $value['type'] . '
+                                    </td>
+                                    <td>
+                                        ' . $value['adet'] . '
+                                    </td>
+                                    <td>
+                                        <span class="text-gray-800 fw-bold d-block fs-6 ps-0 text-end">' . str_replace('.', ',', strval($value['total_amount'])) . '₺</span>
+                                    </td>
+                                    <td class="text-end pe-0">
+                                        <span class="text-gray-800 fw-bold d-block fs-6">' . $yazisi . '</span>
                                     </td>
                                 </tr>';
             }
@@ -1124,30 +1218,30 @@ class ShowStudent extends Student
                                 </td>
                             </tr>';
         } else {/* 
-            foreach ($packagesInfo as $value) {
+foreach ($packagesInfo as $value) {
 
-                if($value['packageType'] == 'Özel Ders'){
-                    $yazisi = 'adet';
-                } else {
-                    $yazisi = $value['packageLimit'] . ' aylık';
-                }
+if($value['packageType'] == 'Özel Ders'){
+$yazisi = 'adet';
+} else {
+$yazisi = $value['packageLimit'] . ' aylık';
+}
 
-                $totalPrice += $value['total_amount'];
+$totalPrice += $value['total_amount'];
 
-                $packagesList .= '<tr>
-                                    <td>
-                                        <a href="paket-detay?id=' . $value['id'] . '" class="text-hover-primary text-gray-600">' . $value['packageName'] . '</a>
-                                    </td>
-                                    <td>
-                                        ' . $value['packageType'] . '
-                                    </td>
-                                    <td>
-                                        ' . $yazisi . '
-                                    </td>
-                                    <td>' . str_replace('.', ',', strval($value['total_amount'])) . '₺</td>
-                                    <td class="text-end">' . $dateFormat->changeDate($value['end_date']) . '</td>
-                                </tr>';
-            } */
+$packagesList .= '<tr>
+<td>
+<a href="paket-detay?id=' . $value['id'] . '" class="text-hover-primary text-gray-600">' . $value['packageName'] . '</a>
+</td>
+<td>
+' . $value['packageType'] . '
+</td>
+<td>
+' . $yazisi . '
+</td>
+<td>' . str_replace('.', ',', strval($value['total_amount'])) . '₺</td>
+<td class="text-end">' . $dateFormat->changeDate($value['end_date']) . '</td>
+</tr>';
+} */
             foreach ($packagesInfo as $value) {
 
                 $totalPrice += $value['total_amount'];
@@ -1246,6 +1340,55 @@ class ShowStudent extends Student
         }
     }
 
+    public function showprivateLessonsforFirstPage($id)
+    {
+
+        $showPrivateLessons = new Classes();
+        $data = $showPrivateLessons->getPrivateLessonRequestList($id);
+
+        foreach ($data as $key => $value) {
+            switch ($value['request_status']) {
+                case 0:
+                    $status = 'Beklemede';
+                    break;
+                case 1:
+                    $status = 'Onaylandı';
+                    break;
+                case 2:
+                    $status = 'Reddedildi';
+                    break;
+                case 3:
+                    $status = 'Öğretmen Atandı';
+                    break;
+                case 4:
+                    $status = 'Tamamlandı';
+                    break;
+                case 5:
+                    $status = 'İptal Edildi';
+                    break;
+            }
+
+            $privateLessons = '
+                                <tr>
+                                    <td>
+                                        ' . $value['class_name'] . '
+                                    </td>
+                                    <td>
+                                        ' . $value['lesson_name'] . '
+                                    </td>
+                                    <td>
+                                        ' . $value['teacher_full_name'] . '
+                                    </td>
+                                    <td class="text-end">
+                                        ' . $value['meet_date'] . '
+                                    </td>
+                                    <td class="text-end">' . $status . '</td>
+                                </tr>';
+
+            echo $privateLessons;
+        }
+    }
+
     // List of Students
 
     public function showStudentList()
@@ -1319,7 +1462,7 @@ class ShowStudent extends Student
                     $topicData = $this->getTopics($lesson_id, $class_id, $school_id, $unit['id']);
                     $topicCount = count($topicData);
 
-                    $result = $contentObj->getSchoolContentAnalyticsByUnitId($getStudentId, $unit['id']);
+                    $result = $contentObj->getSchoolContentAnalyticsByUnitId($getStudentId, $class_id, $lesson_id, $unit['id']);
                     $resultW = ($result == null) ? 0 : $result;
                     $resultT = ($result == null) ? '-' : $result;
 
@@ -1442,9 +1585,6 @@ class ShowStudent extends Student
                 $loginList .= '<tr>
                                     <td>
                                         ' . $value['deviceType'] . '
-                                    </td>
-                                    <td>
-                                        ' . $value['deviceModel'] . '
                                     </td>
                                     <td>' . $value['deviceOs'] . '</td>
                                     <td>' . $value['browser'] . '</td>

@@ -174,6 +174,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 OR $_SESSION['role'] ==
 																		<th class="min-w-100px">Ders</th>
 																		<th class="min-w-100px">Sınıf</th>
 																		<th class="min-w-100px">Konu</th>
+																		<th class="min-w-100px">Durum</th>
 																		<th class="text-end min-w-100px pe-4">İşlemler</th>
 																	</tr>
 																</thead>
@@ -260,7 +261,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 OR $_SESSION['role'] ==
 		<script src="assets/js/custom/apps/topic-details/view/adjust-balance.js"></script>
 		<!-- <script src="assets/js/custom/apps/topic-details/view/invoices.js"></script> -->
 		<!-- <script src="assets/js/custom/apps/topic-details/view/payment-method.js"></script> -->
+		 <?php if ($subOrContent == "Alt Konu") { ?>
 		<script src="assets/js/custom/apps/topic-details/view/payment-table.js"></script>
+		<?php }else { ?>
+		<script src="assets/js/custom/apps/topic-details/view/topic-inside-content.js"></script>
+		<?php } ?>
 		<script src="assets/js/custom/apps/topic-details/view/teachers-table.js"></script>
 		<script src="assets/js/custom/apps/topic-details/guncelle.js"></script>
 		<!-- <script src="assets/js/custom/apps/topic-details/view/statement.js"></script> -->
@@ -309,5 +314,5 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 OR $_SESSION['role'] ==
 
 </html>
 <?php } else {
-	header("location: index");
+	header("location: ../index");
 }

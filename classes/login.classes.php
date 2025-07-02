@@ -13,12 +13,17 @@ class Login extends Dbh
 	public function __construct()
 	{
 		date_default_timezone_set('Europe/Istanbul');
-		$this->attempt_time = Date('Y-m-d H:i:s');
+		$this->attempt_time = Date('Y-m-d H:i:s');/* 
 		$this->ip_address = $this->getIpAddr();
 		$this->deviceModel = $this->deviceModel ?? 'Unknown Model';
 		$this->os = $this->getOs();
 		$this->browser = $this->getBrowser();
-		$this->deviceType = $this->getDeviceType();
+		$this->deviceType = $this->getDeviceType(); */
+		$this->ip_address = $this->ip_address;
+		$this->deviceModel = $this->deviceModel ?? 'Unknown Model';
+		$this->os = $this->os;
+		$this->browser = $this->browser;
+		$this->deviceType = $this->deviceType;
 	}
 
 	protected function getIpAddr()
@@ -51,7 +56,23 @@ class Login extends Dbh
 
 	protected function getOs()
 	{
-		return preg_replace('/\s.*$/', '', php_uname('s'));
+		//return preg_replace('/\s.*$/', '', php_uname('s'));
+		$userAgent = $_SERVER['HTTP_USER_AGENT'];
+		$os = "Bilinmiyor";
+
+		if (str_contains($userAgent, "Windows")) {
+			$os = "Windows";
+		} elseif (str_contains($userAgent, "Macintosh") || str_contains($userAgent, "Mac OS X")) {
+			$os = "macOS";
+		} elseif (str_contains($userAgent, "Linux")) {
+			$os = "Linux";
+		} elseif (str_contains($userAgent, "Android")) {
+			$os = "Android";
+		} elseif (str_contains($userAgent, "iOS") || str_contains($userAgent, "iPhone") || str_contains($userAgent, "iPad")) {
+			$os = "iOS";
+		}
+
+		return $this->os;
 	}
 
 	protected function getBrowser()
@@ -98,8 +119,8 @@ class Login extends Dbh
 
 		// print($this->attempt_time);
 		// die();
-	
-		
+
+
 
 		$stmt = $this->connect()->prepare('SELECT password FROM users_lnp WHERE email = ? OR username = ?');
 

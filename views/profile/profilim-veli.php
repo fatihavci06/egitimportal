@@ -5,12 +5,10 @@ if (!isset($userInfo)) {
 
 
 include_once "classes/dbh.classes.php";
-include_once "classes/teacher.classes.php";
-include_once "classes/teacher-view.classes.php";
+include_once "classes/Guardian.php";
 include_once "classes/school.classes.php";
 include_once "classes/timespend.classes.php";
-$teacherId = new Teacher();
-$teacher = new ShowTeacher();
+$guadianObj = new Guardian();
 $timeSpend = new timeSpend();
 $school = new School();
 include_once "classes/student.classes.php";
@@ -22,9 +20,9 @@ require_once "classes/grade-result.classes.php";
 
 $contentObj = new ContentTracker();
 $gradeObj = new GradeResult();
-$getTeacherId = $_SESSION['id'];
+$userId = $_SESSION['id'];
 
-$userInfo = $teacher->getOneTeacher($getTeacherId);
+$userInfo = $guadianObj->getOneGaurdian($userId);
 
 ?>
 <div class="d-flex flex-column flex-root app-root" id="kt_app_root">

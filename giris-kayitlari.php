@@ -69,17 +69,63 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             <!--begin::Card toolbar-->
                                             <div class="card-toolbar">
                                                 <!--begin::Toolbar-->
-                                                <div class="d-flex justify-content-end" data-kt-logs-table-toolbar="base">
+                                                <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
+                                                        <!--begin::Filter-->
+                                                        <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                                            <i class="ki-duotone ki-filter fs-2">
+                                                                <span class="path1"></span>
+                                                                <span class="path2"></span>
+                                                            </i>Filtre</button>
+                                                        <!--begin::Menu 1-->
+                                                        <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true" id="kt-toolbar-filter">
+                                                            <!--begin::Header-->
+                                                            <div class="px-7 py-5">
+                                                                <div class="fs-4 text-gray-900 fw-bold">Filtreleme</div>
+                                                            </div>
+                                                            <!--end::Header-->
+                                                            <!--begin::Separator-->
+                                                            <div class="separator border-gray-200"></div>
+                                                            <!--end::Separator-->
+                                                            <!--begin::Content-->
+                                                            <div class="px-7 py-5">
+                                                                <form action="" id="filtreleme" method="GET" class="form">
+                                                                    <!--begin::Input group-->
+                                                                    <div class="mb-10">
+                                                                        <!--begin::Label-->
+                                                                        <label class="form-label fs-5 fw-semibold mb-3">Başlangıç Tarihi:</label>
+                                                                        <!--end::Label-->
+                                                                        <!--begin::Input-->
+                                                                        <input type="date" class="form-control form-control-solid fw-bold pe-5" placeholder="Başlangıç Tarihi Seçin" name="baslangic" id="baslangic">
+                                                                        <!--end::Input-->
+                                                                    </div>
+                                                                    <!--end::Input group-->
+                                                                    <!--begin::Input group-->
+                                                                    <div class="mb-10">
+                                                                        <!--begin::Label-->
+                                                                        <label class="form-label fs-5 fw-semibold mb-3">Bitiş Tarihi:</label>
+                                                                        <!--end::Label-->
+                                                                        <!--begin::Input-->
+                                                                        <input type="date" class="form-control form-control-solid fw-bold pe-5" placeholder="Bitiş Tarihi Seçin" name="bitis" id="bitis">
+                                                                        <!--end::Input-->
+                                                                    </div>
+                                                                    <!--end::Input group-->
+                                                                    <!--begin::Actions-->
+                                                                    <div class="d-flex justify-content-end">
+                                                                        <a href="giris-kayitlari"><button type="button" class="btn btn-light btn-active-light-primary me-2">Temizle</button></a>
+                                                                        <a href=""><button type="submit" class="btn btn-primary">Uygula</button></a>
+                                                                    </div>
+                                                                    <!--end::Actions-->
+                                                                </form>
+                                                            </div>
+                                                            <!--end::Content-->
+                                                        </div>
+                                                        <!--end::Menu 1-->
+                                                        <!--end::Filter-->
+                                                    <!--begin::Add school-->
+                                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#kt_modal_add_customer">Ünite Ekle</button>
+                                                    <!--end::Add school-->
                                                 </div>
                                                 <!--end::Toolbar-->
-                                                <!--begin::Group actions-->
-                                                <div class="d-flex justify-content-end align-items-center d-none" data-kt-coupon-table-toolbar="selected">
-                                                    <div class="fw-bold me-5">
-                                                        <span class="me-2" data-kt-logs-table-select="selected_count"></span>Seçildi
-                                                    </div>
-                                                    <button type="button" class="btn btn-danger" data-kt-coupon-table-select="delete_selected">Seçilenleri Pasif Yap</button>
-                                                </div>
-                                                <!--end::Group actions-->
                                             </div>
                                             <!--end::Card toolbar-->
                                         </div>
@@ -93,7 +139,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                                                             <th class="min-w-125px">Ad Soyad</th>
                                                             <th class="min-w-125px">Cihaz Tipi</th>
-                                                            <th class="min-w-125px">Cihaz Modeli</th>
                                                             <th class="min-w-125px">İşletim Sistemi</th>
                                                             <th class="min-w-125px">Tarayıcı</th>
                                                             <th class="min-w-125px">Çözünürlük</th>
@@ -188,8 +233,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <!--end::Vendors Javascript-->
         <!--begin::Custom Javascript(used for this page only)-->
         <!-- <script src="assets/js/custom/apps/students/list/export.js"></script>
-        <script src="assets/js/custom/apps/students/list/list.js"></script>
         <script src="assets/js/custom/apps/students/add.js"></script> -->
+        <script src="assets/js/custom/apps/enterance/list/list.js"></script>
         <script src="assets/js/widgets.bundle.js"></script>
         <script src="assets/js/custom/widgets.js"></script>
         <script src="assets/js/custom/apps/chat/chat.js"></script>

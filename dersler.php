@@ -100,7 +100,6 @@
                                                     </th>
                                                     <th class="min-w-125px">Ders</th>
                                                     <th class="min-w-125px">Sınıf</th>
-                                                    <th class="text-end min-w-70px">İşlemler</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="fw-semibold text-gray-600">

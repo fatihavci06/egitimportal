@@ -244,7 +244,8 @@ class Student extends Dbh
 
 		$children = $getChild->fetchAll(PDO::FETCH_ASSOC);
 
-		if (empty($children)) return;
+		if (empty($children))
+			return;
 
 		foreach ($children as $value) {
 			$childId = $value['child_id'];
@@ -334,7 +335,8 @@ class Student extends Dbh
 
 		$child = $getChild->fetch(PDO::FETCH_ASSOC);
 
-		if (empty($child)) return [];
+		if (empty($child))
+			return [];
 
 		$stmt = $this->connect()->prepare('SELECT id FROM users_lnp WHERE username = ? AND id = ?');
 
@@ -375,6 +377,21 @@ class Student extends Dbh
 		$studentInfo = $stmt->fetch(PDO::FETCH_ASSOC);
 		return $studentInfo;
 		$stmt = null;
+	}
+
+	public function getStudentByIdAndRole($id)
+	{
+		try {
+			$stmt = $this->connect()->prepare('SELECT * FROM users_lnp WHERE id = ? AND role = 2');
+
+			$stmt->execute(array($id));
+			$studentInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+
+			return $studentInfo;
+
+		} catch (PDOException $e) {
+			return null;
+		}
 	}
 
 	public function getStudentPackages($id)
@@ -504,7 +521,7 @@ class Student extends Dbh
 
 	public function getStudentAdditionalPackages($id)
 	{
-		$stmt = $this->connect()->prepare('SELECT * FROM additional_package_payments_lnp WHERE user_id = ?');
+		$stmt = $this->connect()->prepare('SELECT * FROM extra_package_payments_lnp WHERE user_id = ?');
 
 		if (!$stmt->execute(array($id))) {
 			$stmt = null;
@@ -533,7 +550,7 @@ class Student extends Dbh
 	public function getOneStudent($student_id)
 	{
 
-		$stmt = $this->connect()->prepare('SELECT users_lnp.*, schools_lnp.name AS schoolName FROM users_lnp INNER JOIN schools_lnp ON users_lnp.school_id = schools_lnp.id WHERE users_lnp.id = ?');
+		$stmt = $this->connect()->prepare('SELECT users_lnp.*, schools_lnp.name AS schoolName, classes_lnp.name AS className FROM users_lnp INNER JOIN schools_lnp ON users_lnp.school_id = schools_lnp.id INNER JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id WHERE users_lnp.id = ?');
 
 		if (!$stmt->execute(array($student_id))) {
 			$stmt = null;

@@ -12,7 +12,7 @@ class SuspiciousLogs extends Dbh
         browser,
         resolution, 
         ipAddress, 
-        attempt_time FROM suspicious_attempts_lnp');
+        attempt_time FROM suspicious_attempts_lnp ORDER BY attempt_time DESC');
 
         if (!$stmt->execute()) {
             $stmt = null;

@@ -5,15 +5,23 @@ class LoginContr extends Login
 
 	private $email;
 	private $password;
+	protected $screenSize;
+	protected $deviceModel;
+	protected $deviceType;
+	protected $browser;
+	protected $os;
 
-	public function __construct($email, $password, $screenSize)
+	public function __construct($email, $password, $screenSize, $deviceModel, $deviceType, $browser, $os)
 	{
 		//login.classes içindeki __construct metodunu ezmemesi için
 		parent::__construct();
 		$this->email = $email;
 		$this->password = $password;
 		$this->screenSize = $screenSize;
-		
+		$this->deviceModel = $deviceModel;
+		$this->deviceType = $deviceType;
+		$this->browser = $browser;
+		$this->os = $os;
 	}
 
 	public function loginUser()

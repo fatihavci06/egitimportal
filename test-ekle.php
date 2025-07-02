@@ -139,6 +139,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </div>
 
                                         </div>
+
+                                        <div id="questions_container" class="mt-5"></div>
+
                                         <div class="row mt-5 mb-5">
                                             <div class="col-lg-4"></div>
                                             <div class="col-lg-3">
@@ -148,7 +151,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <button type="button" id="submitForm" class="btn btn-success btn-sm w-100">Kaydet</button>
                                             </div>
                                         </div>
-                                        <div id="questions_container"></div>
 
 
 
@@ -227,6 +229,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </div>
 
                                         </div>
+                                        
+                                        <div id="questions_container" class="mt-5"></div>
 
                                         <div class="row mt-5 mb-5">
                                             <div class="col-lg-4"></div>
@@ -237,7 +241,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <button type="button" id="submitForm" class="btn btn-success btn-sm w-100">Kaydet</button>
                                             </div>
                                         </div>
-                                        <div id="questions_container"></div>
 
 
 
@@ -869,7 +872,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 const newQuestionHTML = createQuestionBlock(newIndex, newQuestionNumber);
                 const questionsContainer = document.getElementById('questions_container');
 
-                questionsContainer.insertAdjacentHTML('afterbegin', newQuestionHTML);
+                questionsContainer.insertAdjacentHTML('beforeend', newQuestionHTML);
 
                 currentMaxQuestionIndex = newIndex;
 

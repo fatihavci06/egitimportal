@@ -101,7 +101,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             <!--end::Separator-->
                                                             <!--begin::Content-->
                                                             <div class="px-7 py-5">
-                                                                <form action="" method="GET">
+                                                                <form action="" method="GET" id="filtreleme" class="form">
                                                                     <!--begin::Input group-->
                                                                     <div class="mb-10">
                                                                         <!--begin::Label-->
@@ -125,7 +125,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                         <div class="d-flex flex-column flex-wrap fw-semibold">
 
                                                                             <!--begin::Input-->
-                                                                            <select class="form-select form-select-solid fw-bold" name="sinif" data-kt-select2="true" data-placeholder="Sınıf" data-allow-clear="true" data-kt-customer-table-filter="student_class" data-dropdown-parent="#kt-toolbar-filter">
+                                                                            <select class="form-select form-select-solid fw-bold" id="sinif" name="sinif" data-kt-select2="true" data-placeholder="Sınıf" data-allow-clear="true" data-kt-customer-table-filter="student_class" data-dropdown-parent="#kt-toolbar-filter">
                                                                                 <option></option>
                                                                                 <?php $students->getClassDropdownListWithId(); ?>
                                                                             </select>
@@ -141,9 +141,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                         <label class="form-label fs-5 fw-semibold mb-3">Ders:</label>
                                                                         <!--end::Label-->
                                                                         <!--begin::Input-->
-                                                                        <select class="form-select form-select-solid fw-bold" name="ders" data-kt-select2="true" data-placeholder="Ders Seçin" data-allow-clear="true" data-kt-customer-table-filter="lesson" data-dropdown-parent="#kt-toolbar-filter">
-                                                                            <option></option>
-                                                                            <?php $students->getLessonListwithId(); ?>
+                                                                        <select class="form-select form-select-solid fw-bold" id="ders" name="ders" data-kt-select2="true" data-placeholder="Ders Seçin" data-allow-clear="true" data-kt-customer-table-filter="lesson" data-dropdown-parent="#kt-toolbar-filter">
+                                                                            
                                                                         </select>
                                                                         <!--end::Input-->
                                                                     </div>
@@ -157,9 +156,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                         <div class="d-flex flex-column flex-wrap fw-semibold">
 
                                                                             <!--begin::Input-->
-                                                                            <select class="form-select form-select-solid fw-bold" name="unite" data-kt-select2="true" data-placeholder="Ünite" data-allow-clear="true">
-                                                                                <option></option>
-                                                                                <?php $students->getUnitsDropdownListWithId(); ?>
+                                                                            <select class="form-select form-select-solid fw-bold" id="unite" name="unite" data-kt-select2="true" data-placeholder="Ünite" data-allow-clear="true">
+                                                                                
                                                                             </select>
                                                                             <!--end::Input-->
 
@@ -176,9 +174,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                         <div class="d-flex flex-column flex-wrap fw-semibold">
 
                                                                             <!--begin::Input-->
-                                                                            <select class="form-select form-select-solid fw-bold" name="konu" data-kt-select2="true" data-placeholder="Konu" data-allow-clear="true">
-                                                                                <option></option>
-                                                                                <?php $students->getTopicsDropdownListWithId(); ?>
+                                                                            <select class="form-select form-select-solid fw-bold" id="konu" name="konu" data-kt-select2="true" data-placeholder="Konu" data-allow-clear="true">
                                                                             </select>
                                                                             <!--end::Input-->
 
@@ -188,7 +184,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                     <!--end::Input group-->
                                                                     <!--begin::Actions-->
                                                                     <div class="d-flex justify-content-end">
-                                                                        <a href="alt-konular"><button type="submit" class="btn btn-light btn-active-light-primary me-2">Temizle</button></a>
+                                                                        <a href="alt-konular"><button type="button" class="btn btn-light btn-active-light-primary me-2">Temizle</button></a>
                                                                         <a href=""><button type="submit" class="btn btn-primary">Uygula</button></a>
                                                                     </div>
                                                                     <!--end::Actions-->
@@ -200,7 +196,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <!--end::Filter-->
                                                     <?php } ?>
                                                     <!--begin::Add school-->
-                                                    <a href="altkonu-ekle"><button type="button" class="btn btn-primary btn-sm h-100">Alt Konu Ekle</button></a>
+                                                    <a href="altkonu-ekle?return_url=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>"><button type="button" class="btn btn-primary btn-sm h-100">Alt Konu Ekle</button></a>
                                                     <!--end::Add school-->
                                                 </div>
                                                 <!--end::Toolbar-->
@@ -296,7 +292,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <!--begin::Custom Javascript(used for this page only)-->
         <script src="assets/js/custom/apps/subtopics/list/export.js"></script>
         <script src="assets/js/custom/apps/subtopics/list/list.js"></script>
-        <script src="assets/js/custom/apps/subtopics/add.js"></script>
+        <!-- <script src="assets/js/custom/apps/subtopics/add.js"></script> -->
         <script src="assets/js/widgets.bundle.js"></script>
         <script src="assets/js/custom/widgets.js"></script>
         <script src="assets/js/custom/apps/chat/chat.js"></script>

@@ -17,9 +17,6 @@ class ShowLogs extends SuspiciousLogs
                             ' . $value['deviceType'] . '
                         </td>
                         <td>
-                            ' . $value['deviceModel'] . '
-                        </td>
-                        <td>
                             ' . $value['deviceOs'] . '
                         </td>
                         <td>
@@ -32,7 +29,7 @@ class ShowLogs extends SuspiciousLogs
                         '  . $value['ipAddress'] . '
                         </td>
                         <td>
-                        '  . $value['attempt_time']. '
+                        '  . $dateFormat->changeDateHour($value['attempt_time']). '
                        </td>
                     </tr>
             ';

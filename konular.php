@@ -7,6 +7,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     include_once "classes/dbh.classes.php";
     include "classes/topics.classes.php";
     include "classes/topics-view.classes.php";
+    include_once "classes/student.classes.php";
+    include_once "classes/student-view.classes.php";
+    $students = new ShowStudent();
     $topics = new ShowTopic();
     include_once "views/pages-head.php";
 ?>
@@ -79,8 +82,104 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             <div class="card-toolbar">
                                                 <!--begin::Toolbar-->
                                                 <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
+                                                    <?php if ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 8) { ?>
+                                                        <!--begin::Filter-->
+                                                        <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                                            <i class="ki-duotone ki-filter fs-2">
+                                                                <span class="path1"></span>
+                                                                <span class="path2"></span>
+                                                            </i>Filtre</button>
+                                                        <!--begin::Menu 1-->
+                                                        <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true" id="kt-toolbar-filter">
+                                                            <!--begin::Header-->
+                                                            <div class="px-7 py-5">
+                                                                <div class="fs-4 text-gray-900 fw-bold">Filtreleme</div>
+                                                            </div>
+                                                            <!--end::Header-->
+                                                            <!--begin::Separator-->
+                                                            <div class="separator border-gray-200"></div>
+                                                            <!--end::Separator-->
+                                                            <!--begin::Content-->
+                                                            <div class="px-7 py-5">
+                                                                <form action="" method="GET" id="filtreleme" class="form">
+                                                                    <!--begin::Input group-->
+                                                                    <div class="mb-10">
+                                                                        <!--begin::Label-->
+                                                                        <label class="form-label fs-5 fw-semibold mb-3">Durum:</label>
+                                                                        <!--end::Label-->
+                                                                        <!--begin::Input-->
+                                                                        <select class="form-select form-select-solid fw-bold" name="durum" data-kt-select2="true" data-placeholder="Durum Seçin" data-allow-clear="true" data-kt-customer-table-filter="status" data-dropdown-parent="#kt-toolbar-filter">
+                                                                            <option></option>
+                                                                            <option value="aktif">Aktif</option>
+                                                                            <option value="pasif">Pasif</option>
+                                                                        </select>
+                                                                        <!--end::Input-->
+                                                                    </div>
+                                                                    <!--end::Input group-->
+                                                                    <!--begin::Input group-->
+                                                                    <div class="mb-10">
+                                                                        <!--begin::Label-->
+                                                                        <label class="form-label fs-5 fw-semibold mb-3">Sınıf:</label>
+                                                                        <!--end::Label-->
+                                                                        <!--begin::Options-->
+                                                                        <div class="d-flex flex-column flex-wrap fw-semibold">
+
+                                                                            <!--begin::Input-->
+                                                                            <select class="form-select form-select-solid fw-bold" id="sinif" name="sinif" data-kt-select2="true" data-placeholder="Sınıf" data-allow-clear="true" data-kt-customer-table-filter="student_class" data-dropdown-parent="#kt-toolbar-filter">
+                                                                                <option></option>
+                                                                                <?php $students->getClassDropdownListWithId(); ?>
+                                                                            </select>
+                                                                            <!--end::Input-->
+
+                                                                        </div>
+                                                                        <!--end::Options-->
+                                                                    </div>
+                                                                    <!--end::Input group-->
+                                                                    <!--begin::Input group-->
+                                                                    <div class="mb-10">
+                                                                        <!--begin::Label-->
+                                                                        <label class="form-label fs-5 fw-semibold mb-3">Ders:</label>
+                                                                        <!--end::Label-->
+                                                                        <!--begin::Input-->
+                                                                        <select class="form-select form-select-solid fw-bold" id="ders" name="ders" data-kt-select2="true" data-placeholder="Ders Seçin" data-allow-clear="true" data-kt-customer-table-filter="lesson" data-dropdown-parent="#kt-toolbar-filter">
+                                                                            
+                                                                        </select>
+                                                                        <!--end::Input-->
+                                                                    </div>
+                                                                    <!--end::Input group-->
+                                                                    <!--begin::Input group-->
+                                                                    <div class="mb-10">
+                                                                        <!--begin::Label-->
+                                                                        <label class="form-label fs-5 fw-semibold mb-3">Ünite:</label>
+                                                                        <!--end::Label-->
+                                                                        <!--begin::Options-->
+                                                                        <div class="d-flex flex-column flex-wrap fw-semibold">
+
+                                                                            <!--begin::Input-->
+                                                                            <select class="form-select form-select-solid fw-bold" id="unite" name="unite" data-kt-select2="true" data-placeholder="Ünite" data-allow-clear="true">
+                                                                                
+                                                                            </select>
+                                                                            <!--end::Input-->
+
+                                                                        </div>
+                                                                        <!--end::Options-->
+                                                                    </div>
+                                                                    <!--end::Input group-->
+                                                                    <!--begin::Actions-->
+                                                                    <div class="d-flex justify-content-end">
+                                                                        <a href="konular"><button type="button" class="btn btn-light btn-active-light-primary me-2">Temizle</button></a>
+                                                                        <a href=""><button type="submit" class="btn btn-primary">Uygula</button></a>
+                                                                    </div>
+                                                                    <!--end::Actions-->
+                                                                </form>
+                                                            </div>
+                                                            <!--end::Content-->
+                                                        </div>
+                                                        <!--end::Menu 1-->
+                                                        <!--end::Filter-->
+                                                    <?php } ?>
                                                     <!--begin::Add school-->
-                                                    <a href="konu-ekle"><button type="button" class="btn btn-primary btn-sm">Konu Ekle</button></a>
+                                                    <a href="konu-ekle?return_url=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>"><button type="button" class="btn btn-primary btn-sm h-100">Konu Ekle</button></a>
                                                     <!--end::Add school-->
                                                 </div>
                                                 <!--end::Toolbar-->
@@ -175,7 +274,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <!--begin::Custom Javascript(used for this page only)-->
         <script src="assets/js/custom/apps/topics/list/export.js"></script>
         <script src="assets/js/custom/apps/topics/list/list.js"></script>
-        <script src="assets/js/custom/apps/topics/add.js"></script>
+        <!-- <script src="assets/js/custom/apps/topics/add.js"></script> -->
         <script src="assets/js/widgets.bundle.js"></script>
         <script src="assets/js/custom/widgets.js"></script>
         <script src="assets/js/custom/apps/chat/chat.js"></script>

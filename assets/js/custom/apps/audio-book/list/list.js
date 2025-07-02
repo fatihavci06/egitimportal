@@ -20,7 +20,7 @@ var KTCustomersList = function () {
             'order': [],
             'columnDefs': [
                 { orderable: false, targets: 0 }, // Disable ordering on column 0 (checkbox)
-                { orderable: false, targets: 8 }, // Disable ordering on column 7 (actions)
+                { orderable: false, targets: 6 }, // Disable ordering on column 7 (actions)
             ]
         });
 

@@ -9,12 +9,16 @@ class GradeResult
 
         $this->db = (new dbh())->connect();
     }
-        public function getGradeOverall($userId)
+    public function getGradeOverall($userId)
     {
         try {
             $sql = "SELECT AVG(score) as average_score 
-                FROM user_grades_lnp 
-                WHERE user_id = :user_id";
+                    FROM user_grades_lnp
+            
+                    WHERE user_id = :user_id 
+                    AND unit_id != 0
+                    
+                    ";
 
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
@@ -22,7 +26,7 @@ class GradeResult
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $result['average_score'] !== null ? (float) $result['average_score'] : null;
+            return $result['average_score'] !== null ? $this->getFirstThreeDecimalDigits($result['average_score']) : null;
 
         } catch (PDOException $e) {
             return null;
@@ -33,10 +37,12 @@ class GradeResult
         try {
             $sql = "SELECT AVG(score) as average_score 
                 FROM user_grades_lnp 
+        
                 WHERE user_id = :user_id 
                 AND lesson_id = :lesson_id 
-                AND lesson_id IS NOT NULL 
-                AND lesson_id != 0";
+                AND lesson_id != 0
+                AND unit_id != 0
+                ";
 
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
@@ -45,7 +51,7 @@ class GradeResult
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $result['average_score'] !== null ? (float) $result['average_score'] : null;
+            return $result['average_score'] !== null ? $this->getFirstThreeDecimalDigits($result['average_score']) : null;
 
         } catch (PDOException $e) {
             return null;
@@ -56,11 +62,12 @@ class GradeResult
     {
         try {
             $sql = "SELECT AVG(score) as average_score 
-                FROM user_grades_lnp 
+                FROM user_grades_lnp
+         
                 WHERE user_id = :user_id 
                 AND unit_id = :unit_id 
-                AND unit_id IS NOT NULL 
-                AND unit_id != 0";
+                AND unit_id != 0
+                ";
 
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
@@ -69,7 +76,7 @@ class GradeResult
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $result['average_score'] !== null ? (float) $result['average_score'] : null;
+            return $result['average_score'] !== null ? $this->getFirstThreeDecimalDigits($result['average_score']) : null;
 
         } catch (PDOException $e) {
             return null;
@@ -81,10 +88,12 @@ class GradeResult
         try {
             $sql = "SELECT AVG(score) as average_score 
                 FROM user_grades_lnp 
+         
                 WHERE user_id = :user_id 
                 AND topic_id = :topic_id 
-                AND topic_id IS NOT NULL 
-                AND topic_id != 0";
+                AND topic_id != 0
+                AND unit_id != 0
+                ";
 
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
@@ -93,7 +102,7 @@ class GradeResult
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $result['average_score'] !== null ? (float) $result['average_score'] : null;
+            return $result['average_score'] !== null ? $this->getFirstThreeDecimalDigits($result['average_score']) : null;
 
         } catch (PDOException $e) {
             return null;
@@ -104,11 +113,13 @@ class GradeResult
     {
         try {
             $sql = "SELECT AVG(score) as average_score 
-                FROM user_grades_lnp 
-                WHERE user_id = :user_id 
-                AND subtopic_id = :subtopic_id 
-                AND subtopic_id IS NOT NULL 
-                AND subtopic_id != 0";
+                    FROM user_grades_lnp
+              
+                    WHERE user_id = :user_id 
+                    AND subtopic_id = :subtopic_id 
+                    AND subtopic_id != 0
+                    AND unit_id != 0
+                    ";
 
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
@@ -117,10 +128,16 @@ class GradeResult
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $result['average_score'] !== null ? (float) $result['average_score'] : null;
+            return $result['average_score'] !== null ? $this->getFirstThreeDecimalDigits($result['average_score']) : null;
 
         } catch (PDOException $e) {
             return null;
         }
+    }
+    function getFirstThreeDecimalDigits($number)
+    {
+
+        $truncated = (int) ($number * 100);
+        return $truncated / 100;
     }
 }

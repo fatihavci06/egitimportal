@@ -7,6 +7,7 @@ var KTCustomersList = function () {
     /* var filterMonth;
      var filterPayment;*/
     var table
+    var form; // Declare form here
 
     // Private functions
     var initCustomerList = function () {
@@ -38,6 +39,220 @@ var KTCustomersList = function () {
             toggleToolbars();
             KTMenu.init(); // reinit KTMenu instances 
         });
+    }
+
+    // Function to handle the class change logic
+    var handleClassChange = function () {
+        // Ensure form and the select element exist
+        if (form && form.querySelector('[name="sinif"]')) {
+            $(form.querySelector('[name="sinif"]')).on('change', function () {
+                var classChoose = $("#sinif").val();
+
+                $.ajax({
+                    allowClear: true,
+                    type: "POST",
+                    url: "includes/select_for_lesson.inc.php",
+                    data: { class: classChoose },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.length > 0) {
+                            $('#ders').select2('destroy');
+                            $('#ders').html('<option value="">Ders Yok</option>');
+                            $('#ders').select2({ data: data });
+                            $('#unite').select2('destroy');
+                            $('#unite').html('<option value="">Ünite Yok</option>');
+                            $('#konu').select2('destroy');
+                            $('#konu').html('<option value="">Konu Yok</option>');
+                            $('#altkonu').select2('destroy');
+                            $('#altkonu').html('<option value="">Alt Konu Yok</option>');
+                        } else {
+                            // Re-initialize select2 correctly after clearing
+                            $('#sinif').select2('destroy'); // This line might be unintended, usually you wouldn't destroy the sinif select2 on ders/unite change
+                            $('#ders').select2('destroy');
+                            $('#ders').html('<option value="">Ders Yok</option>');
+                            $('#unite').select2('destroy');
+                            $('#unite').html('<option value="">Ünite Yok</option>');
+                            $('#konu').select2('destroy');
+                            $('#konu').html('<option value="">Konu Yok</option>');
+                            $('#altkonu').select2('destroy');
+                            $('#altkonu').html('<option value="">Alt Konu Yok</option>');
+                        }
+                    },
+                    error: function (xhr, status, error, response) {
+                        Swal.fire({
+                            text: error.responseText + ' ' + xhr.responseText,
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Tamam, anladım!",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        }).then(function (result) {
+                            if (result.isConfirmed) {
+                                // Assuming submitButton is defined in this scope or globally accessible
+                                // submitButton.disabled = false; // Uncomment and define submitButton if needed
+                            }
+                        });
+                    }
+                });
+            });
+        }
+
+        if (form && form.querySelector('[name="ders"]')) {
+            $(form.querySelector('[name="ders"]')).on('change', function () {
+                var classChoose = $("#sinif").val();
+
+                var lessonsChoose = $("#ders").val();
+
+                $.ajax({
+                    allowClear: true,
+                    type: "POST",
+                    url: "includes/select_for_unit.inc.php",
+                    data: {
+                        class: classChoose,
+                        lesson: lessonsChoose
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.length > 0) {
+                            $('#unite').html('<option value="">Ünite Seçiniz...</option>'); // Varsayılan yer tutucuya sıfırla
+                            $('#unite').select2({ data: data });
+                            $('#konu').select2('destroy');
+                            $('#konu').html('<option value="">Konu Yok</option>');
+                            $('#altkonu').select2('destroy');
+                            $('#altkonu').html('<option value="">Alt Konu Yok</option>');
+                        } else {
+                            // Re-initialize select2 correctly after clearing
+                            $('#unite').select2('destroy');
+                            $('#unite').html('<option value="">Ünite Yok</option>');
+                            $('#konu').select2('destroy');
+                            $('#konu').html('<option value="">Konu Yok</option>');
+                            $('#altkonu').select2('destroy');
+                            $('#altkonu').html('<option value="">Alt Konu Yok</option>');
+                        }
+                    },
+                    error: function (xhr, status, error, response) {
+                        Swal.fire({
+                            text: error.responseText + ' ' + xhr.responseText,
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Tamam, anladım!",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        }).then(function (result) {
+                            if (result.isConfirmed) {
+                                // Assuming submitButton is defined in this scope or globally accessible
+                                // submitButton.disabled = false; // Uncomment and define submitButton if needed
+                            }
+                        });
+                    }
+                });
+            });
+        }
+
+        if (form && form.querySelector('[name="unite"]')) {
+            $(form.querySelector('[name="unite"]')).on('change', function () {
+                var classChoose = $("#sinif").val();
+
+                var lessonsChoose = $("#ders").val();
+
+                var unitsChoose = $("#unite").val();
+
+                $.ajax({
+                    allowClear: true,
+                    type: "POST",
+                    url: "includes/select_for_topic.inc.php",
+                    data: {
+                        class: classChoose,
+                        lesson: lessonsChoose,
+                        unit: unitsChoose
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.length > 0) {
+                            $('#konu').html('<option value="">Konu Seçiniz...</option>'); // Varsayılan yer tutucuya sıfırla
+                            $('#konu').select2({ data: data });
+                            $('#altkonu').select2('destroy');
+                            $('#altkonu').html('<option value="">Alt Konu Yok</option>');
+                        } else {
+                            // Re-initialize select2 correctly after clearing
+                            $('#konu').select2('destroy');
+                            $('#konu').html('<option value="">Konu Yok</option>');
+                            $('#altkonu').select2('destroy');
+                            $('#altkonu').html('<option value="">Alt Konu Yok</option>');
+                        }
+                    },
+                    error: function (xhr, status, error, response) {
+                        Swal.fire({
+                            text: error.responseText + ' ' + xhr.responseText,
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Tamam, anladım!",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        }).then(function (result) {
+                            if (result.isConfirmed) {
+                                // Assuming submitButton is defined in this scope or globally accessible
+                                // submitButton.disabled = false; // Uncomment and define submitButton if needed
+                            }
+                        });
+                    }
+                });
+            });
+        }
+
+        if (form && form.querySelector('[name="konu"]')) {
+            $(form.querySelector('[name="konu"]')).on('change', function () {
+                var classChoose = $("#sinif").val();
+
+                var lessonsChoose = $("#ders").val();
+
+                var unitsChoose = $("#unite").val();
+
+                var topicsChoose = $("#konu").val();
+
+                $.ajax({
+                    allowClear: true,
+                    type: "POST",
+                    url: "includes/select_for_subtopic.inc.php",
+                    data: {
+                        class: classChoose,
+                        lesson: lessonsChoose,
+                        unit: unitsChoose,
+                        topics: topicsChoose
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.length > 0) {
+                            $('#altkonu').html('<option value="">Alt Konu Seçiniz...</option>'); // Varsayılan yer tutucuya sıfırla
+                            $('#altkonu').select2({ data: data });
+                        } else {
+                            // Re-initialize select2 correctly after clearing
+                            $('#altkonu').select2('destroy');
+                            $('#altkonu').html('<option value="">Alt Konu Yok</option>');
+                        }
+                    },
+                    error: function (xhr, status, error, response) {
+                        Swal.fire({
+                            text: error.responseText + ' ' + xhr.responseText,
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Tamam, anladım!",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        }).then(function (result) {
+                            if (result.isConfirmed) {
+                                // Assuming submitButton is defined in this scope or globally accessible
+                                // submitButton.disabled = false; // Uncomment and define submitButton if needed
+                            }
+                        });
+                    }
+                });
+            });
+        }
     }
 
     // Search Datatable --- official docs reference: https://datatables.net/reference/api/search()
@@ -347,9 +562,15 @@ var KTCustomersList = function () {
     return {
         init: function () {
             table = document.querySelector('#kt_customers_table');
+            form = document.querySelector('#filtreleme'); // Assign form here
 
             if (!table) {
+                console.warn('Table #kt_customers_table not found.');
                 return;
+            }
+            if (!form) {
+                console.warn('Form #filtreleme not found.');
+                // Don't return, as other functionalities might still work
             }
 
             initCustomerList();
@@ -358,6 +579,7 @@ var KTCustomersList = function () {
             /*handleFilterDatatable();*/
             handleDeleteRows();
             /*handleResetForm();*/
+            handleClassChange(); // Call the new function here  
         }
     }
 }();

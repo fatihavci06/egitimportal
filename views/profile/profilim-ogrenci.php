@@ -1225,7 +1225,7 @@ $resultProfileT = ($resultProfile == null) ? '-' : $resultProfile;
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                        <div class="row mt-4">
+                                                        <!-- <div class="row mt-4">
 
                                                             <div class="col-lg-10">
                                                                 <label class="fs-6 fw-semibold mb-2"
@@ -1236,7 +1236,7 @@ $resultProfileT = ($resultProfile == null) ? '-' : $resultProfile;
                                                                     <option value="">Seçiniz</option>
                                                                 </select>
                                                             </div>
-                                                        </div>
+                                                        </div> -->
                                                         <div class=" mt-4">
 
                                                             <button type="submit" id="kt_form_student_progress_submit"

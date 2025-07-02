@@ -175,6 +175,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																	<i class="fa-solid fa-school fs-4 me-1"></i>
 																	<?php echo $schoolInfo['name']; ?>
 																</span>
+																<span
+																	class="d-flex align-items-center text-gray-500 me-5 mb-2">
+																	<i class="fa-solid fa-chalkboard-user fs-4 me-1"></i>
+																	<?php echo $studentInfo['className']; ?>
+																</span>
 																<a href="tel:<?php echo $studentInfo['telephone']; ?>"
 																	class="d-flex align-items-center text-gray-500 text-hover-primary me-5 mb-2">
 																	<i class="fa-solid fa-phone fs-4 me-1"></i>
@@ -303,7 +308,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 												<!--begin::Nav item-->
 												<li class="nav-item mt-2">
 													<a class="nav-link text-active-primary ms-0 me-10 py-5"
-														data-bs-toggle="pill" href="#paketler">Paketler</a>
+														data-bs-toggle="pill" href="#paketler">Satın Almalar</a>
 												</li>
 												<!--end::Nav item-->
 												<!--begin::Nav item-->
@@ -468,15 +473,18 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																			<thead>
 																				<tr
 																					class="fs-7 fw-bold text-gray-500 border-bottom-0">
+																					<th style="width: 25%;"
+																						class="ps-0">PAKET TÜRÜ
+																					</th>
+																					<th style="width: 25%;"
+																						class="ps-0">SÜRE / ADET
+																					</th>
+																					<th style="width: 25%;"
+																						class="text-end">FİYATI
+																					</th>
 																					<th style="width: 50%;"
-																						class="ps-0 min-w-200px">PAKET ADI
-																					</th>
-																					<th style="width: 25%;"
-																						class="text-end min-w-100px">FİYATI
-																					</th>
-																					<th style="width: 25%;"
-																						class="pe-0 text-end min-w-100px">
-																						BİTİŞ TARİHİ</th>
+																						class="pe-0 text-end">
+																						BİTİŞ TARİHİ / KALAN</th>
 																				</tr>
 																			</thead>
 																			<!--end::Table head-->
@@ -513,59 +521,44 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 														</div>
 														<!--end::Header-->
 														<!--begin::Body-->
-														<div class="card-body pt-5">
-															<!--begin::Items-->
-															<div class="">
-																<!--begin::Item-->
-																<div class="d-flex flex-stack">
-																	<!--begin::Section-->
-																	<div class="d-flex align-items-center me-5">
-																		<!--begin::Flag-->
-																		<i
-																			class="fa-solid fa-person-chalkboard text-muted fs-1 me-8"></i>
-																		<!--end::Flag-->
-																		<!--begin::Content-->
-																		<div class="me-5">
-																			<!--begin::Title-->
-																			<a href="#"
-																				class="text-gray-800 fw-bold text-hover-primary fs-6">Özel
-																				Ders</a>
-																			<!--end::Title-->
-																			<!--begin::Desc-->
-																			<span
-																				class="text-gray-500 fw-semibold fs-7 d-block text-start ps-0">Öğretmen</span>
-																			<!--end::Desc-->
-																		</div>
-																		<!--end::Content-->
-																	</div>
-																	<!--end::Section-->
-																	<!--begin::Wrapper-->
-																	<div class="d-flex align-items-center">
-																		<!--begin::Number-->
-																		<span
-																			class="text-gray-800 fw-bold fs-4 me-3">45</span>
-																		<!--end::Number-->
-																		<!--begin::Info-->
-																		<div class="m-0">
-																			<!--begin::Label-->
-																			<span class="badge badge-light-success fs-base">
-																				<i
-																					class="ki-duotone ki-arrow-up fs-5 text-success ms-n1">
-																					<span class="path1"></span>
-																					<span class="path2"></span>
-																				</i>Dk</span>
-																			<!--end::Label-->
-																		</div>
-																		<!--end::Info-->
-																	</div>
-																	<!--end::Wrapper-->
-																</div>
-																<!--end::Item-->
-																<!--begin::Separator-->
-																<div class="separator separator-dashed my-3"></div>
-																<!--end::Separator-->
+														<div class="card-body pt-5"><!--begin::Table container-->
+															<div class="table-responsive">
+																<!--begin::Table-->
+																<table
+																	class="table table-row-dashed align-middle gs-0 gy-4 my-0">
+																	<!--begin::Table head-->
+																	<thead>
+																		<tr
+																			class="fs-7 fw-bold text-gray-500 border-bottom-0">
+																			<th style="width: 20%;"
+																				class="ps-0">SINIF
+																			</th>
+																			<th style="width: 20%;"
+																				class="ps-0">DERS
+																			</th>
+																			<th style="width: 20%;"
+																				class="ps-0">ÖĞRETMEN
+																			</th>
+																			<th style="width: 20%;"
+																				class="text-end">ZAMAN
+																			</th>
+																			<th style="width: 20%;"
+																				class="pe-0 text-end">
+																				DURUM</th>
+																		</tr>
+																	</thead>
+																	<!--end::Table head-->
+																	<!--begin::Table body-->
+																	<tbody> 
+																		
+																		<?php $student->showprivateLessonsforFirstPage($getStudentId); ?>
+
+																	</tbody>
+																	<!--end::Table body-->
+																</table>
+																<!--end::Table-->
 															</div>
-															<!--end::Items-->
+															<!--end::Table container-->
 														</div>
 														<!--end: Card Body-->
 													</div>
@@ -652,7 +645,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																		</select>
 																	</div>
 																</div>
-																<div class="row mt-4">
+																<!-- <div class="row mt-4">
 
 																	<div class="col-lg-10">
 																		<label class="fs-6 fw-semibold mb-2"
@@ -663,7 +656,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																			<option value="">Seçiniz</option>
 																		</select>
 																	</div>
-																</div>
+																</div> -->
 																<div class=" mt-4">
 
 																	<button type="submit"
@@ -910,7 +903,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 															<thead class="border-gray-200 fs-5 fw-semibold bg-lighten">
 																<tr>
 																	<th class="min-w-250px">Cihaz Tipi</th>
-																	<th class="min-w-100px">Cihaz Modeli</th>
 																	<th class="min-w-150px">İşletim Sistemi</th>
 																	<th class="min-w-150px">Tarayıcı</th>
 																	<th class="min-w-150px">Ekran Çözünürlüğü</th>
@@ -1002,5 +994,5 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 </html>
 <?php } else {
-	header("location: index");
+	header("location: ../index");
 }
