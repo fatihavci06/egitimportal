@@ -103,7 +103,7 @@ class PackagesForAdmin extends Dbh {
 	public function getAllPackages()
 	{
 
-		$stmt = $this->connect()->prepare('SELECT packages_lnp.id,packages_lnp.status, packages_lnp.name, packages_lnp.monthly_fee, packages_lnp.subscription_period, packages_lnp.discount, classes_lnp.name AS className FROM packages_lnp INNER JOIN classes_lnp ON packages_lnp.class_id = classes_lnp.id WHERE packages_lnp.pack_type IS ? ORDER BY packages_lnp.id DESC'); 
+		$stmt = $this->connect()->prepare('SELECT packages_lnp.id,packages_lnp.status, packages_lnp.name, packages_lnp.monthly_fee, packages_lnp.subscription_period, packages_lnp.discount, classes_lnp.name AS className, classes_lnp.slug AS classSlug FROM packages_lnp INNER JOIN classes_lnp ON packages_lnp.class_id = classes_lnp.id WHERE packages_lnp.pack_type IS ? ORDER BY packages_lnp.id DESC'); 
 
 			if (!$stmt->execute(array(NULL))) {
 				$stmt = null;
