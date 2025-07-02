@@ -743,11 +743,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																foreach ($studentList as $student) {
 																	$percentage = $contentObj->getSchoolContentAnalyticsOverall($student['id']);
 																	$percentageW = ($percentage == null) ? 0 : $percentage;
-																	$percentageT = ($percentage == null) ? '-' : $percentage;
+																	$percentageT = ($percentage === null) ? '-' : $percentage;
 
 																	$score = $gradeObj->getGradeOverall($student['id'], );
 																	$scoreW = ($score == null) ? 0 : $score;
-																	$scoreT = ($score == null) ? '-' : $score;
+																	$scoreT = ($score ===  null) ? '-' : $score;
 
 																	$studentRow = '
 																		<div class="">
@@ -874,11 +874,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																foreach ($studentList as $student) {
 																	$percentage = $contentObj->getSchoolContentAnalyticsOverall($student['id']);
 																	$percentageW = ($percentage == null) ? 0 : $percentage;
-																	$percentageT = ($percentage == null) ? '-' : $percentage;
+																	$percentageT = ($percentage === null) ? '-' : $percentage;
 
 																	$score = $gradeObj->getGradeOverall($student['id'], );
 																	$scoreW = ($score == null) ? 0 : $score;
-																	$scoreT = ($score == null) ? '-' : $score;
+																	$scoreT = ($score ===  null) ? '-' : $score;
 
 																	$studentRow = '
 																		<tr>

@@ -26,7 +26,7 @@ class GradeResult
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $result['average_score'] !== null ? $this->getFirstThreeDecimalDigits($result['average_score']) : null;
+            return ($result['average_score'] !== null)  ? $this->getFirstThreeDecimalDigits($result['average_score']) : null;
 
         } catch (PDOException $e) {
             return null;
@@ -51,7 +51,7 @@ class GradeResult
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $result['average_score'] !== null ? $this->getFirstThreeDecimalDigits($result['average_score']) : null;
+            return ($result['average_score'] !== null)  ? $this->getFirstThreeDecimalDigits($result['average_score']) : null;
 
         } catch (PDOException $e) {
             return null;
@@ -76,7 +76,7 @@ class GradeResult
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $result['average_score'] !== null ? $this->getFirstThreeDecimalDigits($result['average_score']) : null;
+            return (($result['average_score'] !== null) ) ? $this->getFirstThreeDecimalDigits($result['average_score']) : null;
 
         } catch (PDOException $e) {
             return null;
@@ -102,7 +102,7 @@ class GradeResult
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $result['average_score'] !== null ? $this->getFirstThreeDecimalDigits($result['average_score']) : null;
+            return ($result['average_score'] !== null)  ? $this->getFirstThreeDecimalDigits($result['average_score']) : null;
 
         } catch (PDOException $e) {
             return null;
@@ -128,7 +128,7 @@ class GradeResult
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $result['average_score'] !== null ? $this->getFirstThreeDecimalDigits($result['average_score']) : null;
+            return ($result['average_score'] !== null)  ? $this->getFirstThreeDecimalDigits($result['average_score']) : null;
 
         } catch (PDOException $e) {
             return null;

@@ -88,11 +88,11 @@ function doLessons($school_id, $class_id, $lesson_id, $unit_id, $student_id)
         $subItemsCount = count($subItems);
         $percentage = $contentObj->getSchoolContentAnalyticsByUnitId($student_id, $class_id, $lesson_id, $item['id']);
         $percentageW = ($percentage == null) ? 0 : $percentage;
-        $percentageT = ($percentage == null) ? '-' : $percentage;
+        $percentageT = ($percentage === null) ? '-' : $percentage;
 
         $score = $gradeObj->getGradeByUnitId($student_id, $item['id']);
         $scoreW = ($score == null) ? 0 : $score;
-        $scoreT = ($score == null) ? '-' : $score;
+        $scoreT = ($score ===  null) ? '-' : $score;
 
         $view .= '<div class="d-flex flex-stack">
                             <div class="symbol symbol-40px me-4">
@@ -177,11 +177,11 @@ function doUnits($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $studen
         $subItemsCount = count($subItems);
         $percentage = $contentObj->getSchoolContentAnalyticsByTopicId($student_id, $class_id, $lesson_id, $unit_id, $item['id']);
         $percentageW = ($percentage == null) ? 0 : $percentage;
-        $percentageT = ($percentage == null) ? '-' : $percentage;
+        $percentageT = ($percentage === null) ? '-' : $percentage;
 
         $score = $gradeObj->getGradeByTopicId($student_id, $item['id']);
         $scoreW = ($score == null) ? 0 : $score;
-        $scoreT = ($score == null) ? '-' : $score;
+        $scoreT = ($score ===  null) ? '-' : $score;
 
         $view .= '<div class="d-flex flex-stack">
                             <div class="symbol symbol-40px me-4">
@@ -266,11 +266,11 @@ function doTopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $subto
         // $subItemsCount = count($subItems);
         $percentage = $contentObj->getSchoolContentAnalyticsBySubtopicId($student_id, $class_id, $lesson_id, $unit_id, $topic_id, $item['id']);
         $percentageW = ($percentage == null) ? 0 : $percentage;
-        $percentageT = ($percentage == null) ? '-' : $percentage;
+        $percentageT = ($percentage === null) ? '-' : $percentage;
 
         $score = $gradeObj->getGradeBySubtopicId($student_id, $item['id']);
         $scoreW = ($score == null) ? 0 : $score;
-        $scoreT = ($score == null) ? '-' : $score;
+        $scoreT = ($score ===  null) ? '-' : $score;
 
         $view .= '<div class="d-flex flex-stack">
                             <div class="symbol symbol-40px me-4">
@@ -348,11 +348,11 @@ function doSubtopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $su
 
     $percentage = $contentObj->getSchoolContentAnalyticsBySubtopicId($student_id, $class_id, $lesson_id, $unit_id, $topic_id, $subtopic_id);
     $percentageW = ($percentage == null) ? 0 : $percentage;
-    $percentageT = ($percentage == null) ? '-' : $percentage;
+    $percentageT = ($percentage === null) ? '-' : $percentage;
 
     $score = $gradeObj->getGradeBySubtopicId($student_id, $item['id']);
     $scoreW = ($score == null) ? 0 : $score;
-    $scoreT = ($score == null) ? '-' : $score;
+    $scoreT = ($score ===  null) ? '-' : $score;
 
     $view .= '<div class="d-flex flex-stack">
                             <div class="symbol symbol-40px me-4">

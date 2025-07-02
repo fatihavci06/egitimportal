@@ -240,11 +240,11 @@ class ShowStudent extends Student
 
             $percentage = $contentObj->getSchoolContentAnalyticsOverall($value['id']);
             $percentageW = ($percentage == null) ? 0 : $percentage;
-            $percentageT = ($percentage == null) ? '-' : $percentage;
+            $percentageT = ($percentage === null) ? '-' : $percentage;
 
             $score = $gradeObj->getGradeOverall($value['id'], );
             $scoreW = ($score == null) ? 0 : $score;
-            $scoreT = ($score == null) ? '-' : $score;
+            $scoreT = ($score ===  null) ? '-' : $score;
 
             $studentList .= '
                     <tr>
@@ -307,11 +307,11 @@ class ShowStudent extends Student
 
             $percentage = $contentObj->getSchoolContentAnalyticsOverall($value['id']);
             $percentageW = ($percentage == null) ? 0 : $percentage;
-            $percentageT = ($percentage == null) ? '-' : $percentage;
+            $percentageT = ($percentage === null) ? '-' : $percentage;
 
             $score = $gradeObj->getGradeOverall($value['id'], );
             $scoreW = ($score == null) ? 0 : $score;
-            $scoreT = ($score == null) ? '-' : $score;
+            $scoreT = ($score ===  null) ? '-' : $score;
 
             $studentList .= '
                     <tr>
@@ -995,13 +995,13 @@ class ShowStudent extends Student
                 $unitData = $this->getUnits($lesson_id, $class_id, $school_id);
                 $unitCount = count($unitData);
 
-                $result = $contentObj->getSchoolContentAnalyticsByLessonId($studentId, $class_id, $lesson_id);
-                $resultW = ($result == null) ? 0 : $result;
-                $resultT = ($result == null) ? '-' : $result;
+                $percentage = $contentObj->getSchoolContentAnalyticsByLessonId($studentId, $class_id, $lesson_id);
+                $percentageW = ($percentage == null) ? 0 : $percentage;
+                $percentageT = ($percentage === null) ? '-' : $percentage;
 
                 $score = $gradeObj->getGradeByLessonId($studentId, $lesson_id);
                 $scoreW = ($score == null) ? 0 : $score;
-                $scoreT = ($score == null) ? '-' : $score;
+                $scoreT = ($score ===  null) ? '-' : $score;
 
                 $lessonList .= '
                 <!--begin::Item-->
@@ -1022,10 +1022,10 @@ class ShowStudent extends Student
                             <div class="d-flex align-items-center w-100px w-sm-200px flex-column mt-3">
                                 <div class="d-flex justify-content-between w-100 mt-auto mb-2">
                                     <span class="fw-semibold fs-6 text-gray-500">Tamamlama Oranı</span>
-                                    <span class="fw-bold fs-6">' . $resultT . '%</span>
+                                    <span class="fw-bold fs-6">' . $percentageT . '%</span>
                                 </div>
                                 <div class="h-5px mx-3 w-100 bg-light mb-3">
-                                    <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $resultW . '%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                    <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $percentageW . '%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
                                 <div class="d-flex justify-content-between w-100 mt-auto mb-2">
                                     <span class="fw-semibold fs-6 text-gray-500">Başarı Oranı</span>
@@ -1462,13 +1462,13 @@ $packagesList .= '<tr>
                     $topicData = $this->getTopics($lesson_id, $class_id, $school_id, $unit['id']);
                     $topicCount = count($topicData);
 
-                    $result = $contentObj->getSchoolContentAnalyticsByUnitId($getStudentId, $class_id, $lesson_id, $unit['id']);
-                    $resultW = ($result == null) ? 0 : $result;
-                    $resultT = ($result == null) ? '-' : $result;
+                    $percentage = $contentObj->getSchoolContentAnalyticsByUnitId($getStudentId, $class_id, $lesson_id, $unit['id']);
+                    $percentageW = ($percentage == null) ? 0 : $percentage;
+                    $percentageT = ($percentage === null) ? '-' : $percentage;
 
                     $score = $gradeObj->getGradeByUnitId($getStudentId, $unit['id']);
                     $scoreW = ($score == null) ? 0 : $score;
-                    $scoreT = ($score == null) ? '-' : $score;
+                    $scoreT = ($score ===  null) ? '-' : $score;
                     $units .= '
                             <!--begin::Item-->
                                 <div class="d-flex flex-stack">
@@ -1489,11 +1489,11 @@ $packagesList .= '<tr>
                                         <div class="d-flex align-items-center w-100px w-sm-200px flex-column mt-3">
                                             <div class="d-flex justify-content-between w-100 mt-auto mb-2">
                                                 <span class="fw-semibold fs-6 text-gray-500">Tamamlama Oranı</span>
-                                                <span class="fw-bold fs-6">' . $resultT . '%</span>
+                                                <span class="fw-bold fs-6">' . $percentageT . '%</span>
                                                 
                                             </div>
                                             <div class="h-5px mx-3 w-100 bg-light mb-3">
-                                                <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $resultW . '%;" aria-valuenow="25"
+                                                <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $percentageW . '%;" aria-valuenow="25"
                                                     aria-valuemin="0" aria-valuemax="100"></div>
                                             </div>
                                             <div class="d-flex justify-content-between w-100 mt-auto mb-2">
@@ -1585,6 +1585,9 @@ $packagesList .= '<tr>
                 $loginList .= '<tr>
                                     <td>
                                         ' . $value['deviceType'] . '
+                                    </td>
+                                    <td>
+                                        ' . $value['deviceModel'] . '
                                     </td>
                                     <td>' . $value['deviceOs'] . '</td>
                                     <td>' . $value['browser'] . '</td>
