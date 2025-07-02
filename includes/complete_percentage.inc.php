@@ -100,7 +100,7 @@ function doLessons($school_id, $class_id, $lesson_id, $unit_id, $student_id)
                             </div>
                             <div class="d-flex align-items-center flex-row-fluid ">
                                 <div class="flex-grow-1 me-2">
-                                    <a href="' . $student_id . '" class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $item['name'] . '</a>
+                                    <a class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $item['name'] . '</a>
                                     <span class="text-muted fw-semibold d-block fs-7">' . $subItemsCount . ' Konu </span>
                                 </div>
                                 <div class="d-flex align-items-center w-100px w-sm-200px flex-column mt-3">

@@ -1015,7 +1015,7 @@ class ShowStudent extends Student
                         <div class="d-flex align-items-center flex-row-fluid flex-wrap">
                             <!--begin:Author-->
                             <div class="flex-grow-1 me-2">
-                                <a href="pages/user-profile/overview.html" class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $value['name'] . '</a>
+                                <a  class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $value['name'] . '</a>
                                 <span class="text-muted fw-semibold d-block fs-7">' . $unitCount . ' Ünite</span>
                             </div>
                             <!--end:Author--><!--begin::Progress-->
@@ -1481,7 +1481,7 @@ $packagesList .= '<tr>
                                     <div class="d-flex align-items-center flex-row-fluid ">
                                         <!--begin:Author-->
                                         <div class="flex-grow-1 me-2">
-                                            <a href="' . $unit['id'] . '" class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $unit['name'] . '</a>
+                                            <a class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $unit['name'] . '</a>
                                             <span class="text-muted fw-semibold d-block fs-7">' . $topicCount . ' Konu</span>
                                         </div>
                                         <!--end:Author-->
