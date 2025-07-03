@@ -568,16 +568,44 @@ include_once "classes/dateformat.classes.php";
             document.getElementById('contactSearch').addEventListener('input', filterContacts);
         });
 
-        function loadConversations() {
-            fetch('includes/chat_handler.inc.php?action=get_conversations')
+        function loadConversationsForUser() {
+            return fetch('includes/chat_handler.inc.php?action=get_conversations')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
                         conversations = data.conversations;
-                        renderConversations();
                     }
                 })
                 .catch(error => console.error('Error loading conversations:', error));
+        }
+
+        function loadConversationsForParent() {
+            return fetch('includes/chat_handler.inc.php?action=get_child_conversations')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+
+                        conversations = [...conversations, ...data.conversations].sort((a, b) => {
+                            return new Date(b.updated_at) - new Date(a.updated_at);
+                        });
+                    }
+                })
+                .catch(error => console.error('Error loading conversations:', error));
+        }
+        function loadConversations() {
+
+            Promise.all([
+                loadConversationsForUser()
+            <?php if ($_SESSION['role'] == 5) {
+                echo ", loadConversationsForParent()";
+            }
+            ?>
+            ]).then(() => {
+                renderConversations();
+            }).catch(error => {
+                console.error("One of the requests failed:", error);
+            });
+
         }
 
         function renderConversations() {
@@ -597,35 +625,68 @@ include_once "classes/dateformat.classes.php";
                 return;
             }
 
-            list.innerHTML = conversations.map(conv => `
+            list.innerHTML = conversations.map((conv) => {
+                if (conv.child_user_id) {
+                    return `
+                <div class="conversation-item ${currentConversationId == conv.id ? 'active' : ''}" style="background-color:rgb(233, 250, 255);"
+                    conv-id="${conv.id}" onclick="selectConversation(${conv.id}, '${conv.child_name} ${conv.child_surname} ${conv.other_name} ${conv.other_surname}', ${conv.child_user_id},'${conv.child_photo}', false)">
+                    <div class="d-flex align-items-center">
+                        <div class="symbol symbol-45px me-3">
+                            <img src="assets/media/profile/${conv.child_photo}" alt="${conv.child_username}" class="rounded-circle">
+                            <img src="assets/media/profile/${conv.other_photo}" alt="${conv.other_username}" class="rounded-circle">
+
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <span class="text-gray-900 fw-bold fs-6 other-fullname">${conv.child_name} ${conv.child_surname} </span>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <span class="text-gray-900 fw-bold fs-6 other-fullname">${conv.other_name} ${conv.other_surname} </span>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <span class="text-gray-600 fw-bold fs-8 other-fullname">${conv.userSchoolName} ${conv.userClassName} </span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            `
+                } else {
+                    return `
                 <div class="conversation-item ${currentConversationId == conv.id ? 'active' : ''}" 
-                     onclick="selectConversation(${conv.id}, '${conv.other_name} ${conv.other_surname}', ${conv.other_user_id},'${conv.other_photo}')">
+                     onclick="selectConversation(${conv.id}, '${conv.other_name} ${conv.other_surname} ${conv.childId ? (`(${conv.childName} ${conv.childSurname} ${conv.childSchoolName} ${conv.childClassName})`) : ''} ', ${conv.other_user_id},'${conv.other_photo}')">
                     <div class="d-flex align-items-center">
                         <div class="symbol symbol-45px me-3">
                             <img src="assets/media/profile/${conv.other_photo}" alt="${conv.other_username}" class="rounded-circle">
                         </div>
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center justify-content-between mb-1">
-                                <span class="text-gray-900 fw-bold fs-6">${conv.other_name} ${conv.other_surname} </span>
+                                <span class="text-gray-900 fw-bold fs-6">${conv.other_name} ${conv.other_surname} ${conv.childId ? (`(${conv.childName} ${conv.childSurname} ${conv.childSchoolName} ${conv.childClassName})`) : ''} </span>
                                 ${conv.unread_count > 0 ? `<span class="unread-badge">${conv.unread_count}</span>` : ''}
                             </div>
                             <span class="text-gray-500 fw-semibold fs-7 d-block">
                                 ${conv.last_message ? (conv.last_message.length > 30 ? conv.last_message.substring(0, 30) + '...' : conv.last_message) : 'Henüz mesaj yok'}
                             </span>
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <span class="text-gray-600 fw-bold fs-8 other-fullname">${conv.userSchoolName ? conv.userSchoolName : " "} ${conv.userClassName ? conv.userClassName : " "} </span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            `).join('');
+            `
+                }
+
+            }).join('');
 
         }
 
-        function selectConversation(conversationId, userName, userId, photo) {
+        function selectConversation(conversationId, userName, userId, photo, isChatable = true) {
             currentConversationId = conversationId;
             currentChatUser = userName;
 
             document.getElementById('currentChatName').textContent = userName;
             document.getElementById('chatHeader').style.display = 'block';
-            document.getElementById('messageInputArea').style.display = 'block';
+            document.getElementById('messageInputArea').style.display = (isChatable ? 'block' : 'none');
             document.getElementById('currentChatPhoto').src = `assets/media/profile/${photo}`;
 
             document.querySelectorAll('.conversation-item').forEach(item => {
@@ -635,13 +696,32 @@ include_once "classes/dateformat.classes.php";
                 event.target.closest('.conversation-item').classList.add('active');
 
             }
-            loadMessages();
+            if(isChatable){
+                loadMessages();
+            }else{
+                loadChildMessages();
+
+            }
         }
 
         function loadMessages() {
             if (!currentConversationId) return;
 
             fetch(`includes/chat_handler.inc.php?action=get_messages&conversation_id=${currentConversationId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        renderMessages(data.messages);
+                        loadConversations();
+                    }
+                })
+                .catch(error => console.error('Error loading messages:', error));
+        }
+
+        function loadChildMessages() {
+            if (!currentConversationId) return;
+
+            fetch(`includes/chat_handler.inc.php?action=get_child_messages&conversation_id=${currentConversationId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -668,9 +748,10 @@ include_once "classes/dateformat.classes.php";
                 `;
                 return;
             }
+            let selectedId = messages[0].sender_id;
 
             container.innerHTML = messages.map(msg => {
-                const isOwn = msg.sender_id == getCurrentUserId();
+                const isOwn = msg.sender_id == selectedId;
                 const messageTime = new Date(msg.created_at).toLocaleTimeString('tr-TR', {
                     hour: '2-digit',
                     minute: '2-digit'
@@ -678,6 +759,7 @@ include_once "classes/dateformat.classes.php";
 
                 return `
                     <div class="message-bubble ${isOwn ? 'own' : ''} d-flex flex-column">
+                        <span class="text-gray-500 fs-8 px-2 ${isOwn ? '' : ''}"> ${msg.name} ${msg.surname}</span>
                         <div class="message-content">
                             ${escapeHtml(msg.message)}
                         </div>

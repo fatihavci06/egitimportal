@@ -689,7 +689,7 @@ include_once "classes/dateformat.classes.php";
         function renderTextMessage(msg, isOwn, messageTime) {
             return `
         <div class="message-bubble ${isOwn ? 'own' : ''} d-flex flex-column">
-            <span class="text-gray-500 fs-8 px-2 ${isOwn ? '' : ''}"> ${msg.name} ${msg.name}</span>
+            <span class="text-gray-500 fs-8 px-2 ${isOwn ? '' : ''}"> ${msg.name} ${msg.surname}</span>
             <div class="message-content">
                 ${escapeHtml(msg.message)}
             </div>
