@@ -380,18 +380,30 @@ class ContentTracker
                 return null;
 
             }
+            $sums = [
+                'content_visits' => 0,
+                'total_content_visits' => 0,
+            ];
+
             foreach ($results as $item) {
+                if (($item['total_wordwalls'] == 0) && ($item['total_files'] == 0) && ($item['total_videos'] == 0)) {
+                    $sums['total_content_visits'] += 1;
+                    $sums['content_visits'] += $item['content_visited'];
+
+                }
+
                 foreach ($item as $key => $value) {
                     if (is_numeric($value)) {
                         $sums[$key] = ($sums[$key] ?? 0) + (int) $value;
                     }
                 }
             }
-
             if (!empty($sums)) {
-                $total_points = $sums['total_wordwalls'] + $sums['total_files'] + $sums['total_videos'] + count($results);
-                $result_points = $sums['viewed_wordwalls'] + $sums['downloaded_files'] + $sums['completed_videos'] + $sums['content_visited'];
-                $percentage = $this->getFirstThreeDecimalDigits(($result_points / $total_points) * 100);
+                $total_points = $sums['total_wordwalls'] + $sums['total_files'] + $sums['total_videos'] + $sums['total_content_visits'];
+                $result_points = $sums['viewed_wordwalls'] + $sums['downloaded_files'] + $sums['completed_videos'] + $sums['content_visits'];
+                if ($total_points > 0) {
+                    $percentage = $this->getFirstThreeDecimalDigits(($result_points / $total_points) * 100);
+                }
 
             }
             return $percentage;
@@ -470,7 +482,7 @@ class ContentTracker
             $stmt->execute([$user_id, $user_id, $user_id, $user_id, $class_id, $lesson_id, $unit_id, $topic_id]);
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-           $sums = [];
+            $sums = [];
             $percentage = 0;
             if (empty($results)) {
                 return null;
@@ -579,7 +591,7 @@ class ContentTracker
             $stmt->execute([$user_id, $user_id, $user_id, $user_id, $class_id, $lesson_id, $unit_id, $topic_id, $subtopic_id]);
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-           $sums = [];
+            $sums = [];
             $percentage = 0;
             if (empty($results)) {
                 return null;

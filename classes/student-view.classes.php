@@ -244,7 +244,7 @@ class ShowStudent extends Student
 
             $score = $gradeObj->getGradeOverall($value['id'], );
             $scoreW = ($score == null) ? 0 : $score;
-            $scoreT = ($score ===  null) ? '-' : $score;
+            $scoreT = ($score === null) ? '-' : $score;
 
             $studentList .= '
                     <tr>
@@ -275,13 +275,16 @@ class ShowStudent extends Student
         }
         echo $studentList;
     }
-    public function getStudentsProgressListForParent($userID)
+    public function getStudentsProgressListForParent($childId, $isParent)
     {
 
-        $schoolInfo = $this->getStudentsListForParent($userID);
+        if ($isParent) {
+            $parent = $this->getUserById($childId);
+            $childWithSchoolInfo = $this->getUserById($parent['child_id']);
+        } else {
+            $childWithSchoolInfo = $this->getUserById($childId);
 
-        // var_dump($schoolInfo);
-        // die();
+        }
 
         $dateFormat = new DateFormat();
         $studentList = '';
@@ -292,48 +295,46 @@ class ShowStudent extends Student
         $gradeObj = new GradeResult();
 
 
-        foreach ($schoolInfo as $key => $value) {
-            $sinifArama = 'data-filter="' . $value['classSlug'] . '"';
+        $sinifArama = 'data-filter="' . $childWithSchoolInfo['classSlug'] . '"';
 
-            if ($value['userActive'] == 1) {
-                $aktifArama = 'data-filter="Aktif"';
-                $aktifYazi = '<span class="badge badge-light-success">Aktif</span>';
-            } else {
-                $aktifArama = 'data-filter="Passive"';
-                $aktifYazi = '<span class="badge badge-light-danger">Pasif</span>';
-            }
 
-            $alter_button = $value['active'] ? "Pasif Yap" : "Aktif Yap";
 
-            $percentage = $contentObj->getSchoolContentAnalyticsOverall($value['id']);
-            $percentageW = ($percentage == null) ? 0 : $percentage;
-            $percentageT = ($percentage === null) ? '-' : $percentage;
+        $alter_button = $childWithSchoolInfo['active'] ? "Pasif Yap" : "Aktif Yap";
 
-            $score = $gradeObj->getGradeOverall($value['id'], );
-            $scoreW = ($score == null) ? 0 : $score;
-            $scoreT = ($score ===  null) ? '-' : $score;
+        $percentage = $contentObj->getSchoolContentAnalyticsOverall($childWithSchoolInfo['id']);
+        $percentageW = ($percentage == null) ? 0 : $percentage;
+        $percentageT = ($percentage === null) ? '-' : $percentage;
 
-            $studentList .= '
+        $score = $gradeObj->getGradeOverall($childWithSchoolInfo['id'], );
+        $scoreW = ($score == null) ? 0 : $score;
+        $scoreT = ($score === null) ? '-' : $score;
+
+        $studentList .= '
                     <tr>
-                        <td ' . $aktifArama . '>
-                            <a href="./ogrenci-detay/' . $value['username'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['name'] . ' ' . $value['surname'] . '</a>
+                        <td>
+                            <a href="./ogrenci-detay/' . $childWithSchoolInfo['username'] . '" class="text-gray-800 text-hover-primary mb-1">' . $childWithSchoolInfo['name'] . ' ' . $childWithSchoolInfo['surname'] . '</a>
                         </td>
                         <td ' . $sinifArama . '>
-                            ' . $value['className'] . '
+                            ' . $childWithSchoolInfo['className'] . '
                         </td>
-                        <td data-filter="' . $value['schoolName'] . '">
-                            ' . $value['schoolName'] . '
+                        <td data-filter="' . $childWithSchoolInfo['schoolName'] . '">
+                            ' . $childWithSchoolInfo['schoolName'] . '
                         </td>
-                        <td>
-                            <span class="fw-bold fs-6">' . $percentageT . '%</span>
+                        <td class="text-end">
+                            <span class="fw-bold fs-6">' . $percentage . '%</span>
                         </td>
-                        <td>
+                        <td class="text-end">
                             <span class="fw-bold fs-6">' . $scoreT . '%</span>
                         </td>
-
+                        <td class="text-center">
+                            <a href="./icerik-ilerleme-takip/' . $childWithSchoolInfo['id'] . '" class="text-gray-800 text-hover-primary mb-1"> 
+                            <i class="ki-duotone ki-chart-line text-gray-900 fs-2tx">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i></a>
+                        </td>
                     </tr>
                 ';
-        }
         echo $studentList;
     }
     public function getStudentProgress($userId, $classId)
@@ -1001,7 +1002,7 @@ class ShowStudent extends Student
 
                 $score = $gradeObj->getGradeByLessonId($studentId, $lesson_id);
                 $scoreW = ($score == null) ? 0 : $score;
-                $scoreT = ($score ===  null) ? '-' : $score;
+                $scoreT = ($score === null) ? '-' : $score;
 
                 $lessonList .= '
                 <!--begin::Item-->
@@ -1468,7 +1469,7 @@ $packagesList .= '<tr>
 
                     $score = $gradeObj->getGradeByUnitId($getStudentId, $unit['id']);
                     $scoreW = ($score == null) ? 0 : $score;
-                    $scoreT = ($score ===  null) ? '-' : $score;
+                    $scoreT = ($score === null) ? '-' : $score;
                     $units .= '
                             <!--begin::Item-->
                                 <div class="d-flex flex-stack">

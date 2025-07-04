@@ -4,6 +4,34 @@
 class Student extends Dbh
 {
 
+	public function getUserById($id)
+	{
+		$stmt = $this->connect()->prepare('
+            SELECT 
+                users_lnp.*,
+                schools_lnp.name AS schoolName,
+                classes_lnp.id AS classId,
+                classes_lnp.name AS className,
+                classes_lnp.slug AS classSlug,
+                lessons_lnp.id AS lessonsId,
+                lessons_lnp.name AS lessonName,
+                lessons_lnp.slug AS lessonSlug
+            FROM users_lnp 
+            LEFT JOIN schools_lnp ON users_lnp.school_id = schools_lnp.id
+            LEFT JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id
+            LEFT JOIN lessons_lnp ON users_lnp.lesson_id = lessons_lnp.id
+            WHERE users_lnp.id = ?
+		');
+
+		if (!$stmt->execute([$id])) {
+			$stmt = null;
+			exit();
+		}
+
+		$getData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return $getData;
+	}
 	public function getWaitingMoneyTransfers()
 	{
 		$stmt = $this->connect()->prepare('SELECT user_id FROM money_transfer_list_lnp WHERE status = ?');
@@ -219,6 +247,9 @@ class Student extends Dbh
 				$stmt = null;
 				exit();
 			}
+		} else {
+			return null;
+
 		}
 
 
@@ -228,70 +259,7 @@ class Student extends Dbh
 
 		$stmt = null;
 	}
-	public function getStudentsListForParent($userID)
-	{
-		$childId = [];
 
-		$getChild = $this->connect()->prepare('SELECT 
-        child_id FROM users_lnp
-        WHERE id = :id
-        ');
-
-		if (!$getChild->execute([':id' => $userID])) {
-			$getChild = null;
-			exit();
-		}
-
-		$children = $getChild->fetchAll(PDO::FETCH_ASSOC);
-
-		if (empty($children))
-			return;
-
-		foreach ($children as $value) {
-			$childId = $value['child_id'];
-		}
-
-		if ($_SESSION['role'] == 1) {
-			$stmt = $this->connect()->prepare('SELECT users_lnp.*, classes_lnp.name AS className, classes_lnp.slug AS classSlug, users_lnp.active AS userActive, schools_lnp.name AS schoolName FROM users_lnp INNER JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id INNER JOIN schools_lnp ON users_lnp.school_id = schools_lnp.id WHERE (users_lnp.active = ? OR users_lnp.active = ?) AND (users_lnp.role = ? OR users_lnp.role = ?) ORDER BY users_lnp.id DESC');
-
-			if (!$stmt->execute(array("1", "0", "2", "10002"))) {
-				$stmt = null;
-				exit();
-			}
-		} elseif ($_SESSION['role'] == 5) {
-			// $childId = $child['child_id'];
-			$stmt = $this->connect()->prepare('SELECT 
-           users_lnp.id, 
-           users_lnp.active, 
-           users_lnp.photo, 
-           users_lnp.username, 
-           users_lnp.name, 
-           users_lnp.surname, 
-           users_lnp.email, 
-           users_lnp.subscribed_end, 
-           users_lnp.active AS userActive, 
-           classes_lnp.name AS className, 
-           classes_lnp.slug AS classSlug, 
-           schools_lnp.name AS schoolName 
-           FROM users_lnp 
-           INNER JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id 
-           INNER JOIN schools_lnp ON users_lnp.school_id = schools_lnp.id 
-           WHERE users_lnp.id = ?
-			');
-
-			if (!$stmt->execute(array($childId))) {
-				$stmt = null;
-				exit();
-			}
-		}
-
-
-		$studentData = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-		return $studentData;
-
-		$stmt = null;
-	}
 
 	public function getStudentId($slug)
 	{
