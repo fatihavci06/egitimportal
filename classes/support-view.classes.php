@@ -15,6 +15,9 @@ class ShowSupport extends Support
 
         foreach ($supportInfo as $key => $value) {
 
+            $sInfo = $value['className'] ?? '';
+            $sInfo = $value['schoolName'] ? ($sInfo ? $sInfo . ' ' . $value['schoolName'] : $value['schoolName']) : '';
+            $sInfo = '(' . $sInfo . ')';
 
             $supportList = '
                     <tr>
@@ -25,7 +28,7 @@ class ShowSupport extends Support
                             ' . $value['subjectName'] . '
                         </td>
                         <td>
-                            ' . $value['userName'] . ' ' . $value['userSurname'] . '
+                            ' . $value['userName'] . ' ' . $value['userSurname'] . ' ' . $sInfo . '
                         </td>
                         <td>' . $dateFormat->changeDateHour($value['created_at']) . '</td>
                         <td class="text-end">
@@ -56,6 +59,10 @@ class ShowSupport extends Support
 
         foreach ($supportInfo as $key => $value) {
 
+            $sInfo = $value['className'] ?? '';
+            $sInfo = $value['schoolName'] ? ($sInfo ? $sInfo . ' ' . $value['schoolName'] : $value['schoolName']) : '';
+            $sInfo = '(' . $sInfo . ')';
+
             $supportList = '
                     <tr>
                         <td>
@@ -65,7 +72,7 @@ class ShowSupport extends Support
                             ' . $value['subjectName'] . '
                         </td>
                         <td>
-                            ' . $value['userName'] . ' ' . $value['userSurname'] . '
+                            ' . $value['userName'] . ' ' . $value['userSurname'] . ' ' . $sInfo . '
                         </td>
                         <td>' . $dateFormat->changeDateHour($value['created_at']) . '</td>
                         <td class="text-end">
@@ -95,16 +102,20 @@ class ShowSupport extends Support
 
         foreach ($supportInfo as $key => $value) {
 
+            $sInfo = $value['className'] ?? '';
+            $sInfo = $value['schoolName'] ? ($sInfo ? $sInfo . ' ' . $value['schoolName'] : $value['schoolName']) : '';
+            $sInfo = '(' . $sInfo . ')';
+
             $supportList = '
                     <tr>
                         <td>
                             <a href="destek-talebi?id=' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
                         </td>
                         <td>
-                            ' .  $value['subjectName'] . '
+                            ' . $value['subjectName'] . '
                         </td>
                         <td>
-                            ' . $value['userName'] . ' ' . $value['userSurname'] . '
+                            ' . $value['userName'] . ' ' . $value['userSurname'] . ' ' . $sInfo . '
                         </td>
                         <td>' . $dateFormat->changeDateHour($value['created_at']) . '</td>
                         <td class="text-end">
@@ -135,6 +146,10 @@ class ShowSupport extends Support
 
         foreach ($supportInfo as $key => $value) {
 
+            $sInfo = $value['className'] ?? '';
+            $sInfo = $value['schoolName'] ? ($sInfo ? $sInfo . ' ' . $value['schoolName'] : $value['schoolName']) : '';
+            $sInfo = '(' . $sInfo . ')';
+
             $supportList = '
                     <tr>
                         <td>
@@ -144,7 +159,7 @@ class ShowSupport extends Support
                             ' . $value['subjectName'] . '
                         </td>
                         <td>
-                            ' . $value['userName'] . ' ' . $value['userSurname'] . '
+                            ' . $value['userName'] . ' ' . $value['userSurname'] . ' ' . $sInfo . '
                         </td>
                         <td>' . $dateFormat->changeDateHour($value['created_at']) . '</td>
                         <td class="text-end">
@@ -174,7 +189,7 @@ class ShowSupport extends Support
 
         $dateFormat = new DateFormat();
 
-        $details ='';
+        $details = '';
 
         $i = 0;
 
@@ -185,6 +200,10 @@ class ShowSupport extends Support
         $solved = "";
 
         foreach ($supportInfo as $key => $value) {
+
+            $sInfo = $value['className'] ?? '';
+            $sInfo = $value['schoolName'] ? ($sInfo ? $sInfo . ' ' . $value['schoolName'] : $value['schoolName']) : '';
+            $sInfo = '(' . $sInfo . ')';
 
             if ($i == 0) {
 
@@ -220,8 +239,8 @@ class ShowSupport extends Support
 
                 $details = '<div class="mt-7 mb-10">
                         <b>Başlık: </b>' . $value['title'] . ' <br>
-                        <b>Konu: </b>' .  $value['subjectName'] . ' <br>
-                        <b>Yazan: </b>' . $value['userName'] . ' ' . $value['userSurname'] . ' <br>
+                        <b>Konu: </b>' . $value['subjectName'] . ' <br>
+                        <b>Yazan: </b>' . $value['userName'] . ' ' . $value['userSurname'] . ' ' . $sInfo . ' <br>
                         ' . $solved . '
                     </div>';
             }
@@ -247,7 +266,7 @@ class ShowSupport extends Support
                                             <!--begin::Text-->
                                             <div class="d-flex align-items-center">
                                                 <!--begin::Username-->
-                                                <div class="text-gray-800 fw-bold fs-5 me-3">' . $value['userName'] . ' ' . $value['userSurname'] . '</div>
+                                                <div class="text-gray-800 fw-bold fs-5 me-3">' . $value['userName'] . ' ' . $value['userSurname'] . ' ' . $sInfo . '</div>
                                                 <!--end::Username-->
                                                 <span class="m-0"></span>
                                             </div>
@@ -295,17 +314,22 @@ class ShowSupport extends Support
 
         foreach ($supportInfo as $key => $value) {
 
+            $sInfo = $value['className'] ?? '';
+            $sInfo = $value['schoolName'] ? ($sInfo ? $sInfo . ' ' . $value['schoolName'] : $value['schoolName']) : '';
+            $sInfo = '(' . $sInfo . ')';
+
             if ($i == 0) {
 
                 if ($role == 1) {
-                    $solvedButton = "";
-                } else {
                     $solvedButton = '<button type="submit" id="solved" class="btn btn-success btn-sm mt-n20 mb-20 position-relative ms-7">
                             <span class="indicator-label">Çözümlendi</span>
                             <span class="indicator-progress">Lütfen Bekleyin...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
                             </span>
                         </button>';
+
+                } else {
+                    $solvedButton = "";
                 }
 
                 if ($value['completed'] == 0) {
@@ -335,8 +359,8 @@ class ShowSupport extends Support
 
                 $details = '<div class="mt-7 mb-10">
                         <b>Başlık: </b>' . $value['title'] . ' <br>
-                        <b>Konu: </b>' .  $value['subjectName'] . ' <br>
-                        <b>Yazan: </b>' . $value['userName'] . ' ' . $value['userSurname'] . ' <br>
+                        <b>Konu: </b>' . $value['subjectName'] . ' <br>
+                        <b>Yazan: </b>' . $value['userName'] . ' ' . $value['userSurname'] . ' ' . $sInfo . ' <br>
                         ' . $solved . '
                     </div>';
             }
@@ -362,7 +386,7 @@ class ShowSupport extends Support
                                             <!--begin::Text-->
                                             <div class="d-flex align-items-center">
                                                 <!--begin::Username-->
-                                                <div class="text-gray-800 fw-bold fs-5 me-3">' . $value['userName'] . ' ' . $value['userSurname'] . '</div>
+                                                <div class="text-gray-800 fw-bold fs-5 me-3">' . $value['userName'] . ' ' . $value['userSurname'] . ' ' . $sInfo . '</div>
                                                 <!--end::Username-->
                                                 <span class="m-0"></span>
                                             </div>
@@ -788,7 +812,7 @@ class ShowSupport extends Support
 
 
 
-            $supportList .=  $schoolForms;
+            $supportList .= $schoolForms;
         }
 
 
@@ -1258,7 +1282,7 @@ class ShowSupportForUsers extends Support
 
 
 
-            $supportList .=  $schoolForms;
+            $supportList .= $schoolForms;
         }
 
 

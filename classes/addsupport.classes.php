@@ -93,18 +93,17 @@ class Support extends Dbh
 		    dt.updated_at AS updated_at,
 			u.name AS userName,
 			u.surname AS userSurname,
+			c.name AS className,
+			s.name AS schoolName,
 			scs.name AS subjectName
-			FROM
-			support_center_lnp dt
-			INNER JOIN
-			(SELECT slug, MAX(created_at) AS son_olusturma FROM support_center_lnp 
-			WHERE openedBy IN (:user_id, :child_id) 
-			GROUP BY slug) AS son_talepler
+			FROM support_center_lnp dt
+			INNER JOIN (SELECT slug, MAX(created_at) AS son_olusturma FROM support_center_lnp 
+			WHERE openedBy IN (:user_id, :child_id) GROUP BY slug) AS son_talepler
 			ON dt.slug = son_talepler.slug AND dt.created_at = son_talepler.son_olusturma
-			INNER JOIN
-			users_lnp u ON dt.writer = u.id
-			INNER JOIN
-			support_center_subjects_lnp scs ON scs.id = dt.subject
+			INNER JOIN users_lnp u ON dt.writer = u.id
+        	LEFT JOIN classes_lnp c ON u.class_id = c.id 
+        	LEFT JOIN schools_lnp s ON u.school_id = s.id
+		 	INNER JOIN support_center_subjects_lnp scs ON scs.id = dt.subject
 			WHERE dt.completed =:completed AND (dt.openedBy = :user_id OR dt.openedBy = :child_id) ORDER BY dt.created_at DESC');
 
 		if (!$stmt->execute([':user_id' => $userID, ':child_id' => $childId, ':completed' => 0])) {
@@ -138,6 +137,8 @@ class Support extends Dbh
 		    dt.updated_at AS updated_at,
 			u.name AS userName,
 			u.surname AS userSurname,
+			c.name AS className,
+			s.name AS schoolName,
 			scs.name AS subjectName 
 			FROM support_center_lnp dt
 			INNER JOIN
@@ -147,6 +148,8 @@ class Support extends Dbh
 			users_lnp u ON dt.writer = u.id 
 			INNER JOIN
 			support_center_subjects_lnp scs ON dt.subject = scs.id 
+			LEFT JOIN classes_lnp c ON u.class_id = c.id 
+        	LEFT JOIN schools_lnp s ON u.school_id = s.id
 			WHERE dt.completed =? ORDER BY dt.created_at DESC');
 
 		if (!$stmt->execute([0])) {
@@ -193,8 +196,11 @@ class Support extends Dbh
 		    dt.updated_at AS updated_at, 
 			u.name AS userName,
 			u.surname AS userSurname,
+			c.name AS className,
+			s.name AS schoolName,
 			scs.name AS subjectName,
 			scs.id AS subjectId
+
 			FROM
 			support_center_lnp dt
 			INNER JOIN
@@ -204,6 +210,8 @@ class Support extends Dbh
 			users_lnp u ON dt.writer = u.id 
 			INNER JOIN
 			support_center_subjects_lnp scs ON scs.id = dt.subject
+			LEFT JOIN classes_lnp c ON u.class_id = c.id 
+        	LEFT JOIN schools_lnp s ON u.school_id = s.id
 			WHERE  dt.completed =:completed AND (dt.openedBy = :user_id OR dt.openedBy = :child_id) ORDER BY dt.created_at DESC');
 
 		if (!$stmt->execute([':user_id' => $userID, ':child_id' => $childId, ':completed' => 1])) {
@@ -236,6 +244,8 @@ class Support extends Dbh
 		    dt.updated_at AS updated_at,
 			u.name AS userName,
 			u.surname AS userSurname,
+			c.name AS className,
+			s.name AS schoolName,
 			scs.name AS subjectName,
 			scs.id AS subjectId
 			FROM support_center_lnp dt
@@ -244,6 +254,8 @@ class Support extends Dbh
 			ON dt.slug = son_talepler.slug AND dt.created_at = son_talepler.son_olusturma
 			INNER JOIN users_lnp u ON dt.writer = u.id 
 			INNER JOIN support_center_subjects_lnp scs ON scs.id = dt.subject
+			LEFT JOIN classes_lnp c ON u.class_id = c.id 
+        	LEFT JOIN schools_lnp s ON u.school_id = s.id
 			WHERE dt.completed =?');
 
 		if (!$stmt->execute([1])) {
@@ -289,12 +301,17 @@ class Support extends Dbh
 		support_center_lnp.updated_at AS updated_at, 
 		scs.name AS subjectName,
 		scs.id AS subjectId,
-		users_lnp.name AS userName, 
-		users_lnp.surname AS userSurname, 
-		users_lnp.photo AS photo 
-		FROM support_center_lnp INNER JOIN users_lnp 
-		ON support_center_lnp.writer = users_lnp.id 
+		c.name AS className,
+		s.name AS schoolName,
+		u.name AS userName, 
+		u.surname AS userSurname, 
+		u.photo AS photo 
+		FROM support_center_lnp 
+		INNER JOIN users_lnp u
+		ON support_center_lnp.writer = u.id 
 		INNER JOIN support_center_subjects_lnp scs ON scs.id = support_center_lnp.subject
+		LEFT JOIN classes_lnp c ON u.class_id = c.id 
+        LEFT JOIN schools_lnp s ON u.school_id = s.id
 		WHERE (support_center_lnp.openedBy = :user_id OR support_center_lnp.openedBy = :child_id) AND support_center_lnp.slug = :slug ORDER BY support_center_lnp.created_at DESC');
 
 		/*$stmt = $this->connect()->prepare('SELECT
@@ -337,13 +354,16 @@ class Support extends Dbh
 		support_center_lnp.updated_at AS updated_at, 
 		scs.name AS subjectName,
 		scs.id AS subjectId,
-		users_lnp.name AS userName, 
-		users_lnp.surname AS userSurname, 
-		users_lnp.photo AS photo 
-		FROM support_center_lnp INNER JOIN users_lnp 
-		ON support_center_lnp.writer = users_lnp.id 
-	INNER JOIN
-			support_center_subjects_lnp scs ON scs.id = support_center_lnp.subject	
+		s.name AS schoolName,
+		u.name AS userName, 
+		u.name AS userName, 
+		u.surname AS userSurname, 
+		u.photo AS photo 
+		FROM support_center_lnp INNER JOIN users_lnp u
+		ON support_center_lnp.writer = u.id 
+		INNER JOIN support_center_subjects_lnp scs ON scs.id = support_center_lnp.subject
+		LEFT JOIN classes_lnp c ON u.class_id = c.id 
+        LEFT JOIN schools_lnp s ON u.school_id = s.id
 		WHERE support_center_lnp.slug = ? 
 		ORDER BY support_center_lnp.created_at DESC');
 
