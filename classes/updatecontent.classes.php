@@ -70,7 +70,20 @@ class GetContent extends Dbh
 {
 
 	public function getAllContents(){
-		$stmt = $this->connect()->prepare('SELECT school_content_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName, subtopics_lnp.name AS subTopicName FROM school_content_lnp LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id ORDER BY school_content_lnp.id DESC');
+		$stmt = $this->connect()->prepare('SELECT 
+		school_content_lnp.*, 
+		classes_lnp.name AS className, 
+		lessons_lnp.name AS lessonName, 
+		units_lnp.name AS unitName, 
+		topics_lnp.name AS topicName, 
+		subtopics_lnp.name AS subTopicName 
+		FROM school_content_lnp 
+		LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id 
+		LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id 
+		LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id 
+		LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id 
+		LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id 
+		ORDER BY school_content_lnp.id DESC');
 
 		if (!$stmt->execute()) {
 			$stmt = null;
@@ -104,7 +117,20 @@ class GetContent extends Dbh
 	// Content ID'sine göre tüm içerikleri getirir
 
 	public function getAllContentDetailsById($id){
-		$stmt = $this->connect()->prepare('SELECT school_content_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName, subtopics_lnp.name AS subTopicName FROM school_content_lnp LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id WHERE school_content_lnp.id = ?');
+		$stmt = $this->connect()->prepare('SELECT 
+		school_content_lnp.*, 
+		classes_lnp.name AS className, 
+		lessons_lnp.name AS lessonName, 
+		units_lnp.name AS unitName, 
+		topics_lnp.name AS topicName, 
+		subtopics_lnp.name AS subTopicName 
+		FROM school_content_lnp 
+		LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id 
+		LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id 
+		LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id 
+		LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id 
+		LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id 
+		WHERE school_content_lnp.id = ?');
 
 		if (!$stmt->execute([$id])) {
 			$stmt = null;

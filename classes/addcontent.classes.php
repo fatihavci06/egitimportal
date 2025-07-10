@@ -137,14 +137,26 @@ class GetContent extends Dbh
 			$filtre_konu = isset($_GET['konu']) ? $_GET['konu'] : '';
 			$filtre_alt_konu = isset($_GET['altkonu']) ? $_GET['altkonu'] : '';
 
-			$sql = 'SELECT school_content_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName, subtopics_lnp.name AS subTopicName FROM school_content_lnp LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id';
+			$sql = 'SELECT 
+			school_content_lnp.*, 
+			classes_lnp.name AS className, 
+			lessons_lnp.name AS lessonName, 
+			units_lnp.name AS unitName, 
+			topics_lnp.name AS topicName, 
+			subtopics_lnp.name AS subTopicName 
+			FROM school_content_lnp 
+			LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id 
+			LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id 
+			LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id 
+			LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id 
+			LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id';
 
 			$whereClauses = [];
 			$parameters = [];
 
 			// Durum filtresi varsa ekle
 			if (!empty($filtre_durum)) {
-				if($filtre_durum == 'aktif') {
+				if ($filtre_durum == 'aktif') {
 					$filtre_durum = 1;
 				} elseif ($filtre_durum == 'pasif') {
 					$filtre_durum = 0;
@@ -196,31 +208,54 @@ class GetContent extends Dbh
 				$stmt = null;
 				exit();
 			}
-
-			/* $stmt = $this->connect()->prepare('SELECT school_content_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName, subtopics_lnp.name AS subTopicName FROM school_content_lnp LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id ORDER BY school_content_lnp.id DESC');
-
-			if (!$stmt->execute()) {
-				$stmt = null;
-				exit();
-			} */
-		} elseif ($_SESSION['role'] == 3) {
+		} elseif ($_SESSION['role'] == 3 or $_SESSION['role'] == 8) {
 			$school = $_SESSION['school_id'];
-			$stmt = $this->connect()->prepare('SELECT school_content_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName, subtopics_lnp.name AS subTopicName FROM school_content_lnp LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id WHERE school_content_lnp.school_id = ? ORDER BY school_content_lnp.id DESC');
+			$stmt = $this->connect()->prepare('SELECT 
+			school_content_lnp.*, 
+			classes_lnp.name AS className, 
+			lessons_lnp.name AS lessonName, 
+			units_lnp.name AS unitName, 
+			topics_lnp.name AS topicName, 
+			subtopics_lnp.name AS subTopicName 
+			FROM school_content_lnp 
+			LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id 
+			LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id 
+			LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id 
+			LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id 
+			LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id 
+			WHERE school_content_lnp.school_id = ? ORDER BY school_content_lnp.id DESC');
 
 			if (!$stmt->execute([$school])) {
 				$stmt = null;
 				exit();
 			}
-		} elseif ($_SESSION['role'] == 4) {
+		} elseif ($_SESSION['role'] == 4 ) {
 			$school = $_SESSION['school_id'];
 			$class_id = $_SESSION['class_id'];
 			$lesson_id = $_SESSION['lesson_id'];
-			$stmt = $this->connect()->prepare('SELECT school_content_lnp.*, classes_lnp.name AS className, lessons_lnp.name AS lessonName, units_lnp.name AS unitName, topics_lnp.name AS topicName, subtopics_lnp.name AS subTopicName FROM school_content_lnp LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id WHERE school_content_lnp.school_id = ? AND school_content_lnp.class_id = ? AND school_content_lnp.lesson_id = ? ORDER BY school_content_lnp.id DESC');
+			$stmt = $this->connect()->prepare('SELECT 
+			school_content_lnp.*,
+			classes_lnp.name AS className,
+			lessons_lnp.name AS lessonName, 
+			units_lnp.name AS unitName, 
+			topics_lnp.name AS topicName, 
+			subtopics_lnp.name AS subTopicName 
+			FROM school_content_lnp 
+			LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id 
+			LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id 
+			LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id 
+			LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id 
+			LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id 
+			WHERE school_content_lnp.school_id = ? AND school_content_lnp.class_id = ? AND school_content_lnp.lesson_id = ? 
+			ORDER BY school_content_lnp.id DESC');
 
 			if (!$stmt->execute([$school, $class_id, $lesson_id])) {
 				$stmt = null;
 				exit();
 			}
+		}
+		else{
+			return [];
 		}
 
 		$contentData = $stmt->fetchAll(PDO::FETCH_ASSOC);

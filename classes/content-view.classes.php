@@ -42,6 +42,10 @@ class ShowContents extends GetContent
 
             $subTopicName = $value['subTopicName'] ?? '-';
 
+            $approv_status = '<span class="badge badge-light-success">Onaylandı</span>';
+            if (!$value['is_approved']) {
+                $approv_status = '<span class="badge badge-light-danger">Onaylanmadı</span>';
+            }
             $contentList = '
                     <tr>
                         <td>
@@ -68,6 +72,7 @@ class ShowContents extends GetContent
                             ' . $value['className'] . '
                         </td>
                         <td>' . $aktifYazi . '</td>
+                        <td>' . $approv_status . '</td>
                         <td class="text-end">
                             <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler

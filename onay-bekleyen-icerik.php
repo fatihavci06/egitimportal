@@ -3,14 +3,17 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 4 or $_SESSION['role'] == 8)) {
+// if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or ($_SESSION['school_id'] == 1 and (($_SESSION['role'] == 3) or ($_SESSION['role'] == 8))))) {
+if (isset($_SESSION['role']) or ($_SESSION['role'] == 1 or ($_SESSION['school_id'] == 1 and (($_SESSION['role'] == 3) or ($_SESSION['role'] == 8))))) {
+
+   
     include_once "classes/dbh.classes.php";
-    include "classes/topics.classes.php";
-    include "classes/topics-view.classes.php";
+    include "classes/addcontent.classes.php";
+    include "classes/content-view.classes.php";
     include_once "classes/student.classes.php";
     include_once "classes/student-view.classes.php";
     $students = new ShowStudent();
-    $topics = new ShowTopic();
+    $contents = new ShowContents();
     include_once "views/pages-head.php";
     ?>
     <!--end::Head-->
@@ -79,7 +82,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     </i>
                                                     <input type="text" data-kt-customer-table-filter="search"
                                                         class="form-control form-control-solid w-250px ps-12"
-                                                        placeholder="Konu Ara" />
+                                                        placeholder="İçerik Ara" />
                                                 </div>
                                                 <!--end::Search-->
                                             </div>
@@ -89,6 +92,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <!--begin::Toolbar-->
                                                 <div class="d-flex justify-content-end"
                                                     data-kt-customer-table-toolbar="base">
+                                                    <?php if ($_SESSION['role']) { ?>
+                                                        <a href="havale-beklenenler"><button type="button"
+                                                                class="btn btn-primary me-3" data-bs-toggle="modal">Onay
+                                                                Bekleyen İçerikler</button></a><?php } ?>
+
                                                     <?php if ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 8) { ?>
                                                         <!--begin::Filter-->
                                                         <button type="button" class="btn btn-light-primary me-3"
@@ -197,9 +205,53 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                         <!--end::Options-->
                                                                     </div>
                                                                     <!--end::Input group-->
+                                                                    <!--begin::Input group-->
+                                                                    <div class="mb-10">
+                                                                        <!--begin::Label-->
+                                                                        <label
+                                                                            class="form-label fs-5 fw-semibold mb-3">Konu:</label>
+                                                                        <!--end::Label-->
+                                                                        <!--begin::Options-->
+                                                                        <div class="d-flex flex-column flex-wrap fw-semibold">
+
+                                                                            <!--begin::Input-->
+                                                                            <select
+                                                                                class="form-select form-select-solid fw-bold"
+                                                                                id="konu" name="konu" data-kt-select2="true"
+                                                                                data-placeholder="Konu" data-allow-clear="true">
+                                                                            </select>
+                                                                            <!--end::Input-->
+
+                                                                        </div>
+                                                                        <!--end::Options-->
+                                                                    </div>
+                                                                    <!--end::Input group-->
+                                                                    <!--begin::Input group-->
+                                                                    <div class="mb-10">
+                                                                        <!--begin::Label-->
+                                                                        <label class="form-label fs-5 fw-semibold mb-3">Alt
+                                                                            Konu:</label>
+                                                                        <!--end::Label-->
+                                                                        <!--begin::Options-->
+                                                                        <div class="d-flex flex-column flex-wrap fw-semibold">
+
+                                                                            <!--begin::Input-->
+                                                                            <select
+                                                                                class="form-select form-select-solid fw-bold"
+                                                                                id="altkonu" name="altkonu"
+                                                                                data-kt-select2="true"
+                                                                                data-placeholder="Alt Konu"
+                                                                                data-allow-clear="true">
+                                                                            </select>
+                                                                            <!--end::Input-->
+
+                                                                        </div>
+                                                                        <!--end::Options-->
+                                                                    </div>
+                                                                    <!--end::Input group-->
                                                                     <!--begin::Actions-->
                                                                     <div class="d-flex justify-content-end">
-                                                                        <a href="konular"><button type="button"
+                                                                        <a href="icerikler"><button type="button"
                                                                                 class="btn btn-light btn-active-light-primary me-2">Temizle</button></a>
                                                                         <a href=""><button type="submit"
                                                                                 class="btn btn-primary">Uygula</button></a>
@@ -214,8 +266,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <?php } ?>
                                                     <!--begin::Add school-->
                                                     <a
-                                                        href="konu-ekle?return_url=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>"><button
-                                                            type="button" class="btn btn-primary btn-sm h-100">Konu
+                                                        href="icerik-ekle?return_url=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>"><button
+                                                            type="button" class="btn btn-primary btn-sm h-100">İçerik
                                                             Ekle</button></a>
                                                     <!--end::Add school-->
                                                 </div>
@@ -255,25 +307,22 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                         value="1" />
                                                                 </div>
                                                             </th>
+                                                            <th class="min-w-125px">İçerik</th>
+                                                            <th class="min-w-125px">Alt Konu</th>
                                                             <th class="min-w-125px">Konu</th>
                                                             <th class="min-w-125px">Ünite</th>
                                                             <th class="min-w-125px">Ders</th>
                                                             <th class="min-w-125px">Sınıf</th>
-                                                            <th class="min-w-125px">Konu Başlama Tarihi</th>
-                                                            <th class="min-w-125px">Konu Bitiş Tarihi</th>
-                                                            <th class="min-w-125px">Sıra</th>
                                                             <th class="min-w-125px">Durum</th>
-                                                             
-
-                                                            <th class="text-end min-w-70px">İşlemler</th>
-
+                                                            <th class="min-w-125px">Onay</th>
                                                             <th class="text-end min-w-70px">İşlemler</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody class="fw-semibold text-gray-600"></tbody>
-                                                    <?php $topics->getTopicList(); ?>
+                                                    <?php $contents->getContentsList(); ?>
 
                                                 <?php } else { ?>
+
                                                     <thead>
                                                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                                                             <th class="w-10px pe-2">
@@ -285,21 +334,20 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                         value="1" />
                                                                 </div>
                                                             </th>
+                                                            <th class="min-w-125px">İçerik</th>
+                                                            <th class="min-w-125px">Alt Konu</th>
                                                             <th class="min-w-125px">Konu</th>
                                                             <th class="min-w-125px">Ünite</th>
                                                             <th class="min-w-125px">Ders</th>
                                                             <th class="min-w-125px">Sınıf</th>
-                                                            <th class="min-w-125px">Konu Başlama Tarihi</th>
-                                                            <th class="min-w-125px">Konu Bitiş Tarihi</th>
-                                                            <th class="min-w-125px">Sıra</th>
                                                             <th class="min-w-125px">Durum</th>
-                                                             
+                                                            <th class="min-w-125px">Onay</th>
                                                             <th class="text-end min-w-70px">İşlemler</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody class="fw-semibold text-gray-600">
-                                                        <?php $topics->getTopicList();
-                                                } ?>
+                                                        <?php $contents->getContentsList(); ?>
+                                                    <?php } ?>
                                                 </tbody>
                                             </table>
                                             <!--end::Table-->
@@ -353,9 +401,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
         <!--end::Vendors Javascript-->
         <!--begin::Custom Javascript(used for this page only)-->
-        <script src="assets/js/custom/apps/topics/list/export.js"></script>
-        <script src="assets/js/custom/apps/topics/list/list.js"></script>
-        <!-- <script src="assets/js/custom/apps/topics/add.js"></script> -->
+        <script src="assets/js/custom/apps/contents/list/export.js"></script>
+        <script src="assets/js/custom/apps/contents/list/list.js"></script>
+        <!-- <script src="assets/js/custom/apps/contents/add.js"></script> -->
         <script src="assets/js/widgets.bundle.js"></script>
         <script src="assets/js/custom/widgets.js"></script>
         <script src="assets/js/custom/apps/chat/chat.js"></script>
