@@ -466,7 +466,7 @@ class Units extends Dbh
 				$stmt = null;
 				exit();
 			}
-		} elseif ($_SESSION['role'] == 3) {
+		} elseif ($_SESSION['role'] == 3 or $_SESSION['role'] == 8 or $_SESSION['role'] == 3 or $_SESSION['role'] == 4) {
 			$school = $_SESSION['school_id'];
 			$stmt = $this->connect()->prepare('SELECT id, name FROM units_lnp WHERE class_id = ? AND lesson_id=? AND school_id=?');
 

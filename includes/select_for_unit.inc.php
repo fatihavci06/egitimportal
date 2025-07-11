@@ -25,8 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 	// Running error handlers and addUnit
 	$addUnit->showUnitForTopicList($class, $lessons);
 
-	
-
 
 	// Going to back to products page
 	//header("location: ../kategoriler");

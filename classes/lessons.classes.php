@@ -90,10 +90,18 @@ class Lessons extends Dbh
 				exit();
 			}
 		} elseif ($_SESSION['role'] == 3 or $_SESSION['role'] == 8) {
-			$school = $_SESSION['school_id'];
-			$stmt = $this->connect()->prepare('SELECT id, name, class_id,package_type FROM lessons_lnp WHERE (school_id=? OR school_id=?)');
+			$school_id = $_SESSION['school_id'];
+			$stmt = $this->connect()->prepare('SELECT id, name, class_id,package_type FROM lessons_lnp WHERE (school_id=? )');
 
-			if (!$stmt->execute(array($school, "1"))) {
+			if (!$stmt->execute([$school_id])) {
+				$stmt = null;
+				exit();
+			}
+		} else{
+			$school_id = $_SESSION['school_id'];
+			$stmt = $this->connect()->prepare('SELECT id, name, class_id,package_type FROM lessons_lnp WHERE (school_id=? )');
+
+			if (!$stmt->execute([$school_id])) {
 				$stmt = null;
 				exit();
 			}

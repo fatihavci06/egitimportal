@@ -6,15 +6,16 @@ define('GUARD', true);
 // if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or ($_SESSION['school_id'] == 1 and (($_SESSION['role'] == 3) or ($_SESSION['role'] == 8))))) {
 if (isset($_SESSION['role']) or ($_SESSION['role'] == 1 or ($_SESSION['school_id'] == 1 and (($_SESSION['role'] == 3) or ($_SESSION['role'] == 8))))) {
 
-   
+
     include_once "classes/dbh.classes.php";
-    include "classes/addcontent.classes.php";
-    include "classes/content-view.classes.php";
+    include_once "classes/addcontent.classes.php";
+    include_once "classes/content-view.classes.php";
     include_once "classes/student.classes.php";
     include_once "classes/student-view.classes.php";
+    include_once "views/pages-head.php";
+
     $students = new ShowStudent();
     $contents = new ShowContents();
-    include_once "views/pages-head.php";
     ?>
     <!--end::Head-->
     <!--begin::Body-->
@@ -92,11 +93,6 @@ if (isset($_SESSION['role']) or ($_SESSION['role'] == 1 or ($_SESSION['school_id
                                                 <!--begin::Toolbar-->
                                                 <div class="d-flex justify-content-end"
                                                     data-kt-customer-table-toolbar="base">
-                                                    <?php if ($_SESSION['role']) { ?>
-                                                        <a href="havale-beklenenler"><button type="button"
-                                                                class="btn btn-primary me-3" data-bs-toggle="modal">Onay
-                                                                Bekleyen İçerikler</button></a><?php } ?>
-
                                                     <?php if ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 8) { ?>
                                                         <!--begin::Filter-->
                                                         <button type="button" class="btn btn-light-primary me-3"
@@ -265,10 +261,9 @@ if (isset($_SESSION['role']) or ($_SESSION['role'] == 1 or ($_SESSION['school_id
                                                         <!--end::Filter-->
                                                     <?php } ?>
                                                     <!--begin::Add school-->
-                                                    <a
-                                                        href="icerik-ekle?return_url=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>"><button
-                                                            type="button" class="btn btn-primary btn-sm h-100">İçerik
-                                                            Ekle</button></a>
+                                                    <a href="icerikler"><button type="button" class="btn btn-primary me-3"
+                                                            data-bs-toggle="modal">
+                                                            Tüm İçerikler</button></a>
                                                     <!--end::Add school-->
                                                 </div>
                                                 <!--end::Toolbar-->
@@ -293,61 +288,33 @@ if (isset($_SESSION['role']) or ($_SESSION['role'] == 1 or ($_SESSION['school_id
                                             <!--begin::Table-->
                                             <table class="table align-middle table-row-dashed fs-6 gy-5"
                                                 id="kt_customers_table">
+                                                <thead>
+                                                    <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
+                                                        <th class="w-10px pe-2">
+                                                            <div
+                                                                class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    data-kt-check="true"
+                                                                    data-kt-check-target="#kt_customers_table .form-check-input"
+                                                                    value="1" />
+                                                            </div>
+                                                        </th>
+                                                        <th class="min-w-100px">Onayla</th>
+                                                        <th class="min-w-180px">İçerik</th>
+                                                        <th class="min-w-100px">Okul</th>
+                                                        <th class="min-w-100px">Durum</th>
+                                                        <th class="min-w-100px">Alt Konu</th>
+                                                        <th class="min-w-100px">Konu</th>
+                                                        <th class="min-w-100px">Ünite</th>
+                                                        <th class="min-w-100px">Ders</th>
+                                                        <th class="min-w-100px">Sınıf</th>
+                                                        <th class="text-end min-w-70px">İşlemler</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="fw-semibold text-gray-600">
+                                                    <?php $contents->getNotApprovedContentsList(); ?>
 
 
-                                                <?php if ($_SESSION['role'] == 1) { ?>
-                                                    <thead>
-                                                        <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                            <th class="w-10px pe-2">
-                                                                <div
-                                                                    class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                                                    <input class="form-check-input" type="checkbox"
-                                                                        data-kt-check="true"
-                                                                        data-kt-check-target="#kt_customers_table .form-check-input"
-                                                                        value="1" />
-                                                                </div>
-                                                            </th>
-                                                            <th class="min-w-125px">İçerik</th>
-                                                            <th class="min-w-125px">Alt Konu</th>
-                                                            <th class="min-w-125px">Konu</th>
-                                                            <th class="min-w-125px">Ünite</th>
-                                                            <th class="min-w-125px">Ders</th>
-                                                            <th class="min-w-125px">Sınıf</th>
-                                                            <th class="min-w-125px">Durum</th>
-                                                            <th class="min-w-125px">Onay</th>
-                                                            <th class="text-end min-w-70px">İşlemler</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody class="fw-semibold text-gray-600"></tbody>
-                                                    <?php $contents->getContentsList(); ?>
-
-                                                <?php } else { ?>
-
-                                                    <thead>
-                                                        <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                            <th class="w-10px pe-2">
-                                                                <div
-                                                                    class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                                                    <input class="form-check-input" type="checkbox"
-                                                                        data-kt-check="true"
-                                                                        data-kt-check-target="#kt_customers_table .form-check-input"
-                                                                        value="1" />
-                                                                </div>
-                                                            </th>
-                                                            <th class="min-w-125px">İçerik</th>
-                                                            <th class="min-w-125px">Alt Konu</th>
-                                                            <th class="min-w-125px">Konu</th>
-                                                            <th class="min-w-125px">Ünite</th>
-                                                            <th class="min-w-125px">Ders</th>
-                                                            <th class="min-w-125px">Sınıf</th>
-                                                            <th class="min-w-125px">Durum</th>
-                                                            <th class="min-w-125px">Onay</th>
-                                                            <th class="text-end min-w-70px">İşlemler</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody class="fw-semibold text-gray-600">
-                                                        <?php $contents->getContentsList(); ?>
-                                                    <?php } ?>
                                                 </tbody>
                                             </table>
                                             <!--end::Table-->
@@ -360,6 +327,52 @@ if (isset($_SESSION['role']) or ($_SESSION['role'] == 1 or ($_SESSION['school_id
                                     <?php // include_once "views/topics/add_topic.php" 
                                         ?>
                                     <!--end::Modal - Customers - Add-->
+                                    <div class="modal fade" id="kt_modal_success" tabindex="-1"
+                                        aria-labelledby="successModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header border-0 pb-0">
+                                                    <h5 class="modal-title text-success" id="successModalLabel">
+                                                        <i class="ki-duotone ki-check-circle fs-1 text-success me-2"></i>
+                                                        Başarılı
+                                                    </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body text-center py-5">
+                                                    <!-- Content will be inserted here by JavaScript -->
+                                                </div>
+                                                <div class="modal-footer border-0 pt-0">
+                                                    <button type="button" class="btn btn-success"
+                                                        data-bs-dismiss="modal">Tamam</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Error Modal -->
+                                    <div class="modal fade" id="kt_modal_error" tabindex="-1"
+                                        aria-labelledby="errorModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header border-0 pb-0">
+                                                    <h5 class="modal-title text-danger" id="errorModalLabel">
+                                                        <i class="ki-duotone ki-cross-circle fs-1 text-danger me-2"></i>
+                                                        Hata
+                                                    </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body text-center py-5">
+                                                    <!-- Content will be inserted here by JavaScript -->
+                                                </div>
+                                                <div class="modal-footer border-0 pt-0">
+                                                    <button type="button" class="btn btn-danger"
+                                                        data-bs-dismiss="modal">Tamam</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <!--end::Modals-->
                                 </div>
                                 <!--end::Content container-->
@@ -413,6 +426,155 @@ if (isset($_SESSION['role']) or ($_SESSION['role'] == 1 or ($_SESSION['school_id
         <script src="assets/js/custom/utilities/modals/users-search.js"></script>
         <!--end::Custom Javascript-->
         <!--end::Javascript-->
+
+
+        <script>
+            "use strict";
+
+            var KTActionHandler = function () {
+                // Private variables
+                var submitButton;
+                var validator;
+                var form;
+                var modal;
+                var successModal;
+                var errorModal;
+
+                var initModals = function () {
+                    successModal = new bootstrap.Modal(document.getElementById('kt_modal_success'));
+
+                    errorModal = new bootstrap.Modal(document.getElementById('kt_modal_error'));
+                };
+
+                var handleAction = function (button, itemId) {
+                    button.setAttribute('data-kt-indicator', 'on');
+                    button.disabled = true;
+
+                    var data = {
+                        id: itemId,
+                        action: 'process_item'
+                    };
+
+                    fetch('includes/approve_content.inc.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify(data)
+                    })
+                        .then(response => {
+                            return response.json().then(data => {
+                                return {
+                                    status: response.status,
+                                    ok: response.ok,
+                                    data: data
+                                };
+                            });
+                        })
+                        .then(result => {
+                            button.removeAttribute('data-kt-indicator');
+                            button.disabled = false;
+
+                            if (result.ok && result.data.success) {
+                                var statusTarget = button.getAttribute('data-status-target');
+                                var statusElement = document.getElementById(statusTarget);
+
+                                if (statusElement && result.data.new_status) {
+                                    statusElement.textContent = result.data.new_status;
+                                    statusElement.classList.add('text-success');
+                                }
+
+                                showSuccessModal(result.data.message);
+
+                                button.querySelector('.indicator-label').textContent = 'Tamamlandı';
+                                button.classList.remove('btn-primary');
+                                button.classList.add('btn-success');
+
+                            } else {
+                                showErrorModal(result.data.message || 'Bilinmeyen bir hata oluştu');
+                            }
+                        })
+                        .catch(error => {
+                            button.removeAttribute('data-kt-indicator');
+                            button.disabled = false;
+
+                            console.error('Error:', error);
+                            showErrorModal('Bağlantı hatası. Lütfen tekrar deneyin.');
+                        });
+                };
+
+                var showSuccessModal = function (message) {
+                    var modalBody = document.querySelector('#kt_modal_success .modal-body');
+                    if (modalBody) {
+                        modalBody.innerHTML = '<div class="text-center"><i class="ki-duotone ki-check-circle fs-3x text-success mb-3"></i><p class="fs-4 fw-bold text-gray-800">' + message + '</p></div>';
+                    }
+
+                    if (successModal) {
+                        successModal.show();
+                    }
+                };
+
+                var showErrorModal = function (message) {
+                    var modalBody = document.querySelector('#kt_modal_error .modal-body');
+                    if (modalBody) {
+                        modalBody.innerHTML = '<div class="text-center"><i class="ki-duotone ki-cross-circle fs-3x text-danger mb-3"></i><p class="fs-4 fw-bold text-gray-800">' + message + '</p></div>';
+                    }
+
+                    if (errorModal) {
+                        errorModal.show();
+                    }
+                };
+
+                var initEventListeners = function () {
+                    document.addEventListener('click', function (e) {
+                        if (e.target.classList.contains('action-button') || e.target.closest('.action-button')) {
+                            e.preventDefault();
+
+                            var button = e.target.classList.contains('action-button') ? e.target : e.target.closest('.action-button');
+                            var itemId = button.getAttribute('data-item-id');
+
+                            if (itemId) {
+                                Swal.fire({
+                                    title: 'Emin misiniz?',
+                                    text: 'Bu işlemi gerçekleştirmek istediğinizden emin misiniz?',
+                                    icon: 'question',
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Evet, devam et',
+                                    cancelButtonText: 'İptal',
+                                    customClass: {
+                                        confirmButton: 'btn btn-primary',
+                                        cancelButton: 'btn btn-secondary'
+                                    }
+                                }).then(function (result) {
+                                    if (result.isConfirmed) {
+                                        handleAction(button, itemId);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                };
+
+                return {
+                    init: function () {
+                        initModals();
+                        initEventListeners();
+                    }
+                };
+            }();
+
+            KTUtil.onDOMContentLoaded(function () {
+                KTActionHandler.init();
+            });
+
+            document.addEventListener('DOMContentLoaded', function () {
+                if (typeof KTActionHandler !== 'undefined') {
+                    KTActionHandler.init();
+                }
+            });
+
+        </script>
     </body>
     <!--end::Body-->
 

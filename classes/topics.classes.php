@@ -1024,7 +1024,7 @@ class SubTopics extends Dbh
 				$stmt = null;
 				exit();
 			}
-		} elseif ($_SESSION['role'] == 2 or $_SESSION['role'] == 5) {
+		} elseif ($_SESSION['role'] == 2 or $_SESSION['role'] == 5 or $_SESSION['role'] == 3 or $_SESSION['role'] == 8 or $_SESSION['role'] == 4) {
 			$school = $_SESSION['school_id'];
 			$stmt = $this->connect()->prepare('SELECT id, name FROM topics_lnp WHERE class_id = ? AND lesson_id=? AND unit_id = ? AND school_id=?');
 
@@ -1032,22 +1032,8 @@ class SubTopics extends Dbh
 				$stmt = null;
 				exit();
 			}
-		} elseif ($_SESSION['role'] == 3) {
-			$school = $_SESSION['school_id'];
-			$stmt = $this->connect()->prepare('SELECT id, name FROM topics_lnp WHERE class_id = ? AND lesson_id=? AND unit_id = ? AND school_id=?');
-
-			if (!$stmt->execute(array($class, $lessons, $units, $school))) {
-				$stmt = null;
-				exit();
-			}
-		} elseif ($_SESSION['role'] == 4) {
-			$school = $_SESSION['school_id'];
-			$stmt = $this->connect()->prepare('SELECT id, name FROM topics_lnp WHERE class_id = ? AND lesson_id=? AND unit_id = ? AND school_id=?');
-
-			if (!$stmt->execute(array($class, $lessons, $units, $school))) {
-				$stmt = null;
-				exit();
-			}
+		} else {
+			return [];
 		}
 
 		$topicData = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -1083,7 +1069,7 @@ class SubTopics extends Dbh
 				$stmt = null;
 				exit();
 			}
-		} elseif ($_SESSION['role'] == 2 or $_SESSION['role'] == 5) {
+		} elseif ($_SESSION['role'] == 2 or $_SESSION['role'] == 5 or $_SESSION['role'] == 3 or $_SESSION['role'] == 8 or $_SESSION['role'] == 4) {
 			$school = $_SESSION['school_id'];
 			$stmt = $this->connect()->prepare('SELECT id, name FROM subtopics_lnp WHERE class_id = ? AND lesson_id=? AND unit_id = ? AND topic_id = ? AND school_id=?');
 
@@ -1091,22 +1077,8 @@ class SubTopics extends Dbh
 				$stmt = null;
 				exit();
 			}
-		} elseif ($_SESSION['role'] == 3) {
-			$school = $_SESSION['school_id'];
-			$stmt = $this->connect()->prepare('SELECT id, name FROM subtopics_lnp WHERE class_id = ? AND lesson_id=? AND unit_id = ? AND topic_id = ? AND school_id=?');
-
-			if (!$stmt->execute(array($class, $lessons, $units, $topics, $school))) {
-				$stmt = null;
-				exit();
-			}
-		} elseif ($_SESSION['role'] == 4) {
-			$school = $_SESSION['school_id'];
-			$stmt = $this->connect()->prepare('SELECT id, name FROM subtopics_lnp WHERE class_id = ? AND lesson_id=? AND unit_id = ? AND topic_id = ? AND school_id=?');
-
-			if (!$stmt->execute(array($class, $lessons, $units, $topics, $school))) {
-				$stmt = null;
-				exit();
-			}
+		} else{
+			return [];
 		}
 
 		$subtopicData = $stmt->fetchAll(PDO::FETCH_ASSOC);

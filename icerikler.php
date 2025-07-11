@@ -90,7 +90,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <div class="d-flex justify-content-end"
                                                     data-kt-customer-table-toolbar="base">
                                                     <?php if ($_SESSION['role']) { ?>
-                                                        <a href="havale-beklenenler"><button type="button" class="btn btn-primary me-3" data-bs-toggle="modal">Onay
+                                                        <a href="onay-bekleyen-icerik"><button type="button" class="btn btn-primary me-3" data-bs-toggle="modal">Onay
                                                                 Bekleyen İçerikler</button></a><?php } ?>
 
                                                     <?php if ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 8) { ?>
@@ -314,7 +314,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             <th class="text-end min-w-70px">İşlemler</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody class="fw-semibold text-gray-600"></tbody>
+                                                    <tbody class="fw-semibold text-gray-600">
                                                     <?php $contents->getContentsList(); ?>
 
                                                 <?php } else { ?>
@@ -342,7 +342,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         </tr>
                                                     </thead>
                                                     <tbody class="fw-semibold text-gray-600">
-                                                        <?php $contents->getContentsList(); ?>
+                                                        <?php $contents->getContentsListBySchool($_SESSION['school_id']); ?>
                                                     <?php } ?>
                                                 </tbody>
                                             </table>

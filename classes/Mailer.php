@@ -56,7 +56,38 @@ class Mailer
         // Set default timeout
         $this->mail->Timeout = 25;
     }
+    /**
+     * Set custom SMTP configuration
+     * 
+     * @param array $config SMTP configuration
+     * @return void
+     */
+    public function setSmtpConfig($config)
+    {
+        if (isset($config['host']))
+            $this->mail->Host = $config['host'];
+        if (isset($config['port']))
+            $this->mail->Port = $config['port'];
+        if (isset($config['username']))
+            $this->mail->Username = $config['username'];
+        if (isset($config['password']))
+            $this->mail->Password = $config['password'];
+        if (isset($config['secure']))
+            $this->mail->SMTPSecure = $config['secure'];
+        if (isset($config['from_email']) && isset($config['from_name'])) {
+            $this->mail->setFrom($config['from_email'], $config['from_name']);
+        }
+    }
 
+    /**
+     * Get error info if email sending fails
+     * 
+     * @return string Error information
+     */
+    public function getErrorInfo()
+    {
+        return $this->mail->ErrorInfo;
+    }
     /**
      * Send an email
      * 
@@ -492,7 +523,6 @@ class Mailer
         return $this->send($teacher_mail, $subject, $htmlBody, true);
     }
 
-    
 
     /**
      * Send a Support email To Admin
@@ -540,7 +570,7 @@ class Mailer
 
         return $this->send($adminEmail, $subject, $htmlBody, true);
     }
-    
+
 
     /**
      * Send a Support Response email
@@ -588,7 +618,7 @@ class Mailer
 
         return $this->send($adminEmail, $subject, $htmlBody, true);
     }
-    
+
 
     /**
      * Send a Support Complete email
@@ -782,37 +812,42 @@ class Mailer
         return $this->send($to, $subject, $htmlBody, true);
     }
 
-
-    /**
-     * Set custom SMTP configuration
-     * 
-     * @param array $config SMTP configuration
-     * @return void
-     */
-    public function setSmtpConfig($config)
+    public function sendNewContentApproveRequestNotification($adminEmail,$subject, $userName, $contentName, $schoolName)
     {
-        if (isset($config['host']))
-            $this->mail->Host = $config['host'];
-        if (isset($config['port']))
-            $this->mail->Port = $config['port'];
-        if (isset($config['username']))
-            $this->mail->Username = $config['username'];
-        if (isset($config['password']))
-            $this->mail->Password = $config['password'];
-        if (isset($config['secure']))
-            $this->mail->SMTPSecure = $config['secure'];
-        if (isset($config['from_email']) && isset($config['from_name'])) {
-            $this->mail->setFrom($config['from_email'], $config['from_name']);
-        }
+        $subject = "Yeni İçerik Ekleme Talebi- LineUp Campus";
+
+        $htmlBody = "
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; }
+                .container { margin: 0 auto; padding: 20px; }
+                .content { background-color: #ffffff; padding: 20px; border-radius: 0 0 5px 5px; }
+                .button { display: inline-block; padding: 10px 20px; background-color:rgb(166, 209, 255); color: #ffffff; text-decoration: none; border-radius: 5px; }
+                .footer { margin-top: 20px; font-size: 12px; color: #6c757d; text-align: center; }
+                .text-center { text-align: center; }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <div class='header'>
+                    <h2>Yeni İçerik Ekleme Talebi - $userName</h2>
+                </div>
+                <div class='content'>
+                    <p>Merhaba</p>
+                    <p>$userName isimli kullanıcı $contentName başlıklı içerik ekledi.</p>
+                    <p>İçeriği sistem üzerinden onaylayabilirsiniz.</p>
+                    <p>Saygılarımızla,<br>LineUp Campus</p>
+                </div>
+                <div class='footer'>
+                    <p>Bu otomatik bir e-postadır. Lütfen bu mesaja cevap vermeyin.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        ";
+
+        return $this->send($adminEmail, $subject, $htmlBody, true);
     }
 
-    /**
-     * Get error info if email sending fails
-     * 
-     * @return string Error information
-     */
-    public function getErrorInfo()
-    {
-        return $this->mail->ErrorInfo;
-    }
 }
