@@ -3,8 +3,9 @@
 <?php
 session_start();
 define('GUARD', true);
+if (isset($_SESSION['role']) and $_SESSION['role'] == 1 and $_SESSION['id'] == 1 ) {
 // if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or ($_SESSION['school_id'] == 1 and (($_SESSION['role'] == 3) or ($_SESSION['role'] == 8))))) {
-if (isset($_SESSION['role']) or ($_SESSION['role'] == 1 or ($_SESSION['school_id'] == 1 and (($_SESSION['role'] == 3) or ($_SESSION['role'] == 8))))) {
+// if (isset($_SESSION['role']) or ($_SESSION['role'] == 1 or ($_SESSION['school_id'] == 1 and (($_SESSION['role'] == 3) or ($_SESSION['role'] == 8))))) {
 
 
     include_once "classes/dbh.classes.php";
@@ -490,6 +491,8 @@ if (isset($_SESSION['role']) or ($_SESSION['role'] == 1 or ($_SESSION['school_id
                                 button.querySelector('.indicator-label').textContent = 'Tamamlandı';
                                 button.classList.remove('btn-primary');
                                 button.classList.add('btn-success');
+                                button.classList.add('btn-success');
+                                button.disabled = true;
 
                             } else {
                                 showErrorModal(result.data.message || 'Bilinmeyen bir hata oluştu');
