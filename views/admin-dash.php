@@ -27,9 +27,10 @@ $getTests = $tests->getTests();
 $getHomeworks = $tests->getHomeworks();
 $getPayments = $tests->getPayments();
 
-
 $getHighestScoreStudents = $gradeObj->getHighestGradeOverall($_SESSION['school_id']);
 $getHighestAnaStudents = $contentObj->getHighestAnalyticsOverall($_SESSION['school_id']);
+$getHighestTimespent = $contentObj->getTimeSpentByStudents($_SESSION['school_id']);
+
 
 ?>
 <div id="kt_app_content_container" class="app-container container-fluid">
@@ -643,6 +644,77 @@ $getHighestAnaStudents = $contentObj->getHighestAnalyticsOverall($_SESSION['scho
 				</div>
 			</div>
 		</div>
+
+
+		<div class="col-xxl-6 mb-5 mb-xl-10">
+			<div class="card card-flush h-xl-100">
+				<div class="card-header pt-5">
+					<h3 class="card-title align-items-start flex-column">
+						<span class="card-label fw-bold text-gray-900">En Fazla Zaman Geçiren Öğrenciler</span>
+					</h3>
+				</div>
+				<div class="card-body pt-6">
+					<div class="tab-content">
+						<div class="tab-pane fade active show" id="kt_chart_widget_8_month_tab" role="tabpanel">
+
+							<div class="table-responsive">
+								<table class="table table-row-dashed align-middle gs-0 gy-3 my-0">
+									<thead>
+										<tr class="fs-7 fw-bold text-gray-500 border-bottom-0">
+											<th class="p-0 pb-3 min-w-150px text-start">ÖĞRENCİ ADI</th>
+											<th class="p-0 pb-3 min-w-100px text-end pe-13">SINIFI</th>
+											<th class="p-0 pb-3 min-w-100px text-end pe-13">ZAMAN</th>
+
+										</tr>
+									</thead>
+
+									<tbody>
+										<?php if (empty($getHighestTimespent)) { ?>
+											<tr>
+												<td colspan="3" class="text-center"><span
+														class="text-gray-600 fw-bold fs-6">Öğrenci Mevcut Değil!</span></td>
+											</tr>
+										<?php } else {
+											foreach ($getHighestTimespent as $student) { ?>
+												<tr>
+													<td>
+														<div class="d-flex align-items-center">
+															<div class="symbol symbol-50px me-3">
+																<img src="assets/media/profile/<?php echo $student['photo']; ?>"
+																	class="" alt="" />
+															</div>
+															<div class="d-flex justify-content-start flex-column">
+																<a href="ogrenci-detay/<?php echo $student['username']; ?>"
+																	class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6"><?php echo $student['name'] . ' ' . $student['surname']; ?></a>
+																<span
+																	class="text-gray-500 fw-semibold d-block fs-7"><?php echo $student['schoolName']; ?></span>
+															</div>
+														</div>
+													</td>
+													<td class="text-end pe-13">
+														<span
+															class="text-gray-600 fw-bold fs-6"><?php echo $student['className']; ?></span>
+													</td>
+													<td class="text-end pe-13">
+														<span
+															class="text-gray-600 fw-bold fs-6"><?php echo $dateFormat->secondsToReadableTime($student['totalTime']); ?></span>
+													</td>
+												</tr>
+											<?php }
+										} ?>
+									</tbody>
+								</table>
+								<a href="ilerleme-performans-takip"><button type="button"
+										class="btn btn-primary btn-sm mt-5">Tüm
+										Öğrenciler</button></a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
 	</div>
 	<!--end::Row-->
 </div>

@@ -23,7 +23,37 @@ class ContentTracker
             return false;
         }
     }
+    public function getTimeSpentByStudents($schoolId)
+    {
+        $sql = "
+            SELECT 
+            SUM(ts.timeSpent) AS totalTime,
+            u.*,
+            s.name AS schoolName,
+            c.name AS className
+            FROM timespend_lnp ts
 
+            LEFT JOIN users_lnp u ON ts.user_id = u.id
+            LEFT JOIN schools_lnp s ON u.school_id = s.id
+            LEFT JOIN classes_lnp c ON u.class_id = c.id
+
+            WHERE u.school_id = :school_id AND (u.role = 2 OR u.role = 10002)
+            GROUP BY ts.user_id 
+            ORDER BY totalTime DESC
+            LIMIT 5
+        ";
+
+        try {
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['school_id' => $schoolId]);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $results;
+
+        } catch (PDOException $e) {
+            return null;
+        }
+    }
     // public function getAllContentOfUnitById($unitId)
     // {
     //     try {
