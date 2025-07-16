@@ -31,11 +31,159 @@ $getHighestScoreStudents = $gradeObj->getHighestGradeOverall($_SESSION['school_i
 $getHighestAnaStudents = $contentObj->getHighestAnalyticsOverall($_SESSION['school_id']);
 $getHighestTimespent = $contentObj->getTimeSpentByStudents($_SESSION['school_id']);
 
+$totalClasses = $contentObj->getClassesBySchool($_SESSION['school_id']);
+$totalLessons = $contentObj->getLessonsBySchool($_SESSION['school_id']);
+$totalUnits = $contentObj->getUnitsBySchool($_SESSION['school_id']);
+$totalTopics = $contentObj->getTopicsBySchool($_SESSION['school_id']);
+$totalSubtopis = $contentObj->getSubtopicsBySchool($_SESSION['school_id']);
+$totalGames = $contentObj->getGamesBySchool($_SESSION['school_id']);
+$totalBooks = $contentObj->getBooksBySchool($_SESSION['school_id']);
+
+$totalContents = $contentObj->getContentsBySchool($_SESSION['school_id']);
+
+$testsHigh = $contentObj->getExamsWithHighestScore($_SESSION['school_id']);
+$testsLow = $contentObj->getExamsWithLowestScore($_SESSION['school_id']);
 
 ?>
 <div id="kt_app_content_container" class="app-container container-fluid">
 	<!--begin::Row-->
 	<div class="row gx-5 gx-xl-10">
+
+		<div>
+			<div class="d-flex flex-wrap flex-stack">
+				<div class="d-flex flex-column flex-grow-1 pe-8">
+					<div class="d-flex flex-wrap">
+
+						<div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+							<div class="d-flex align-items-center">
+								<i class="fa-regular fa-clock fs-2 text-success me-2"></i>
+								<div class="fs-2 fw-bold">
+									<?php echo $totalClasses['total']; ?>
+								</div>
+							</div>
+							<div class="fw-semibold fs-6 text-gray-500">Toplam
+								Sınıf Sayısı</div>
+						</div>
+						<div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+							<div class="d-flex align-items-center">
+								<i class="ki-duotone ki-book-open fs-2 text-success me-2">
+									<span class="path1"></span>
+									<span class="path2"></span>
+									<span class="path3"></span>
+									<span class="path4"></span>
+								</i>
+								<div class="fs-2 fw-bold" data-kt-countup="true"
+									data-kt-countup-value="	<?php echo $totalLessons['total']; ?>">
+									0
+								</div>
+							</div>
+
+							<div class="fw-semibold fs-6 text-gray-500">Toplam
+								Ders Sayısı</div>
+						</div>
+						<div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+							<div class="d-flex align-items-center">
+								<i class="ki-duotone ki-book-open fs-2 text-success me-2">
+									<span class="path1"></span>
+									<span class="path2"></span>
+									<span class="path3"></span>
+									<span class="path4"></span>
+								</i>
+								<div class="fs-2 fw-bold" data-kt-countup="true"
+									data-kt-countup-value="	<?php echo $totalUnits['total']; ?>">
+									0
+								</div>
+							</div>
+
+							<div class="fw-semibold fs-6 text-gray-500">Toplam
+								Ünite Sayısı</div>
+						</div>
+						<div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+							<div class="d-flex align-items-center">
+								<i class="ki-duotone ki-book-open fs-2 text-success me-2">
+									<span class="path1"></span>
+									<span class="path2"></span>
+									<span class="path3"></span>
+									<span class="path4"></span>
+								</i>
+								<div class="fs-2 fw-bold" data-kt-countup="true"
+									data-kt-countup-value="	<?php echo $totalTopics['total']; ?>">
+									0
+								</div>
+							</div>
+
+							<div class="fw-semibold fs-6 text-gray-500">Toplam
+								Konu Sayısı</div>
+						</div>
+						<div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+							<div class="d-flex align-items-center">
+								<i class="ki-duotone ki-book-open fs-2 text-success me-2">
+									<span class="path1"></span>
+									<span class="path2"></span>
+									<span class="path3"></span>
+									<span class="path4"></span>
+								</i>
+								<div class="fs-2 fw-bold" data-kt-countup="true"
+									data-kt-countup-value="	<?php echo $totalSubtopis['total']; ?>">
+									0
+								</div>
+							</div>
+
+							<div class="fw-semibold fs-6 text-gray-500">Toplam
+								Altkonu Sayısı</div>
+						</div>
+						<div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+							<div class="d-flex align-items-center">
+								<i class="ki-duotone ki-book-open fs-2 text-success me-2">
+									<span class="path1"></span>
+									<span class="path2"></span>
+									<span class="path3"></span>
+									<span class="path4"></span>
+								</i>
+								<div class="fs-2 fw-bold" data-kt-countup="true"
+									data-kt-countup-value="	<?php echo $totalBooks['total']; ?>">
+									0
+								</div>
+							</div>
+
+							<div class="fw-semibold fs-6 text-gray-500">Toplam
+								Sesli kitap Sayısı</div>
+						</div>
+						<div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+							<div class="d-flex align-items-center">
+								<i class="ki-duotone ki-brifecase-tick fs-2 text-success me-2">
+									<span class="path1"></span>
+									<span class="path2"></span>
+									<span class="path3"></span>
+								</i>
+								<div class="fs-2 fw-bold" data-kt-countup="true"
+									data-kt-countup-value="	<?php echo $totalGames['total']; ?>">
+									0</div>
+							</div>
+
+							<div class="fw-semibold fs-6 text-gray-500">Toplam
+								Oyun Sayısı</div>
+						</div>
+						<div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+							<div class="d-flex align-items-center">
+								<i class="ki-duotone ki-brifecase-tick fs-2 text-success me-2">
+									<span class="path1"></span>
+									<span class="path2"></span>
+									<span class="path3"></span>
+								</i>
+								<div class="fs-2 fw-bold" data-kt-countup="true"
+									data-kt-countup-value="	<?php echo $totalContents['total']; ?>">
+									0</div>
+							</div>
+
+							<div class="fw-semibold fs-6 text-gray-500">Toplam
+								Oyun Sayısı</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<!--begin::Col-->
 		<div class="col-xxl-6 mb-5 mb-xl-10">
 			<!--begin::Chart widget 8-->
@@ -506,8 +654,6 @@ $getHighestTimespent = $contentObj->getTimeSpentByStudents($_SESSION['school_id'
 		</div>
 		<!--end::Col-->
 
-
-
 		<div class="col-xxl-6 mb-5 mb-xl-10">
 			<div class="card card-flush h-xl-100">
 				<div class="card-header pt-5">
@@ -714,7 +860,124 @@ $getHighestTimespent = $contentObj->getTimeSpentByStudents($_SESSION['school_id'
 			</div>
 		</div>
 
+		<div class="col-xxl-6 mb-5 mb-xl-10">
+			<div class="card card-flush h-xl-100">
+				<div class="card-header pt-5">
+					<h3 class="card-title align-items-start flex-column">
+						<span class="card-label fw-bold text-gray-900">En Başarlı Testler</span>
+					</h3>
+				</div>
+				<div class="card-body pt-6">
+					<div class="tab-content">
+						<div class="tab-pane fade active show" id="kt_chart_widget_8_month_tab" role="tabpanel">
+
+							<div class="table-responsive">
+								<table class="table table-row-dashed align-middle gs-0 gy-3 my-0">
+									<thead>
+										<tr class="fs-7 fw-bold text-gray-500 border-bottom-0">
+											<th class="p-0 pb-3 min-w-150px text-start">TEST ADI</th>
+											<th class="p-0 pb-3 min-w-100px text-end pe-13">SINIFI</th>
+											<th class="p-0 pb-3 min-w-100px text-end">ORTALAMA</th>
+										</tr>
+									</thead>
+									<tbody>
+										<?php if (empty($testsHigh)) { ?>
+											<tr>
+												<td colspan="2" class="text-center"><span
+														class="text-gray-600 fw-bold fs-6">Eklenmiş Test Mevcut
+														Değil!</span></td>
+											</tr>
+										<?php } else {
+											foreach ($testsHigh as $tests) { ?>
+												<tr>
+													<td>
+														<div class="d-flex align-items-center">
+															<div class="d-flex justify-content-start flex-column">
+																<?php echo $tests['test_title'] ?>
+															</div>
+														</div>
+													</td>
+													<td class="text-end pe-13">
+														<span
+															class="text-gray-600 fw-bold fs-6"><?php echo $tests['className']; ?></span>
+													</td>
+													<td class="text-end">
+														<span
+															class="text-gray-600 fw-bold fs-6"><?php echo $tests['total']; ?>%</span>
+													</td>
+												</tr>
+											<?php }
+										} ?>
+									</tbody>
+								</table>
+								<a href="testler"><button type="button" class="btn btn-primary btn-sm mt-5">Tüm
+										Testler</button></a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-xxl-6 mb-5 mb-xl-10">
+			<div class="card card-flush h-xl-100">
+				<div class="card-header pt-5">
+					<h3 class="card-title align-items-start flex-column">
+						<span class="card-label fw-bold text-gray-900">En Başarsız Testler</span>
+					</h3>
+				</div>
+				<div class="card-body pt-6">
+					<div class="tab-content">
+						<div class="tab-pane fade active show" id="kt_chart_widget_8_month_tab" role="tabpanel">
+
+							<div class="table-responsive">
+								<table class="table table-row-dashed align-middle gs-0 gy-3 my-0">
+									<thead>
+										<tr class="fs-7 fw-bold text-gray-500 border-bottom-0">
+											<th class="p-0 pb-3 min-w-150px text-start">TEST ADI</th>
+											<th class="p-0 pb-3 min-w-100px text-end pe-13">SINIFI</th>
+											<th class="p-0 pb-3 min-w-100px text-end">ORTALAMA</th>
+										</tr>
+									</thead>
+									<tbody>
+										<?php if (empty($testsLow)) { ?>
+											<tr>
+												<td colspan="2" class="text-center"><span
+														class="text-gray-600 fw-bold fs-6">Eklenmiş Test Mevcut
+														Değil!</span></td>
+											</tr>
+										<?php } else {
+											foreach ($testsLow as $tests) { ?>
+												<tr>
+													<td>
+														<div class="d-flex align-items-center">
+															<div class="d-flex justify-content-start flex-column">
+																<?php echo $tests['test_title'] ?>
+															</div>
+														</div>
+													</td>
+													<td class="text-end pe-13">
+														<span
+															class="text-gray-600 fw-bold fs-6"><?php echo $tests['className']; ?></span>
+													</td>
+													<td class="text-end">
+														<span
+															class="text-gray-600 fw-bold fs-6"><?php echo $tests['total']; ?>%</span>
+													</td>
+												</tr>
+											<?php }
+										} ?>
+									</tbody>
+								</table>
+								<a href="testler"><button type="button" class="btn btn-primary btn-sm mt-5">Tüm
+										Testler</button></a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
 	</div>
-	<!--end::Row-->
+
 </div>

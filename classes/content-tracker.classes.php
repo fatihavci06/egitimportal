@@ -10,6 +10,189 @@ class ContentTracker
         $this->db = (new dbh())->connect();
     }
 
+    public function getExamsWithHighestScore($schoolId)
+    {
+
+        try {
+            $sql = "
+                SELECT AVG(score) as total,
+                t.test_title,
+                c.name AS className,
+                l.name AS lessonName
+                FROM user_grades_lnp ug 
+                LEFT JOIN tests_lnp t ON ug.test_id = t.id
+                LEFT JOIN classes_lnp c ON t.class_id = c.id
+                LEFT JOIN lessons_lnp l ON t.lesson_id = l.id
+                WHERE t.school_id = :school_id
+                GROUP BY ug.test_id
+                ORDER BY total DESC
+                LIMIT 5
+                ";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['school_id' => $schoolId]);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+    public function getExamsWithLowestScore($schoolId)
+    {
+
+        try {
+            $sql = "
+                SELECT AVG(score) as total,
+                t.test_title,
+                c.name AS className,
+                l.name AS lessonName
+                FROM user_grades_lnp ug 
+                LEFT JOIN tests_lnp t ON ug.test_id = t.id
+                LEFT JOIN classes_lnp c ON t.class_id = c.id
+                LEFT JOIN lessons_lnp l ON t.lesson_id = l.id
+                WHERE t.school_id = :school_id
+                GROUP BY ug.test_id
+                ORDER BY total ASC
+                LIMIT 5
+                ";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['school_id' => $schoolId]);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public function getClassesBySchool($schoolId)
+    {
+        try {
+            $sql = "SELECT 
+            COUNT(*) AS total
+            FROM classes_lnp
+            WHERE classes_lnp.school_id = :school_id
+            ";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['school_id' => $schoolId]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public function getLessonsBySchool($schoolId)
+    {
+        try {
+            $sql = "SELECT 
+            COUNT(*) AS total
+            FROM lessons_lnp
+            WHERE lessons_lnp.school_id = :school_id
+            ";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['school_id' => $schoolId]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+    public function getUnitsBySchool($schoolId)
+    {
+        try {
+            $sql = "SELECT 
+            COUNT(*) AS total
+            FROM units_lnp
+            WHERE units_lnp.school_id = :school_id
+            ";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['school_id' => $schoolId]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+    public function getTopicsBySchool($schoolId)
+    {
+        try {
+            $sql = "SELECT 
+            COUNT(*) AS total
+            FROM topics_lnp
+            WHERE topics_lnp.school_id = :school_id
+            ";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['school_id' => $schoolId]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+    public function getSubtopicsBySchool($schoolId)
+    {
+        try {
+            $sql = "SELECT 
+            COUNT(*) AS total
+            FROM subtopics_lnp
+            WHERE subtopics_lnp.school_id = :school_id
+            ";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['school_id' => $schoolId]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+    public function getBooksBySchool($schoolId)
+    {
+        try {
+            $sql = "SELECT 
+            COUNT(*) AS total
+            FROM audio_book_lnp
+            WHERE audio_book_lnp.school_id = :school_id
+            ";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['school_id' => $schoolId]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+    public function getContentsBySchool($schoolId)
+    {
+        try {
+            $sql = "SELECT 
+            COUNT(*) AS total
+            FROM school_content_lnp
+            WHERE school_content_lnp.school_id = :school_id
+            ";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['school_id' => $schoolId]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+    public function getGamesBySchool($schoolId)
+    {
+        try {
+            $sql = "SELECT 
+            COUNT(*) AS total
+            FROM games_lnp
+            WHERE games_lnp.school_id = :school_id
+            ";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['school_id' => $schoolId]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
     public function createContentVisit($userId, $contentId)
     {
         try {
@@ -54,22 +237,6 @@ class ContentTracker
             return null;
         }
     }
-    // public function getAllContentOfUnitById($unitId)
-    // {
-    //     try {
-    //         $sql = "
-    //         SELECT * FROM school_content_lnp scl
-    //         LEFT JOIN school_content_videos_url v ON scl.unit_id = v.id;
-    //         LEFT JOIN  v ON v.id = v.id;
-    //         WHERE unit_id = ? 
-    //         ";
-    //         $stmt = $this->db->prepare($sql);
-    //         $stmt->execute([$unitId]);
-    //         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    //     } catch (Exception $e) {
-    //         return null;
-    //     }
-    // }
 
     public function getById($id)
     {
