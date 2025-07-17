@@ -44,6 +44,44 @@ $totalContents = $contentObj->getContentsBySchool($_SESSION['school_id']);
 $testsHigh = $contentObj->getExamsWithHighestScore($_SESSION['school_id']);
 $testsLow = $contentObj->getExamsWithLowestScore($_SESSION['school_id']);
 
+// $subsState = $contentObj->getSubscriptionState($_SESSION['school_id']);
+
+$subscriptionStats = $contentObj->getSubscriptionState($_SESSION['school_id']);
+
+function prepareChartData($data, $type)
+{
+	$labels = [];
+	$values = [];
+	$total = 0;
+
+	foreach ($data as $entry) {
+		if ($type === 'week') {
+			$labels[] = 'Hafta ' . $entry['week'];
+			$values[] = (int) $entry['count'];
+		} elseif ($type === 'month') {
+			$monthNames = [1 => 'Ocak', 'Şubat', 'Mar', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+			$labels[] = $monthNames[(int) $entry['month']];
+			$values[] = (int) $entry['count'];
+		} elseif ($type === 'year') {
+			$labels[] = $entry['year'];
+			$values[] = (int) $entry['count'];
+		}
+		$total += (int) $entry['count'];
+	}
+
+	return [
+		'labels' => $labels,
+		'data' => $values,
+		'total' => $total
+	];
+}
+
+$chartData = [
+	'week' => prepareChartData($subscriptionStats['weekly'], 'week'),
+	'month' => prepareChartData($subscriptionStats['monthly'], 'month'),
+	'year' => prepareChartData($subscriptionStats['yearly'], 'year')
+];
+?>
 ?>
 <div id="kt_app_content_container" class="app-container container-fluid">
 	<!--begin::Row-->
@@ -183,7 +221,64 @@ $testsLow = $contentObj->getExamsWithLowestScore($_SESSION['school_id']);
 				</div>
 			</div>
 		</div>
+		<div class="col-xxl-8 mb-5 mb-xl-10">
 
+			<div class="container-fluid py-4">
+				<div class="row">
+					<div class="col-12">
+						<div class="card">
+							<div class="card-header">
+								<div class="d-flex justify-content-between align-items-center">
+									<h3 class="card-title mb-0">
+										<i class="fas fa-chart-line text-primary me-2"></i>
+										Abonelik Analitiği
+									</h3>
+									<div class="btn-group" role="group">
+										<button type="button" class="btn btn-sm active" data-period="week">
+											<i class="fas fa-calendar-week me-1"></i>Haftalık
+										</button>
+										<button type="button" class="btn btn-sm" data-period="month">
+											<i class="fas fa-calendar-alt me-1"></i>Aylık
+										</button>
+										<button type="button" class="btn btn-sm" data-period="year">
+											<i class="fas fa-calendar me-1"></i>yıllık
+										</button>
+									</div>
+								</div>
+							</div>
+							<div class="card-body">
+								<div class="row mb-4">
+									<div class="col-md-4">
+										<div class="stats-card">
+											<div class="stats-value" id="totalSubscriptions">0</div>
+											<div class="stats-label">Toplam Abonelikler</div>
+										</div>
+									</div>
+									<div class="col-md-4">
+										<div class="stats-card"
+											style="background: linear-gradient(135deg, var(--kt-success), #2fb344);">
+											<div class="stats-value" id="growthRate">0%</div>
+											<div class="stats-label">Büyüme Oranı</div>
+										</div>
+									</div>
+									<div class="col-md-4">
+										<div class="stats-card"
+											style="background: linear-gradient(135deg, var(--kt-info), #5014d0);">
+											<div class="stats-value" id="avgPerPeriod">0</div>
+											<div class="stats-label">Dönem Başına Ortalama</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="chart-container">
+									<canvas id="subscriptionChart"></canvas>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 		<!--begin::Col-->
 		<div class="col-xxl-6 mb-5 mb-xl-10">
 			<!--begin::Chart widget 8-->
@@ -981,3 +1076,147 @@ $testsLow = $contentObj->getExamsWithLowestScore($_SESSION['school_id']);
 	</div>
 
 </div>
+<script>
+
+	const subscriptionData = <?php echo json_encode($chartData, JSON_NUMERIC_CHECK); ?>;
+
+	let chart;
+	let currentPeriod = 'week';
+
+	function initChart() {
+		const ctx = document.getElementById('subscriptionChart').getContext('2d');
+
+		chart = new Chart(ctx, {
+			type: 'line',
+			data: {
+				labels: subscriptionData[currentPeriod].labels,
+				datasets: [{
+					label: 'Subscriptions',
+					data: subscriptionData[currentPeriod].data,
+					borderColor: 'rgb(0, 158, 247)',
+					backgroundColor: 'rgba(0, 158, 247, 0.1)',
+					borderWidth: 3,
+					fill: true,
+					tension: 0.4,
+					pointBackgroundColor: 'rgb(0, 158, 247)',
+					pointBorderColor: '#fff',
+					pointBorderWidth: 2,
+					pointRadius: 6,
+					pointHoverRadius: 8,
+					pointHoverBackgroundColor: 'rgb(0, 158, 247)',
+					pointHoverBorderColor: '#fff',
+					pointHoverBorderWidth: 3
+				}]
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				plugins: {
+					legend: {
+						display: false
+					},
+					tooltip: {
+						backgroundColor: 'rgba(0, 0, 0, 0.8)',
+						titleColor: '#fff',
+						bodyColor: '#fff',
+						cornerRadius: 8,
+						padding: 12,
+						displayColors: false,
+						callbacks: {
+							label: function (context) {
+								return `${context.parsed.y} new subscriptions`;
+							}
+						}
+					}
+				},
+				scales: {
+					x: {
+						grid: {
+							color: 'rgba(0, 0, 0, 0.1)',
+							borderDash: [5, 5]
+						},
+						ticks: {
+							color: '#7e8299',
+							font: {
+								size: 12
+							}
+						}
+					},
+					y: {
+						beginAtZero: true,
+						grid: {
+							color: 'rgba(0, 0, 0, 0.1)',
+							borderDash: [5, 5]
+						},
+						ticks: {
+							color: '#7e8299',
+							font: {
+								size: 12
+							}
+						}
+					}
+				},
+				elements: {
+					point: {
+						hoverRadius: 8
+					}
+				},
+				interaction: {
+					intersect: false,
+					mode: 'index'
+				}
+			}
+		});
+	}
+
+	function updateChart(period) {
+		currentPeriod = period;
+		const data = subscriptionData[period];
+
+		chart.data.labels = data.labels;
+		chart.data.datasets[0].data = data.data;
+		chart.update('active');
+
+		updateStats(period);
+	}
+
+	function updateStats(period) {
+		const data = subscriptionData[period];
+		const total = data.total;
+		const average = Math.round(total / data.data.length);
+
+		const firstValue = data.data[0];
+		const lastValue = data.data[data.data.length - 1];
+		const growthRate = ((lastValue - firstValue) / firstValue * 100).toFixed(1);
+
+		document.getElementById('totalSubscriptions').textContent = total.toLocaleString();
+		document.getElementById('growthRate').textContent = `${growthRate}%`;
+		document.getElementById('avgPerPeriod').textContent = average.toLocaleString();
+	}
+
+	document.querySelectorAll('[data-period]').forEach(button => {
+		button.addEventListener('click', function () {
+			document.querySelectorAll('[data-period]').forEach(btn => btn.classList.remove('active'));
+
+			this.classList.add('active');
+
+			updateChart(this.dataset.period);
+		});
+	});
+
+	document.addEventListener('DOMContentLoaded', function () {
+		initChart();
+		updateStats('week');
+	});
+
+	function loadDataFromPHP(period) {
+
+		fetch(`/api/subscriptions?period=${period}`)
+			.then(response => response.json())
+			.then(data => {
+				subscriptionData[period] = data;
+				updateChart(period);
+			});
+
+	}
+</script>
