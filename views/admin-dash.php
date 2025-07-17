@@ -82,7 +82,6 @@ $chartData = [
 	'year' => prepareChartData($subscriptionStats['yearly'], 'year')
 ];
 ?>
-?>
 <div id="kt_app_content_container" class="app-container container-fluid">
 	<!--begin::Row-->
 	<div class="row gx-5 gx-xl-10">
