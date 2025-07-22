@@ -78,9 +78,9 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
                                     <!--begin::Careers - List-->
                                     <div class="card">
                                         <!--begin::Body-->
-                                        <div class="card-body p-lg-17">
+                                        <div class="card-body p-lg-8">
                                             <!--begin::Hero-->
-                                            <?php $contents->getHeaderImageStu(); ?>
+                                            <?php // $contents->getHeaderImageStu(); ?>
                                             <!--end::-->
                                             <!--begin::Layout-->
                                             <div class="flex-column flex-lg-row mb-17">

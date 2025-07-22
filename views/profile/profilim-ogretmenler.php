@@ -614,11 +614,11 @@ function getSubtopics($school_id, $class_id, $lesson_id)
                                                         foreach ($studentList as $student) {
                                                             $percentage = $contentObj->getSchoolContentAnalyticsOverall($student['id']);
                                                             $percentageW = ($percentage == null) ? 0 : $percentage;
-                                                            $percentageT = ($percentage == null) ? '-' : $percentage;
+                                                            $percentageT = ($percentage === null) ? '-' : $percentage;
 
                                                             $score = $gradeObj->getGradeOverall($student['id'], );
                                                             $scoreW = ($score == null) ? 0 : $score;
-                                                            $scoreT = ($score == null) ? '-' : $score;
+                                                            $scoreT = ($score ===  null) ? '-' : $score;
 
                                                             $studentRow = '
 																		<div class="">
@@ -744,11 +744,11 @@ function getSubtopics($school_id, $class_id, $lesson_id)
                                                         foreach ($studentList as $student) {
                                                             $percentage = $contentObj->getSchoolContentAnalyticsOverall($student['id']);
                                                             $percentageW = ($percentage == null) ? 0 : $percentage;
-                                                            $percentageT = ($percentage == null) ? '-' : $percentage;
+                                                            $percentageT = ($percentage === null) ? '-' : $percentage;
 
                                                             $score = $gradeObj->getGradeOverall($student['id'], );
                                                             $scoreW = ($score == null) ? 0 : $score;
-                                                            $scoreT = ($score == null) ? '-' : $score;
+                                                            $scoreT = ($score ===  null) ? '-' : $score;
 
                                                             $studentRow = '
 																		<tr>

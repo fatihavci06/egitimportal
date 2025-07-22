@@ -7,6 +7,89 @@ class ShowUnit extends Units
 
     // Get Unit List
 
+    public function getUnitListForSuperAdmin()
+    {
+
+        $unitInfo = $this->getUnitsListWithFilter();
+
+        $dateFormat = new DateFormat();
+
+        foreach ($unitInfo as $key => $value) {
+
+            $sinifArama = 'data-filter="' . $value['classSlug'] . '"';
+
+            if ($value['unitActive'] == 1) {
+                $aktifArama = 'data-filter="Aktif"';
+                $aktifYazi = '<span class="badge badge-light-success">Aktif</span>';
+            } else {
+                $aktifArama = 'data-filter="Passive"';
+                $aktifYazi = '<span class="badge badge-light-danger">Pasif</span>';
+            }
+
+            $alter_button = $value['unitActive'] ? "Pasif Yap" : "Aktif Yap";
+
+            if ($_SESSION['role'] == 4) {
+                $passiveButton = '';
+            } else {
+                $passiveButton = '
+                                <!--begin::Menu item-->
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">' . $alter_button . '</a>
+                                </div>
+                                <!--end::Menu item-->';
+            }
+
+
+
+
+            $lessonList = '
+                    <tr>
+                        <td>
+                            <div class="form-check form-check-sm form-check-custom form-check-solid">
+                                <input class="form-check-input" type="checkbox" value="1" />
+                            </div>
+                        </td>
+                        <td data-file-id="' . $value['unitID'] . '">
+                            <a href="./unite-detay/' . $value['unitSlug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['unitName'] . '</a>
+                        </td>
+                        <td>
+                            ' . $value['lessonName'] . '
+                        </td>
+                        <td ' . $sinifArama . '>
+                            ' . $value['className'] . '
+                        </td>
+                        <td>
+                            ' . $dateFormat->changeDate($value['unitStartDate']) . '
+                        </td>
+                        <td>
+                            ' . $dateFormat->changeDate($value['unitEndDate']) . '
+                        </td>
+                        <td>
+                            ' . $value['unitOrder'] . '
+                        </td>
+                        <td>' . $aktifYazi . '</td>
+
+                        <td class="text-end">
+                            <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
+                                data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
+                                <i class="ki-duotone ki-down fs-5 ms-1"></i></a>
+                            <!--begin::Menu-->
+                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
+                                data-kt-menu="true">
+                                <!--begin::Menu item-->
+                                <div class="menu-item px-3">
+                                    <a href="./unite-detay/' . $value['unitSlug'] . '" class="menu-link px-3">Görüntüle</a>
+                                </div>
+                                <!--end::Menu item-->
+                                ' . $passiveButton . '
+                            </div>
+                            <!--end::Menu-->
+                        </td>
+                    </tr>
+                ';
+            echo $lessonList;
+        }
+    }
     public function getUnitList()
     {
 
@@ -38,6 +121,9 @@ class ShowUnit extends Units
                                 </div>
                                 <!--end::Menu item-->';
             }
+
+
+
 
             $lessonList = '
                     <tr>
@@ -158,7 +244,7 @@ class ShowUnit extends Units
 
                 $lessonList = '
                             <!--begin::Col-->
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <!--begin::Publications post-->
                                 <div class="card-xl-stretch me-md-6">
                                     <!--begin::Overlay-->
@@ -179,7 +265,7 @@ class ShowUnit extends Units
                                         <a href="' . $link . '" class="fs-4 text-gray-900 fw-bold text-hover-primary text-gray-900 lh-base ' . $class . '">' . $value['name'] . '</a>
                                         <!--end::Title-->
                                         <!--begin::Text-->
-                                        <div class="fw-semibold fs-5 text-gray-600 text-gray-900 mt-3 mb-5">' . $value['short_desc'] . '</div>
+                                        <!-- <div class="fw-semibold fs-5 text-gray-600 text-gray-900 mt-3 mb-5">' . $value['short_desc'] . '</div> -->
                                         ' . $notification . '
                                         <!--end::Text-->
                                     </div>

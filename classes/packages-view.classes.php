@@ -230,6 +230,7 @@ class ShowPackagesForAdmin extends PackagesForAdmin
             $discount = htmlspecialchars($value['discount']);
             $className = htmlspecialchars($value['className']);
             $status = (int) $value['status'];
+            $sinifArama = 'data-filter="' . $value['classSlug'] . '"';
 
             // Duruma göre buton belirle
             if ($status === 0) {
@@ -255,7 +256,7 @@ class ShowPackagesForAdmin extends PackagesForAdmin
             <td>' . $monthly_fee . ' ₺</td>
             <td>' . $subscription_period . ' Aylık</td>
             <td>%' . $discount . '</td>
-            <td>' . $className . '</td>
+            <td ' . $sinifArama . '>' . $className . '</td>
             <td style="width:250px;" class="text-end">
                 <a href="paket-detay?id=' . $id . '" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                     data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">

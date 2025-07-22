@@ -65,6 +65,14 @@ class ShowMenu extends Menus
             $pageTitle = 'Oyunlar';
         } elseif ($active_slug == 'icerik-ekle') {
             $pageTitle = 'İçerik Ekle';
+        } elseif ($active_slug == 'cek-gonder') {
+            $pageTitle = 'Çek Gönder';
+        } elseif ($active_slug == 'cek-gonder-admin') {
+            $pageTitle = 'Çek Gönder';
+        } elseif ($active_slug == 'kocluk-sohbet') {
+            $pageTitle = 'Koçluk Sohbet';
+        } elseif ($active_slug == 'kuponlari-listele') {
+            $pageTitle = 'Kuponları Listele';
         }
 
         $questionmark = strpos($pageTitle, '?');
@@ -107,6 +115,13 @@ class ShowMenu extends Menus
 
                 if (in_array($_SESSION['role'], $pieces)) {
 
+                    if ($value['slug'] == 'kocluk-sohbet' AND $_SESSION['role'] == 2) {
+                        $controlKocluk = $this->controlKoclukPack();
+                        if (empty($controlKocluk)) {
+                            continue;
+                        }
+                    }
+
                     if ($activeId == $value['accordion']) {
                         $show = " show";
                         $here = " here";
@@ -126,7 +141,7 @@ class ShowMenu extends Menus
                                 <!--begin:Menu link-->
                                 <span class="menu-link"  >
                                     <span class="menu-icon">
-                                        <i class="' . $value['classes'] . ' fs-1"></i>
+                                        <i class="' . $value['classes'] . ' fs"></i>
                                     </span>
                                     <span class="menu-title">' . $value['name'] . '</span>
                                     <span class="menu-arrow"></span>
@@ -164,6 +179,13 @@ class ShowMenu extends Menus
 
                                 if ($active_slug == $subValue['slug']) {
                                     $active = " active";
+                                }
+
+                                if ($lessonClass['package_type'] == 1) {
+                                    $controlPayment = $this->controlDevelopmentPack();
+                                    if (empty($controlPayment)) {
+                                        continue;
+                                    }
                                 }
 
                                 $menuList .= '

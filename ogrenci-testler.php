@@ -34,82 +34,82 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 document.documentElement.setAttribute("data-bs-theme", themeMode);
             }
         </script>
-        <div class="d-flex flex-column flex-root app-root" id="kt_app_root" style="margin-top:-135px;">
+        <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
             <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
                 <?php include_once "views/header.php"; ?>
                 <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
                     <?php include_once "views/sidebar.php"; ?>
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
-                        <div class="d-flex flex-column flex-column-fluid" <?php if (isset($_SESSION['role']) && $_SESSION['role'] != 1) echo 'style="margin-top: 150px;"'; ?>>
+                        <div class="d-flex flex-column flex-column-fluid" <?php if (isset($_SESSION['role']) && $_SESSION['role'] != 1) echo 'style="margin-top: 0px;"'; ?>>
                             <?php include_once "views/toolbar.php"; ?>
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <div class="card">
-                                    <!--begin::Card header-->
-                                    <div class="card-header border-0 pt-6">
-                                        <!--begin::Card title-->
-                                        <div class="card-title">
-                                        </div>
-                                        <!--begin::Card title-->
-                                        <!--begin::Card toolbar-->
-                                        <div class="card-toolbar">
-                                            <!--begin::Toolbar-->
-                                            <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
-                                                <!--begin::Add school-->
-                                               
-                                                <!--end::Add school-->
+                                        <!--begin::Card header-->
+                                        <div class="card-header border-0 pt-6">
+                                            <!--begin::Card title-->
+                                            <div class="card-title">
                                             </div>
-                                            <!--end::Toolbar-->
-                                            <!--begin::Group actions-->
-                                            
-                                            <!--end::Group actions-->
+                                            <!--begin::Card title-->
+                                            <!--begin::Card toolbar-->
+                                            <div class="card-toolbar">
+                                                <!--begin::Toolbar-->
+                                                <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
+                                                    <!--begin::Add school-->
+
+                                                    <!--end::Add school-->
+                                                </div>
+                                                <!--end::Toolbar-->
+                                                <!--begin::Group actions-->
+
+                                                <!--end::Group actions-->
+                                            </div>
+                                            <!--end::Card toolbar-->
                                         </div>
-                                        <!--end::Card toolbar-->
-                                    </div>
-                                    <!--end::Card header-->
-                                    <!--begin::Card body-->
-                                    <div class="card-body pt-0">
-                                    <table id="example" class="table align-middle table-row-dashed fs-6 gy-5">
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Test Başlığı</th>
-                                                <th>Bitiş Tarihi</th>
-                                                <th>İşlem</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php foreach ($dataTest as $row): ?>
-                                                <tr>
-                                                    <td><?= htmlspecialchars($row['id']) ?></td>
-                                                    <td><?= htmlspecialchars($row['test_title']) ?></td>
-                                                    <td><?= htmlspecialchars($row['end_date']) ?></td>
-                                                    <td>
-                                                        <?php if (isset($row['fail_count']) && $row['fail_count'] >= 3): ?>
-                                                            
-                                                            <span class="badge badge-danger">Sonuç: <?= htmlspecialchars($row['score']) ?> Puan</span>
-                                                        <?php elseif (isset($row['score']) && $row['score'] >= 80): ?>
-                                                            <span class="badge badge-success">Sonuç: <?= htmlspecialchars($row['score']) ?> Puan</span>
-                                                        <?php else: ?>
-                                                            <button class="btn btn-primary start-exam-btn btn-sm" data-id="<?= $row['id'] ?>">Sınava Gir</button>
-                                                        <?php endif; ?>
-                                                    </td>
-                                                </tr>
-                                            <?php endforeach; ?>
-                                        </tbody>
-                                    </table>
-                                    </div>
+                                        <!--end::Card header-->
+                                        <!--begin::Card body-->
+                                        <div class="card-body pt-0">
+                                            <table id="example" class="table align-middle table-row-dashed fs-6 gy-5">
+                                                <thead>
+                                                    <tr>
+                                                        <th>ID</th>
+                                                        <th>Test Başlığı</th>
+                                                        <th>Bitiş Tarihi</th>
+                                                        <th>İşlem</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php foreach ($dataTest as $row): ?>
+                                                        <tr>
+                                                            <td><?= htmlspecialchars($row['id']) ?></td>
+                                                            <td><?= htmlspecialchars($row['test_title']) ?></td>
+                                                            <td><?= htmlspecialchars($row['end_date']) ?></td>
+                                                            <td>
+                                                                <?php if (isset($row['fail_count']) && $row['fail_count'] >= 3): ?>
+
+                                                                    <span class="badge badge-danger">Sonuç: <?= htmlspecialchars($row['score']) ?> Puan</span>
+                                                                <?php elseif (isset($row['score']) && $row['score'] >= 80): ?>
+                                                                    <span class="badge badge-success">Sonuç: <?= htmlspecialchars($row['score']) ?> Puan</span>
+                                                                <?php else: ?>
+                                                                    <button class="btn btn-primary start-exam-btn btn-sm" data-id="<?= $row['id'] ?>">Sınava Gir</button>
+                                                                <?php endif; ?>
+                                                            </td>
+                                                        </tr>
+                                                    <?php endforeach; ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
 
 
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <?php include_once "views/footer.php"; ?>
                     </div>
-                    <?php include_once "views/footer.php"; ?>
+                    <?php include_once "views/aside.php"; ?>
                 </div>
-                <?php include_once "views/aside.php"; ?>
             </div>
-        </div>
         </div>
         <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
             <i class="ki-duotone ki-arrow-up">

@@ -21,8 +21,9 @@ class AddContentContr extends AddContent
 	private $descriptions;
 	private $titles;
 	private $urls;
+	private $is_approved;
 
-	public function __construct($name, $classes, $lessons, $units, $topics, $sub_topics, $short_desc, $content, $video_url, $files, $imageFiles, $photoSize, $photoName, $fileTmpName, $descriptions, $titles, $urls)
+	public function __construct($name, $classes, $lessons, $units, $topics, $sub_topics, $short_desc, $content, $video_url, $files, $imageFiles, $photoSize, $photoName, $fileTmpName, $descriptions, $titles, $urls,$is_approved)
 	{
 		$this->photoSize = $photoSize;
 		$this->photoName = $photoName;
@@ -41,6 +42,7 @@ class AddContentContr extends AddContent
 		$this->descriptions = $descriptions;
 		$this->titles = $titles;
 		$this->urls = $urls;
+		$this->is_approved = $is_approved;
 	}
 
 
@@ -99,6 +101,8 @@ class AddContentContr extends AddContent
 			}
 		}
 
-		$this->setContent($imgName, $slug, $this->name, $this->classes, $this->lessons, $this->units, $this->short_desc, $this->topics, $this->sub_topics, $this->content, $this->video_url, $file_urls, $this->imageFiles, $this->descriptions, $this->titles, $this->urls);
+		$result = $this->setContent($imgName, $slug, $this->name, $this->classes, $this->lessons, $this->units, $this->short_desc, $this->topics, $this->sub_topics, $this->content, $this->video_url, $file_urls, $this->imageFiles, $this->descriptions, $this->titles, $this->urls, $this->is_approved);
+		return $result;
+
 	}
 }

@@ -10,7 +10,7 @@ class Menus extends Dbh
 		//$stmt = $this->connect()->prepare('SELECT menus_lnp.name AS menuName, menus_lnp.slug AS menuSlug, menus_lnp.role AS menuRole, menus_lnp.parent AS menuParent, menusparent_lnp.name AS accordionName, menusparent_lnp.accordion AS accordionNo, menusparent_lnp.classes AS accordionClasses FROM menusparent_lnp INNER JOIN menus_lnp ON menusparent_lnp.accordion = menus_lnp.parent');
 
 		//$stmt = $this->connect()->prepare('SELECT name, slug, role, parent, accordion, classes FROM menus_lnp');
-		$stmt = $this->connect()->prepare('SELECT name, classes, role, parent, accordion FROM menusparent_lnp WHERE accordion = ?');
+		$stmt = $this->connect()->prepare('SELECT name, classes, role, parent, accordion, slug FROM menusparent_lnp WHERE accordion = ?');
 
 		if (!$stmt->execute(array($i))) {
 			$stmt = null;
@@ -84,7 +84,7 @@ class Menus extends Dbh
 	protected function getLessonsListForSubMenu($slug)
 	{
 
-		$stmt = $this->connect()->prepare('SELECT class_id FROM lessons_lnp WHERE slug = ?');
+		$stmt = $this->connect()->prepare('SELECT class_id, package_type FROM lessons_lnp WHERE slug = ?');
 
 		if (!$stmt->execute(array($slug))) {
 			$stmt = null;
@@ -109,6 +109,32 @@ class Menus extends Dbh
 		$menuData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 		return $menuData;
+	}
+
+	public function controlDevelopmentPack(){
+		$stmt = $this->connect()->prepare('SELECT * FROM extra_package_payments_lnp WHERE user_id = ? AND development_package_id IS NOT NULL');
+
+		if (!$stmt->execute(array($_SESSION['id']))) {
+			$stmt = null;
+			exit();
+		}
+
+		$Data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $Data;
+	}
+
+	public function controlKoclukPack(){
+		$stmt = $this->connect()->prepare('SELECT * FROM extra_package_payments_lnp INNER JOIN extra_packages_lnp ON extra_package_payments_lnp.package_id = extra_packages_lnp.id WHERE extra_package_payments_lnp.user_id = ? AND extra_packages_lnp.type = "Koçluk"');
+
+		if (!$stmt->execute(array($_SESSION['id']))) {
+			$stmt = null;
+			exit();
+		}
+
+		$Data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $Data;
 	}
 
 	public function getLessonTitle($slug)

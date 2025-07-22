@@ -657,9 +657,20 @@ class ShowSchool extends School
         $dateFormat = new DateFormat();
 
         foreach ($teachersInfo as $key => $value) {
+
+            if ($value['active'] == 1) {
+                $aktifArama = 'data-filter="Aktif"';
+                $aktifYazi = '<span class="badge badge-light-success">Aktif</span>';
+            } else {
+                $aktifArama = 'data-filter="Passive"';
+                $aktifYazi = '<span class="badge badge-light-danger">Pasif</span>';
+            }
+
+            $alter_button = $value['active'] ? "Pasif Yap" : "Aktif Yap";
+
             $teacherData = '<tr>
-                                <td>
-                                    <a href="#" class="text-gray-600 text-hover-primary mb-1"> ' . $value['name'] . ' ' . $value['surname'] . '</a>
+                                <td data-file-id="' . $value['email'] . '">
+                                    <a href="ogretmen-detay/' . $value['username'] . '" class="text-gray-600 text-hover-primary mb-1"> ' . $value['name'] . ' ' . $value['surname'] . '</a>
                                 </td>
                                 <td>
                                     <a href="mailto' . $value['email'] . '" class="text-gray-600 text-hover-primary mb-1"> ' . $value['email'] . '</a>
@@ -667,10 +678,26 @@ class ShowSchool extends School
                                 <td>
                                     <a href="tel' . $value['telephone'] . '" class="text-gray-600 text-hover-primary mb-1"> ' . $value['telephone'] . '</a>
                                 </td>
+                                <td>' . $aktifYazi . '</td>
                                 <td class="pe-0 text-end">
-                                    <a href="#" class="btn btn-sm btn-light image.png btn-active-light-primary" data-kt-menu-trigger="click"
-                                        data-kt-menu-placement="bottom-end">İşlemler
+                                    <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
+                                        data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
                                         <i class="ki-duotone ki-down fs-5 ms-1"></i></a>
+                                    <!--begin::Menu-->
+                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
+                                        data-kt-menu="true">
+                                        <!--begin::Menu item-->
+                                        <div class="menu-item px-3">
+                                            <a href="./ogretmen-detay/' . $value['username'] . '" class="menu-link px-3">Görüntüle</a>
+                                        </div>
+                                        <!--end::Menu item-->
+                                        <!--begin::Menu item-->
+                                        <div class="menu-item px-3">
+                                            <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row2">'. $alter_button .'</a>
+                                        </div>
+                                        <!--end::Menu item-->
+                                    </div>
+                                    <!--end::Menu-->
                                 </td>
                             </tr>';
             echo $teacherData;
@@ -691,14 +718,26 @@ class ShowSchool extends School
         $dateFormat = new DateFormat();
 
         foreach ($studentsInfo as $key => $value) {
+
+            if ($value['active'] == 1) {
+                $aktifArama = 'data-filter="Aktif"';
+                $aktifYazi = '<span class="badge badge-light-success">Aktif</span>';
+            } else {
+                $aktifArama = 'data-filter="Passive"';
+                $aktifYazi = '<span class="badge badge-light-danger">Pasif</span>';
+            }
+
+            $alter_button = $value['active'] ? "Pasif Yap" : "Aktif Yap";
+
             $studentData = '<tr>
-                                <td>
+                                <td data-file-id="' . $value['email'] . '">
                                     <a href="ogrenci-detay/' . $value['username'] . '" class="text-gray-600 text-hover-primary mb-1"> ' . $value['name'] . ' ' . $value['surname'] . '</a>
                                 </td>
                                 <td>
                                     <a href="mailto:' . $value['email'] . '" class="text-gray-600 text-hover-primary mb-1"> ' . $value['email'] . '</a>
                                 </td>
                                 <td>' . $dateFormat->changeDate($value['subscribed_end']) . '</td>
+                                <td>' . $aktifYazi . '</td>
                                 <td class="pe-0 text-end">
                                     <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                         data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
@@ -713,7 +752,7 @@ class ShowSchool extends School
                                         <!--end::Menu item-->
                                         <!--begin::Menu item-->
                                         <div class="menu-item px-3">
-                                            <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
+                                            <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">'. $alter_button .'</a>
                                         </div>
                                         <!--end::Menu item-->
                                     </div>

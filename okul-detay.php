@@ -164,6 +164,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 																		<th class="min-w-100px">Öğrenci Adı</th>
 																		<th>E-posta Adresi</th>
 																		<th class="min-w-100px">Üyelik Bitiş Tarihi</th>
+																		<th class="min-w-100px">Durum</th>
 																		<th class="text-end min-w-100px pe-4">İşlemler</th>
 																	</tr>
 																</thead>
@@ -213,6 +214,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 																		<th class="min-w-100px">Öğretmen Adı</th>
 																		<th>E-posta Adresi</th>
 																		<th>Telefon Numarası</th>
+																		<th class="min-w-100px">Durum</th>
 																		<th class="text-end min-w-100px pe-4">İşlemler</th>
 																	</tr>
 																</thead>
@@ -294,7 +296,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 		<script src="assets/js/custom/apps/customers/view/add-payment.js"></script>
 		<script src="assets/js/custom/apps/customers/view/adjust-balance.js"></script>
 		<!-- <script src="assets/js/custom/apps/customers/view/invoices.js"></script> -->
-		<script src="assets/js/custom/apps/customers/view/payment-method.js"></script>
+		<!-- <script src="assets/js/custom/apps/customers/view/payment-method.js"></script> -->
 		<script src="assets/js/custom/apps/customers/view/payment-table.js"></script>
 		<script src="assets/js/custom/apps/customers/view/teachers-table.js"></script>
 		<!-- <script src="assets/js/custom/apps/customers/view/statement.js"></script> -->

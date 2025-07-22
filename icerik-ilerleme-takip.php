@@ -6,15 +6,35 @@ define('GUARD', true);
 // ini_set('display_startup_errors', 1);
 // error_reporting(E_ALL);
 
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 4 or $_SESSION['role'] == 5 or $_SESSION['role'] == 8)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 2 or $_SESSION['role'] == 3 or $_SESSION['role'] == 4 or $_SESSION['role'] == 5 or $_SESSION['role'] == 8)) {
     include_once "classes/dbh.classes.php";
     include_once "classes/student.classes.php";
     include_once "classes/student-view.classes.php";
     include_once "views/pages-head.php";
 
+
+
+
     $studentObj = new Student();
     $student = new ShowStudent();
     $query_student_id = $_GET['q'];
+    $parent = $studentObj->getUserById($query_student_id);
+    if (isset($parent['child_id'])) {
+        header("HTTP/1.0 404 Not Found");
+        header("Location: 404.php");
+        exit();
+    }
+    if (($query_student_id == $parent['child_id']) && ($_SESSION['role'] == 5)) {
+
+        $studentModel = $studentObj->getStudentByIdAndRole($parent['child_id']);
+
+    } elseif (($_SESSION['id'] == $query_student_id) && ($_SESSION['role'] == 2)) {
+        $studentModel = $studentObj->getStudentByIdAndRole($query_student_id);
+
+    } elseif ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 8 or $_SESSION['role'] == 8) {
+        $studentModel = $studentObj->getStudentByIdAndRole($query_student_id);
+    }
+
     $studentModel = $studentObj->getStudentByIdAndRole($query_student_id);
     if (empty($studentModel)) {
         header("HTTP/1.0 404 Not Found");

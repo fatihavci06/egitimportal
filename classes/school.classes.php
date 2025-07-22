@@ -123,7 +123,7 @@ class School extends Dbh {
 
 	public function getSchoolStudents($id){
 
-		$stmt = $this->connect()->prepare('SELECT * FROM users_lnp WHERE role = ? AND school_id = ?');
+		$stmt = $this->connect()->prepare('SELECT * FROM users_lnp WHERE role = ? AND school_id = ? ORDER BY active DESC');
 
 		if(!$stmt->execute(array(2, $id))){
 			$stmt = null;

@@ -17,10 +17,11 @@ function monitorVimeoPlayer() {
         initializePlayer();
     }
 
-    function sendVideoData(videoId, timestamp) {
+    function sendVideoData(videoId, timestamp, videoLength) {
         const data = {
             video_id: videoId,
-            timestamp: timestamp
+            timestamp: timestamp,
+            duration: videoLength
         };
 
         fetch('includes/track-timestamp-video.inc.php', {
@@ -41,30 +42,39 @@ function monitorVimeoPlayer() {
         const logCurrentTime = async () => {
             try {
                 const currentTime = await player.getCurrentTime();
-                const currentSecond = Math.floor(currentTime);
+                const videoLength = await player.getDuration();
+                const timestamp = Math.floor(currentTime);
+                const duration = Math.floor(videoLength);
 
-                if (currentSecond !== lastLoggedSecond) {
-                    lastLoggedSecond = currentSecond;
+                if (videoId) {
+                    sendVideoData(videoId, timestamp, duration);
+                    console.log('Data sent');
+
                 }
             } catch (error) {
-                console.error('Error getting current time:', error);
+                console.error('Error getting timestamp on video pause:', error);
             }
+
+            console.log('Video paused - stopped monitoring');
         };
-        intervalId = setInterval(logCurrentTime, 1000);
+        intervalId = setInterval(logCurrentTime, 12000);
 
         player.on('pause', async () => {
-            if (intervalId) {
-                clearInterval(intervalId);
-                intervalId = null;
-            }
+            // if (intervalId) {
+            //     clearInterval(intervalId);
+            //     intervalId = null;
+            // }
 
             try {
                 const currentTime = await player.getCurrentTime();
+                const videoLength = await player.getDuration();
                 const timestamp = Math.floor(currentTime);
-                console.log(`Video paused at timestamp: ${timestamp} seconds`);
+                const duration = Math.floor(videoLength);
 
                 if (videoId) {
-                    sendVideoData(videoId, timestamp);
+                    sendVideoData(videoId, timestamp, duration);
+                    console.log('Data sent');
+
                 }
             } catch (error) {
                 console.error('Error getting timestamp on video pause:', error);
@@ -80,6 +90,8 @@ function monitorVimeoPlayer() {
                     const currentTime = await player.getCurrentTime();
                     const timestamp = Math.floor(currentTime);
                     const videoLength = await player.getDuration();
+
+                    console.log(videoLength);
                     const duration = Math.floor(videoLength);
 
                     const data = JSON.stringify({

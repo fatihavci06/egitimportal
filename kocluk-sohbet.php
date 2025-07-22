@@ -9,6 +9,11 @@ if (!isset($_SESSION['role'])) {
     header("Location: 404.php");
     exit();
 }
+if (($_SESSION['role'] != 2) && ($_SESSION['role'] != 10)) {
+    header("HTTP/1.0 404 Not Found");
+    header("Location: 404.php");
+    exit();
+}
 include_once "classes/dbh.classes.php";
 
 include_once "views/pages-head.php";

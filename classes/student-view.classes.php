@@ -240,11 +240,11 @@ class ShowStudent extends Student
 
             $percentage = $contentObj->getSchoolContentAnalyticsOverall($value['id']);
             $percentageW = ($percentage == null) ? 0 : $percentage;
-            $percentageT = ($percentage == null) ? '-' : $percentage;
+            $percentageT = ($percentage === null) ? '-' : $percentage;
 
             $score = $gradeObj->getGradeOverall($value['id'], );
             $scoreW = ($score == null) ? 0 : $score;
-            $scoreT = ($score == null) ? '-' : $score;
+            $scoreT = ($score === null) ? '-' : $score;
 
             $studentList .= '
                     <tr>
@@ -275,13 +275,16 @@ class ShowStudent extends Student
         }
         echo $studentList;
     }
-    public function getStudentsProgressListForParent($userID)
+    public function getStudentsProgressListForParent($childId, $isParent)
     {
 
-        $schoolInfo = $this->getStudentsListForParent($userID);
+        if ($isParent) {
+            $parent = $this->getUserById($childId);
+            $childWithSchoolInfo = $this->getUserById($parent['child_id']);
+        } else {
+            $childWithSchoolInfo = $this->getUserById($childId);
 
-        // var_dump($schoolInfo);
-        // die();
+        }
 
         $dateFormat = new DateFormat();
         $studentList = '';
@@ -292,48 +295,46 @@ class ShowStudent extends Student
         $gradeObj = new GradeResult();
 
 
-        foreach ($schoolInfo as $key => $value) {
-            $sinifArama = 'data-filter="' . $value['classSlug'] . '"';
+        $sinifArama = 'data-filter="' . $childWithSchoolInfo['classSlug'] . '"';
 
-            if ($value['userActive'] == 1) {
-                $aktifArama = 'data-filter="Aktif"';
-                $aktifYazi = '<span class="badge badge-light-success">Aktif</span>';
-            } else {
-                $aktifArama = 'data-filter="Passive"';
-                $aktifYazi = '<span class="badge badge-light-danger">Pasif</span>';
-            }
 
-            $alter_button = $value['active'] ? "Pasif Yap" : "Aktif Yap";
 
-            $percentage = $contentObj->getSchoolContentAnalyticsOverall($value['id']);
-            $percentageW = ($percentage == null) ? 0 : $percentage;
-            $percentageT = ($percentage == null) ? '-' : $percentage;
+        $alter_button = $childWithSchoolInfo['active'] ? "Pasif Yap" : "Aktif Yap";
 
-            $score = $gradeObj->getGradeOverall($value['id'], );
-            $scoreW = ($score == null) ? 0 : $score;
-            $scoreT = ($score == null) ? '-' : $score;
+        $percentage = $contentObj->getSchoolContentAnalyticsOverall($childWithSchoolInfo['id']);
+        $percentageW = ($percentage == null) ? 0 : $percentage;
+        $percentageT = ($percentage === null) ? '-' : $percentage;
 
-            $studentList .= '
+        $score = $gradeObj->getGradeOverall($childWithSchoolInfo['id'], );
+        $scoreW = ($score == null) ? 0 : $score;
+        $scoreT = ($score === null) ? '-' : $score;
+
+        $studentList .= '
                     <tr>
-                        <td ' . $aktifArama . '>
-                            <a href="./ogrenci-detay/' . $value['username'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['name'] . ' ' . $value['surname'] . '</a>
+                        <td>
+                            <a href="./ogrenci-detay/' . $childWithSchoolInfo['username'] . '" class="text-gray-800 text-hover-primary mb-1">' . $childWithSchoolInfo['name'] . ' ' . $childWithSchoolInfo['surname'] . '</a>
                         </td>
                         <td ' . $sinifArama . '>
-                            ' . $value['className'] . '
+                            ' . $childWithSchoolInfo['className'] . '
                         </td>
-                        <td data-filter="' . $value['schoolName'] . '">
-                            ' . $value['schoolName'] . '
+                        <td data-filter="' . $childWithSchoolInfo['schoolName'] . '">
+                            ' . $childWithSchoolInfo['schoolName'] . '
                         </td>
-                        <td>
-                            <span class="fw-bold fs-6">' . $percentageT . '%</span>
+                        <td class="text-end">
+                            <span class="fw-bold fs-6">' . $percentage . '%</span>
                         </td>
-                        <td>
+                        <td class="text-end">
                             <span class="fw-bold fs-6">' . $scoreT . '%</span>
                         </td>
-
+                        <td class="text-center">
+                            <a href="./icerik-ilerleme-takip/' . $childWithSchoolInfo['id'] . '" class="text-gray-800 text-hover-primary mb-1"> 
+                            <i class="ki-duotone ki-chart-line text-gray-900 fs-2tx">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i></a>
+                        </td>
                     </tr>
                 ';
-        }
         echo $studentList;
     }
     public function getStudentProgress($userId, $classId)
@@ -995,13 +996,13 @@ class ShowStudent extends Student
                 $unitData = $this->getUnits($lesson_id, $class_id, $school_id);
                 $unitCount = count($unitData);
 
-                $result = $contentObj->getSchoolContentAnalyticsByLessonId($studentId, $class_id, $lesson_id);
-                $resultW = ($result == null) ? 0 : $result;
-                $resultT = ($result == null) ? '-' : $result;
+                $percentage = $contentObj->getSchoolContentAnalyticsByLessonId($studentId, $class_id, $lesson_id);
+                $percentageW = ($percentage == null) ? 0 : $percentage;
+                $percentageT = ($percentage === null) ? '-' : $percentage;
 
                 $score = $gradeObj->getGradeByLessonId($studentId, $lesson_id);
                 $scoreW = ($score == null) ? 0 : $score;
-                $scoreT = ($score == null) ? '-' : $score;
+                $scoreT = ($score === null) ? '-' : $score;
 
                 $lessonList .= '
                 <!--begin::Item-->
@@ -1015,17 +1016,17 @@ class ShowStudent extends Student
                         <div class="d-flex align-items-center flex-row-fluid flex-wrap">
                             <!--begin:Author-->
                             <div class="flex-grow-1 me-2">
-                                <a href="pages/user-profile/overview.html" class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $value['name'] . '</a>
+                                <a  class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $value['name'] . '</a>
                                 <span class="text-muted fw-semibold d-block fs-7">' . $unitCount . ' Ünite</span>
                             </div>
                             <!--end:Author--><!--begin::Progress-->
                             <div class="d-flex align-items-center w-100px w-sm-200px flex-column mt-3">
                                 <div class="d-flex justify-content-between w-100 mt-auto mb-2">
                                     <span class="fw-semibold fs-6 text-gray-500">Tamamlama Oranı</span>
-                                    <span class="fw-bold fs-6">' . $resultT . '%</span>
+                                    <span class="fw-bold fs-6">' . $percentageT . '%</span>
                                 </div>
                                 <div class="h-5px mx-3 w-100 bg-light mb-3">
-                                    <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $resultW . '%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                    <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $percentageW . '%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
                                 <div class="d-flex justify-content-between w-100 mt-auto mb-2">
                                     <span class="fw-semibold fs-6 text-gray-500">Başarı Oranı</span>
@@ -1462,13 +1463,13 @@ $packagesList .= '<tr>
                     $topicData = $this->getTopics($lesson_id, $class_id, $school_id, $unit['id']);
                     $topicCount = count($topicData);
 
-                    $result = $contentObj->getSchoolContentAnalyticsByUnitId($getStudentId, $class_id, $lesson_id, $unit['id']);
-                    $resultW = ($result == null) ? 0 : $result;
-                    $resultT = ($result == null) ? '-' : $result;
+                    $percentage = $contentObj->getSchoolContentAnalyticsByUnitId($getStudentId, $class_id, $lesson_id, $unit['id']);
+                    $percentageW = ($percentage == null) ? 0 : $percentage;
+                    $percentageT = ($percentage === null) ? '-' : $percentage;
 
                     $score = $gradeObj->getGradeByUnitId($getStudentId, $unit['id']);
                     $scoreW = ($score == null) ? 0 : $score;
-                    $scoreT = ($score == null) ? '-' : $score;
+                    $scoreT = ($score === null) ? '-' : $score;
                     $units .= '
                             <!--begin::Item-->
                                 <div class="d-flex flex-stack">
@@ -1481,7 +1482,7 @@ $packagesList .= '<tr>
                                     <div class="d-flex align-items-center flex-row-fluid ">
                                         <!--begin:Author-->
                                         <div class="flex-grow-1 me-2">
-                                            <a href="' . $unit['id'] . '" class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $unit['name'] . '</a>
+                                            <a class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $unit['name'] . '</a>
                                             <span class="text-muted fw-semibold d-block fs-7">' . $topicCount . ' Konu</span>
                                         </div>
                                         <!--end:Author-->
@@ -1489,11 +1490,11 @@ $packagesList .= '<tr>
                                         <div class="d-flex align-items-center w-100px w-sm-200px flex-column mt-3">
                                             <div class="d-flex justify-content-between w-100 mt-auto mb-2">
                                                 <span class="fw-semibold fs-6 text-gray-500">Tamamlama Oranı</span>
-                                                <span class="fw-bold fs-6">' . $resultT . '%</span>
+                                                <span class="fw-bold fs-6">' . $percentageT . '%</span>
                                                 
                                             </div>
                                             <div class="h-5px mx-3 w-100 bg-light mb-3">
-                                                <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $resultW . '%;" aria-valuenow="25"
+                                                <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $percentageW . '%;" aria-valuenow="25"
                                                     aria-valuemin="0" aria-valuemax="100"></div>
                                             </div>
                                             <div class="d-flex justify-content-between w-100 mt-auto mb-2">
@@ -1585,6 +1586,9 @@ $packagesList .= '<tr>
                 $loginList .= '<tr>
                                     <td>
                                         ' . $value['deviceType'] . '
+                                    </td>
+                                    <td>
+                                        ' . $value['deviceModel'] . '
                                     </td>
                                     <td>' . $value['deviceOs'] . '</td>
                                     <td>' . $value['browser'] . '</td>
