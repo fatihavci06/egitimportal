@@ -1,8 +1,8 @@
 <?php
 session_start();
-
+$apiKey = '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'; // Buraya OpenAI API key'inizi yazın
 if (isset($_SESSION['role'])) {
-    $apiKey = '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'; // Buraya OpenAI API key'inizi yazın
+    
 
     $input = json_decode(file_get_contents("php://input"), true);
     $userMessage = trim($input['message'] ?? '');
