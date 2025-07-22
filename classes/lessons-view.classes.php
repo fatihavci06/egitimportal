@@ -55,6 +55,55 @@ class ShowLesson extends Lessons
         }
     }
 
+    public function getLessonListBySchool()
+    {
+
+        include_once "classes.classes.php";
+        $classes = new Classes();
+
+
+        $lessonsInfo = $this->getLessonsListBySchool($_SESSION['school_id']);
+
+        $dateFormat = new DateFormat();
+
+
+
+        foreach ($lessonsInfo as $key => $value) {
+
+            $class_Names = "";
+
+            $classArray = explode(";", $value['class_id']);
+
+            $lastKey = array_key_last($classArray);
+
+            foreach ($classArray as $key => $classValue) {
+                $className = $classes->getClassByLesson($classValue);
+
+                if ($key === $lastKey) {
+                    $class_Names .= $className['name'];
+                } else {
+                    $class_Names .= $className['name'] . ' - ';
+                }
+            }
+
+            $lessonList = '
+                    <tr>
+                        <td>
+                            <div class="form-check form-check-sm form-check-custom form-check-solid">
+                                <input class="form-check-input" type="checkbox" value="1" />
+                            </div>
+                        </td>
+                        <td>
+                            ' . $value['name'] . '
+                        </td>
+                        <td>
+                            ' . $class_Names . '
+                        </td>
+                    </tr>
+                ';
+            echo $lessonList;
+        }
+    }
     // Get Lesson List Select
 
     public function getLessonSelectList()
@@ -612,11 +661,11 @@ class ShowLesson extends Lessons
 
             foreach ($classList as $classId) {
                 if ($class == $classId) {
-                    $units[] = array("id" => $unit["id"], "text" => $unit["name"],"package_type" => $unit["package_type"]);
+                    $units[] = array("id" => $unit["id"], "text" => $unit["name"], "package_type" => $unit["package_type"]);
                 }
             }
         }
-        	
+
         echo json_encode($units);
     }
 

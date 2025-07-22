@@ -66,7 +66,7 @@ var KTCustomerViewPaymentTable2 = function () {
 
                 // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
                 Swal.fire({
-                    text: customerName + " isimli alt konuyu " + activeStatus + " yapmak istediğinizden emin misiniz?",
+                    text: customerName + " isimli öğretmeni " + activeStatus + " yapmak istediğinizden emin misiniz?",
                     icon: "warning",
                     showCancelButton: true,
                     buttonsStyling: false,
@@ -81,9 +81,9 @@ var KTCustomerViewPaymentTable2 = function () {
 
                         $.ajax({
                             type: "POST",
-                            url: "includes/update_active_subtopic.inc.php",
+                            url: "includes/update_active_student.inc.php",
                             data: {
-                                id: fileId,
+                                email: fileId,
                                 statusVal: statusVal,
                             },
                             dataType: "json",
@@ -91,7 +91,7 @@ var KTCustomerViewPaymentTable2 = function () {
                                 if (response.status === "success") {
 
                                     Swal.fire({
-                                        text: customerName + "adlı alt konu " + activeStatus + " hale gelmiştir!.",
+                                        text: customerName + "adlı öğretmen " + activeStatus + " hale gelmiştir!.",
                                         icon: "success",
                                         buttonsStyling: false,
                                         confirmButtonText: "Tamam, anladım!",
@@ -160,7 +160,7 @@ var KTCustomerViewPaymentTable2 = function () {
                             text: customerName + " pasif edilmedi.",
                             icon: "error",
                             buttonsStyling: false,
-                            confirmButtonText: "Ok, got it!",
+                            confirmButtonText: "Tamam, anladım!",
                             customClass: {
                                 confirmButton: "btn fw-bold btn-primary",
                             }

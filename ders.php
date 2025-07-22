@@ -67,8 +67,8 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 												<!--begin::Top-->
 												<div class="text-center mb-12">
 													<!--begin::Title-->
-													<h3 class="fs-2hx text-gray-900 mb-5">Üniteler
-														<i class="ki-duotone ki-clipboard text-warning fs-2hx">
+													<h3 class="fs-2x text-gray-900 mb-5">Üniteler
+														<i class="ki-duotone ki-clipboard text-warning fs-2x">
 															<span class="path1"></span>
 															<span class="path2"></span>
 															<span class="path3"></span>

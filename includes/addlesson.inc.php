@@ -4,9 +4,20 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
 	// Grabbing the data
 	$name = $_POST["name"];
-	$classes = $_POST["classes"];
-	$package_type = $_POST["package_type"];
-	$classes = implode(";", $classes);
+	$classes = $_POST["classes"] ?? [];
+	$package_type = $_POST["package_type"] ?? "0";
+	$classes = implode(";", array_map('htmlspecialchars', $classes));
+
+	// echo json_encode(["status" => "error", "message" => $_POST]);
+	// exit();
+	// echo json_encode($_POST);
+	// exit();
+
+	if (empty($name)) {
+
+		echo json_encode(["status" => "error", "message" => "Bir hata oluştu"]);
+		exit();
+	}
 
 	// Instantiate AddLessonContr class
 	include "../classes/dbh.classes.php";
@@ -15,12 +26,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 	include "../classes/slug.classes.php";
 
 
-	$addLesson = new AddLessonContr($name, $classes,$package_type);
+	$addLesson = new AddLessonContr($name, $classes, $package_type);
+
+
 
 	// Running error handlers and school addLesson
 	$addLesson->addLessonDb();
 
-	
+
 
 
 	// Going to back to products page

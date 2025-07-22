@@ -29,9 +29,9 @@ class ShowContents extends GetContent
 
             $alter_button = $value['active'] ? "Pasif Yap" : "Aktif Yap";
 
-            if($_SESSION['role'] == 4) {
+            if ($_SESSION['role'] == 4) {
                 $passiveButton = '';
-            }else{
+            } else {
                 $passiveButton = '
                                 <!--begin::Menu item-->
                                 <div class="menu-item px-3">
@@ -42,6 +42,10 @@ class ShowContents extends GetContent
 
             $subTopicName = $value['subTopicName'] ?? '-';
 
+            $approv_status = '<span class="badge badge-light-success">Onaylandı</span>';
+            if (!$value['is_approved']) {
+                $approv_status = '<span class="badge badge-light-danger">Onaylanmadı</span>';
+            }
             $contentList = '
                     <tr>
                         <td>
@@ -49,7 +53,7 @@ class ShowContents extends GetContent
                                 <input class="form-check-input" type="checkbox" value="1" />
                             </div>
                         </td>
-                        <td data-file-id="'. $value['id'] .'">
+                        <td data-file-id="' . $value['id'] . '">
                             <a href="./icerik-detay/' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
                         </td>
                         <td>
@@ -68,6 +72,7 @@ class ShowContents extends GetContent
                             ' . $value['className'] . '
                         </td>
                         <td>' . $aktifYazi . '</td>
+                        <td>' . $approv_status . '</td>
                         <td class="text-end">
                             <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
@@ -92,9 +97,260 @@ class ShowContents extends GetContent
             echo $contentList;
         }
     }
+    public function getContentsListBySchool($schoolId)
+    {
 
+        $contentInfo = $this->getAllContentsBySchool($schoolId);
+
+        $dateFormat = new DateFormat();
+
+        foreach ($contentInfo as $key => $value) {
+
+
+            if ($value['active'] == 1) {
+                $aktifArama = 'data-filter="Aktif"';
+                $aktifYazi = '<span class="badge badge-light-success">Aktif</span>';
+            } else {
+                $aktifArama = 'data-filter="Passive"';
+                $aktifYazi = '<span class="badge badge-light-danger">Pasif</span>';
+            }
+
+            $alter_button = $value['active'] ? "Pasif Yap" : "Aktif Yap";
+
+            if ($_SESSION['role'] == 4) {
+                $passiveButton = '';
+            } else {
+                $passiveButton = '
+                                <!--begin::Menu item-->
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">' . $alter_button . '</a>
+                                </div>
+                                <!--end::Menu item-->';
+            }
+
+            $subTopicName = $value['subTopicName'] ?? '-';
+
+            $approv_status = '<span class="badge badge-light-success">Onaylandı</span>';
+            if (!$value['is_approved']) {
+                $approv_status = '<span class="badge badge-light-danger">Onaylanmadı</span>';
+            }
+            $contentList = '
+                    <tr>
+                        <td>
+                            <div class="form-check form-check-sm form-check-custom form-check-solid">
+                                <input class="form-check-input" type="checkbox" value="1" />
+                            </div>
+                        </td>
+                        <td data-file-id="' . $value['id'] . '">
+                            <a href="./icerik-detay/' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
+                        </td>
+                        <td>
+                           ' . $subTopicName . '
+                        </td>
+                        <td>
+                            ' . $value['topicName'] . '
+                        </td>
+                        <td>
+                            ' . $value['unitName'] . '
+                        </td>
+                        <td>
+                            ' . $value['lessonName'] . '
+                        </td>
+                        <td>
+                            ' . $value['className'] . '
+                        </td>
+                        <td>' . $aktifYazi . '</td>
+                        <td>' . $approv_status . '</td>
+                        <td class="text-end">
+                            <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
+                                data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
+                                <i class="ki-duotone ki-down fs-5 ms-1"></i></a>
+                            <!--begin::Menu-->
+                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
+                                data-kt-menu="true">
+                                <!--begin::Menu item-->
+                                <div class="menu-item px-3">
+                                    <a href="./icerik-guncelle/' . $value['slug'] . '" class="menu-link px-3">Güncelle</a>
+                                </div>
+                                <div class="menu-item px-3">
+                                    <a href="./icerik-detay/' . $value['slug'] . '" class="menu-link px-3">Görüntüle</a>
+                                </div>
+                                <!--end::Menu item-->
+                                ' . $passiveButton . '
+                            </div>
+                            <!--end::Menu-->
+                        </td>
+                    </tr>
+                ';
+            echo $contentList;
+        }
+    }
+    public function getAllContentsBySchool($schoolId)
+    {
+        $stmt = $this->connect()->prepare('SELECT 
+		school_content_lnp.*, 
+		classes_lnp.name AS className, 
+		lessons_lnp.name AS lessonName, 
+		units_lnp.name AS unitName, 
+		topics_lnp.name AS topicName, 
+		subtopics_lnp.name AS subTopicName 
+		FROM school_content_lnp 
+		LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id 
+		LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id 
+		LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id 
+		LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id 
+		LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id 
+        WHERE school_content_lnp.school_id = :school_id
+		ORDER BY school_content_lnp.id DESC');
+
+        if (!$stmt->execute(['school_id' => $schoolId])) {
+            $stmt = null;
+            exit();
+        }
+
+        $contentData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $contentData;
+
+        $stmt = null;
+    }
+
+    public function getNotApprovedContentsList()
+    {
+
+        $contentInfo = $this->getNotApprovedContents();
+
+        $dateFormat = new DateFormat();
+
+        foreach ($contentInfo as $key => $value) {
+
+
+            if ($value['active'] == 1) {
+                $aktifArama = 'data-filter="Aktif"';
+                $aktifYazi = '<span class="badge badge-light-success">Aktif</span>';
+            } else {
+                $aktifArama = 'data-filter="Passive"';
+                $aktifYazi = '<span class="badge badge-light-danger">Pasif</span>';
+            }
+
+            $alter_button = $value['active'] ? "Pasif Yap" : "Aktif Yap";
+
+            if ($_SESSION['role'] == 4) {
+                $passiveButton = '';
+            } else {
+                $passiveButton = '
+                                <!--begin::Menu item-->
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">' . $alter_button . '</a>
+                                </div>
+                                <!--end::Menu item-->';
+            }
+
+            $subTopicName = $value['subTopicName'] ?? '-';
+
+            $approv_status = '<span class="badge badge-light-success">Onaylandı</span>';
+            if (!$value['is_approved']) {
+                $approv_status = '<span class="badge badge-light-danger">Onaylanmadı</span>';
+            }
+            $contentList = '
+                    <tr>
+                        <td>
+                            <div class="form-check form-check-sm form-check-custom form-check-solid">
+                                <input class="form-check-input" type="checkbox" value="1" />
+                            </div>
+                        </td>
+                        <td>
+                            <button type="button" 
+                                    class="btn btn-sm btn-secondary action-button" 
+                                    data-item-id="' . $value['id'] . '"
+                                    data-status-target="status-' . $value['id'] . '">
+                                <span class="indicator-label">Onayla</span>
+                                <span class="indicator-progress">
+                                    Lütfen bekleyin... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                </span>
+                            </button>
+                        </td>
+                        <td data-file-id="' . $value['id'] . '">
+                            <a href="./icerik-detay/' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
+                        </td>
+                       
+                        <td>
+                            ' . $value['schoolName'] . '
+                        </td>
+                        <td>' . $aktifYazi . '</td>
+                        <td>
+                           ' . $subTopicName . '
+                        </td>
+
+                        <td>
+                            ' . $value['topicName'] . '
+                        </td>
+                        <td>
+                            ' . $value['unitName'] . '
+                        </td>
+                        <td>
+                            ' . $value['lessonName'] . '
+                        </td>
+                        <td>
+                            ' . $value['className'] . '
+                        </td>
+
+                        <td class="text-end">
+                            <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
+                                data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
+                                <i class="ki-duotone ki-down fs-5 ms-1"></i></a>
+                            <!--begin::Menu-->
+                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
+                                data-kt-menu="true">
+                                <!--begin::Menu item-->
+                                <div class="menu-item px-3">
+                                    <a href="./icerik-guncelle/' . $value['slug'] . '" class="menu-link px-3">Güncelle</a>
+                                </div>
+                                <div class="menu-item px-3">
+                                    <a href="./icerik-detay/' . $value['slug'] . '" class="menu-link px-3">Görüntüle</a>
+                                </div>
+                                <!--end::Menu item-->
+                                ' . $passiveButton . '
+                            </div>
+                            <!--end::Menu-->
+                        </td>
+                    </tr>
+                ';
+            echo $contentList;
+        }
+    }
     // Show Content Details
+    public function getNotApprovedContents()
+    {
+        $stmt = $this->connect()->prepare('SELECT 
+            school_content_lnp.*, 
+            schools_lnp.name AS schoolName, 
+            classes_lnp.name AS className, 
+            lessons_lnp.name AS lessonName, 
+            units_lnp.name AS unitName, 
+            topics_lnp.name AS topicName, 
+            subtopics_lnp.name AS subTopicName 
+            FROM school_content_lnp 
+            LEFT JOIN schools_lnp ON school_content_lnp.school_id = schools_lnp.id 
+            LEFT JOIN classes_lnp ON school_content_lnp.class_id = classes_lnp.id 
+            LEFT JOIN lessons_lnp ON school_content_lnp.lesson_id = lessons_lnp.id 
+            LEFT JOIN units_lnp ON school_content_lnp.unit_id = units_lnp.id 
+            LEFT JOIN topics_lnp ON school_content_lnp.topic_id = topics_lnp.id 
+            LEFT JOIN subtopics_lnp ON school_content_lnp.subtopic_id = subtopics_lnp.id 
+            WHERE school_content_lnp.is_approved = 0 
+            ORDER BY school_content_lnp.id DESC');
 
+        if (!$stmt->execute()) {
+            $stmt = null;
+            exit();
+        }
+
+        $contentData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $contentData;
+
+        $stmt = null;
+    }
     public function showOneContent($slug)
     {
         $contentId = $this->getContentIdBySlug($slug);
@@ -134,7 +390,7 @@ class ShowContents extends GetContent
                     if (in_array($dosyaUzantisi, $izinVerilenUzantilar)) {
                         $content .= '<div class="mb-3"><h3>' . $file['description'] . '</h3></div>';
                         $content .= '<div class="mb-10"><a href="' . $file['file_path'] . '" download class="btn btn-primary btn-sm" target="_blank"> <i class="bi bi-download"></i> Dosyayı İndir </a></div>';
-                    }else{
+                    } else {
                         $content .= '<div class="mb-3"><h3>' . $file['description'] . '</h3></div>';
                         $content .= '<div class="mb-10"><img src="' . $file['file_path'] . '""></div>';
                     }

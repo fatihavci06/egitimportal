@@ -539,7 +539,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                             </div>
                                                         <?php endif; ?>
                                                     </div>
-                                                    <input type="hidden" name="user_id" value="<?= $_SESSION['user_id'] ?? 1 ?>">
+                                                    <input type="hidden" name="user_id" value="<?= $_SESSION['id'] ?? 1 ?>">
                                                     <div class="text-end mt-4">
                                                         <button type="submit" class="btn btn-success" id="selectPackageButton">Seçili Paketi Onayla</button>
                                                     </div>
@@ -627,13 +627,13 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                         },
                         success: function(response) {
                             if (response.oneTimeToken) {
-                                window.location.href = 'https://sandbox-portal.tami.com.tr/hostedPaymentPage?token=' + response.oneTimeToken;
+                                window.location.href = 'https://portal.tami.com.tr/hostedPaymentPage?token=' + response.oneTimeToken;
                             } else {
                                 alert('Bir hata oluştu: Token alınamadı.');
                             }
                         },
                         error: function(xhr, status, error) {
-                            console.error('Hata:', error);
+                         
                             alert('Sunucu ile iletişimde bir hata oluştu.');
                         }
                     });

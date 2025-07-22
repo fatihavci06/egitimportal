@@ -1,4 +1,4 @@
-<<?php
+<?php
     include_once "dateformat.classes.php";
 
     class ShowCoupons extends Coupon
@@ -13,13 +13,18 @@
 
             foreach ($couponInfo as $key => $value) {
 
+                $discountType = "TL";
+                if ($value['discount_type'] == "percentage") {
+                    $discountType = "Yüzde";
+                }
+
                 $couponList = '
                 <tr>
                     <td>
                        <a href="./kupon-detay?id=' . $value['id'] . '" class="text-gray-800 text-hover-primary mb-1"> ' . $value['coupon_code'] . ' </a>
                    </td>
                    <td>
-                       ' . $value['discount_type'] . '
+                       ' . $discountType . '
                    </td>
                    <td>
                        ' . $value['discount_value'] . '

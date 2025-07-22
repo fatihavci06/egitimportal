@@ -43,7 +43,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
                         <div class="d-flex flex-column flex-column-fluid">
                             <?php include_once "views/toolbar.php"; ?>
-                            <?php if ($_SESSION['role'] == 1) { ?>
+                            <?php if ($_SESSION['role'] == 1 || $_SESSION['role']==9) { ?>
                                 <div id="kt_app_content" class="app-content flex-column-fluid">
                                     <div id="kt_app_content_container" class="app-container container-fluid">
                                         <div class="row">

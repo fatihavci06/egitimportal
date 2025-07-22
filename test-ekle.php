@@ -229,7 +229,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </div>
 
                                         </div>
-                                        
+
                                         <div id="questions_container" class="mt-5"></div>
 
                                         <div class="row mt-5 mb-5">
@@ -876,7 +876,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                 currentMaxQuestionIndex = newIndex;
 
-                const newlyAddedQuestionBlock = questionsContainer.firstElementChild;
+                const newlyAddedQuestionBlock = questionsContainer.lastElementChild;
                 const questionTextarea = newlyAddedQuestionBlock.querySelector('.question-textarea');
                 if (questionTextarea) {
                     initTinyMCE(`#${questionTextarea.id}`);

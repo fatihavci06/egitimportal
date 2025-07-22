@@ -70,4 +70,41 @@ class DateFormat
 
         echo $result;
     }
+
+    public function secondsToReadableTime( $seconds, $precision = null)
+    {
+        if ($seconds < 0) {
+            return '0 saniye';
+        }
+
+        $units = [
+            'yıl' => 365 * 24 * 60 * 60,
+            'ay' => 30 * 24 * 60 * 60,
+            'hafta' => 7 * 24 * 60 * 60,
+            'gün' => 24 * 60 * 60,
+            'saat' => 60 * 60,
+            'dakika' => 60,
+            'saniye' => 1
+        ];
+
+        $result = [];
+        $unitsUsed = 0;
+
+        foreach ($units as $name => $divisor) {
+            $quot = intval($seconds / $divisor);
+
+            if ($quot > 0) {
+                $plural = '';
+                $result[] = "$quot $name$plural";
+                $seconds %= $divisor;
+                $unitsUsed++;
+
+                if ($precision !== null && $unitsUsed >= $precision) {
+                    break;
+                }
+            }
+        }
+
+        return $result ? implode(', ', $result) : '0 saniye';
+    }
 }
