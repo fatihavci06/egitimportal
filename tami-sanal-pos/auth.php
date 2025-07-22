@@ -18,8 +18,8 @@ header('Content-Type: application/json');
 
 try {
   $amount = $_POST['amount'] ?? null;
-  $failCallbackUrl = $_POST['fail_callback_url'] ?? "http://localhost/canlitest/tami-sanal-pos/callback_url.php";
-  $successCallbackUrl = $_POST['success_callback_url'] ?? "http://localhost/canlitest/tami-sanal-pos/callback_url.php";
+  $failCallbackUrl = $_POST['fail_callback_url'] ?? "https://lineupcampus.com/online/tami-sanal-pos/callback_url.php";
+  $successCallbackUrl = $_POST['success_callback_url'] ?? "https://lineupcampus.com/online/tami-sanal-pos/callback_url.php";
   if(isset($_POST['telephone']))
   {
     $telephone=$_POST['telephone'];
@@ -27,7 +27,7 @@ try {
   else{
     $userId = $_SESSION['id'];
     $userInfo = getUserInfo($userId, $pdo);
-    $telephone=$userInfo['telephone'];
+    $telephone="9" . $userInfo['telephone'];
   }
   
   $orderId = getGUID();
@@ -51,6 +51,7 @@ try {
   curl_setopt($ch, CURLOPT_POST, true);
 
   $formattedHeaders = [];
+
   foreach ($headers as $key => $value) {
     $formattedHeaders[] = "$key: $value";
   }
@@ -86,7 +87,7 @@ try {
     'success' => true,
     'oneTimeToken' => $responseArray['oneTimeToken']
   ]);
-
+    
   curl_close($ch);
   exit();
 } catch (Exception $e) {

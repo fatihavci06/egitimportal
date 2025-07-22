@@ -352,21 +352,21 @@ var KTSignupGeneral = function () {
                                             type: "POST",
                                             url: "tami-sanal-pos/auth.php",
                                             data: {
-                                                fail_callback_url: "http://localhost/lineup_campus/odeme-sonuc-tami",
-                                                success_callback_url: "http://localhost/lineup_campus/odeme-sonuc-tami",
+                                                fail_callback_url: "https://lineupcampus.com/online/tami-sanal-pos/callback_url2.php",
+                                                success_callback_url: "https://lineupcampus.com/online/tami-sanal-pos/callback_url.php",
                                                 telephone: '9' + telephone,
                                                 amount: PriceWVat,
                                             },
                                             dataType: "json",
                                             success: function (response) {
+                                                console.log(response.oneTimeToken);
                                                 if (response.oneTimeToken) {
-                                                    window.location.href = 'https://sandbox-portal.tami.com.tr/hostedPaymentPage?token=' + response.oneTimeToken;
+                                                    window.location.href = 'https://portal.tami.com.tr/hostedPaymentPage?token=' + response.oneTimeToken;
                                                 } else {
                                                     alert('Bir hata oluştu: Token alınamadı.');
                                                 }
                                             },
                                             error: function (xhr, status, error) {
-                                                console.error('Hata:', error);
                                                 alert('Sunucu ile iletişimde bir hata oluştu.');
                                             }
                                         });
@@ -385,13 +385,13 @@ var KTSignupGeneral = function () {
                                     }).then(function (result) {
                                         if (result.isConfirmed) {
                                             // Hide modal
-                                            modal.hide();
+                                            //modal.hide();
 
                                             // Enable submit button after loading
                                             submitButton.disabled = false;
 
                                             // Redirect to customers list page
-                                            window.location = form.getAttribute("data-kt-redirect");
+                                            //window.location = form.getAttribute("data-kt-redirect");
                                         }
                                     });
                                 } else {
