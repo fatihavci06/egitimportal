@@ -44,3 +44,4 @@ $headers = [
     'PG-Auth-Token' => $merchantId . ":" . $terminalId. ":". calculateSHA256($merchantId.$terminalId.$secretKey),
     'correlationId' => getGUID()
 ];
+
