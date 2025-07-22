@@ -244,7 +244,7 @@ class ShowUnit extends Units
 
                 $lessonList = '
                             <!--begin::Col-->
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <!--begin::Publications post-->
                                 <div class="card-xl-stretch me-md-6">
                                     <!--begin::Overlay-->
@@ -265,7 +265,7 @@ class ShowUnit extends Units
                                         <a href="' . $link . '" class="fs-4 text-gray-900 fw-bold text-hover-primary text-gray-900 lh-base ' . $class . '">' . $value['name'] . '</a>
                                         <!--end::Title-->
                                         <!--begin::Text-->
-                                        <div class="fw-semibold fs-5 text-gray-600 text-gray-900 mt-3 mb-5">' . $value['short_desc'] . '</div>
+                                        <!-- <div class="fw-semibold fs-5 text-gray-600 text-gray-900 mt-3 mb-5">' . $value['short_desc'] . '</div> -->
                                         ' . $notification . '
                                         <!--end::Text-->
                                     </div>

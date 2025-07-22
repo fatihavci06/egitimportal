@@ -14,6 +14,7 @@ require_once('classes/adduser.classes.php');
 include_once ("classes/packages.classes.php");
 require_once ('classes/Mailer.php');
 require_once('classes/userslist.classes.php');
+require_once('classes/classes.classes.php');
 
 $admin = new User();
 $getadminEmail = $admin->getlnpAdmin();
@@ -100,8 +101,9 @@ if($class == 10 OR $class == 11 OR $class == 12) {
     $role = 2;
 }
 
-$className = $className->getClassByLesson($class);
-$className = $className['name'];
+$classes = new Classes();
+$classDetails = $classes->getClassByLesson($class);
+$className = $classDetails['name'];
 
 $veli_ad = $_SESSION['parentFirstName'];
 $veli_soyad = $_SESSION['parentLastName'];

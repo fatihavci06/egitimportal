@@ -3,7 +3,7 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 8)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 )) {
     include_once "classes/dbh.classes.php";
     include "classes/coupon.classes.php";
     include "classes/coupon-view.classes.php";
@@ -66,13 +66,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             <!--begin::Card title-->
                                             <div class="card-title">
                                                 <!--begin::Search-->
-                                                <div class="d-flex align-items-center position-relative my-1">
-                                                    <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5">
-                                                        <span class="path1"></span>
-                                                        <span class="path2"></span>
-                                                    </i>
-                                                    <input type="text" data-kt-coupon-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder="Öğrenci Ara" />
-                                                </div>
                                                 <!--end::Search-->
                                             </div>
                                             <!--begin::Card title-->
@@ -81,17 +74,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <!--begin::Toolbar-->
                                                 <div class="d-flex justify-content-end" data-kt-coupon-table-toolbar="base">
                                                     <!--begin::Add school-->
-                                                    <?php if ($_SESSION['role'] != 4) { ?><a href="http://localhost/lineup_campus/kupon" class="btn btn-primary btn-sm">Kupon Ekle</a><?php } ?>
+                                                    <?php if($_SESSION['role'] != 4) { ?><a href="http://localhost/lineup_campus/kupon" class="btn btn-primary btn-sm">Kupon Ekle</a><?php } ?>
                                                     <!--end::Add school-->
                                                 </div>
                                                 <!--end::Toolbar-->
                                                 <!--begin::Group actions-->
-                                                <div class="d-flex justify-content-end align-items-center d-none" data-kt-coupon-table-toolbar="selected">
-                                                    <div class="fw-bold me-5">
-                                                        <span class="me-2" data-kt-coupon-table-select="selected_count"></span>Seçildi
-                                                    </div>
-                                                    <button type="button" class="btn btn-danger btn-sm" data-kt-coupon-table-select="delete_selected">Seçilenleri Pasif Yap</button>
-                                                </div>
                                                 <!--end::Group actions-->
                                             </div>
                                             <!--end::Card toolbar-->
@@ -156,30 +143,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         </div>
         <!--end::Scrolltop-->
         <!--begin::Modals-->
-        <!--begin::Modal - Upgrade plan-->
-        <div class="modal fade" id="kt_modal_upgrade_plan" tabindex="-1" aria-hidden="true">
-            <!--begin::Modal dialog-->
-            <div class="modal-dialog modal-xl">
-                <!--begin::Modal content-->
-                <div class="modal-content rounded">
-                    <!--begin::Modal header-->
-                    <div class="modal-header justify-content-end border-0 pb-0">
-                        <!--begin::Close-->
-                        <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
-                            <i class="ki-duotone ki-cross fs-1">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                            </i>
-                        </div>
-                        <!--end::Close-->
-                    </div>
-                    <!--end::Modal header-->
-                </div>
-                <!--end::Modal content-->
-            </div>
-            <!--end::Modal dialog-->
-        </div>
-        <!--end::Modal - Upgrade plan-->
         <!--end::Modals-->
         <!--begin::Javascript-->
         <script>
@@ -196,6 +159,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <!-- <script src="assets/js/custom/apps/students/list/export.js"></script>
         <script src="assets/js/custom/apps/students/list/list.js"></script>
         <script src="assets/js/custom/apps/students/add.js"></script> -->
+        <script src="assets/js/custom/apps/coupon/list.js"></script>
         <script src="assets/js/widgets.bundle.js"></script>
         <script src="assets/js/custom/widgets.js"></script>
         <script src="assets/js/custom/apps/chat/chat.js"></script>

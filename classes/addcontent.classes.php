@@ -391,8 +391,9 @@ class GetContent extends Dbh
 				$embedUrl .= "#t={$timestamp}";
 			}
 			// Iframe HTML kodunu oluştur
-			$iframeCode = '<iframe id="' . $id . '" src="' . htmlspecialchars($embedUrl) . '" width="100%" height="600" frameborder="0" allow="autoplay; fullscreen; picture-in-picture"></iframe>';
-			// 
+			//$iframeCode = '<iframe id="' . $id . '" src="' . htmlspecialchars($embedUrl) . '" width="100%" height="800" frameborder="0" allow="autoplay; fullscreen; picture-in-picture"></iframe>';
+			$iframeCode = '<div class="video-responsive"><iframe id="' . $id . '" src="' . htmlspecialchars($embedUrl) . '" frameborder="0" allow="autoplay; fullscreen; picture-in-picture"></iframe></div>';
+
 			// Opsiyonel: Videonun başlığını da ekleyebilirsiniz (aşağıdaki p etiketi gibi)
 			// $iframeCode .= '<p><a href="' . htmlspecialchars($vimeoUrl) . '">Vimeo\'da izle</a>.</p>';
 

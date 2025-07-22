@@ -191,8 +191,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <th class="min-w-125px">Fotoğraf</th>
                                                         <th class="min-w-125px">Öğretmen Adı</th>
                                                         <th class="min-w-125px">Rolü</th>
-                                                        <th class="min-w-125px">E-posta Adresi</th>
-                                                        <th class="min-w-125px">Telefon</th>
                                                         <th class="min-w-125px">Okul</th>
                                                         <th class="min-w-125px">Sınıf</th>
                                                         <th class="min-w-125px">Ders</th>

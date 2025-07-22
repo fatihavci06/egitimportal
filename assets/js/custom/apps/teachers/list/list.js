@@ -28,7 +28,7 @@ var KTCustomersList = function () {
             'order': [],
             'columnDefs': [
                 { orderable: false, targets: 0 }, // Disable ordering on column 0 (checkbox)
-                { orderable: false, targets: 9 }, // Disable ordering on column 7 (actions)
+                { orderable: false, targets: 8 }, // Disable ordering on column 8 (actions)
             ]
         });
 
@@ -102,9 +102,17 @@ var KTCustomersList = function () {
 
                 // Get customer name
                 const customerName = parent.querySelectorAll('td')[2].innerText;
-                const email = parent.querySelectorAll('td')[4].innerText;
+                /* const email = parent.querySelectorAll('td')[4].innerText;
+ */
+                const tdElement = parent.querySelector('td[data-file-id]'); // İlk data-file-id'ye sahip td'yi seçer
 
-                var activeStatus = parent.querySelectorAll('td')[9].innerText;
+                if (tdElement) {
+                    var fileId = tdElement.dataset.fileId;
+                } else {
+                    console.log('Belirtilen <td> elemanı bulunamadı.');
+                }
+
+                var activeStatus = parent.querySelectorAll('td')[7].innerText;
 
                 if (activeStatus === "Aktif") {
                     var activeStatus = "pasif";
@@ -133,7 +141,7 @@ var KTCustomersList = function () {
                             type: "POST",
                             url: "includes/update_active_student.inc.php",
                             data: {
-                                email: email,
+                                email: fileId,
                                 statusVal: statusVal,
                             },
                             dataType: "json",
@@ -210,7 +218,7 @@ var KTCustomersList = function () {
                             text: customerName + " pasif edilmedi.",
                             icon: "error",
                             buttonsStyling: false,
-                            confirmButtonText: "Ok, got it!",
+                            confirmButtonText: "Tamam, anladım!",
                             customClass: {
                                 confirmButton: "btn fw-bold btn-primary",
                             }

@@ -60379,7 +60379,8 @@ body,
   transition: none;
   display: flex;
   align-items: stretch;
-  background-color: var(--bs-app-header-base-bg-color);
+  background-color: #2b8c01;
+  /*background-color: var(--bs-app-header-base-bg-color);*/
   box-shadow: var(--bs-app-header-base-box-shadow);
   border-bottom: var(--bs-app-header-base-border-bottom);
 }
@@ -61030,7 +61031,7 @@ body,
   }
 
   :root {
-    --bs-app-sidebar-width: 330px;
+    --bs-app-sidebar-width: 280px;
     --bs-app-sidebar-width-actual: 280px;
     --bs-app-sidebar-gap-start: 0px;
     --bs-app-sidebar-gap-end: 0px;
@@ -61819,7 +61820,8 @@ body,
 
 .app-aside {
   transition: none;
-  background-color: var(--bs-app-aside-base-bg-color);
+  background-color: #2b8c01;
+  /* background-color: var(--bs-app-aside-base-bg-color); */
   box-shadow: var(--bs-app-aside-base-box-shadow);
 }
 
@@ -62721,7 +62723,7 @@ body,
 }
 
 .app-header-separator {
-  border-top-left-radius: 12px;
+  border-top-left-radius: 0px;
   border-top-right-radius: 12px;
   background-color: var(--bs-app-content-bg-color);
   height: 10px;
@@ -62730,7 +62732,7 @@ body,
 @media (min-width: 992px) {
   .app-content {
     border-bottom-right-radius: 12px;
-    border-bottom-left-radius: 12px;
+    border-bottom-left-radius: 0px;
     padding-top: 25px;
   }
 
@@ -62921,4 +62923,30 @@ body,
 
 .scrollable-div::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+.menu-title{
+  font-family: "Comic Relief", system-ui;
+  color: #2b8c01 !important;
+}
+
+.menu-icon i{
+  color: #2b8c01 !important;
+}
+
+.video-responsive {
+  position: relative; /* İçindeki iframe'ı konumlandırmak için */
+  padding-bottom: 56.25%; /* Bu oran 16:9 en boy oranı içindir (9 / 16 = 0.5625) */
+  height: 0; /* İçeriği gizlemek için başlangıç yüksekliği */
+  overflow: hidden; /* Taşmayı gizlemek için */
+  max-width: 100%; /* Kapsayıcının genişliğini kısıtlamak isterseniz */
+  background: #000; /* Video yüklenirken veya boş alanda arka plan rengi */
+}
+
+.video-responsive iframe {
+  position: absolute; /* Kapsayıcının içine mutlak konumlandır */
+  top: 0;
+  left: 0;
+  width: 100%; /* Kapsayıcının genişliğini al */
+  height: 100%; /* Kapsayıcının yüksekliğini al (padding-bottom ile belirlenen) */
 }

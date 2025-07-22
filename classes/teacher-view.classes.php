@@ -37,7 +37,7 @@ class ShowTeacher extends Teacher
 
             $studentList = '
                     <tr>
-                        <td>
+                        <td data-file-id="' . $value['email'] . '">
                             <div class="form-check form-check-sm form-check-custom form-check-solid">
                                 <input class="form-check-input" type="checkbox" value="1" />
                             </div>
@@ -49,12 +49,6 @@ class ShowTeacher extends Teacher
                             <a href="./ogretmen-detay/' . $value['username'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['name'] . ' ' . $value['surname']  . '</a>
                         </td>
                         <td>' . $rolu . '</td>
-                        <td>
-                            <a href="mailto:' . $value['email'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['email'] . '</a>
-                        </td>
-                        <td>
-                            <a href="tel:' . $value['telephone'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['telephone'] . '</a>
-                        </td>
                         <td data-filter="' . $value['schoolName'] . '">' . $value['schoolName'] . '</td>
                         <td ' . $sinifArama . '>' . $value['className'] . '</td>
                         <td>' . $value['lessonName'] . '</td>

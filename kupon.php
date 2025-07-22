@@ -129,9 +129,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
         <!--end::Vendors Javascript-->
         <!--begin::Custom Javascript(used for this page only)-->
-        <script src="assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
+        <!-- <script src="assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
         <script src="assets/js/custom/apps/topics/list/export.js"></script>
-        <script src="assets/js/custom/apps/topics/list/list.js"></script>
+        <script src="assets/js/custom/apps/topics/list/list.js"></script> -->
         <!--<script src="assets/js/custom/apps/topics/list/topicadd.js"></script>-->
         <!-- <script src="assets/js/custom/apps/topics/add.js"></script> -->
         <!--<script src="assets/js/custom/apps/topics/create.js"></script>-->
@@ -161,6 +161,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
             }
 
             $('#coupon_submit').on('click', function(e) {
+                let redirectUrl = 'kuponlari-listele'; // Varsayılan bir dönüş URL'si
                 e.preventDefault();
 
                 const coupon_code = $('#coupon_code').val();
@@ -214,7 +215,20 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 icon: 'success',
                                 title: 'Başarılı',
                                 text: res.message,
-                                confirmButtonText: 'Tamam'
+                                confirmButtonText: 'Tamam',
+                            }).then(function(result) {
+                                if (result.isConfirmed) {
+                                    // Hide modal
+                                    //modal.hide();
+
+                                    // Enable submit button after loading
+                                    //submitButton.disabled = false;
+
+                                    // Redirect to customers list page
+                                    /* window.location = form.getAttribute("data-kt-redirect"); */
+
+                                    window.location.href = redirectUrl;
+                                }
                             });
                         }
                     },

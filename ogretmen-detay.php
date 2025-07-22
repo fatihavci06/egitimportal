@@ -321,10 +321,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																		Sayısı</div>
 																	<!--end::Label-->
 																</div>
-																<div
-																	class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+																<!-- <div
+																	class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3"> -->
 																	<!--begin::Number-->
-																	<div class="d-flex align-items-center">
+																	<!-- <div class="d-flex align-items-center">
 																		<i
 																			class="ki-duotone ki-brifecase-tick fs-2 text-success me-2">
 																			<span class="path1"></span>
@@ -334,13 +334,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 																		<div class="fs-2 fw-bold" data-kt-countup="true"
 																			data-kt-countup-value="<?php //echo count($studentAdditionalPackages); ?>">
 																			0</div>
-																	</div>
+																	</div> -->
 																	<!--end::Number-->
 																	<!--begin::Label-->
-																	<div class="fw-semibold fs-6 text-gray-500"> Sayısı
-																	</div>
+																	<!-- <div class="fw-semibold fs-6 text-gray-500"> Sayısı
+																	</div> -->
 																	<!--end::Label-->
-																</div>
+																<!-- </div> -->
 															</div>
 															<!--end::Stats-->
 														</div>

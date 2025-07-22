@@ -43,15 +43,15 @@ var KTCustomersList = function () {
     }
 
     // Search Datatable --- official docs reference: https://datatables.net/reference/api/search()
-    var handleSearchDatatable = () => {
+    /* var handleSearchDatatable = () => {
         const filterSearch = document.querySelector('[data-kt-customer-table-filter="search"]');
         filterSearch.addEventListener('keyup', function (e) {
             datatable.search(e.target.value).draw();
         });
-    }
+    } */
 
     // Filter Datatable
-    var handleFilterDatatable = () => {
+    /* var handleFilterDatatable = () => {
         // Select filter options
         filterMonth = $('[data-kt-customer-table-filter="month"]');
         filterPayment = document.querySelectorAll('[data-kt-customer-table-filter="payment_type"] [name="payment_type"]');
@@ -81,10 +81,10 @@ var KTCustomersList = function () {
             // Filter datatable --- official docs reference: https://datatables.net/reference/api/search()
             datatable.search(filterString).draw();
         });
-    }
+    } */
 
     // Delete customer
-    var handleDeleteRows = () => {
+    /* var handleDeleteRows = () => {
         // Select all delete buttons
         const deleteButtons = table.querySelectorAll('[data-kt-customer-table-filter="delete_row"]');
 
@@ -176,7 +176,7 @@ var KTCustomersList = function () {
                                 //alert(status + "0");
 
                             },
-                        });
+                        }); */
                         /*Swal.fire({
                             text: "You have deleted " + customerName + "!.",
                             icon: "success",
@@ -189,7 +189,7 @@ var KTCustomersList = function () {
                             // Remove current row
                             datatable.row($(parent)).remove().draw();
                         });*/
-                    } else if (result.dismiss === 'cancel') {
+                    /* } else if (result.dismiss === 'cancel') {
                         Swal.fire({
                             text: customerName + " pasif edilmedi.",
                             icon: "error",
@@ -203,7 +203,7 @@ var KTCustomersList = function () {
                 });
             })
         });
-    }
+    } */
 
     // Reset Filter
     /*var handleResetForm = () => {
@@ -224,7 +224,7 @@ var KTCustomersList = function () {
     }*/
 
     // Init toggle toolbar
-    var initToggleToolbar = () => {
+    /* var initToggleToolbar = () => {
         // Toggle selected action toolbar
         // Select all checkboxes
         const checkboxes = table.querySelectorAll('[type="checkbox"]');
@@ -291,7 +291,7 @@ var KTCustomersList = function () {
                 }
             });
         });
-    }
+    } */
 
     // Toggle toolbars
     const toggleToolbars = () => {
@@ -329,7 +329,7 @@ var KTCustomersList = function () {
     // Public methods
     return {
         init: function () {
-            table = document.querySelector('#kt_customers_table');
+            table = document.querySelector('#kt_coupons_table');
 
             if (!table) {
                 return;
