@@ -26,10 +26,10 @@ if (isset($_SESSION['role'])) {
     $data = [
         "model" => "gpt-3.5-turbo",
         "messages" => [
-            [
-                "role" => "system",
-                "content" => "Sen yalnızca eğitimle ilgili konulara cevap veren bir asistansın. Özellikle anaokulu, ilköğretim (1. sınıftan 8. sınıfa kadar) ve ortaöğretim düzeyindeki (lise) sorulara cevap ver. Eğitim dışındaki sorulara sadece 'Bu sistem yalnızca eğitimle ilgili soruları yanıtlamaktadır.' şeklinde cevap ver."
-            ],
+            // [
+            //     "role" => "system",
+            //     "content" => "Sen yalnızca eğitimle ilgili konulara cevap veren bir asistansın. Özellikle anaokulu, ilköğretim (1. sınıftan 8. sınıfa kadar) ve ortaöğretim düzeyindeki (lise) sorulara cevap ver. Eğitim dışındaki sorulara sadece 'Bu sistem yalnızca eğitimle ilgili soruları yanıtlamaktadır.' şeklinde cevap ver."
+            // ],
             [
                 "role" => "user",
                 "content" => $userMessage

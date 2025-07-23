@@ -353,7 +353,7 @@ var KTSignupGeneral = function () {
                                             url: "tami-sanal-pos/auth.php",
                                             data: {
                                                 fail_callback_url: "https://lineupcampus.com/online/tami-sanal-pos/callback_url2.php",
-                                                success_callback_url: "https://lineupcampus.com/online/tami-sanal-pos/callback_url.php",
+                                                success_callback_url: "https://lineupcampus.com/online/tami-sanal-pos/odeme-sonuc",
                                                 telephone: '9' + telephone,
                                                 amount: PriceWVat,
                                             },

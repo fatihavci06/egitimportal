@@ -2,9 +2,14 @@
 // Sayfanın en üstünde session_start() ve GUARD tanımı
 session_start();
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 define('GUARD', true);
 require_once './classes/dbh.classes.php';
 require_once './classes/Mailer.php';
+include_once('./classes/packages.classes.php');
 // require dosyalarını en başta dahil edin
 require_once './tami-sanal-pos/securityHashV2.php';
 require_once './tami-sanal-pos/lib/common_lib.php';
@@ -19,7 +24,10 @@ function getUserInfo($userId, $pdo)
     return $user;
 }
 
+$package = new Packages();
 
+$vat = $package->getVat();
+$vat = $vat['tax_rate'];  // %10 KDV oranı
 
 $success = $_SESSION['payment_success'] ?? null;
 $error = $_SESSION['payment_error'] ?? null;
@@ -473,7 +481,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                             <?php include_once "views/toolbar.php"; ?>
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <div id="kt_app_content_container" class="app-container container-fluid">
-                                    <div class="card" style="margin-top:-30px">
+                                    <div class="card">
                                         <div class="card-header border-0 pt-6">
                                             <div class="card-toolbar">
                                                 <div class="d-flex justify-content-end align-items-center d-none" data-kt-customer-table-toolbar="selected">
@@ -487,7 +495,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                             <div class="row" style="margin: auto;">
                                                 <?php if ($success): ?>
                                                     <div class="alert alert-success">
-                                                        ✅ <?= htmlspecialchars($success) ?>
+                                                        ✅ Paket Satın Alınmıştır <?php /*htmlspecialchars($success)*/ ?>
                                                     </div>
                                                 <?php elseif ($error): ?>
                                                     <div class="alert alert-danger">
@@ -504,11 +512,17 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                 <form id="purchaseForm" class="mb-5">
                                                     <div class="row g-4">
                                                         <?php if (!empty($packages)): ?>
-                                                            <?php foreach ($packages as $package): ?>
+                                                            <?php foreach ($packages as $package):
+
+                                                                $price = $package['price']; // Paket fiyatı
+                                                                $price += $price * ($vat / 100); // KDV'yi ekle
+                                                                $vatAmount = $package['price'] * ($vat / 100); // KDV tutarını hesapla
+
+                                                            ?>
                                                                 <div class="col-md-4">
                                                                     <div class="card h-100 package-card"
                                                                         data-package-id="<?= $package['id'] ?>"
-                                                                        data-package-price="<?= htmlspecialchars($package['price']) ?>">
+                                                                        data-package-price="<?= htmlspecialchars($price) ?>">
                                                                         <div class="card-body d-flex flex-column">
                                                                             <h5 class="card-title text-primary fw-bold"><?= htmlspecialchars($package['name']) ?></h5>
                                                                             <p class="card-text flex-grow-1">
@@ -518,10 +532,13 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                                                 <?php else: ?>
                                                                                     Adet: <strong><?= $package['limit_count'] ?> ders</strong><br>
                                                                                 <?php endif; ?>
+                                                                                Paket Ücreti: <strong><?= number_format($package['price'], 2, ',', '.') ?> TL</strong><br>
+                                                                                KDV Oranı: <strong>%<?= number_format($vat, 2, ',', '.') ?></strong><br>
+                                                                                Toplam Ücret: <strong><?= number_format($price, 2, ',', '.') ?> TL</strong><br>
                                                                                 <span class="text-muted small"><?= htmlspecialchars($package['description'] ?? 'Açıklama mevcut değil.') ?></span>
                                                                             </p>
                                                                             <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
-                                                                                <h4 class="mb-0 text-success"><strong><?= number_format($package['price'], 2, ',', '.') ?> TL</strong></h4>
+                                                                                <h4 class="mb-0 text-success"><strong><?= number_format($price, 2, ',', '.') ?> TL</strong></h4>
                                                                                 <div class="form-check">
                                                                                     <input class="form-check-input" type="radio" name="package_id" value="<?= $package['id'] ?>" required>
                                                                                     <label class="form-check-label">Seç</label>
@@ -633,7 +650,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                             }
                         },
                         error: function(xhr, status, error) {
-                         
+
                             alert('Sunucu ile iletişimde bir hata oluştu.');
                         }
                     });
