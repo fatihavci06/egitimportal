@@ -56,7 +56,7 @@ class Classes extends Dbh
 			exit();
 		}
 		$data['data'] = $stmt->fetch(PDO::FETCH_ASSOC);
-		$id=$data['data']['id'];
+		$id = $data['data']['id'];
 		$stmt2 = $this->connect()->prepare('SELECT * FROM school_content_videos_url WHERE school_content_id = ?');
 		if (!$stmt2->execute([$id])) {
 			$stmt2 = null;
@@ -70,7 +70,7 @@ class Classes extends Dbh
 			exit();
 		}
 		$data['wordwall'] = $stmt3->fetchAll(PDO::FETCH_ASSOC);
-		
+
 
 		$stmt4 = $this->connect()->prepare('SELECT * FROM school_content_files_lnp WHERE school_content_id = ?');
 		if (!$stmt4->execute([$id])) {
@@ -670,6 +670,21 @@ class Classes extends Dbh
 		$stmt = $this->connect()->prepare('SELECT id, name, slug FROM classes_lnp where class_type=0 ORDER BY orderBY ASC');
 
 		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
+
+	public function getClassesListBySchool()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT id, name, slug FROM classes_lnp where school_id=? AND class_type=0 ORDER BY orderBY ASC');
+
+		if (!$stmt->execute([$_SESSION['school_id']])) {
 			$stmt = null;
 			exit();
 		}

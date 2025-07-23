@@ -3,7 +3,7 @@ include_once "dateformat.classes.php";
 
 class ShowClass extends Classes
 {
-   
+
     // Ana Okulu Sınıf Listesi
 
     public function getMainSchoolClassList()
@@ -90,9 +90,26 @@ class ShowClass extends Classes
                     <option value="' . $value['id'] . '">' . $value['name'] . '</option>
                 ';
         }
-            return $classList;
+        return $classList;
     }
 
+    public function getClassSelectListByschool()
+    {
+
+        $classInfo = $this->getClassesListBySchool();
+
+        $dateFormat = new DateFormat();
+
+        $classList = '';
+
+        foreach ($classInfo as $key => $value) {
+
+            $classList .= '
+                    <option value="' . $value['id'] . '">' . $value['name'] . '</option>
+                ';
+        }
+        return $classList;
+    }
     public function getClassSelectListForCreateAccount()
     {
 
@@ -393,8 +410,8 @@ class ShowClass extends Classes
                                 <label class="required fs-6 fw-semibold mb-2">Okul Adı</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <input type="text" id="name" class="form-control form-control-solid" value="'. $value['name'] .'" name="name" />
-                                    <input type="hidden" name="old_slug" id="old_slug" value="'. $value['slug'] .'" />
+                                <input type="text" id="name" class="form-control form-control-solid" value="' . $value['name'] . '" name="name" />
+                                    <input type="hidden" name="old_slug" id="old_slug" value="' . $value['slug'] . '" />
                                 <!--end::Input-->
                             </div>
 
@@ -406,7 +423,7 @@ class ShowClass extends Classes
                                     <label class="required fs-6 fw-semibold mb-2">Adres</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input class="form-control form-control-solid" name="address" id="address" value="'. $value['address'] .'" />
+                                    <input class="form-control form-control-solid" name="address" id="address" value="' . $value['address'] . '" />
                                     <!--end::Input-->
                                 </div>
                                 <!--begin::Input group-->
@@ -417,7 +434,7 @@ class ShowClass extends Classes
                                         <label class="required fs-6 fw-semibold mb-2">İlçe</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input class="form-control form-control-solid" name="district" id="district" value="'. $value['district'] .'" />
+                                        <input class="form-control form-control-solid" name="district" id="district" value="' . $value['district'] . '" />
                                         <!--end::Input-->
                                     </div>
                                     <!--end::Col-->
@@ -427,7 +444,7 @@ class ShowClass extends Classes
                                         <label class="fs-6 fw-semibold mb-2">Posta Kodu</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input class="form-control form-control-solid" name="postcode" id="postcode" value="'. $value['postcode'] .'" />
+                                        <input class="form-control form-control-solid" name="postcode" id="postcode" value="' . $value['postcode'] . '" />
                                         <!--end::Input-->
                                     </div>
                                     <!--end::Col-->
@@ -443,7 +460,7 @@ class ShowClass extends Classes
                                     <!--begin::Input-->
                                     <select id="city" name="city" aria-label="Sehir Seçiniz" data-control="select2" data-dropdown-parent="#kt_modal_update_customer"
                                         class="form-select form-select-solid fw-bold">
-                                        <option value="'. $value['city'] .'">'. $value['city'] .'</option>
+                                        <option value="' . $value['city'] . '">' . $value['city'] . '</option>
                                         <option value="Adana">Adana</option>
                                         <option value="Adıyaman">Adıyaman</option>
                                         <option value="Afyonkarahisar">Afyonkarahisar</option>
@@ -537,8 +554,8 @@ class ShowClass extends Classes
                                     </label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input type="email" class="form-control form-control-solid" name="email" id="email" value="'. $value['email'] .'" />
-                                    <input type="hidden" name="email_old" id="email_old" value="'. $value['email'] .'" />
+                                    <input type="email" class="form-control form-control-solid" name="email" id="email" value="' . $value['email'] . '" />
+                                    <input type="hidden" name="email_old" id="email_old" value="' . $value['email'] . '" />
                                     <!--end::Input-->
                                 </div>
                                 <!--end::Input group-->
@@ -548,7 +565,7 @@ class ShowClass extends Classes
                                     <label class="required fs-6 fw-semibold mb-2">Telefon Numarası</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input type="number" class="form-control form-control-solid" value="'. $value['telephone'] .'" id="telephone" name="telephone" />
+                                    <input type="number" class="form-control form-control-solid" value="' . $value['telephone'] . '" id="telephone" name="telephone" />
                                     <!--end::Input-->
                                 </div>
                                 <!--end::Input group-->
@@ -604,7 +621,7 @@ class ShowClass extends Classes
 
 
 
-            $classList .=  $classForms;
+            $classList .= $classForms;
         }
 
 
