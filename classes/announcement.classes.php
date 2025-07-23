@@ -150,8 +150,6 @@ class AnnouncementManager extends Dbh
 		$stmt->execute([':id' => $announcementId]);
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
-
-
 	public function updateAnnouncementStatus($announcementId, $isActive)
 	{
 		$db = $this->connect();
