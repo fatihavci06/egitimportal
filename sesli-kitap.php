@@ -3,17 +3,21 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) AND ($_SESSION['role'] == 2)) {
-    include_once "classes/dbh.classes.php";
-    include_once "classes/audio-book.classes.php";
-    include_once "classes/audio-book-view.classes.php";
-    $audioBooks = new ShowAudioBookStudent();
-    include_once "views/pages-head.php";
-?>
-    <!--end::Head-->
-    <!--begin::Body-->
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 2)) {
+	include_once "classes/dbh.classes.php";
+	include_once "classes/audio-book.classes.php";
+	include_once "classes/audio-book-view.classes.php";
+	$audioBooks = new ShowAudioBookStudent();
+	include_once "views/pages-head.php";
+	?>
+	<!--end::Head-->
+	<!--begin::Body-->
 
-	<body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
+	<body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true"
+		data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true"
+		data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true"
+		data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true"
+		data-kt-app-aside-push-footer="true" class="app-default">
 		<!--begin::Theme mode setup on page load-->
 		<script>
 			var defaultThemeMode = "light";
@@ -59,16 +63,13 @@ if (isset($_SESSION['role']) AND ($_SESSION['role'] == 2)) {
 								<!--begin::Content container-->
 								<div id="kt_app_content_container" class="app-container container-fluid">
 									<!--begin::Careers - List-->
-									<div class="card">
+									<div class="card bg-gray-200">
 										<!--begin::Body-->
-										<div class="card-body p-lg-17">
-											<!--begin::Hero-->
-												<?php $audioBooks->getHeaderImageStu(); ?>
-											<!--end::-->
+										<div class="card-body p-lg-10">
 											<!--begin::Layout-->
 											<div class="d-flex flex-column flex-lg-row mb-17">
 												<!--begin::Content-->
-												<div class="flex-lg-row-fluid row">
+												<div class="flex-lg-row-fluid row ">
 													<?php $audioBooks->getAudioBookList($_SESSION['class_id']); ?>
 												</div>
 												<!--end::Content-->
@@ -90,7 +91,7 @@ if (isset($_SESSION['role']) AND ($_SESSION['role'] == 2)) {
 					</div>
 					<!--end:::Main-->
 					<!--begin::aside-->
-						<?php include_once "views/aside.php"; ?>
+					<?php include_once "views/aside.php"; ?>
 					<!--end::aside-->
 				</div>
 				<!--end::Wrapper-->
@@ -130,10 +131,30 @@ if (isset($_SESSION['role']) AND ($_SESSION['role'] == 2)) {
 		<script src="assets/js/custom/utilities/modals/users-search.js"></script>
 		<!--end::Custom Javascript-->
 		<!--end::Javascript-->
+		<style>
+			.dark-hover {
+				position: relative;
+				overflow: hidden;
+				border-radius: 6px;
+			}
+
+			.dark-hover .dark-overlay {
+				content: "";
+				position: absolute;
+				inset: 0;
+				background-color: rgba(0, 0, 0, 0);
+				transition: background-color 0.3s ease;
+				border-radius: 6px;
+			}
+
+			.dark-hover:hover .dark-overlay {
+				background-color: rgba(0, 0, 0, 0.4);
+			}
+		</style>
 	</body>
 	<!--end::Body-->
 
-</html>
+	</html>
 <?php } else {
 	header("location: index");
 }
