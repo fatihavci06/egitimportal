@@ -214,7 +214,7 @@ $chartData = [
 							</div>
 
 							<div class="fw-semibold fs-6 text-gray-500">Toplam
-								Oyun Sayısı</div>
+								İçerik Sayısı</div>
 						</div>
 					</div>
 				</div>

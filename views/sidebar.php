@@ -6,6 +6,11 @@ if (!defined('GUARD')) {
 include_once "classes/dbh.classes.php";
 include "classes/menu.classes.php";
 include "classes/menu-view.classes.php";
+include_once "classes/timespend.classes.php";
+
+$timeSpend = new timeSpend();
+
+$timeSpendInfo = $timeSpend->getTimeSpend($_SESSION["id"]);
 
 $menu1 = new ShowMenu();
 
@@ -13,14 +18,45 @@ $menu1 = new ShowMenu();
 <div id="kt_app_sidebar" class="app-sidebar flex-column" data-kt-drawer="true" data-kt-drawer-name="app-sidebar" data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="250px" data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle" style="background: #fdfdfd;border-right: 2px solid #fa6000;">
     <!--begin::Main-->
     <div class="d-flex flex-column justify-content-between hover-scroll-overlay-x h-100 my-5 mx-5 d-flex flex-column" style="margin-left:0px!important;margin-right:0px!important;" id="kt_app_sidebar_main" data-kt-scroll="true" data-kt-scroll-activate="true" data-kt-scroll-height="auto" data-kt-scroll-dependencies="#kt_app_header" data-kt-scroll-wrappers="#kt_app_main" data-kt-scroll-offset="5px">
+        <?php if ($_SESSION['role'] == 2) { ?>
+            <!--begin::Sidebar profile-->
+            <div class="menu menu-sub-indention menu-column menu-rounded menu-active-bg mb-7 border-bottom-2" style="border-color: #fa6000 !important; border-bottom: solid">
+                <span class="menu-link d-flex align-items-center px-3 py-4" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <span class="symbol symbol-50px">
+                        <?php if ($_SESSION['photo'] == "") { ?>
+                            <img alt="Logo" src="assets/media/avatars/blank.png" alt="user" class="w-100 h-100 rounded-circle" style="width: 50px !important; height: 50px !important;" />
+                        <?php } else { ?>
+                            <img alt="Logo" src="assets/media/profile/<?php echo $_SESSION['photo']; ?>" class="w-50 h-50 rounded-circle" style="width: 50px !important; height: 50px !important;" />
+                        <?php } ?>
+                    </span>
+                    <span style="text-align: center; margin-top: 10px; font-weight: bold; color: #333;">
+                        <?php echo $_SESSION['name']; ?>
+                    </span>
+                </span>
+                <div style="display: flex; justify-content: space-around; width: 100%; padding: 20px 0;">
+                    <div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px;">
+                        <i class="fa-solid fa-hourglass fs-1" style="color:black"></i>
+                        <p><?php echo $timeSpendInfo; ?></p>
+                    </div>
+                    <div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px;">
+                        <h4>Sütun 2</h4>
+                        <p>İçerik 2</p>
+                    </div>
+                    <div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px;">
+                        <h4>Sütun 3</h4>
+                        <p>İçerik 3</p>
+                    </div>
+                </div>
+            </div>
+            <!--end::Sidebar profile-->
+        <?php } ?>
         <!--begin::Sidebar menu-->
         <div id="#kt_app_sidebar_menu" data-kt-menu="true" data-kt-menu-expand="false" class="flex-column-fluid menu menu-sub-indention menu-column menu-rounded menu-active-bg mb-7">
             <!--begin:Menu item-->
             <?php
             if ($_SESSION['role'] == 1) {
                 $menu1->showMenuSuperAdminList();
-            }
-            elseif ($_SESSION['role'] == 2) {
+            } elseif ($_SESSION['role'] == 2) {
                 $menu1->showMenuSuperAdminList();
                 /* echo '<div id="#kt_app_sidebar_menu" data-kt-menu="true" data-kt-menu-expand="false" class="flex-column-fluid menu menu-sub-indention menu-column menu-rounded menu-active-bg mb-7">
             <!--begin:Menu item-->
@@ -256,30 +292,22 @@ $menu1 = new ShowMenu();
                                 <!--end:Menu sub-->
                               </div>            <!--end:Menu item-->
                     </div>'; */
-            }
-            elseif ($_SESSION['role'] == 3) {
+            } elseif ($_SESSION['role'] == 3) {
                 $menu1->showMenuSuperAdminList();
-            }
-            elseif ($_SESSION['role'] == 4){
+            } elseif ($_SESSION['role'] == 4) {
                 $menu1->showMenuSuperAdminList();
-            }
-            elseif ($_SESSION['role'] == 5){
+            } elseif ($_SESSION['role'] == 5) {
                 $menu1->showMenuSuperAdminList();
-            }
-            elseif ($_SESSION['role'] == 10001){
-               
+            } elseif ($_SESSION['role'] == 10001) {
+
                 $menu1->showMenuSuperAdminList();
-            }
-            elseif ($_SESSION['role'] == 10002){
+            } elseif ($_SESSION['role'] == 10002) {
                 $menu1->showMenuSuperAdminList();
-            }
-            elseif ($_SESSION['role'] == 8){
+            } elseif ($_SESSION['role'] == 8) {
                 $menu1->showMenuSuperAdminList();
-            }
-             elseif ($_SESSION['role'] == 9){
+            } elseif ($_SESSION['role'] == 9) {
                 $menu1->showMenuSuperAdminList();
-            }
-             elseif ($_SESSION['role'] == 10){
+            } elseif ($_SESSION['role'] == 10) {
                 $menu1->showMenuSuperAdminList();
             }
             ?>

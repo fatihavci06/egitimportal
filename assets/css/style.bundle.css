@@ -60265,7 +60265,8 @@ router-outlet {
 
 body,
 .app-default {
-  background-color: var(--bs-app-bg-color);
+ /* background-color: var(--bs-app-bg-color);*/
+  background-color: #fff;
 }
 
 .app-blank {
@@ -60379,7 +60380,7 @@ body,
   transition: none;
   display: flex;
   align-items: stretch;
-  background-color: #2b8c01;
+  background-color: #fff;
   /*background-color: var(--bs-app-header-base-bg-color);*/
   box-shadow: var(--bs-app-header-base-box-shadow);
   border-bottom: var(--bs-app-header-base-border-bottom);
@@ -61820,7 +61821,7 @@ body,
 
 .app-aside {
   transition: none;
-  background-color: #2b8c01;
+  background-color: #fff;
   /* background-color: var(--bs-app-aside-base-bg-color); */
   box-shadow: var(--bs-app-aside-base-box-shadow);
 }
@@ -61885,7 +61886,8 @@ body,
     display: none;
   }
 
- /*  [data-kt-app-aside-fixed=true] */ .app-aside {
+  /*  [data-kt-app-aside-fixed=true] */
+  .app-aside {
     position: fixed;
     z-index: 99;
     top: 0;
@@ -61961,7 +61963,8 @@ body,
     display: flex !important;
   }
 
-  /* [data-kt-app-aside-fixed=true][data-kt-app-header-fixed=true]:not([data-kt-app-aside-push-header=true]) */ .app-aside {
+  /* [data-kt-app-aside-fixed=true][data-kt-app-header-fixed=true]:not([data-kt-app-aside-push-header=true]) */
+  .app-aside {
     top: var(--bs-app-header-height);
   }
 
@@ -62199,6 +62202,7 @@ body,
 
   [data-kt-app-aside-fixed=true][data-kt-app-aside-push-footer=true] .app-footer {
     right: calc(var(--bs-app-aside-width) + var(--bs-app-aside-gap-start, 0px) + var(--bs-app-aside-gap-end, 0px));
+    background-color: #fff;
   }
 }
 
@@ -62743,6 +62747,7 @@ body,
 
   [data-kt-app-aside-enabled=true] .app-header-separator {
     margin-right: 80px;
+    /* border-top: 2px solid #fa6000; */
   }
 
   body:not([data-kt-app-aside-enabled=true]) .app-header-separator {
@@ -62927,28 +62932,37 @@ body,
   background: #555;
 }
 
-.menu-title{
+.menu-title {
   font-family: "Comic Relief", system-ui;
   color: #2b8c01 !important;
 }
 
-.menu-icon i{
+.menu-icon i {
   color: #2b8c01 !important;
 }
 
 .video-responsive {
-  position: relative; /* İçindeki iframe'ı konumlandırmak için */
-  padding-bottom: 56.25%; /* Bu oran 16:9 en boy oranı içindir (9 / 16 = 0.5625) */
-  height: 0; /* İçeriği gizlemek için başlangıç yüksekliği */
-  overflow: hidden; /* Taşmayı gizlemek için */
-  max-width: 100%; /* Kapsayıcının genişliğini kısıtlamak isterseniz */
-  background: #000; /* Video yüklenirken veya boş alanda arka plan rengi */
+  position: relative;
+  /* İçindeki iframe'ı konumlandırmak için */
+  padding-bottom: 56.25%;
+  /* Bu oran 16:9 en boy oranı içindir (9 / 16 = 0.5625) */
+  height: 0;
+  /* İçeriği gizlemek için başlangıç yüksekliği */
+  overflow: hidden;
+  /* Taşmayı gizlemek için */
+  max-width: 100%;
+  /* Kapsayıcının genişliğini kısıtlamak isterseniz */
+  background: #000;
+  /* Video yüklenirken veya boş alanda arka plan rengi */
 }
 
 .video-responsive iframe {
-  position: absolute; /* Kapsayıcının içine mutlak konumlandır */
+  position: absolute;
+  /* Kapsayıcının içine mutlak konumlandır */
   top: 0;
   left: 0;
-  width: 100%; /* Kapsayıcının genişliğini al */
-  height: 100%; /* Kapsayıcının yüksekliğini al (padding-bottom ile belirlenen) */
+  width: 100%;
+  /* Kapsayıcının genişliğini al */
+  height: 100%;
+  /* Kapsayıcının yüksekliğini al (padding-bottom ile belirlenen) */
 }

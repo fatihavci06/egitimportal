@@ -73,6 +73,8 @@ class ShowMenu extends Menus
             $pageTitle = 'Koçluk Sohbet';
         } elseif ($active_slug == 'kuponlari-listele') {
             $pageTitle = 'Kuponları Listele';
+        } elseif ($active_slug == '3dbilimvideo-ekle') {
+            $pageTitle = '3D Bilim Video Ekle';
         }
 
         $questionmark = strpos($pageTitle, '?');

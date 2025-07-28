@@ -385,6 +385,54 @@ class ImageUpload {
 
     }
 
+    public function threeDVideoImage($name, $fileSize, $fileTmpName, $slug)
+    {
+        $message = "";
+        $uploadOk = 1;
+
+        $fileSize = $fileSize;
+        $randNum = rand(0, 99999);
+        $fileTempPath = $fileTmpName;
+        $fileName = $name;
+        $maxFileSize = 1024 * 1024 * 2;
+        $fileTypes = array("jpg", "jpeg", "png", "JPG", "JPEG", "PNG");
+        $uploadFolder = "../uploads/3dvideos/";
+
+        if($fileSize > $maxFileSize) {
+            $message = "Dosya boyutu 2mb'dan fazla.<br>";
+            $uploadOk = 0;
+        }
+
+        $fileName_Arr = explode(".", $fileName);
+        $fileNameOnly = $fileName_Arr[0];
+        $fileType = $fileName_Arr[1];
+
+        if(!in_array($fileType, $fileTypes)) {
+            $message .= "Kabul edilen dosya uzantıları : ".implode(", ", $fileTypes)."<br>";
+            $uploadOk = 0;
+        }
+
+        $newFileName = $slug . "-" . $randNum . "." . $fileType;
+        $photoPath = $uploadFolder.$newFileName;
+
+        if($uploadOk == 0) {
+            $message .= "Dosya yüklenemedi.<br>";
+            echo json_encode(["status" => "error", "message" => $name]);
+            exit();
+        } else {
+            if(move_uploaded_file($fileTempPath, $photoPath)) {
+                $message .="dosya yüklendi.<br>";
+            }
+        }
+
+        return array(
+            "isSuccess" => $uploadOk,
+            "message" => $message,
+            "image" => $newFileName
+        );
+
+    }
+
      public function homeworkImage($name, $fileSize, $fileTmpName, $slug)
     {
         $message = "";

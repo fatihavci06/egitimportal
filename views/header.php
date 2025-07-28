@@ -3,6 +3,8 @@ ob_start();
 if (!defined('GUARD')) {
     die('Direkt erişim yasak!');
 }
+$current_uri = $_SERVER['REQUEST_URI'];
+
 ?>
 <div id="kt_app_header" class="app-header d-flex flex-column flex-stack">
     <!--begin::Header main-->
@@ -33,62 +35,27 @@ if (!defined('GUARD')) {
         </div>
         <!--begin::Navbar-->
         <div class="app-navbar flex-grow-1 justify-content-end" id="kt_app_header_navbar">
-            <div class="app-navbar-item d-flex align-items-stretch flex-lg-grow-1 me-2 me-lg-0">
-                <!--begin::Search-->
-                <div id="kt_header_search" class="header-search d-flex align-items-center w-lg-350px" data-kt-search-keypress="true" data-kt-search-min-length="2" data-kt-search-enter="enter" data-kt-search-layout="menu" data-kt-search-responsive="true" data-kt-menu-trigger="auto" data-kt-menu-permanent="true" data-kt-menu-placement="bottom-start">
-                    <!--begin::Tablet and mobile search toggle-->
-                    <div data-kt-search-element="toggle" class="search-toggle-mobile d-flex d-lg-none align-items-center">
-                        <div class="d-flex">
-                            <i class="ki-duotone ki-magnifier fs-1 fs-1">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                            </i>
-                        </div>
-                    </div>
-                    <!--end::Tablet and mobile search toggle-->
-                    <!--begin::Form(use d-none d-lg-block classes for responsive search)-->
-                    <form data-kt-search-element="form" class="d-none d-lg-block w-100 position-relative mb-5 mb-lg-0" autocomplete="off">
-                        <!--begin::Hidden input(Added to disable form autocomplete)-->
-                        <input type="hidden" />
-                        <!--end::Hidden input-->
-                        <!--begin::Icon-->
-                        <i class="ki-duotone ki-magnifier search-icon fs-2 text-gray-500 position-absolute top-50 translate-middle-y ms-5">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                        </i>
-                        <!--end::Icon-->
-                        <!--begin::Input-->
-                        <input type="text" class="search-input form-control form-control border-0 h-lg-40px ps-13" name="search" value="" placeholder="Ara..." data-kt-search-element="input" />
-                        <!--end::Input-->
-                        <!--begin::Spinner-->
-                        <span class="search-spinner position-absolute top-50 end-0 translate-middle-y lh-0 d-none me-5" data-kt-search-element="spinner">
-                            <span class="spinner-border h-15px w-15px align-middle text-gray-500"></span>
-                        </span>
-                        <!--end::Spinner-->
-                        <!--begin::Reset-->
-                        <span class="search-reset btn btn-flush btn-active-color-primary position-absolute top-50 end-0 translate-middle-y lh-0 d-none me-4" data-kt-search-element="clear">
-                            <i class="ki-duotone ki-cross fs-2 fs-lg-1 me-0">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                            </i>
-                        </span>
-                        <!--end::Reset-->
-                    </form>
-                    <!--end::Form-->
-                </div>
-                <!--end::Search-->
+            <?php if ($_SESSION['role'] == 2 AND strpos($current_uri, '/dashboard') !== false) { ?>
+            <div class="app-navbar-item d-flex align-items-center flex-lg-grow-1 me-2 me-lg-0 fs-1">
+                <b>Hoş geldin <?php echo $_SESSION['name']; ?> haydi görevleri tamamlayarak puan toplamaya başla!</b>
             </div>
+            <div class="app-navbar-item d-flex justify-content align-items-center flex-lg-grow-1 me-2 me-lg-0">
+                <img src="assets/media/mascots/header-mascots.png" alt="Lineup Campus Maskotlar" class="h-50px theme-light-show" />
+            </div>
+            <?php } ?>
             <!--begin::Notifications-->
             <?php include "includes/views/notifications-announcements.php" ?>
             <!--end::Notifications-->
             <!--begin::Quick links-->
-            <?php // include_once "views/quick_links.php" ?>
+            <?php // include_once "views/quick_links.php" 
+            ?>
             <!--end::Quick links-->
             <!--begin::User menu-->
             <?php include_once "views/user_menu.php" ?>
             <!--end::User menu-->
             <!--begin::Action-->
-            <?php //include_once "views/action.php" ?>
+            <?php //include_once "views/action.php" 
+            ?>
             <!--end::Action-->
             <!--begin::Header menu toggle-->
             <div class="app-navbar-item ms-3 ms-lg-4 ms-n2 me-3 d-flex d-lg-none">

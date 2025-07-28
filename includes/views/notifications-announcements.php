@@ -51,7 +51,7 @@ $timeDifference = new DateFormat();
             border-left: 3px solid #3f4ed4;
         }
     </style>
-    <div class="btn btn-icon btn-custom btn-color-white w-35px h-35px w-md-40px h-md-40px"
+    <div class="btn btn-icon btn-custom btn-color w-35px h-35px w-md-40px h-md-40px"
         data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent"
         data-kt-menu-placement="bottom-end">
         <i class="ki-duotone ki-graph-3 fs-1">

@@ -1023,14 +1023,98 @@ class ShowStudent extends Student
                             <div class="d-flex align-items-center w-100px w-sm-200px flex-column mt-3">
                                 <div class="d-flex justify-content-between w-100 mt-auto mb-2">
                                     <span class="fw-semibold fs-6 text-gray-500">Tamamlama Oranı</span>
-                                    <span class="fw-bold fs-6">' . $percentageT . '%</span>
+                                    <span class="fw-bold fs-6">%' . $percentageT . '</span>
                                 </div>
                                 <div class="h-5px mx-3 w-100 bg-light mb-3">
                                     <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $percentageW . '%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
                                 <div class="d-flex justify-content-between w-100 mt-auto mb-2">
                                     <span class="fw-semibold fs-6 text-gray-500">Başarı Oranı</span>
-                                    <span class="fw-bold fs-6">' . $scoreT . '%</span>
+                                    <span class="fw-bold fs-6">%' . $scoreT . '</span>
+                                </div>
+                                <div class="h-5px mx-3 w-100 bg-light mb-3">
+                                    <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $scoreW . '%;" aria-valuenow="25"
+                                        aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                </div>
+                            <!--end::Progress-->
+                        </div>
+                        <!--end::Section-->
+                    </div>
+                <!--end::Item-->
+                <!--begin::Separator-->
+                    <div class="separator separator-dashed my-4"></div>
+                <!--end::Separator-->';
+            }
+
+            echo $lessonList;
+
+            $styleIndex++;
+        }
+    }
+
+    // List of Lessons Student Dashboard Page
+
+    public function showLessonsListForStudentDetailsDashboard($studentId, $class_id, $school_id)
+    {
+
+        $lessonsInfo = $this->getLessons();
+
+        $styles = ["danger", "success", "primary", "warning", "info", "secondary", "light", "dark"];
+        $styleIndex = 0;
+
+        require_once "content-tracker.classes.php";
+        require_once "grade-result.classes.php";
+
+        $contentObj = new ContentTracker();
+        $gradeObj = new GradeResult();
+
+        foreach ($lessonsInfo as $value) {
+
+            $style = $styles[$styleIndex % count($styles)];
+
+            $lessonList = '';
+
+            $classes = $value['class_id'];
+
+            $pieces = explode(";", $classes);
+
+            if (in_array($class_id, $pieces)) {
+
+                $class_id = $class_id;
+                $school_id = $school_id;
+                $lesson_id = $value['id'];
+
+                $unitData = $this->getUnits($lesson_id, $class_id, $school_id);
+                $unitCount = count($unitData);
+
+                $percentage = $contentObj->getSchoolContentAnalyticsByLessonId($studentId, $class_id, $lesson_id);
+                $percentageW = ($percentage == null) ? 0 : $percentage;
+                $percentageT = ($percentage === null) ? '-' : $percentage;
+
+                $score = $gradeObj->getGradeByLessonId($studentId, $lesson_id);
+                $scoreW = ($score == null) ? 0 : $score;
+                $scoreT = ($score === null) ? '-' : $score;
+
+                $lessonList .= '
+                <!--begin::Item-->
+                    <div class="d-flex flex-stack">
+                        <!--begin::Symbol-->
+                        <div class="symbol symbol-40px me-4">
+                            <div class="symbol-label fs-2 fw-semibold bg-' . $style . ' text-inverse-' . $style . '">' . mb_substr($value['name'], 0, 1, 'UTF-8') . '</div>
+                        </div>
+                        <!--end::Symbol-->
+                        <!--begin::Section-->
+                        <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                            <!--begin:Author-->
+                            <div class="flex-grow-1 me-2">
+                                <a  class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $value['name'] . '</a>
+                            </div>
+                            <!--end:Author--><!--begin::Progress-->
+                            <div class="d-flex align-items-center w-100px w-sm-200px flex-column mt-3">
+                                <div class="d-flex justify-content-between w-100 mt-auto mb-2">
+                                    <span class="fw-semibold fs-6 text-gray-500">Başarı Oranı</span>
+                                    <span class="fw-bold fs-6">%' . $scoreT . '</span>
                                 </div>
                                 <div class="h-5px mx-3 w-100 bg-light mb-3">
                                     <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $scoreW . '%;" aria-valuenow="25"
