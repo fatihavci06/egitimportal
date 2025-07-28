@@ -24,6 +24,17 @@ class timeSpend extends Dbh
 	}
 
 
+	public function dakikayaCevir($toplamSaniye)
+	{
+
+		$saniye = $toplamSaniye;
+
+		$tamDakikaFloor = floor($saniye / 60);
+
+		return $tamDakikaFloor;
+
+	}
+
 	public function saniyeyiGoster($toplamSaniye)
 	{
 		$gun = floor($toplamSaniye / (60 * 60 * 24));

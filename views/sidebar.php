@@ -7,6 +7,10 @@ include_once "classes/dbh.classes.php";
 include "classes/menu.classes.php";
 include "classes/menu-view.classes.php";
 include_once "classes/timespend.classes.php";
+include_once "classes/student.classes.php";
+include_once "classes/student-view.classes.php";
+
+$student = new ShowStudent();
 
 $timeSpend = new timeSpend();
 
@@ -35,16 +39,19 @@ $menu1 = new ShowMenu();
                 </span>
                 <div style="display: flex; justify-content: space-around; width: 100%; padding: 20px 0;">
                     <div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px;">
-                        <i class="fa-solid fa-hourglass fs-1" style="color:black"></i>
-                        <p><?php echo $timeSpendInfo; ?></p>
+                        <i class="fa-solid fa-hourglass fs-1 mb-3" style="color:black"></i>
+                        <p class="mb-0"><?php echo $timeSpend->dakikayaCevir($timeSpendInfo); ?></p>
+                        <p class="mb-0" style="font-size: 11px;">dakika geçirdin</p>
                     </div>
                     <div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px;">
-                        <h4>Sütun 2</h4>
-                        <p>İçerik 2</p>
+                        <i class="fa-solid fa-check fs-1 mb-3" style="color:black"></i>
+                        <p class="mb-0"><?php echo $student->getStudentProgressForSidebar($_SESSION['id'], $_SESSION['class_id']); ?></p>
+                        <p class="mb-0" style="font-size: 11px;">mateyali tamamladın</p>
                     </div>
                     <div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px;">
-                        <h4>Sütun 3</h4>
-                        <p>İçerik 3</p>
+                        <i class="fa-solid fa-question fs-1 mb-3" style="color:black"></i>
+                        <p class="mb-0"><?php echo $student->getStudentTestNumberForSidebar($_SESSION['id']); ?></p>
+                        <p class="mb-0" style="font-size: 11px;">sınav çözdün</p>
                     </div>
                 </div>
             </div>

@@ -337,6 +337,7 @@ class ShowStudent extends Student
                 ';
         echo $studentList;
     }
+
     public function getStudentProgress($userId, $classId)
     {
         $schoolInfo = $this->getStudentsList();
@@ -397,6 +398,94 @@ class ShowStudent extends Student
         }
         echo $studentList;
     }
+
+    public function getStudentProgressForSidebar($userId, $classId)
+    {
+        $schoolInfo = $this->getStudentsList();
+
+        $dateFormat = new DateFormat();
+        $studentList = '';
+
+        require_once "content-tracker.classes.php";
+        $contentObj = new ContentTracker();
+
+        $items = $contentObj->getSchoolContentAnalyticsListByUserId($userId, $classId);
+
+        //     echo "<pre>";
+        //     var_dump([$items]);
+        //     echo "</pre>";
+        // die();
+
+        $completedVideos = 0;
+        $content_visitedNo = 0;
+        $downloaded_files = 0;
+        $viewed_wordwalls = 0;
+
+        foreach ($items as $key => $value) {
+
+            $completedVideos += $value['completed_videos'];
+            $content_visitedNo += $value['content_visited'];
+            $downloaded_files += $value['downloaded_files'];
+            $viewed_wordwalls += $value['viewed_wordwalls'];
+
+            $placeholder = "placeholder";
+
+            $topic_name = $value['topic_name'] ?? '-';
+            $subtopic_name = $value['subtopic_name'] ?? '-';
+
+            $content_visited = ($value['content_visited'] == 0) ? '<span class="badge badge-light-danger">Hayır</span>' : '<span class="badge badge-light-success">Evet</span>';
+
+            $videos = ($value['total_videos'] == 0) ? '-' : $value['completed_videos'] . '/' . $value['total_videos'];
+            $files = ($value['total_files'] == 0) ? '-' : '' . $value['downloaded_files'] . '/' . $value['total_files'] . '';
+            $wordwalls = ($value['total_wordwalls'] == 0) ? '-' : '' . $value['viewed_wordwalls'] . '/' . $value['total_wordwalls'] . '';
+
+            $studentList .= '
+                    <tr>
+                        <td>
+                            <a href="./icerik-detay/' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
+                        </td>
+                        <td>
+                            ' . $topic_name . '
+                        </td>
+                        <td>
+                            ' . $subtopic_name . '
+                        </td>
+
+                        <td>
+                            ' . $content_visited . '
+                        </td>
+                        <td>
+                            <span class="fw-bold fs-6">' . $videos . '</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold fs-6">' . $files . '</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold fs-6">' . $wordwalls . '</span>
+                        </td>
+                    </tr>
+                ';
+        }
+
+        $total = $completedVideos + $content_visitedNo + $downloaded_files + $viewed_wordwalls;
+
+        echo $total;
+    }
+
+    public function getStudentTestNumberForSidebar($userId){
+
+        require_once "content-tracker.classes.php";
+        $contentObj = new ContentTracker();
+
+        $items = $contentObj->getExamsWithStudentId($userId);
+
+        $testNumber = count($items);
+
+        echo $testNumber;
+
+    }
+
+
     // Get Waiting Money Transfer Student List
 
     public function getWaitingStudentList()
@@ -1004,12 +1093,18 @@ class ShowStudent extends Student
                 $scoreW = ($score == null) ? 0 : $score;
                 $scoreT = ($score === null) ? '-' : $score;
 
+                if($value['icons'] != NULL){
+                    $ico = "<img src='assets/media/icons/dersler/" . $value['icons'] . "'>";
+                }else{
+                    $ico = "<div class='symbol-label fs-2 fw-semibold bg-$style text-inverse-$style'>" . mb_substr($value['name'], 0, 1, 'UTF-8') . "</div>";
+                }
+
                 $lessonList .= '
                 <!--begin::Item-->
                     <div class="d-flex flex-stack">
                         <!--begin::Symbol-->
                         <div class="symbol symbol-40px me-4">
-                            <div class="symbol-label fs-2 fw-semibold bg-' . $style . ' text-inverse-' . $style . '">' . mb_substr($value['name'], 0, 1, 'UTF-8') . '</div>
+                            ' . $ico . '
                         </div>
                         <!--end::Symbol-->
                         <!--begin::Section-->
@@ -1096,12 +1191,18 @@ class ShowStudent extends Student
                 $scoreW = ($score == null) ? 0 : $score;
                 $scoreT = ($score === null) ? '-' : $score;
 
+                if($value['icons'] != NULL){
+                    $ico = "<img src='assets/media/icons/dersler/" . $value['icons'] . "'>";
+                }else{
+                    $ico = "<div class='symbol-label fs-2 fw-semibold bg-$style text-inverse-$style'>" . mb_substr($value['name'], 0, 1, 'UTF-8') . "</div>";
+                }
+
                 $lessonList .= '
                 <!--begin::Item-->
-                    <div class="d-flex flex-stack">
+                    <div class="d-flex">
                         <!--begin::Symbol-->
                         <div class="symbol symbol-40px me-4">
-                            <div class="symbol-label fs-2 fw-semibold bg-' . $style . ' text-inverse-' . $style . '">' . mb_substr($value['name'], 0, 1, 'UTF-8') . '</div>
+                            ' . $ico . '
                         </div>
                         <!--end::Symbol-->
                         <!--begin::Section-->

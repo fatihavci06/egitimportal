@@ -63,6 +63,22 @@ public function getSubscriptionState($schoolId)
     }
 }
 
+    public function getExamsWithStudentId($userId){
+    
+        try {
+            $sql = "
+                SELECT *
+                FROM user_grades_lnp
+                WHERE user_id = :user_id 
+                ";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['user_id' => $userId]);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
 
     public function getExamsWithHighestScore($schoolId)
     {

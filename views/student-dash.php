@@ -35,9 +35,94 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
 <div id="kt_app_content_container" class="app-container container-fluid">
     <!--begin::Row-->
     <div class="row col-lg-12">
-        <div class="row gx-5 gx-xl-10 col-lg-9">
+        <div class="row gx-5 gx-xl-9 col-lg-9">
             <!--begin::Col-->
-            <div class="col-xxl-6 mb-5 mb-xl-10">
+            <div class="col-xxl-12 mb-5 mb-xl-12">
+                <!--begin::Chart widget 8-->
+                <div class="card card-flush h-xl-100">
+                    <!--begin::Header-->
+                    <div class="card-header pt-5">
+                        <!--begin::Title-->
+                        <h3 class="card-title align-items-start flex-column">
+                            <span class="card-label fw-bold text-gray-900">Haftalık Görevler</span>
+                        </h3>
+
+                        <img class="card-title align-items-start flex-column" src="assets/media/mascots/lineup-maskot-1.png"
+                            style="width: 100px; height: 100px; float: right" alt="Lineup Mascot">
+
+                        <!--end::Title-->
+                    </div>
+                    <!--end::Header-->
+                    <!--begin::Body-->
+                    <div class="card-body pt-6">
+                        <!--begin::Tab content-->
+                        <div class="tab-content">
+                            <!--begin::Tab pane-->
+                            <div class="tab-pane fade active show" id="kt_chart_widget_8_month_tab" role="tabpanel">
+                                <!--begin::Table container-->
+                                <div class="table-responsive">
+                                    <!--begin::Table-->
+
+                                    <div style="display: flex; justify-content: space-around; width: 100%; padding: 20px 0;">
+                                        <?php
+
+                                        $styles = ["#0fadf54a", "#3571804a", "#4d38f74a", "#004eb04a", "#f9f9f94a", "#fa60004a", "#2b8c014a", "#fcecb24a"];
+                                        $styleIndex = 0;
+
+                                        foreach ($getLessons as $value) {
+
+                                            $style = $styles[$styleIndex % count($styles)];
+
+                                            if ($value['icons'] != NULL) {
+                                                $ico = "<img src='assets/media/icons/dersler/" . $value['icons'] . "'>";
+                                            } else {
+                                                $ico = "<div class='symbol-label fs-2 fw-semibold bg-$style text-inverse-$style'>" . mb_substr($value['name'], 0, 1, 'UTF-8') . "</div>";
+                                            }
+
+                                            $classIds = $value['class_id'];
+
+                                            $pieces = explode(";", $classIds);
+
+                                            if (in_array($_SESSION['class_id'], $pieces)) {
+
+                                                echo '<div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; background-color: ' . $style .'">';
+
+                                                $class_id = $_SESSION['class_id'];
+                                                $school_id = $_SESSION['school_id'];
+                                                $lesson_id = $value['id'];
+
+                                                $unitData = $dash->getUnits($lesson_id, $class_id, $school_id);
+                                                $unitCount = count($unitData);
+
+                                                echo '
+                                                <div class="symbol symbol-40px">
+                                                    ' . $ico . '
+                                                </div>';
+
+                                                echo '<div class="mt-5"><span class="text-gray-800 fw-bold fs-4"> ' . $value['name'] . '</span></div>';
+
+
+                                                echo '</div>';
+                                            } $styleIndex++;
+                                        } ?>
+                                    </div>
+
+                                    <!--end::Table-->
+                                </div>
+                                <!--end::Table container-->
+                            </div>
+                            <!--end::Tab pane-->
+                        </div>
+                        <!--end::Tab content-->
+                    </div>
+                    <!--end::Body-->
+                </div>
+                <!--end::Chart widget 8-->
+            </div>
+            <!--end::Col-->
+
+            <!--begin::Col-->
+            <div class="col-xxl-12 mb-5 mb-xl-12">
                 <!--begin::Chart widget 8-->
                 <div class="card card-flush h-xl-100">
                     <!--begin::Header-->
@@ -118,7 +203,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
             <!--end::Col-->
 
             <!--begin::Col-->
-            <div class="col-xxl-6 mb-5 mb-xl-10">
+            <div class="col-xxl-12 mb-5 mb-xl-12">
                 <!--begin::Chart widget 8-->
                 <div class="card card-flush h-xl-100">
                     <!--begin::Header-->
@@ -211,7 +296,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
             <!--end::Col-->
 
             <!--begin::Col-->
-            <div class="col-xxl-6 mb-5 mb-xl-10">
+            <div class="col-xxl-12 mb-5 mb-xl-12">
                 <!--begin::Chart widget 8-->
                 <div class="card card-flush h-xl-100">
                     <!--begin::Header-->
