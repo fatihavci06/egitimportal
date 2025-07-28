@@ -24,6 +24,23 @@ $testsCount = count($getTests);
 
 $getHomeworks = $dash->getHomeworksStudent();
 
+$bugun = new DateTime();
+
+$haftanin_gunu_sayisi = (int)$bugun->format('w'); // 0 (Pazar) - 6 (Cumartesi)
+
+if ($haftanin_gunu_sayisi === 0) { // Bugün Pazar ise
+    $haftanin_sonu = clone $bugun; // Haftanın sonu bugün
+    $kalan_gun_sayisi = 0; // Kalan gün 0
+} else {
+    // Bugün Pazar değilse, haftanın sonu olan Pazar'ı bul
+    $haftanin_sonu = clone $bugun; // $bugun nesnesini değiştirmemek için klonluyoruz
+    $haftanin_sonu->modify('next sunday');
+
+    // İki tarih arasındaki farkı hesapla
+    $fark = $haftanin_sonu->diff($bugun);
+    $kalan_gun_sayisi = $fark->days;
+}
+
 $todayWordObj = new TodayWord();
 $todaysWord = $todayWordObj->getTodaysOrRandomWord($_SESSION['school_id'], $_SESSION['class_id']);
 
@@ -34,8 +51,9 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
 ?>
 <div id="kt_app_content_container" class="app-container container-fluid">
     <!--begin::Row-->
-    <div class="row col-lg-12">
-        <div class="row gx-5 gx-xl-9 col-lg-9">
+    <div class="row col-lg-12" style="align-items: baseline;">
+        <div class="row gx-5 gx-xl-9 col-lg-9" style="align-items: baseline;">
+
             <!--begin::Col-->
             <div class="col-xxl-12 mb-5 mb-xl-12">
                 <!--begin::Chart widget 8-->
@@ -44,17 +62,103 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                     <div class="card-header pt-5">
                         <!--begin::Title-->
                         <h3 class="card-title align-items-start flex-column">
-                            <span class="card-label fw-bold text-gray-900">Haftalık Görevler</span>
+                            <span class="card-label fw-bold text-gray-900"><i class="fa-solid fa-star me-2 fs-1"></i> Haftalık Görevler</span>
                         </h3>
 
-                        <img class="card-title align-items-start flex-column" src="assets/media/mascots/lineup-maskot-1.png"
-                            style="width: 100px; height: 100px; float: right" alt="Lineup Mascot">
+
+                        <a href="ogrenci-haftalik-gorev"><button type="button"
+                                class="btn btn-primary btn-sm mt-5">Tümü</button></a>
 
                         <!--end::Title-->
                     </div>
                     <!--end::Header-->
                     <!--begin::Body-->
                     <div class="card-body pt-6">
+                        <!--begin::Tab content-->
+                        <div class="tab-content">
+                            <!--begin::Tab pane-->
+                            <div class="tab-pane fade active show" id="kt_chart_widget_8_month_tab" role="tabpanel">
+                                <!--begin::Table container-->
+                                <div class="table-responsive">
+                                    <!--begin::Table-->
+                                    <div style="display: flex; justify-content: space-around; width: 100%; padding: 20px 0;">
+                                        <?php foreach ($getLessons as $value) {
+
+                                            $classIds = $value['class_id'];
+
+                                            $pieces = explode(";", $classIds);
+
+                                            if (in_array($_SESSION['class_id'], $pieces)) {
+
+                                                echo '<div class="position-relative" style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; min-height: 220px;">';
+
+                                                //echo '<div class="mt-5"><span class="text-gray-800 fw-bold fs-4"> ' . $value['name'] . '</span></div>';
+
+                                                $getUnits = $dash->getUnitsDash($value['id']);
+
+                                                if (empty($getUnits)) {
+                                                    echo '<p class="mb-0"><img class="img-fluid" src="assets/media/units/uniteDefault.jpg"></p>';
+                                                    echo '<div class="mt-3"><span class="text-gray-600 fw-bold fs-6" style="font-family: Comic Relief, system-ui; color: #2b8c01 !important;"> ' . $value['name'] . ' dersine ait Ünite bulunamadı!</span></div>';
+                                                } else {
+                                                    foreach (array_slice($getUnits, 0, 1) as $unit) {
+                                                        echo '<p class="mb-0"><img class="img-fluid" src="assets/media/units/' . $unit['photo'] . '"></p>';
+                                                        echo '<div class="mt-3"><span class="text-gray-600 fw-bold fs-6"><a style="font-family: Comic Relief, system-ui; color: #2b8c01 !important;" href="unite/' . $unit['slug'] . '">' . $value['name'] . ' - ' . $unit['name'] . '</a></span></div>';
+                                                        echo '<div class="position-absolute bottom-0 start-50 translate-middle-x mb-2"> <i class="fa-solid fa-hourglass""></i> ' . $kalan_gun_sayisi . ' gün</div>';
+                                                        /* $getTopics = $dash->getTopicsDash($value['id'], $unit['id']);
+                                                    if (empty($getTopics)) {
+                                                        echo '<span class="text-gray-600 fw-bold fs-6"> - Bu üniteye ait konu bulunamadı!</span>';
+                                                    } else {
+                                                        foreach (array_slice($getTopics, 0, 1) as $topic) {
+                                                            echo '<div class="mt-1"><span class="text-gray-600 fw-bold fs-6">Konu: <a href="konu/' . $topic['slug'] . '">' . $topic['name'] . '</a></span></div>';
+                                                            $getSubTopics = $dash->getSubTopicsDash($value['id'], $unit['id'], $topic['id']);
+                                                            if (empty($getSubTopics)) {
+                                                                echo '<span class="text-gray-600 fw-bold fs-6"> - Bu konuya ait alt konu bulunamadı!</span>';
+                                                            } else {
+                                                                foreach (array_slice($getSubTopics, 0, 1) as $subTopic) {
+                                                                    echo '<div class="mt-1"><span class="text-gray-600 fw-bold fs-6">Alt Konu: <a href="alt-konu/' . $subTopic['slug'] . '">' . $subTopic['name'] . '</a></span></div><hr>';
+                                                                }
+                                                            }
+                                                        }
+                                                    } */
+                                                    }
+                                                }
+
+
+                                                echo '</div>';
+                                                echo '<hr>';
+                                            }
+                                        } ?>
+                                    </div>
+                                    <!--end::Table-->
+                                </div>
+                                <!--end::Table container-->
+                            </div>
+                            <!--end::Tab pane-->
+                        </div>
+                        <!--end::Tab content-->
+                    </div>
+                    <!--end::Body-->
+                </div>
+                <!--end::Chart widget 8-->
+            </div>
+            <!--end::Col-->
+
+            <!--begin::Col-->
+            <div class="col-xxl-12 mb-5 mb-xl-12">
+                <!--begin::Chart widget 8-->
+                <div class="card card-flush h-xl-100">
+                    <!--begin::Header-->
+                    <div class="card-header pt-5">
+                        <!--begin::Title-->
+                        <h5 class="card-title d-flex align-items-center">
+                            <i class="fa-solid fa-person-chalkboard me-2 fs-1"></i> <span class="card-label fw-bold text-gray-900">Dersler</span>
+                        </h5>
+
+                        <!--end::Title-->
+                    </div>
+                    <!--end::Header-->
+                    <!--begin::Body-->
+                    <div class="card-body pt-0">
                         <!--begin::Tab content-->
                         <div class="tab-content">
                             <!--begin::Tab pane-->
@@ -79,13 +183,17 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                                 $ico = "<div class='symbol-label fs-2 fw-semibold bg-$style text-inverse-$style'>" . mb_substr($value['name'], 0, 1, 'UTF-8') . "</div>";
                                             }
 
+                                            if ($value['bg-color'] != NULL) {
+                                                $style = '#' . $value['bg-color'];
+                                            }
+
                                             $classIds = $value['class_id'];
 
                                             $pieces = explode(";", $classIds);
 
                                             if (in_array($_SESSION['class_id'], $pieces)) {
 
-                                                echo '<div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; background-color: ' . $style .'">';
+                                                echo '<div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; background-color: ' . $style . '">';
 
                                                 $class_id = $_SESSION['class_id'];
                                                 $school_id = $_SESSION['school_id'];
@@ -95,15 +203,19 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                                 $unitCount = count($unitData);
 
                                                 echo '
+                                                <a href="ders/' . $value['slug'] . '">
                                                 <div class="symbol symbol-40px">
                                                     ' . $ico . '
-                                                </div>';
+                                                </div>
+                                                </a>';
 
-                                                echo '<div class="mt-5"><span class="text-gray-800 fw-bold fs-4"> ' . $value['name'] . '</span></div>';
+                                                echo '<a href="ders/' . $value['slug'] . '"><div class="mt-5"><span class="text-gray-800 fw-bold fs-4"> ' . $value['name'] . '</span>
+                                                <p class="text-gray-800 fw-bold fs-6"> ' . $unitCount . ' Ünite</p></div></a>';
 
 
                                                 echo '</div>';
-                                            } $styleIndex++;
+                                            }
+                                            $styleIndex++;
                                         } ?>
                                     </div>
 
@@ -122,24 +234,21 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
             <!--end::Col-->
 
             <!--begin::Col-->
-            <div class="col-xxl-12 mb-5 mb-xl-12">
+            <div class="col-xxl-6 mb-5 mb-xl-6">
                 <!--begin::Chart widget 8-->
                 <div class="card card-flush h-xl-100">
                     <!--begin::Header-->
                     <div class="card-header pt-5">
                         <!--begin::Title-->
-                        <h3 class="card-title align-items-start flex-column">
-                            <span class="card-label fw-bold text-gray-900">Haftalık Görevler</span>
-                        </h3>
-
-                        <img class="card-title align-items-start flex-column" src="assets/media/mascots/lineup-maskot-1.png"
-                            style="width: 100px; height: 100px; float: right" alt="Lineup Mascot">
+                        <h5 class="card-title d-flex align-items-center">
+                            <i class="fa-solid fa-chart-line me-2 fs-1"></i> <span class="card-label fw-bold text-gray-900">Başarını Arttır</span>
+                        </h5>
 
                         <!--end::Title-->
                     </div>
                     <!--end::Header-->
                     <!--begin::Body-->
-                    <div class="card-body pt-6">
+                    <div class="card-body pt-0">
                         <!--begin::Tab content-->
                         <div class="tab-content">
                             <!--begin::Tab pane-->
@@ -147,140 +256,59 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                 <!--begin::Table container-->
                                 <div class="table-responsive">
                                     <!--begin::Table-->
-                                    <?php foreach ($getLessons as $value) {
 
-                                        $classIds = $value['class_id'];
+                                    <div style="display: flex; justify-content: space-around; width: 100%; padding: 20px 0;">
+                                        <?php
+/*
+                                        $styles = ["#0fadf54a", "#3571804a", "#4d38f74a", "#004eb04a", "#f9f9f94a", "#fa60004a", "#2b8c014a", "#fcecb24a"];
+                                        $styleIndex = 0;
 
-                                        $pieces = explode(";", $classIds);
+                                        foreach ($getLessons as $value) {
 
-                                        if (in_array($_SESSION['class_id'], $pieces)) {
+                                            $style = $styles[$styleIndex % count($styles)];
 
-                                            echo '<div class="mt-5"><span class="text-gray-800 fw-bold fs-4"> ' . $value['name'] . '</span></div>';
-
-                                            $getUnits = $dash->getUnitsDash($value['id']);
-
-                                            if (empty($getUnits)) {
-                                                echo '<span class="text-gray-600 fw-bold fs-6"> - Bu derse ait Ünite bulunamadı!</span>';
+                                            if ($value['icons'] != NULL) {
+                                                $ico = "<img src='assets/media/icons/dersler/" . $value['icons'] . "'>";
                                             } else {
-                                                foreach (array_slice($getUnits, 0, 1) as $unit) {
-                                                    echo '<div class="mt-3"><span class="text-gray-600 fw-bold fs-6">Ünite: <a href="unite/' . $unit['slug'] . '">' . $unit['name'] . '</a></span></div>';
-                                                    $getTopics = $dash->getTopicsDash($value['id'], $unit['id']);
-                                                    if (empty($getTopics)) {
-                                                        echo '<span class="text-gray-600 fw-bold fs-6"> - Bu üniteye ait konu bulunamadı!</span>';
-                                                    } else {
-                                                        foreach (array_slice($getTopics, 0, 1) as $topic) {
-                                                            echo '<div class="mt-1"><span class="text-gray-600 fw-bold fs-6">Konu: <a href="konu/' . $topic['slug'] . '">' . $topic['name'] . '</a></span></div>';
-                                                            $getSubTopics = $dash->getSubTopicsDash($value['id'], $unit['id'], $topic['id']);
-                                                            if (empty($getSubTopics)) {
-                                                                echo '<span class="text-gray-600 fw-bold fs-6"> - Bu konuya ait alt konu bulunamadı!</span>';
-                                                            } else {
-                                                                foreach (array_slice($getSubTopics, 0, 1) as $subTopic) {
-                                                                    echo '<div class="mt-1"><span class="text-gray-600 fw-bold fs-6">Alt Konu: <a href="alt-konu/' . $subTopic['slug'] . '">' . $subTopic['name'] . '</a></span></div><hr>';
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
+                                                $ico = "<div class='symbol-label fs-2 fw-semibold bg-$style text-inverse-$style'>" . mb_substr($value['name'], 0, 1, 'UTF-8') . "</div>";
                                             }
 
-                                            echo '<hr>';
-                                        }
-                                    } ?>
-                                    <!--end::Table-->
-                                    <a href="ogrenci-haftalik-gorev"><button type="button"
-                                            class="btn btn-primary btn-sm mt-5">Haftalık Görevler</button></a>
-                                </div>
-                                <!--end::Table container-->
-                            </div>
-                            <!--end::Tab pane-->
-                        </div>
-                        <!--end::Tab content-->
-                    </div>
-                    <!--end::Body-->
-                </div>
-                <!--end::Chart widget 8-->
-            </div>
-            <!--end::Col-->
+                                            if ($value['bg-color'] != NULL) {
+                                                $style = '#' . $value['bg-color'];
+                                            }
 
-            <!--begin::Col-->
-            <div class="col-xxl-12 mb-5 mb-xl-12">
-                <!--begin::Chart widget 8-->
-                <div class="card card-flush h-xl-100">
-                    <!--begin::Header-->
-                    <div class="card-header pt-5">
-                        <!--begin::Title-->
-                        <h3 class="card-title align-items-start flex-column">
-                            <span class="card-label fw-bold text-gray-900">Testler</span>
-                            <span class="fs-6 fw-semibold text-gray-500">En son eklenen 5 test</span>
-                        </h3>
-                        <img src="assets/media/mascots/maskot-erkek-2.png" class="card-title align-items-start flex-column"
-                            style="width: 100px; height: 100px; float: right; -webkit-transform: scaleX(-1); transform: scaleX(-1);"
-                            alt="Lineup Mascot">
-                        <!--end::Title-->
-                    </div>
-                    <!--end::Header-->
-                    <!--begin::Body-->
-                    <div class="card-body pt-6">
-                        <!--begin::Tab content-->
-                        <div class="tab-content">
-                            <!--begin::Tab pane-->
-                            <div class="tab-pane fade active show" id="kt_chart_widget_8_month_tab" role="tabpanel">
-                                <!--begin::Table container-->
-                                <div class="table-responsive">
-                                    <!--begin::Table-->
-                                    <table class="table table-row-dashed align-middle gs-0 gy-3 my-0">
-                                        <!--begin::Table head-->
-                                        <thead>
-                                            <tr class="fs-7 fw-bold text-gray-500 border-bottom-0">
-                                                <th class="p-0 pb-3 min-w-150px text-start">TEST ADI</th>
-                                                <th class="p-0 pb-3 min-w-100px text-end">İŞLEM</th>
-                                            </tr>
-                                        </thead>
-                                        <!--end::Table head-->
-                                        <!--begin::Table body-->
-                                        <tbody>
-                                            <?php if (empty($getTests)) { ?>
-                                                <tr>
-                                                    <td colspan="2" class="text-center"><span
-                                                            class="text-gray-600 fw-bold fs-6">Test Mevcut Değil!</span></td>
-                                                </tr>
-                                                <?php } else {
-                                                foreach (array_slice($getTests, 0, 5) as $tests) {
-                                                    $getTestControl = $dash->getTestControl($tests['id']);
-                                                    $sonuc = $getTestControl['score'] ?? 0;
-                                                    if ($sonuc >= 80) {
-                                                        $status = '<span class="badge badge-success">Sonuç: ' . number_format($sonuc, 2) . ' Puan</span>';
-                                                    } else {
-                                                        $fail = $getTestControl['fail_count'] ?? 0;
-                                                        if ($fail > 2) {
-                                                            $status = '<span class="badge badge-light-danger">Sonuç: ' . number_format($sonuc, 2) . ' Puan</span>';
-                                                        } else {
-                                                            $status = '<button class="btn btn-primary start-exam-btn btn-sm" data-id="' . $tests['id'] . '">Teste Gir</button>';
-                                                        }
-                                                    }
-                                                ?>
-                                                    <tr>
-                                                        <td>
-                                                            <div class="d-flex align-items-center">
-                                                                <div class="d-flex justify-content-start flex-column">
-                                                                    <span
-                                                                        class="text-gray-600 fw-bold fs-6"><?php echo $tests['test_title']; ?></span>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td class="text-end">
-                                                            <span class="text-gray-600 fw-bold fs-6">
-                                                                <?php echo $status; ?>
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                            <?php }
-                                            } ?>
-                                        </tbody>
-                                        <!--end::Table body-->
-                                    </table>
-                                    <a href="ogrenci-testler"><button type="button" class="btn btn-primary btn-sm mt-5">Tüm
-                                            Testler</button></a>
+                                            $classIds = $value['class_id'];
+
+                                            $pieces = explode(";", $classIds);
+
+                                            if (in_array($_SESSION['class_id'], $pieces)) {
+
+                                                echo '<div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; background-color: ' . $style . '">';
+
+                                                $class_id = $_SESSION['class_id'];
+                                                $school_id = $_SESSION['school_id'];
+                                                $lesson_id = $value['id'];
+
+                                                $unitData = $dash->getUnits($lesson_id, $class_id, $school_id);
+                                                $unitCount = count($unitData);
+
+                                                echo '
+                                                <a href="ders/' . $value['slug'] . '">
+                                                <div class="symbol symbol-40px">
+                                                    ' . $ico . '
+                                                </div>
+                                                </a>';
+
+                                                echo '<a href="ders/' . $value['slug'] . '"><div class="mt-5"><span class="text-gray-800 fw-bold fs-4"> ' . $value['name'] . '</span>
+                                                <p class="text-gray-800 fw-bold fs-6"> ' . $unitCount . ' Ünite</p></div></a>';
+
+
+                                                echo '</div>';
+                                            }
+                                            $styleIndex++;
+                                        } */?>
+                                    </div>
+
                                     <!--end::Table-->
                                 </div>
                                 <!--end::Table container-->
@@ -296,24 +324,21 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
             <!--end::Col-->
 
             <!--begin::Col-->
-            <div class="col-xxl-12 mb-5 mb-xl-12">
+            <div class="col-xxl-6 mb-5 mb-xl-6">
                 <!--begin::Chart widget 8-->
                 <div class="card card-flush h-xl-100">
                     <!--begin::Header-->
                     <div class="card-header pt-5">
                         <!--begin::Title-->
-                        <h3 class="card-title align-items-start flex-column">
-                            <span class="card-label fw-bold text-gray-900">Ödevler</span>
-                            <span class="fs-6 fw-semibold text-gray-500">En son eklenen 5 ödev</span>
-                        </h3>
-                        <img src="assets/media/mascots/maskot-kiz-2.png" class="card-title align-items-start flex-column"
-                            style="width: 100px; height: 100px; float: right; -webkit-transform: scaleX(-1); transform: scaleX(-1);"
-                            alt="Lineup Mascot">
+                        <h5 class="card-title d-flex align-items-center">
+                            <i class="fa-solid fa-comments me-2 fs-1"></i> <span class="card-label fw-bold" style="font-family: Comic Relief, system-ui; color: #2b8c01 !important;">Soru-Cevap</span>
+                        </h5>
+
                         <!--end::Title-->
                     </div>
                     <!--end::Header-->
                     <!--begin::Body-->
-                    <div class="card-body pt-6">
+                    <div class="card-body pt-0">
                         <!--begin::Tab content-->
                         <div class="tab-content">
                             <!--begin::Tab pane-->
@@ -321,47 +346,11 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                 <!--begin::Table container-->
                                 <div class="table-responsive">
                                     <!--begin::Table-->
-                                    <table class="table table-row-dashed align-middle gs-0 gy-3 my-0">
-                                        <!--begin::Table head-->
-                                        <thead>
-                                            <tr class="fs-7 fw-bold text-gray-500 border-bottom-0">
-                                                <th class="p-0 pb-3 min-w-150px text-start">ÖDEV ADI</th>
-                                                <th class="p-0 pb-3 min-w-100px text-end">BİTİŞ TARİHİ</th>
-                                            </tr>
-                                        </thead>
-                                        <!--end::Table head-->
-                                        <!--begin::Table body-->
-                                        <tbody>
-                                            <?php if (empty($getTests)) { ?>
-                                                <tr>
-                                                    <td colspan="2" class="text-center"><span
-                                                            class="text-gray-600 fw-bold fs-6">Test Mevcut Değil!</span></td>
-                                                </tr>
-                                                <?php } else {
-                                                foreach (array_slice($getHomeworks, 0, 5) as $homeworks) {
-                                                ?>
-                                                    <tr>
-                                                        <td>
-                                                            <div class="d-flex align-items-center">
-                                                                <div class="d-flex justify-content-start flex-column">
-                                                                    <span class="text-gray-600 fw-bold fs-6"><a
-                                                                            href="ogrenci-odev-detay/<?php echo $homeworks['slug']; ?>"><?php echo $homeworks['title']; ?></a></span>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td class="text-end">
-                                                            <span class="text-gray-600 fw-bold fs-6">
-                                                                <?php echo $dateFormat->changeDate($homeworks['end_date']); ?>
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                            <?php }
-                                            } ?>
-                                        </tbody>
-                                        <!--end::Table body-->
-                                    </table>
-                                    <a href="ogrenci-odev-listele"><button type="button"
-                                            class="btn btn-primary btn-sm mt-5">Tüm Ödevler</button></a>
+
+                                    <div style="display: flex; justify-content: space-around; width: 100%; padding: 20px 0;">
+                                        <p style="font-family: Comic Relief, system-ui; color: #2b8c01 !important;"><b>Derslerle ilgili cevabını merak ettiğin sorularını sormayı unutma, LineUp öğretmenleri sorularını senin için cevaplayacak.</b></p>
+                                    </div>
+
                                     <!--end::Table-->
                                 </div>
                                 <!--end::Table container-->
