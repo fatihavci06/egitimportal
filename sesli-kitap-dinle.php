@@ -9,7 +9,7 @@ ini_set('display_errors', '1');
     include_once "classes/dbh.classes.php";
 	include_once "classes/audio-book.classes.php";
 	include_once "classes/audio-book-view.classes.php";
-    $games = new ShowAudioBook();
+    $book = new ShowAudioBook();
     include_once "views/pages-head.php";
 ?>
 <!--end::Head-->
@@ -63,14 +63,14 @@ ini_set('display_errors', '1');
 									<!--begin::Careers - List-->
 									<div class="card">
 										<!--begin::Body-->
-										<div class="card-body p-lg-17">
+										<div class="card-body p-lg-10">
 											<!--begin::Hero-->
-												<?php $games->getHeaderImageInAudioBookStu(); ?>
+												<?php $book->getHeaderImageInAudioBookStu(); ?>
 											<!--end::-->
 											<!--begin::Layout-->
-											<div class="d-flex flex-column flex-lg-row mb-17">
+											<div class=" mb-17">
 												<!--begin::Content-->
-												<?php $games->showAudioBookStudent(); ?>
+												<?php $book->showAudioBookStudent(); ?>
 												<!--end::Content-->
 											</div>
 											<!--end::Layout-->

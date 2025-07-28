@@ -3,12 +3,14 @@
 <?php
 session_start();
 define('GUARD', true);
+
 if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 8)) {
     include_once "classes/dbh.classes.php";
     include "classes/lessons.classes.php";
     include "classes/lessons-view.classes.php";
     $lessons = new ShowLesson();
     include_once "views/pages-head.php";
+  
     ?>
     <!--end::Head-->
     <!--begin::Body-->
