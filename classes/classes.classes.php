@@ -453,19 +453,35 @@ class Classes extends Dbh
 
 		return $data;
 	}
-	public function getExtraPackageList()
-	{
-		$stmt = $this->connect()->prepare('SELECT *FROM extra_packages_lnp where school_id=1 ORDER BY id desc');
+	public function getExtraPackageList($type = null)
+{
+    if ($type === 'ozel-ders') {
+        $type = 'Özel Ders';
+    } elseif ($type === 'rehberlik') {
+        $type = 'Rehberlik';
+    } elseif ($type === 'kocluk') {
+        $type = 'Koçluk';
+    }
 
-		if (!$stmt->execute(array())) {
-			$stmt = null;
-			exit();
-		}
+    // SQL ve parametreleri ayarla
+    if ($type) {
+        $sql = 'SELECT * FROM extra_packages_lnp WHERE school_id = 1 AND type = ? ORDER BY id DESC';
+        $params = [$type];
+    } else {
+        $sql = 'SELECT * FROM extra_packages_lnp WHERE school_id = 1 ORDER BY id DESC';
+        $params = [];
+    }
 
-		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $this->connect()->prepare($sql);
 
-		return $data;
-	}
+    if (!$stmt->execute($params)) {
+        $stmt = null;
+        exit();
+    }
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 	public function getTestDetail($testId, $classId = 0)
 	{
 		$role = $_SESSION['role'];
