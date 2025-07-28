@@ -18,6 +18,19 @@ class Classes extends Dbh
 
 		return array_values($filtered);
 	}
+	public function getLessonBySlug($slug)
+{
+    $stmt = $this->connect()->prepare('SELECT * FROM lessons_lnp WHERE slug = :slug LIMIT 1');
+    $stmt->bindParam(':slug', $slug, PDO::PARAM_STR);
+
+    if (!$stmt->execute()) {
+        $stmt = null;
+        exit();
+    }
+
+    $lesson = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $lesson ?: null;
+}
 	public function getUnitsList($class_id, $lesson_id)
 	{
 		$stmt = $this->connect()->prepare('SELECT * FROM units_lnp WHERE class_id = ? AND lesson_id = ?');

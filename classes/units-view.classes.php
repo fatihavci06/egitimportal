@@ -243,38 +243,22 @@ class ShowUnit extends Units
                 }
 
                 $lessonList = '
-                            <!--begin::Col-->
-                            <div class="col-md-3">
-                                <!--begin::Publications post-->
-                                <div class="card-xl-stretch me-md-6">
-                                    <!--begin::Overlay-->
-                                    <a class="d-block overlay mb-4 ' . $class . '" href="' . $link . '">
-                                        <!--begin::Image-->
-                                        <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-175px" style="background-image:url(\'assets/media/units/' . $value['photo'] . '\')"></div>
-                                        <!--end::Image-->
-                                        <!--begin::Action-->
-                                        <div class="overlay-layer bg-dark card-rounded bg-opacity-25">
-                                            <i class="ki-duotone ki-eye fs-2x text-white"></i>
-                                        </div>
-                                        <!--end::Action-->
-                                    </a>
-                                    <!--end::Overlay-->
-                                    <!--begin::Body-->
-                                    <div class="m-0">
-                                        <!--begin::Title-->
-                                        <a href="' . $link . '" class="fs-4 text-gray-900 fw-bold text-hover-primary text-gray-900 lh-base ' . $class . '">' . $value['name'] . '</a>
-                                        <!--end::Title-->
-                                        <!--begin::Text-->
-                                        <!-- <div class="fw-semibold fs-5 text-gray-600 text-gray-900 mt-3 mb-5">' . $value['short_desc'] . '</div> -->
-                                        ' . $notification . '
-                                        <!--end::Text-->
-                                    </div>
-                                    <!--end::Body-->
+                    <!--begin::Col-->
+                    <div class="col-12" style="margin-bottom: -20px;">
+                        <a href="' . $link . '" class="text-decoration-none">
+                           <div class="border rounded d-flex align-items-center p-2 ' . $class . '" style="border: 2px solid #333; box-shadow: 0 2px 6px rgba(0,0,0,0.15); justify-content: flex-start;">
+                                <button type="button" class="btn btn-light btn-sm me-3">
+                                    <i style="font-size:50px!important" class="bi bi-play-fill"></i>
+                                </button>
+                                <div>
+                                    <div class="fw-semibold fs-5" style="    font-size: 20px !important; color: #000;">' . htmlspecialchars($value['name']) . '</div>
+                                    ' . $notification . '
                                 </div>
-                                <!--end::Publications post-->
                             </div>
-                            <!--end::Col-->
-                    ';
+                        </a>
+                    </div>
+                    <!--end::Col-->
+                ';
                 echo $lessonList;
             }
         }

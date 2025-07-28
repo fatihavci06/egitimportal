@@ -7,11 +7,62 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 	include_once "classes/dbh.classes.php";
 	include_once "classes/units.classes.php";
 	include_once "classes/units-view.classes.php";
+	include_once "classes/classes.classes.php";
 	$units = new ShowUnit();
 	include_once "views/pages-head.php";
+	$lesson = new Classes();
+	$url = $_SERVER['REQUEST_URI']; // /lineup_campus/ders/turkce
+
+	$parts = explode('/', trim($url, '/')); // ['lineup_campus', 'ders', 'turkce']
+
+	$slug = $parts[2] ?? null; // 'turkce'
+
+	
+	$lessons = $lesson->getLessonsList($_SESSION['class_id']);
+	$lessonInfo = $lesson->getLessonBySlug($slug);
+	
+
 ?>
 	<!--end::Head-->
 	<!--begin::Body-->
+
+	<head>
+
+		<style>
+			/* Minimal custom style for colors not in Bootstrap's palette, 
+           or for specific border widths if Bootstrap's are not enough. */
+			.bg-custom-light {
+				background-color: #e6e6fa;
+				/* Light purple */
+			}
+
+			.border-custom-red {
+				border-color: #d22b2b !important;
+			}
+
+			.text-custom-cart {
+				color: #6a5acd;
+				/* Slate blue for the cart */
+			}
+
+			/* For the circular icon, we'll use a larger padding or fixed size */
+			.icon-circle-lg {
+				width: 60px;
+				/* fixed width */
+				height: 60px;
+				/* fixed height */
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			.icon-circle-lg img {
+				max-width: 100%;
+				/* Ensure image scales within the circle */
+				max-height: 100%;
+			}
+		</style>
+	</head>
 
 	<body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
 		<!--begin::Theme mode setup on page load-->
@@ -64,29 +115,61 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 										<div class="card-body p-lg-17">
 											<!--begin::Section-->
 											<div class="mb-19">
-												<!--begin::Top-->
-												<div class="text-center mb-12">
-													<!--begin::Title-->
-													<h3 class="fs-2x text-gray-900 mb-5">Üniteler
-														<i class="ki-duotone ki-clipboard text-warning fs-2x">
-															<span class="path1"></span>
-															<span class="path2"></span>
-															<span class="path3"></span>
-														</i>
-													</h3>
-													<!--end::Title-->
-													<!--begin::Text-->
-													<!--<div class="fs-5 text-muted fw-semibold">Our goal is to provide a complete and robust theme solution 
-													<br />to boost all of our customer’s project deployments</div>-->
-													<!--end::Text-->
+												<div class="row align-items-center mb-12">
+													<header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
+                           border-top border-bottom border-custom-red" style="border-width: 5px !important;">
+
+														<div class="d-flex align-items-center">
+															<div class="rounded-circle bg-danger me-3 shadow icon-circle-lg">
+																<img src="assets/media/icons/dersler/<?=$lessonInfo['icons']?>" alt="Book Icon" class="img-fluid" style="width: 200px; height: 200px; object-fit: contain;">
+															</div>
+
+															<h1 class="fs-3 fw-bold text-dark mb-0"><?=$lessonInfo['name']?> Dersi Üniteleri</h1>
+														</div>
+
+
+
+
+													</header>
 												</div>
-												<!--end::Top-->
-												<!--begin::Row-->
-												<div class="row g-10">
-													<?php $units->getUnitsListStudent(); ?>
+												<div class="row align-items-center mb-12">
+													<div class="col-2 d-flex justify-content-center">
+														<h3 class="fs-2x text-gray-900 mb-0">
+															Dersler
+															<i class="ki-duotone ki-clipboard text-warning fs-2x">
+																<span class="path1"></span>
+																<span class="path2"></span>
+																<span class="path3"></span>
+															</i>
+														</h3>
+													</div>
+													<div class="col-10 d-flex justify-content-center">
+														
+													</div>
 												</div>
-												<!--end::Row-->
+
+												<div class="row">
+													<div class="col-1">
+														<div class="row g-10 ">
+															<?php foreach ($lessons as $lesson): ?>
+																<?php if ($lesson['name'] !== 'Robotik Kodlama' && $lesson['name'] !== 'Ders Deneme'): ?>
+																	<div class="col-12 mb-4">
+																		<a href="ders/<?= urlencode($lesson['slug']) ?>">
+																			<img src="assets/media/icons/dersler/<?= htmlspecialchars($lesson['icons']) ?>" alt="Icon" class="img-fluid" style="width: 90px; height: 90px; object-fit: contain;" />
+																		</a>
+																	</div>
+																<?php endif; ?>
+															<?php endforeach; ?>
+														</div>
+													</div>
+													<div class="col-11" >
+														<div class="row g-10">
+															<?php $units->getUnitsListStudent(); ?>
+														</div>
+													</div>
+												</div>
 											</div>
+
 											<!--end::Section-->
 										</div>
 										<!--end::Body-->
@@ -104,7 +187,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 					</div>
 					<!--end:::Main-->
 					<!--begin::aside-->
-						<?php include_once "views/aside.php"; ?>
+					<?php include_once "views/aside.php"; ?>
 					<!--end::aside-->
 				</div>
 				<!--end::Wrapper-->
