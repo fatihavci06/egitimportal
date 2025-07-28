@@ -42,165 +42,85 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
     include "classes/classes.classes.php"; // Kendi Classes sınıf dosyanız
 
     $class = new Classes();
-    $data = $class->getExtraPackageList(); // Paket listesini çeken fonksiyon
-
-    // Form gönderildiğinde (POST isteği geldiğinde) ödeme işlemini yap
-    // if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    //     $selectedPackageId = $_POST['package_id'] ?? null;
-    //     $cardNumber = preg_replace('/\s+/', '', $_POST['cardNumber'] ?? '');
-    //     $cardHolder = $_POST['cardHolder'] ?? '';
-    //     $expiryMonth = $_POST['expiryMonth'] ?? '';
-    //     $expiryYear = $_POST['expiryYear'] ?? ''; // Kullanıcıdan 2 haneli alınacak
-    //     $cvv = $_POST['cvv'] ?? '';
-    //     $userId = $_POST['user_id'] ?? null;
-
-    //     $selectedPackage = null;
-    //     foreach ($data as $package) {
-    //         if ($package['id'] == $selectedPackageId) {
-    //             $selectedPackage = $package;
-    //             break;
-    //         }
-    //     }
-
-    //     // Son kullanma yılının 2 haneli olduğundan emin olun ve başına 20 ekleyin
-    //     if (strlen($expiryYear) === 2 && is_numeric($expiryYear)) {
-    //         $expiryYear = '20' . $expiryYear; // Başına '20' ekleniyor
-    //     } else {
-    //         $_SESSION['payment_error'] = 'Son kullanma yılı 2 haneli sayısal olmalıdır.';
-    //         header("Location: " . $_SERVER['PHP_SELF']);
-    //         exit();
-    //     }
-
-    //     if ($selectedPackage && !empty($cardNumber) && !empty($cardHolder) && !empty($expiryMonth) && !empty($expiryYear) && !empty($cvv)) {
-    //         $orderId = getGUID();
-    //         $amount = (float)$selectedPackage['price'];
-    //         $currency = "TRY";
-    //         $installmentCount = 1;
-    //         $userId = $_SESSION['id'] ?? null;
-    //         $userInfo = getUserInfo($userId, $pdo);
-
-    //         $bodyArray = [
-    //             "currency" => $currency,
-    //             "installmentCount" => $installmentCount,
-    //             "motoInd" => false,
-    //             "paymentGroup" => "PRODUCT",
-    //             "paymentChannel" => "WEB",
-    //             "card" => [
-    //                 "holderName" => htmlspecialchars($cardHolder),
-    //                 "cvv" => htmlspecialchars($cvv),
-    //                 "expireMonth" => (int)$expiryMonth,
-    //                 "expireYear" => (int)$expiryYear,
-    //                 "number" => htmlspecialchars($cardNumber)
-    //             ],
-    //             "billingAddress" => [
-    //                 "address" => $userInfo['address'] ?: '-',
-    //                 "city" => $userInfo['address'] ?: '-',
-    //                 "companyName" => "-",
-    //                 "country" => "Türkiye",
-    //                 "district" => $userInfo['district'] ?: '-',
-    //                 "contactName" => (($userInfo['name'] ?? '') . ' ' . ($userInfo['surname'] ?? '')) ?: '-',
-    //                 "phoneNumber" => $userInfo['telephone'] ?: '905000000000',
-    //                 "zipCode" => $userInfo['postcode'] ?: '-'
-    //             ],
-    //             "shippingAddress" => [
-    //                 "address" => $userInfo['address'] ?: '-',
-    //                 "city" => $userInfo['address'] ?: '-',
-    //                 "companyName" => "-",
-    //                 "country" => "Türkiye",
-    //                 "district" => $userInfo['district'] ?: '-',
-    //                 "contactName" => (($userInfo['name'] ?? '') . ' ' . ($userInfo['surname'] ?? '')) ?: '-',
-    //                 "phoneNumber" => $userInfo['telephone'] ?: '905000000000',
-    //                 "zipCode" => $userInfo['postcode'] ?: '-'
-    //             ],
-    //             "buyer" => [
-    //                 "ipAddress" => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-    //                 "buyerId" => $_SESSION['id'] ?? 'default_buyer_id',
-    //                 "name" => $userInfo['name'] ?: '-',
-    //                 "surName" => $userInfo['surname'] ?: '-',
-    //                 "identityNumber" => 11111111111,
-    //                 "city" => $userInfo['city'] ?: '-',
-    //                 "country" => "Türkiye",
-    //                 "zipCode" => $userInfo['postcode'] ?: '-',
-    //                 "emailAddress" => $userInfo['email'] ?: '-',
-    //                 "phoneNumber" => $userInfo['telephone'] ?: '905000000000',
-    //                 "registrationAddress" => $userInfo['address'] ?: '-',
-    //                 "lastLoginDate" => date('Y-m-d\TH:i:s.v'),
-    //                 "registrationDate" => date('Y-m-d\TH:i:s.v')
-    //             ],
-    //             "basket" => [
-    //                 "basketId" => getGUID(),
-    //                 "basketItems" => [
-    //                     [
-    //                         "itemId" => htmlspecialchars($selectedPackage['id']),
-    //                         "name" => htmlspecialchars($selectedPackage['name']),
-    //                         "itemType" => "PHYSICAL",
-    //                         "category" => "Eğitim",
-    //                         "subCategory" => htmlspecialchars($selectedPackage['type']),
-    //                         "numberOfProducts" => 1,
-    //                         "totalPrice" => $amount,
-    //                         "unitPrice" => $amount
-    //                     ]
-    //                 ]
-    //             ],
-    //             "orderId" => $orderId,
-    //             "amount" => $amount
-    //         ];
-
-
-    //         $body = json_encode($bodyArray);
-
-    //         try {
-    //             $securityHash = JWTSignatureGenerator::generateJWKSignature($merchantId, $terminalId, $secretKey, $body, $fixedKidValue, $fixedKValue);
-
-    //             $bodyArray['securityHash'] = $securityHash;
-    //             $updatedBody = json_encode($bodyArray);
-
-    //             $url = $serviceEndpoint . '/payment/auth';
-
-    //             $ch = curl_init($url);
-
-    //             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    //             curl_setopt($ch, CURLOPT_POST, true);
-
-    //             $formattedHeaders = [];
-    //             foreach ($headers as $key => $value) {
-    //                 $formattedHeaders[] = "$key: $value";
-    //             }
-    //             curl_setopt($ch, CURLOPT_HTTPHEADER, $formattedHeaders);
-
-    //             curl_setopt($ch, CURLOPT_POSTFIELDS, $updatedBody);
-
-    //             $response = curl_exec($ch);
-
-    //             if (curl_errno($ch)) {
-    //                 $_SESSION['payment_error'] = 'Curl Hatası: ' . curl_error($ch);
-    //             } else {
-    //                 $responseData = json_decode($response, true);
-
-
-    //                 if (isset($responseData['success']) && $responseData['success'] === true) {
-    //                     setDatabasePackageInfo($pdo, $responseData, $amount, $selectedPackageId);
-    //                     $_SESSION['payment_success'] = 'Ödeme başarılı! ';
-    //                 } else {
-    //                     $errorMessage = $responseData['errorMessage'] ?? 'Bilinmeyen bir hata oluştu.';
-    //                     $_SESSION['payment_error'] = 'Ödeme başarısız: Lütfen kart bilgilerini doğru giriniz.';
-    //                 }
-    //             }
-    //             curl_close($ch);
-    //         } catch (Exception $e) {
-    //             $_SESSION['payment_error'] = 'İşlem sırasında bir hata oluştu: ' . $e->getMessage();
-    //         }
-
-    //         header("Location: " . $_SERVER['PHP_SELF']);
-    //         exit();
-    //     } else {
-    //         $_SESSION['payment_error'] = 'Lütfen tüm ödeme bilgilerini eksiksiz ve doğru formatta girin ve bir paket seçin.';
-    //         header("Location: " . $_SERVER['PHP_SELF']);
-    //         exit();
-    //     }
-    // }
-
-
+    $tur = $_GET['tur'] ?? 'ozel-ders'; // Varsayılan olarak özel ders türü
+    $data = $class->getExtraPackageList($tur); // Paket listesini çeken fonksiyon
+    $package_descriptions = [
+        'rehberlik' => [
+            'title-1' => 'Rehberlik Paket İçeriği',
+            'desc-1'  => 'Rehberlik paketi için özel olarak tasarlanmış içerikler ve danışmanlık hizmetleri ile hedeflerine ulaşmanı kolaylaştırır. Kariyer planlama ve sınav stratejileri hakkında uzman desteği alabilirsin.',
+            'title-2' => 'Rehberlik Deneme Sınavları',
+            'desc-2'  => 'Rehberlik odaklı deneme sınavları ile eksiklerini belirle ve öğrenme sürecini optimize et. Detaylı analizlerle güçlü ve zayıf yönlerini keşfet.',
+            'title-3' => 'Kazanımları Pekiştiren Rehberlik Odaklı Sorular',
+            'desc-3'  => 'Rehberlik programına özel hazırlanmış, kazanımları pekiştirmeye yönelik soru setleri ile konuları daha iyi kavra.',
+            'title-4' => 'Öğrenci Koçluğu ve Mentörlük Desteği',
+            'desc-4'  => 'Rehberlik öğrencilerine özel koçluk ve mentörlük desteği ile motivasyonunu artır ve düzenli takip ile hedeflerine odaklan.',
+            'title-5' => 'Öğrenciye Özel Rehberlik Materyalleri',
+            'desc-5'  => 'Kişiye özel rehberlik materyalleri ve çalışma planları ile verimli bir öğrenme süreci yönetimi.',
+            'title-6' => 'Rehberlik Takip ve Geri Bildirim Sistemi',
+            'desc-6'  => 'Rehberlik süreci boyunca düzenli takip ve geri bildirimler ile gelişimini izle ve stratejilerini sürekli iyileştir.',
+            'title-7' => 'Rehberlik Sonuç Analizi',
+            'desc-7'  => 'Rehberlik programının sonuçlarına yönelik detaylı analiz raporları ile performansını değerlendir ve gelecek hedeflerini belirle.'
+        ],
+        'ozel-ders' => [
+            'title-1' => 'Özel Ders Paket İçeriği',
+            'desc-1'  => 'Birebir özel derslerle konuları derinlemesine öğren ve eksiklerini kapat. Uzman eğitmenlerden kişiye özel destek alarak başarıyı yakala.',
+            'title-2' => 'Birebir Deneme Sınavları',
+            'desc-2'  => 'Özel ders programına entegre edilmiş deneme sınavları ile konulardaki ilerlemeni ölç ve zayıf noktalarını belirle.',
+            'title-3' => 'Kişiye Özel Ders Materyalleri',
+            'desc-3'  => 'Öğrenme hızına ve stilinize uygun olarak hazırlanmış ders materyalleri ile verimli bir çalışma ortamı.',
+            'title-4' => 'Ders Sonrası Soru Çözüm Desteği',
+            'desc-4'  => 'Özel ders sonrası çözemediğin sorular için ek destek ve çözümlerle konuları pekiştir.',
+            'title-5' => 'Ders Tekrar ve Pekiştirme Seansları',
+            'desc-5'  => 'Öğrenilen bilgileri pekiştirmek için ek ders tekrar seansları ve uygulamalar.',
+            'title-6' => 'Öğrenci Gelişim Takip Raporları',
+            'desc-6'  => 'Özel ders sürecindeki gelişimini gösteren detaylı raporlar ve performans analizleri.',
+            'title-7' => 'Ders Sonrası Geri Bildirimler',
+            'desc-7'  => 'Derslerin etkinliğini artırmak için düzenli geri bildirimler ve kişiye özel öneriler.'
+        ],
+        'kocluk' => [
+            'title-1' => 'Koçluk Paket İçeriği',
+            'desc-1'  => 'Profesyonel koçluk desteği ile kişisel hedeflerini belirle, motivasyonunu artır ve başarıya giden yolda emin adımlarla ilerle. Düzenli görüşmeler ve takip ile gelişimini destekle.',
+            'title-2' => 'Koçluk Odaklı Çalışma Planları',
+            'desc-2'  => 'Koçluk programına özel hazırlanmış, hedeflerine yönelik çalışma ve zaman yönetimi planları.',
+            'title-3' => 'Hedef Belirleme ve Strateji Geliştirme',
+            'desc-3'  => 'Koçunla birlikte hedeflerini netleştir, bu hedeflere ulaşmak için etkili stratejiler geliştir.',
+            'title-4' => 'Motivasyon ve Disiplin Desteği',
+            'desc-4'  => 'Koçluk süresince motivasyonunu yüksek tutmak ve düzenli çalışma disiplini kazanmak için destek.',
+            'title-5' => 'Sınav Kaygısı ve Stres Yönetimi',
+            'desc-5'  => 'Sınav kaygısını yönetme ve stresle başa çıkma teknikleri üzerine koçluk seansları.',
+            'title-6' => 'Düzenli Koçluk Görüşmeleri',
+            'desc-6'  => 'Haftalık veya belirlenen periyotlarda koçunla birebir görüşmelerle gelişimini takip et.',
+            'title-7' => 'Koçluk Süreci Geri Bildirimleri',
+            'desc-7'  => 'Koçluk sürecinin etkinliğini artırmak için düzenli geri bildirimler ve analizler.'
+        ],
+        // Varsayılan açıklamalar, eğer 'tur' parametresi tanımsızsa veya eşleşmiyorsa
+        'default' => [
+            'title-1' => 'Paket İçeriğinde Neler Var?',
+            'desc-1'  => 'Derdaily deneme sınavları net odaklı soru bankası deneme avantajı yüksek net yapmanı sağlar. Deneme sınavlarımızda uzmanlar, harmanladıkları özel içeriklerimizle sana eşlik ediyor. Aynı zamanda uzman koçlarımızla kişisel gelişim ve program hazırlığına yönelik destek hizmetleri alabilirsin.',
+            'title-2' => '2 Adet Deneme Sınavı Çözümü',
+            'desc-2'  => 'Öğrencilerimiz için deneme sınavlarını en verimli şekilde değerlendirebilmeleri amacıyla özel olarak hazırlanan, 2 adet deneme sınavında uygulanan "öncesi ve sonrası" koçluğuyla öğrencinin motivasyonunu artırmak ve kazanımlarını pekiştirmeyi amaçlayan bir hizmettir.',
+            'title-3' => 'Kazanımları Pekiştiren Tespitler',
+            'desc-3'  => 'Deneme sınavlarından oluşan öğrencilerin kazanımlardaki eksiklerini tespit etmek için özel olarak tasarlanmıştır. Derdaily\'nin danışmanlık uzmanlarıyla uyumlu bir şekilde tasarlanmış bu içerikler, öğrencilerin zayıf yönlerini belirleyerek doğru bir öğrenme stratejisi oluşturmalarına yardımcı olur.',
+            'title-4' => 'Öğrenci Koçluğu ve Öz Değerlendirme Seansı',
+            'desc-4'  => 'Deneme uygulamaları sonrasında öğrenciye özel koçluk raporları sunulur. Öğrencinin kendi kendini analiz etme ve değerlendirme becerilerini geliştirir. Tecrübeli öğretmenlerimiz bu oturumlarda öğrenciye geri bildirim verir ve mentorluk desteğiyle hedeflerine ulaşmasında yardımcı olur.',
+            'title-5' => 'Öğrenciye Özel Soru Bankası',
+            'desc-5'  => 'Öğrencinin deneme sınavları için özel olarak hazırlanmış ve pekiştirmeyi amaçlayan bir soru bankası programıdır. Deneme sınavları sonuçlarında yapılan kazanım analizlerine göre öğrencinin bilgi ve kazanımlarını güçlendirir. Adı ve soyadı belirtilmez.',
+            'title-6' => 'Paket Alanlara Sonra Destek!',
+            'desc-6'  => 'Paket alanların sınav ve eğitim süreçlerinde yaşadığı zorlukları Derdaily danışmanları tarafından analiz ve birebir koçluk hizmeti ile desteklenir. Ek deneme sınavı için gerekli kargoluk olarak, uzman eğitmen desteğiyle yapılacak ek deneme çözümü sunulur. Deneme çözümü google meet üzerinden yapılır. Tüm süreçlerde soru çözümleri ve destek dersleri ile öğrenciye tam anlamıyla destek sağlanır.',
+            'title-7' => 'Eğitmen Bilgilendirmesi',
+            'desc-7'  => 'Deneme ve kişisel gelişim süreci sonrasında, öğrencinin bilgi donanımındaki eksikliklerini belirlemek amacıyla bir analiz raporu düzenlenir. Bu raporlar öğrencinin kazanımlarını ve eksiklerini net bir şekilde gösterir.'
+        ]
+    ];
+    $current_descriptions = $package_descriptions[$tur] ?? $package_descriptions['default'];
+    $package_blocks = [
+        ['fa-box-open', 'title-1', 'desc-1'], // Paket İçeriği
+        ['fa-file-signature', 'title-2', 'desc-2'], // Deneme Sınavı
+        ['fa-lightbulb', 'title-3', 'desc-3'], // Tespitler
+        ['fa-user-graduate', 'title-4', 'desc-4'], // Koçluk
+        ['fa-book-open', 'title-5', 'desc-5'], // Soru Bankası
+        ['fa-handshake-angle', 'title-6', 'desc-6'], // Destek
+        ['fa-chalkboard-user', 'title-7', 'desc-7'] // Eğitmen Bilgilendirmesi
+    ];
 ?>
     <!DOCTYPE html>
     <html lang="tr">
@@ -448,6 +368,31 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
             .swal2-html-container {
                 color: #555 !important;
             }
+             .package-block {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .package-block .fa-icon { /* Font Awesome ikonları için stil */
+            font-size: 3rem; /* İkon boyutunu ayarlayın */
+            color: #d63384; /* İkon rengini pembe yapın */
+            margin-right: 15px;
+            flex-shrink: 0;
+            width: 50px; /* İkonun kapladığı alanı sabit tutmak için */
+            text-align: center;
+        }
+        .package-block h5 {
+            color: #d63384; /* Pembe renk */
+            font-weight: 600;
+        }
+        .package-block p {
+            color: #555;
+            line-height: 1.6;
+        }
         </style>
     </head>
 
@@ -505,7 +450,20 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                             </div>
 
                                             <?php $packages = $data; ?>
+                                            <div class=" mt-5">
+                                                <h2 class="mb-4 text-center">Ek Paket Detayları</h2>
 
+                                                <?php foreach ($package_blocks as $block): ?>
+                                                    <div class="package-block">
+                                                        <i class="fas <?php echo htmlspecialchars($block[0]); ?> fa-icon"></i>
+                                                        <div>
+                                                            <h5 class="mb-1"><?php echo htmlspecialchars($current_descriptions[$block[1]]); ?></h5>
+                                                            <p class="mb-0"><?php echo htmlspecialchars($current_descriptions[$block[2]]); ?></p>
+                                                        </div>
+                                                    </div>
+                                                <?php endforeach; ?>
+
+                                            </div>
                                             <div id="packageSelectionAndPaymentContainer" class="main-card-container">
                                                 <h4 class="payment-card-title">Paket Seçimi</h4>
 
