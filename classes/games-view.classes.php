@@ -104,36 +104,20 @@ class ShowGame extends Games
             foreach ($unitInfo as $key => $value) {
 
                 $lessonList = '
-                            <!--begin::Col-->
                             <div class="col-md-4">
-                                <!--begin::Publications post-->
                                 <div class="card-xl-stretch me-md-6">
-                                    <!--begin::Overlay-->
                                     <a class="d-block overlay mb-4" href="oyun-oyna/' . $value['slug'] . '">
-                                        <!--begin::Image-->
                                         <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-175px" style="background-image:url(\'assets/media/games/' . $value['cover_img'] . '\')"></div>
-                                        <!--end::Image-->
-                                        <!--begin::Action-->
                                         <div class="overlay-layer bg-dark card-rounded bg-opacity-25">
                                             <i class="ki-duotone ki-eye fs-2x text-white"></i>
                                         </div>
-                                        <!--end::Action-->
                                     </a>
-                                    <!--end::Overlay-->
-                                    <!--begin::Body-->
                                     <div class="m-0">
-                                        <!--begin::Title-->
                                         <a href="oyun-oyna/' . $value['slug'] . '" class="fs-4 text-gray-900 fw-bold text-hover-primary text-gray-900 lh-base">' . $value['name'] . '</a>
-                                        <!--end::Title-->
-                                        <!--begin::Text-->
                                         <div class="fw-semibold fs-5 text-gray-600 text-gray-900 mt-3 mb-5"></div>
-                                        <!--end::Text-->
                                     </div>
-                                    <!--end::Body-->
                                 </div>
-                                <!--end::Publications post-->
                             </div>
-                            <!--end::Col-->
                     ';
                 echo $lessonList;
             }

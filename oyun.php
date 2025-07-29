@@ -52,7 +52,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 						<!--begin::Content wrapper-->
 						<div class="d-flex flex-column flex-column-fluid">
 							<!--begin::Toolbar-->
-							<?php include_once "views/toolbar.php"; ?>
+							<?php include_once "views/toolbar-without-title.php"; ?>
 							<!--end::Toolbar-->
 							<!--begin::Content-->
 							<div id="kt_app_content" class="app-content flex-column-fluid">
@@ -61,12 +61,9 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 									<!--begin::Careers - List-->
 									<div class="card">
 										<!--begin::Body-->
-										<div class="card-body p-lg-17">
-											<!--begin::Hero-->
-												<?php $games->getHeaderImageStu(); ?>
-											<!--end::-->
-											<!--begin::Layout-->
-											<div class="d-flex flex-column flex-lg-row mb-17">
+										<div class="card-body p-lg-10">
+	
+											<div class="d-flex flex-column flex-lg-row mb-10">
 												<!--begin::Content-->
 												<div class="flex-lg-row-fluid row">
 													<?php $games->getGamesListStudent($_SESSION['class_id']); ?>
