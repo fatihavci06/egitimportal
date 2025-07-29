@@ -508,13 +508,11 @@ class ShowAudioBookStudent extends AudioBooksStudent
 
             foreach ($audioBookInfo as $key => $value) {
                 $audioBookList = '
-                    <div class="col-md-3 d-flex justify-content-center p-3">
-                        <div class="card-xl-stretch border p-3 rounded bg-white" >
-                            <a class="d-block position-relative mb-3" href="./sesli-kitap-dinle/' . $value['slug'] . '">
-                                <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover dark-hover"
+                    <div class="col-7 col-sm-6 col-md-5 col-lg-4 col-xl-3  p-3">
+                        <div class=" card-xl-stretch border p-3 rounded bg-white me-md-6">
+                            <a class="d-block overlay mb-4" href="./sesli-kitap-dinle/' . $value['slug'] . '">
+                              <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-175px"
                                     style="background-image:url(\'assets/media/sesli-kitap/' . $value['cover_img'] . '\'); 
-                                        height: 260px; 
-                                        aspect-ratio: 5/6; 
                                         border-radius: 6px;">
                                     <div class="dark-overlay"></div>
                                 </div>

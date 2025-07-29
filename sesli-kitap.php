@@ -56,7 +56,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2)) {
 						<!--begin::Content wrapper-->
 						<div class="d-flex flex-column flex-column-fluid">
 							<!--begin::Toolbar-->
-							<?php include_once "views/toolbar.php"; ?>
+							<?php include_once "views/toolbar-without-title.php"; ?>
 							<!--end::Toolbar-->
 							<!--begin::Content-->
 							<div id="kt_app_content" class="app-content flex-column-fluid">
@@ -67,7 +67,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2)) {
 										<!--begin::Body-->
 										<div class="card-body p-lg-10">
 											<!--begin::Layout-->
-											<div class="d-flex flex-column flex-lg-row mb-17">
+											<div class="d-flex flex-column flex-lg-row mb-10">
 												<!--begin::Content-->
 												<div class="flex-lg-row-fluid row ">
 													<?php $audioBooks->getAudioBookList($_SESSION['class_id']); ?>
@@ -131,26 +131,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2)) {
 		<script src="assets/js/custom/utilities/modals/users-search.js"></script>
 		<!--end::Custom Javascript-->
 		<!--end::Javascript-->
-		<style>
-			.dark-hover {
-				position: relative;
-				overflow: hidden;
-				border-radius: 6px;
-			}
 
-			.dark-hover .dark-overlay {
-				content: "";
-				position: absolute;
-				inset: 0;
-				background-color: rgba(0, 0, 0, 0);
-				transition: background-color 0.3s ease;
-				border-radius: 6px;
-			}
-
-			.dark-hover:hover .dark-overlay {
-				background-color: rgba(0, 0, 0, 0.4);
-			}
-		</style>
 	</body>
 	<!--end::Body-->
 
