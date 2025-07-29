@@ -9,8 +9,17 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
     include_once "classes/topics-view.classes.php";
     include_once "classes/addcontentstu.classes.php";
     include_once "classes/contentstu-view.classes.php";
+    include_once "classes/classes.classes.php";
+    $url = $_SERVER['REQUEST_URI']; // /lineup_campus/ders/turkce
+
+    $parts = explode('/', trim($url, '/')); // ['lineup_campus', 'ders', 'turkce']
+
+    $slug = $parts[2] ?? null;
     $topics = new ShowTopic();
     $subtopics = new ShowSubTopic();
+    $lesson = new Classes();
+    $topicInfo = $lesson->getTopicBySlug($slug);
+    $lessons = $lesson->getLessonsList($_SESSION['class_id']);
     include_once "views/pages-head.php";
 ?>
     <!--end::Head-->
@@ -58,33 +67,100 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
                             <?php include_once "views/toolbar.php"; ?>
                             <!--end::Toolbar-->
                             <!--begin::Content-->
-                            <div id="kt_app_content" class="app-content flex-column-fluid">
+                            <div id="kt_app_content" class="app-content flex-column-fluid" style="margin-top: -15px;">
                                 <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <!--begin::Careers - List-->
-                                    <div class="card">
+                                    <div class="card" style="margin-top: -30px;margin-left: -35px;">
                                         <!--begin::Body-->
-                                        <div class="card-body p-lg-17">
+                                        <div class="card-body p-lg-7">
                                             <!--begin::Hero-->
                                             <?php $topics->getHeaderImageStu(); ?>
                                             <!--end::-->
                                             <!--begin::Layout-->
-                                            <div class="d-flex flex-column flex-lg-row mb-17">
+                                            <div class="row align-items-center mb-3" style="margin-top: -21px;">
+                                                <div class="col-2 d-flex ">
+                                                    <h5 class="fs-2x text-gray-900 mb-0" style="font-size:15px!important;margin-left:-10px;">
+                                                        Dersler
+
+                                                    </h5>
+                                                </div>
+                                                <div class="col-10 d-flex justify-content-center">
+
+                                                </div>
+                                            </div>
+                                            <div class="d-flex flex-column flex-lg-row mb-17" style="margin-left:-10px;">
                                                 <!--begin::Sidebar-->
-                                                <div class="flex-lg-row-auto w-100 w-lg-275px w-xxl-350px mb-17">
-                                                    <!--begin::Careers about-->
-                                                    <div class="card bg-light">
-                                                        <!--begin::Body-->
-                                                        <?php $topics->getSidebarTopicsStu(); ?>
-                                                        <!--end::Body-->
+                                                <div class="row">
+                                                    <div class="col-2"> 
+    <div class="row g-10 ">
+        <?php foreach ($lessons as $l): ?>
+            <?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
+                <div class="col-12 mb-1 text-center">
+                    <a href="ders/<?= urlencode($l['slug']) ?>">
+                        <img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 70%; height: 70%; object-fit: contain;" />
+                    </a>
+                    <div class="mt-1"><?= htmlspecialchars($l['name']) ?></div>
+                </div>
+            <?php endif; ?>
+        <?php endforeach; ?>
+    </div>
+</div>
+
+                                                    <div class="col-10">
+                                                        <div class="row" style="margin-left: -20px;">
+                                                            <?php
+                                                            $subtopics->getSubTopicsListStudent();
+                                                            $testData = $lesson->getTestByTopicLessonUnit($_SESSION['class_id'], null, null, $topicInfo['id']);
+
+                                                            if (!empty($testData)) {
+                                                                foreach ($testData as $test) {
+                                                                    $testLink = 'ogrenci-test-coz.php?id=' . urlencode($test['id']);
+                                                                    $testTitle = htmlspecialchars($test['test_title']);
+                                                                    $testSubtitle = "N Harfi"; // İsteğe göre değiştirilebilir
+                                                                    $testImage = ''.htmlspecialchars($test['cover_img']); // Güvenlik için htmlspecialchars
+                                                            ?>
+                                                                    <!--begin::Col-->
+                                                                    <div class="col-md-6 col-xl-4 mb-4">
+                                                                        <div class="card h-100 shadow-sm border-0">
+
+                                                                            <!-- Kapak Görseli -->
+                                                                            <div class="d-flex justify-content-center align-items-center"
+                                                                                style="height: 180px; background-image: url('includes/<?= $testImage ?>');
+                                    background-size: cover; background-position: center;
+                                    border-top-left-radius: .375rem; border-top-right-radius: .375rem;">
+                                                                            </div>
+
+                                                                            <!-- Kart İçeriği -->
+                                                                            <div class="card-body d-flex flex-column">
+                                                                                <h5 class="card-title fw-bold text-dark mb-1" style="font-size: 16px;"><?= $testTitle ?></h5>
+                                                                                <p class="card-text text-muted mb-3" style="font-size: 14px;"><?= $testSubtitle ?></p>
+
+                                                                                <!-- Alt Buton -->
+                                                                                <div class="mt-auto d-flex justify-content-start">
+                                                                                    <a href="<?= $testLink ?>"
+                                                                                        style="background-color: #2b8c01 !important; color: white !important; border: 1px solid #2b8c01 !important;
+                                          padding: 8px 28px; font-size: 14px; border-radius: 999px; text-decoration: none;"
+                                                                                        onmouseover="this.style.backgroundColor='#ed5606'"
+                                                                                        onmouseout="this.style.backgroundColor='#2b8c01'">
+                                                                                        Aç
+                                                                                    </a>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <!--end::Col-->
+                                                            <?php
+                                                                }
+                                                            }
+                                                            ?>
+                                                        </div>
                                                     </div>
-                                                    <!--end::Careers about-->
+
                                                 </div>
                                                 <!--end::Sidebar-->
                                                 <!--begin::Content-->
-                                                <div class="flex-lg-row-fluid row me-0 ms-lg-20">
-                                                    <?php $subtopics->getSubTopicsListStudent(); ?>
-                                                </div>
+
                                                 <!--end::Content-->
                                             </div>
                                             <!--end::Layout-->

@@ -2,6 +2,37 @@
 
 class Classes extends Dbh
 {
+public function getTestByTopicLessonUnit($class_id, $lesson_id = null, $unit_id = null, $topic_id = null)
+{
+	
+	$sql = 'SELECT * FROM tests_lnp WHERE class_id = ?';
+	$params = [$class_id];
+
+	if ($lesson_id !== null) {
+		$sql .= ' AND lesson_id = ?';
+		$params[] = $lesson_id;
+	} 
+
+	if ($unit_id !== null) {
+		$sql .= ' AND unit_id = ?';
+		$params[] = $unit_id;
+	} 
+
+	if ($topic_id !== null) {
+		$sql .= ' AND topic_id = ?';
+		$params[] = $topic_id;
+	} 
+
+	$stmt = $this->connect()->prepare($sql);
+	if (!$stmt->execute($params)) {
+		$stmt = null;
+		exit();
+	}
+	
+	return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
 	public function getLessonsList($search_class_id)
 	{
 		$stmt = $this->connect()->prepare('SELECT * FROM lessons_lnp');
@@ -18,19 +49,46 @@ class Classes extends Dbh
 
 		return array_values($filtered);
 	}
+	
+	public function getTopicBySlug($slug)
+	{
+		$stmt = $this->connect()->prepare('SELECT * FROM topics_lnp WHERE slug = :slug LIMIT 1');
+		$stmt->bindParam(':slug', $slug, PDO::PARAM_STR);
+
+		if (!$stmt->execute()) {
+			$stmt = null;
+			exit();
+		}
+
+		$lesson = $stmt->fetch(PDO::FETCH_ASSOC);
+		return $lesson ?: null;
+	}
 	public function getLessonBySlug($slug)
-{
-    $stmt = $this->connect()->prepare('SELECT * FROM lessons_lnp WHERE slug = :slug LIMIT 1');
-    $stmt->bindParam(':slug', $slug, PDO::PARAM_STR);
+	{
+		$stmt = $this->connect()->prepare('SELECT * FROM lessons_lnp WHERE slug = :slug LIMIT 1');
+		$stmt->bindParam(':slug', $slug, PDO::PARAM_STR);
 
-    if (!$stmt->execute()) {
-        $stmt = null;
-        exit();
-    }
+		if (!$stmt->execute()) {
+			$stmt = null;
+			exit();
+		}
 
-    $lesson = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $lesson ?: null;
-}
+		$lesson = $stmt->fetch(PDO::FETCH_ASSOC);
+		return $lesson ?: null;
+	}
+	public function getUnitBySlug($slug)
+	{
+		$stmt = $this->connect()->prepare('SELECT * FROM units_lnp WHERE slug = :slug LIMIT 1');
+		$stmt->bindParam(':slug', $slug, PDO::PARAM_STR);
+
+		if (!$stmt->execute()) {
+			$stmt = null;
+			exit();
+		}
+
+		$lesson = $stmt->fetch(PDO::FETCH_ASSOC);
+		return $lesson ?: null;
+	}
 	public function getUnitsList($class_id, $lesson_id)
 	{
 		$stmt = $this->connect()->prepare('SELECT * FROM units_lnp WHERE class_id = ? AND lesson_id = ?');
@@ -467,33 +525,33 @@ class Classes extends Dbh
 		return $data;
 	}
 	public function getExtraPackageList($type = null)
-{
-    if ($type === 'ozel-ders') {
-        $type = 'Özel Ders';
-    } elseif ($type === 'rehberlik') {
-        $type = 'Rehberlik';
-    } elseif ($type === 'kocluk') {
-        $type = 'Koçluk';
-    }
+	{
+		if ($type === 'ozel-ders') {
+			$type = 'Özel Ders';
+		} elseif ($type === 'rehberlik') {
+			$type = 'Rehberlik';
+		} elseif ($type === 'kocluk') {
+			$type = 'Koçluk';
+		}
 
-    // SQL ve parametreleri ayarla
-    if ($type) {
-        $sql = 'SELECT * FROM extra_packages_lnp WHERE school_id = 1 AND type = ? ORDER BY id DESC';
-        $params = [$type];
-    } else {
-        $sql = 'SELECT * FROM extra_packages_lnp WHERE school_id = 1 ORDER BY id DESC';
-        $params = [];
-    }
+		// SQL ve parametreleri ayarla
+		if ($type) {
+			$sql = 'SELECT * FROM extra_packages_lnp WHERE school_id = 1 AND type = ? ORDER BY id DESC';
+			$params = [$type];
+		} else {
+			$sql = 'SELECT * FROM extra_packages_lnp WHERE school_id = 1 ORDER BY id DESC';
+			$params = [];
+		}
 
-    $stmt = $this->connect()->prepare($sql);
+		$stmt = $this->connect()->prepare($sql);
 
-    if (!$stmt->execute($params)) {
-        $stmt = null;
-        exit();
-    }
+		if (!$stmt->execute($params)) {
+			$stmt = null;
+			exit();
+		}
 
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
 
 	public function getTestDetail($testId, $classId = 0)
 	{

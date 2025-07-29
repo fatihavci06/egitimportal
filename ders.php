@@ -17,10 +17,10 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 
 	$slug = $parts[2] ?? null; // 'turkce'
 
-	
+
 	$lessons = $lesson->getLessonsList($_SESSION['class_id']);
 	$lessonInfo = $lesson->getLessonBySlug($slug);
-	
+
 
 ?>
 	<!--end::Head-->
@@ -106,25 +106,25 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 							<?php include_once "views/toolbar.php"; ?>
 							<!--end::Toolbar-->
 							<!--begin::Content-->
-							<div id="kt_app_content" class="app-content flex-column-fluid">
+							<div id="kt_app_content" class="app-content flex-column-fluid" style="margin-top: -25px;">
 								<!--begin::Content container-->
 								<div id="kt_app_content_container" class="app-container container-fluid">
 									<!--begin::Careers - List-->
-									<div class="card">
+									<div class="card" style="margin-top: -22px;margin-left: -15px;">
 										<!--begin::Body-->
-										<div class="card-body p-lg-17">
+										<div class="card-body p-lg-7">
 											<!--begin::Section-->
-											<div class="mb-19">
+											<div class="mb-19" style="margin-top: -22px;">
 												<div class="row align-items-center mb-12">
 													<header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
                            border-top border-bottom border-custom-red" style="border-width: 5px !important;">
 
 														<div class="d-flex align-items-center">
 															<div class="rounded-circle bg-danger me-3 shadow icon-circle-lg">
-																<img src="assets/media/icons/dersler/<?=$lessonInfo['icons']?>" alt="Book Icon" class="img-fluid" style="width: 200px; height: 200px; object-fit: contain;">
+																<img src="assets/media/icons/dersler/<?= $lessonInfo['icons'] ?>" alt="Book Icon" class="img-fluid" style="width: 200px; height: 200px; object-fit: contain;">
 															</div>
 
-															<h1 class="fs-3 fw-bold text-dark mb-0"><?=$lessonInfo['name']?> Dersi Üniteleri</h1>
+															<h1 class="fs-3 fw-bold text-dark mb-0"><?= $lessonInfo['name'] ?> Dersi Üniteleri</h1>
 														</div>
 
 
@@ -132,39 +132,74 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 
 													</header>
 												</div>
-												<div class="row align-items-center mb-12">
-													<div class="col-2 d-flex justify-content-center">
-														<h3 class="fs-2x text-gray-900 mb-0">
+												<div class="row align-items-center mb-12" style="margin-top: -30px;">
+													<div class="col-2 d-flex ">
+														<h5 class="fs-2x text-gray-900 mb-0" style="font-size:15px!important;margin-left:-20px;">
 															Dersler
-															<i class="ki-duotone ki-clipboard text-warning fs-2x">
-																<span class="path1"></span>
-																<span class="path2"></span>
-																<span class="path3"></span>
-															</i>
-														</h3>
+
+														</h5>
 													</div>
 													<div class="col-10 d-flex justify-content-center">
-														
+
 													</div>
 												</div>
 
-												<div class="row">
-													<div class="col-1">
-														<div class="row g-10 ">
-															<?php foreach ($lessons as $lesson): ?>
-																<?php if ($lesson['name'] !== 'Robotik Kodlama' && $lesson['name'] !== 'Ders Deneme'): ?>
-																	<div class="col-12 mb-4">
-																		<a href="ders/<?= urlencode($lesson['slug']) ?>">
-																			<img src="assets/media/icons/dersler/<?= htmlspecialchars($lesson['icons']) ?>" alt="Icon" class="img-fluid" style="width: 90px; height: 90px; object-fit: contain;" />
+												<div class="row" style="margin-top: -30px;margin-left: -30px;">
+													<div class="col-2">
+														<div class="row g-5">
+															<?php foreach ($lessons as $l): ?>
+																<?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
+																	<div class="col-12 mb-4 text-center">
+																		<a href="ders/<?= urlencode($l['slug']) ?>">
+																			<img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 90px; height: 90px; object-fit: contain;" />
+																			<div class="mt-2 fw-semibold"><?= htmlspecialchars($l['name']) ?></div>
 																		</a>
 																	</div>
 																<?php endif; ?>
 															<?php endforeach; ?>
 														</div>
 													</div>
-													<div class="col-11" >
-														<div class="row g-10">
-															<?php $units->getUnitsListStudent(); ?>
+
+													<div class="col-10">
+														<div class="row g-5">
+															<?php
+															$units->getUnitsListStudent();
+															$testData = $lesson->getTestByTopicLessonUnit($_SESSION['class_id'], $lessonInfo['id']);
+
+															if (!empty($testData)) {
+																foreach ($testData as $test) {
+																	// Örnek: test detayına yönlendirme için slug veya id kullanılabilir
+																	$testLink = 'ogrenci-test-coz.php?id=' . urlencode($test['id']);
+															?>
+
+																	<div class="col-12 mb-4">
+																		<a href="<?= $testLink ?>" class="text-decoration-none">
+																			<div class="card border-2 shadow-sm p-3 d-flex flex-row align-items-center">
+
+																				<!-- Görsel -->
+																				<i class="bi bi-play-fill fs-1 me-3" style="font-size:20px!important; margin-left:10px; color:#58d0cd;"></i>
+
+																				<!-- İçerik -->
+																				<div class="flex-grow-1">
+																					<div class="fw-bold fs-5 text-dark mb-1" style=" margin-left:21px;">
+																						<?= htmlspecialchars($test['test_title']) ?>
+																					</div>
+																				</div>
+
+																				<!-- Aksiyon -->
+																				<div class="ms-3">
+																					<i class="bi bi-eye fs-4 text-secondary"></i>
+																				</div>
+																			</div>
+																		</a>
+																	</div>
+
+															<?php
+																}
+															}
+															?>
+
+
 														</div>
 													</div>
 												</div>
