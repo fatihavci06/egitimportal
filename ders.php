@@ -136,7 +136,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 													<div class="col-2 d-flex ">
 														<h5 class="fs-2x text-gray-900 mb-0" style="font-size:15px!important;margin-left:-20px;">
 															Dersler
-															
+
 														</h5>
 													</div>
 													<div class="col-10 d-flex justify-content-center">
@@ -146,20 +146,22 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 
 												<div class="row" style="margin-top: -30px;margin-left: -30px;">
 													<div class="col-2">
-														<div class="row g-5 ">
+														<div class="row g-5">
 															<?php foreach ($lessons as $l): ?>
 																<?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
-																	<div class="col-12 mb-4">
+																	<div class="col-12 mb-4 text-center">
 																		<a href="ders/<?= urlencode($l['slug']) ?>">
 																			<img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 90px; height: 90px; object-fit: contain;" />
+																			<div class="mt-2 fw-semibold"><?= htmlspecialchars($l['name']) ?></div>
 																		</a>
 																	</div>
 																<?php endif; ?>
 															<?php endforeach; ?>
 														</div>
 													</div>
+
 													<div class="col-10">
-														<div class="row g-5" >
+														<div class="row g-5">
 															<?php
 															$units->getUnitsListStudent();
 															$testData = $lesson->getTestByTopicLessonUnit($_SESSION['class_id'], $lessonInfo['id']);

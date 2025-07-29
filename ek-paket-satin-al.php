@@ -379,14 +379,14 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
         }
         .package-block .fa-icon { /* Font Awesome ikonları için stil */
             font-size: 3rem; /* İkon boyutunu ayarlayın */
-            color: #d63384; /* İkon rengini pembe yapın */
+            color: #ed5606!important; /* İkon rengini pembe yapın */
             margin-right: 15px;
             flex-shrink: 0;
             width: 50px; /* İkonun kapladığı alanı sabit tutmak için */
             text-align: center;
         }
         .package-block h5 {
-            color: #d63384; /* Pembe renk */
+            color: #ed5606!important; /* Pembe renk */
             font-weight: 600;
         }
         .package-block p {
@@ -426,8 +426,8 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                             <?php include_once "views/toolbar.php"; ?>
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <div id="kt_app_content_container" class="app-container container-fluid">
-                                    <div class="card">
-                                        <div class="card-header border-0 pt-6">
+                                    <div class="card" style="margin-top: -38px;margin-left:-60px;">
+                                        <div class="card-header ">
                                             <div class="card-toolbar">
                                                 <div class="d-flex justify-content-end align-items-center d-none" data-kt-customer-table-toolbar="selected">
                                                     <div class="fw-bold me-5">
@@ -450,7 +450,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                             </div>
 
                                             <?php $packages = $data; ?>
-                                            <div class=" mt-5">
+                                            <div style="margin-top:-50px;">
                                                 <h2 class="mb-4 text-center">Ek Paket Detayları</h2>
 
                                                 <?php foreach ($package_blocks as $block): ?>

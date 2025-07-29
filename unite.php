@@ -70,7 +70,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 							<?php include_once "views/toolbar.php"; ?>
 							<!--end::Toolbar-->
 							<!--begin::Content-->
-							<div id="kt_app_content" class="app-content flex-column-fluid" style="margin-top: -25px;" >
+							<div id="kt_app_content" class="app-content flex-column-fluid" style="margin-top: -25px;">
 								<!--begin::Content container-->
 								<div id="kt_app_content_container" class="app-container container-fluid">
 									<!--begin::Careers - List-->
@@ -81,12 +81,12 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 											<?php $units->getHeaderImageStu(); ?>
 											<!--end::-->
 											<!--begin::Layout-->
-											<div class="row align-items-center mb-12"  style="margin-top: -22px;">
+											<div class="row align-items-center mb-12" style="margin-top: -22px;">
 												<div class="col-2 d-flex ">
 													<h5 class="fs-2x text-gray-900 mb-0" style="font-size:15px!important;margin-left:0px;">
-															Dersler
-															
-														</h5>
+														Dersler
+
+													</h5>
 												</div>
 												<div class="col-10 d-flex justify-content-center">
 
@@ -95,18 +95,20 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 
 											<div class="row" style="margin-top: -20px;">
 												<div class="col-2">
-													<div class="row g-10 ">
+													<div class="row g-10">
 														<?php foreach ($lessons as $l): ?>
 															<?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
-																<div class="col-12 mb-1">
+																<div class="col-12 mb-1 text-center">
 																	<a href="ders/<?= urlencode($l['slug']) ?>">
 																		<img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 90px; height: 90px; object-fit: contain;" />
+																		<div class="mt-1 small"><?= htmlspecialchars($l['name']) ?></div>
 																	</a>
 																</div>
 															<?php endif; ?>
 														<?php endforeach; ?>
 													</div>
 												</div>
+
 												<div class="col-10">
 													<div class="row g-10">
 
