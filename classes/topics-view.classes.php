@@ -412,38 +412,27 @@ class ShowTopic extends Topics
                 }
 
                 $testList = '
-                            <!--begin::Col-->
-                            <div class="col-md-6 col-lg-6 col-xl-6">
-                                <!--begin::Publications post-->
-                                <div class="card-xl-stretch me-md-6">
-                                    <!--begin::Overlay-->
-                                    <a class="d-block ' . $class . ' overlay mb-4" href="' . $link . '">
-                                        <!--begin::Image-->
-                                        <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-175px" style="background-image:url(\'assets/media/topics/' . $value['topicImage'] . '\')"></div>
-                                        <!--end::Image-->
-                                        <!--begin::Action-->
-                                        <div class="overlay-layer bg-dark card-rounded bg-opacity-25">
-                                            <i class="ki-duotone ki-eye fs-2x text-white"></i>
-                                        </div>
-                                        <!--end::Action-->
-                                    </a>
-                                    <!--end::Overlay-->
-                                    <!--begin::Body-->
-                                    <div class="m-0">
-                                        <!--begin::Title-->
-                                        <a href="' . $link . '" class="fs-4 text-gray-900 fw-bold text-hover-primary text-gray-900 ' . $class . ' lh-base">' . $value['topicName'] . '</a>
-                                        <!--end::Title-->
-                                        <!--begin::Text-->
-                                        <div class="fw-semibold fs-5 text-gray-600 text-gray-900 mt-3 mb-5">' . $value['topicShortDesc'] . '<br>' . $testText . '</div>
-                                        <!--end::Text-->
-                                    </div>
-                                    ' . $notification . '
-                                    <!--end::Body-->
-                                </div>
-                                <!--end::Publications post-->
-                            </div>
-                            <!--end::Col-->
-                    ';
+    <div class="card mb-3 border border-2 rounded-3 shadow-sm">
+        <div class="card-body p-3 d-flex align-items-center">
+            <!-- + işareti -->
+            <span class="text-muted d-flex align-items-center justify-content-center"
+                  style="font-size: 35px !important; width: 40px; height: 40px; line-height: 1; flex-shrink: 0;">
+                +
+            </span>
+
+            <!-- Metin alanı -->
+            <div class="flex-grow-1 ms-3 d-flex align-items-center">
+                <a href="' . $link . '" class="text-decoration-none text-dark fw-bold stretched-link ' . $class . '"
+                   style="font-size: 20px !important; line-height: 1.2;">
+                    ' . $value['topicName'] . '
+                </a>
+                ' . $notification . '
+            </div>
+        </div>
+    </div>';
+
+
+
                 echo $testList;
             }
         }
@@ -461,31 +450,26 @@ class ShowTopic extends Topics
 
         foreach ($unitInfo as $key => $value) {
 
-            $testList = '
-                    <div class="position-relative mb-17">
-                        <!--begin::Overlay-->
-                        <div class="overlay overlay-show">
-                            <!--begin::Image-->
-                            <div class="bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-250px" style="background-image:url(\'assets/media/topics/' . $value['image'] . '\')"></div>
-                            <!--end::Image-->
-                            <!--begin::layer-->
-                            <div class="overlay-layer rounded bg-black" style="opacity: 0.4"></div>
-                            <!--end::layer-->
-                        </div>
-                        <!--end::Overlay-->
-                        <!--begin::Heading-->
-                        <div class="position-absolute text-white mb-8 ms-10 bottom-0">
-                            <!--begin::Title-->
-                            <h3 class="text-white fs-2qx fw-bold mb-3 m">' . $value['name'] . '</h3>
-                            <h3 class="text-white fs-1qx fw-bold mb-3 m">' . $value['short_desc'] . '</h3>
-                            <!--end::Title-->
-                            <!--begin::Text-->
-                            <!--<div class="fs-5 fw-semibold">You sit down. You stare at your screen. The cursor blinks.</div>-->
-                            <!--end::Text-->
-                        </div>
-                        <!--end::Heading-->
-                    </div>
-                ';
+           $testList = '
+<header class="container-fluid py-3 d-flex justify-content-between align-items-center"
+    style="
+        background-color: #e6e6fa !important;
+        margin-bottom: 40px !important;
+        margin-top: -40px !important;
+        border-top: 5px solid #d22b2b !important;
+        border-bottom: 5px solid #d22b2b !important;
+    ">
+    <div class="d-flex align-items-center">
+        <div class="">
+            <img src="assets/media/topics/' . $value['image'] . '" alt="' . $value['name'] . ' Görseli"
+                 class="img-fluid"
+                 style="width: 90px; height: 90px; object-fit: contain;">
+        </div>
+        <div>
+            <h1 class="fs-3 fw-bold text-dark mb-0 ml-2" style="margin-left: 20px;">' . $value['name'] . '</h1>
+        </div>
+    </div>
+</header>';
             echo $testList;
         }
     }
@@ -1126,7 +1110,7 @@ class ShowSubTopic extends SubTopics
                             $unclickable = "pe-none";
                         }
                     }
-
+                    
                     $testList = '
                             <!--begin::Col-->
                             <div class="col-md-6 col-lg-6 col-xl-6">
@@ -1164,6 +1148,7 @@ class ShowSubTopic extends SubTopics
                 }
             }
         } else {
+           
             $contents = new GetContent();
 
             $link = "$_SERVER[REQUEST_URI]";
@@ -1198,38 +1183,30 @@ class ShowSubTopic extends SubTopics
                 foreach ($contentInfo as $key => $value) {
 
                     $contentList = '
-                            <!--begin::Col-->
-                            <div class="col-md-6 col-lg-6 col-xl-6">
-                                <!--begin::Publications post-->
-                                <div class="card-xl-stretch me-md-6">
-                                    <!--begin::Overlay-->
-                                    <a class="d-block overlay mb-4" href="icerik/' . $value['slug'] . '">
-                                        <!--begin::Image-->
-                                        <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-175px" style="background-image:url(\'uploads/contents/' . $value['cover_img'] . '\')"></div>
-                                        <!--end::Image-->
-                                        <!--begin::Action-->
-                                        <div class="overlay-layer bg-dark card-rounded bg-opacity-25">
-                                            <i class="ki-duotone ki-eye fs-2x text-white"></i>
-                                        </div>
-                                        <!--end::Action-->
-                                    </a>
-                                    <!--end::Overlay-->
-                                    <!--begin::Body-->
-                                    <div class="m-0">
-                                        <!--begin::Title-->
-                                        <a href="icerik/' . $value['slug'] . '" class="fs-4 text-gray-900 fw-bold text-hover-primary text-gray-900 lh-base">' . $value['title'] . '</a>
-                                        <!--end::Title-->
-                                        <!--begin::Text-->
-                                        <div class="fw-semibold fs-5 text-gray-600 text-gray-900 mt-3 mb-5">' . $value['summary'] . '</div>
-                                        <!--end::Text-->
-                                    </div>
-                                    <!--end::Body-->
-                                </div>
-                                <!--end::Publications post-->
-                            </div>
-                            <!--end::Col-->
-                    ';
-                    echo $contentList;
+<!--begin::Col-->
+<div class="col-12 mb-4">
+    <a href="icerik/' . $value['slug'] . '" class="text-decoration-none">
+        <div class="border rounded d-flex align-items-center p-3" style="border: 2px solid #dee2e6; box-shadow: 0 2px 6px rgba(0,0,0,0.1); background-color: #fff;font-size: 20px !important;">
+            <!-- Görsel -->
+            <i style="font-size:50px!important" class="bi bi-play-fill"></i>
+            
+            <!-- İçerik -->
+            <div class="flex-grow-1" style="font-size: 20px !important;">
+                <div class="fw-bold fs-5 text-dark mb-1" style="font-size: 20px !important;">' . htmlspecialchars($value['title']) . '</div>
+                <div class="text-muted fs-6" style="font-size: 20px !important;">' . htmlspecialchars($value['summary']) . '</div>
+            </div>
+
+            <!-- Aksiyon -->
+            <div class="ms-3">
+                <i class="ki-duotone ki-eye fs-2 text-gray-500"></i>
+            </div>
+        </div>
+    </a>
+</div>
+<!--end::Col-->
+';
+
+echo $contentList;
                 }
             }
         }

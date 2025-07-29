@@ -9,8 +9,17 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
     include_once "classes/topics-view.classes.php";
     include_once "classes/addcontentstu.classes.php";
     include_once "classes/contentstu-view.classes.php";
+    include_once "classes/classes.classes.php";
+    $url = $_SERVER['REQUEST_URI']; // /lineup_campus/ders/turkce
+
+	$parts = explode('/', trim($url, '/')); // ['lineup_campus', 'ders', 'turkce']
+
+	$slug = $parts[2] ?? null; 
     $topics = new ShowTopic();
     $subtopics = new ShowSubTopic();
+    $lesson = new Classes();
+    $topicInfo = $lesson->getTopicBySlug($slug);
+    $lessons = $lesson->getLessonsList($_SESSION['class_id']);
     include_once "views/pages-head.php";
 ?>
     <!--end::Head-->
@@ -69,22 +78,80 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
                                             <?php $topics->getHeaderImageStu(); ?>
                                             <!--end::-->
                                             <!--begin::Layout-->
+                                            <div class="row align-items-center mb-12">
+                                                <div class="col-2 d-flex ">
+                                                    <h3 class="fs-2x text-gray-900 mb-0">
+                                                        Dersler
+                                                        <i class="ki-duotone ki-clipboard text-warning fs-2x">
+                                                            <span class="path1"></span>
+                                                            <span class="path2"></span>
+                                                            <span class="path3"></span>
+                                                        </i>
+                                                    </h3>
+                                                </div>
+                                                <div class="col-10 d-flex justify-content-center">
+
+                                                </div>
+                                            </div>
                                             <div class="d-flex flex-column flex-lg-row mb-17">
                                                 <!--begin::Sidebar-->
-                                                <div class="flex-lg-row-auto w-100 w-lg-275px w-xxl-350px mb-17">
-                                                    <!--begin::Careers about-->
-                                                    <div class="card bg-light">
-                                                        <!--begin::Body-->
-                                                        <?php $topics->getSidebarTopicsStu(); ?>
-                                                        <!--end::Body-->
+                                                <div class="col-1">
+                                                    <div class="row g-10 ">
+                                                        <?php foreach ($lessons as $l): ?>
+                                                            <?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
+                                                                <div class="col-12 mb-4">
+                                                                    <a href="ders/<?= urlencode($l['slug']) ?>">
+                                                                        <img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 90px; height: 90px; object-fit: contain;" />
+                                                                    </a>
+                                                                </div>
+                                                            <?php endif; ?>
+                                                        <?php endforeach; ?>
                                                     </div>
-                                                    <!--end::Careers about-->
+                                                </div>
+                                                <div class="col-11">
+                                                    <div class="row g-10">
+                                                        <?php
+                                                        $subtopics->getSubTopicsListStudent();
+                                                        $testData = $lesson->getTestByTopicLessonUnit($_SESSION['class_id'], null, null,$topicInfo['id']);
+
+                                                        if (!empty($testData)) {
+                                                            foreach ($testData as $test) {
+                                                                // Örnek: test detayına yönlendirme için slug veya id kullanılabilir
+                                                                $testLink = 'ogrenci-test-coz.php?id=' . urlencode($test['id']);
+                                                        ?>
+
+                                                                <div class="col-12 mb-4">
+                                                                    <a href="<?= $testLink ?>" class="text-decoration-none">
+                                                                        <div class="card border-2 shadow-sm p-3 d-flex flex-row align-items-center">
+
+                                                                            <!-- Görsel -->
+                                                                            <i class="bi bi-play-fill fs-1 me-3" style="font-size:50px!important; color:#58d0cd;"></i>
+
+                                                                            <!-- İçerik -->
+                                                                            <div class="flex-grow-1">
+                                                                                <div class="fw-bold fs-5 text-dark mb-1" style="font-size:20px!important; margin-left:-10px;">
+                                                                                    <?= htmlspecialchars($test['test_title']) ?>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <!-- Aksiyon -->
+                                                                            <div class="ms-3">
+                                                                                <i class="bi bi-eye fs-4 text-secondary"></i>
+                                                                            </div>
+                                                                        </div>
+                                                                    </a>
+                                                                </div>
+
+                                                        <?php
+                                                            }
+                                                        }
+                                                        ?>
+
+                                                    </div>
                                                 </div>
                                                 <!--end::Sidebar-->
                                                 <!--begin::Content-->
-                                                <div class="flex-lg-row-fluid row me-0 ms-lg-20">
-                                                    <?php $subtopics->getSubTopicsListStudent(); ?>
-                                                </div>
+
                                                 <!--end::Content-->
                                             </div>
                                             <!--end::Layout-->

@@ -276,32 +276,29 @@ class ShowUnit extends Units
 
         foreach ($unitInfo as $key => $value) {
 
-            $lessonList = '
-                    <div class="position-relative mb-17">
-                        <!--begin::Overlay-->
-                        <div class="overlay overlay-show">
-                            <!--begin::Image-->
-                            <div class="bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-250px" style="background-image:url(\'assets/media/units/' . $value['photo'] . '\')"></div>
-                            <!--end::Image-->
-                            <!--begin::layer-->
-                            <div class="overlay-layer rounded bg-black" style="opacity: 0.4"></div>
-                            <!--end::layer-->
-                        </div>
-                        <!--end::Overlay-->
-                        <!--begin::Heading-->
-                        <div class="position-absolute text-white mb-8 ms-10 bottom-0">
-                            <!--begin::Title-->
-                            <h3 class="text-white fs-2qx fw-bold mb-3 m">' . $value['name'] . '</h3>
-                            <h3 class="text-white fs-1qx fw-bold mb-3 m">' . $value['short_desc'] . '</h3>
-                            <!--end::Title-->
-                            <!--begin::Text-->
-                            <!--<div class="fs-5 fw-semibold">You sit down. You stare at your screen. The cursor blinks.</div>-->
-                            <!--end::Text-->
-                        </div>
-                        <!--end::Heading-->
-                    </div>
-                ';
-            echo $lessonList;
+         $lessonList = '
+<header class="container-fluid py-3 d-flex justify-content-between align-items-center"
+    style="
+        background-color: #e6e6fa !important;
+        margin-bottom: 40px !important;
+        margin-top: -40px !important;
+        border-top: 5px solid #d22b2b !important;
+        border-bottom: 5px solid #d22b2b !important;
+    ">
+    <div class="d-flex align-items-center">
+        <div class="">
+            <img src="assets/media/units/' . $value['photo'] . '" alt="' . $value['name'] . ' Icon"
+                 class="img-fluid"
+                 style="width: 90px; height: 90px; object-fit: contain;">
+        </div>
+        <div>
+            <h1 class="fs-3 fw-bold text-dark mb-0 ml-2" style="margin-left: 20px;">' . $value['name'] . '</h1>
+        </div>
+    </div>
+</header>';
+
+
+echo $lessonList;
         }
     }
 

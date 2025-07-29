@@ -17,10 +17,10 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 
 	$slug = $parts[2] ?? null; // 'turkce'
 
-	
+
 	$lessons = $lesson->getLessonsList($_SESSION['class_id']);
 	$lessonInfo = $lesson->getLessonBySlug($slug);
-	
+
 
 ?>
 	<!--end::Head-->
@@ -121,10 +121,10 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 
 														<div class="d-flex align-items-center">
 															<div class="rounded-circle bg-danger me-3 shadow icon-circle-lg">
-																<img src="assets/media/icons/dersler/<?=$lessonInfo['icons']?>" alt="Book Icon" class="img-fluid" style="width: 200px; height: 200px; object-fit: contain;">
+																<img src="assets/media/icons/dersler/<?= $lessonInfo['icons'] ?>" alt="Book Icon" class="img-fluid" style="width: 200px; height: 200px; object-fit: contain;">
 															</div>
 
-															<h1 class="fs-3 fw-bold text-dark mb-0"><?=$lessonInfo['name']?> Dersi Üniteleri</h1>
+															<h1 class="fs-3 fw-bold text-dark mb-0"><?= $lessonInfo['name'] ?> Dersi Üniteleri</h1>
 														</div>
 
 
@@ -133,7 +133,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 													</header>
 												</div>
 												<div class="row align-items-center mb-12">
-													<div class="col-2 d-flex justify-content-center">
+													<div class="col-2 d-flex ">
 														<h3 class="fs-2x text-gray-900 mb-0">
 															Dersler
 															<i class="ki-duotone ki-clipboard text-warning fs-2x">
@@ -144,27 +144,64 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 														</h3>
 													</div>
 													<div class="col-10 d-flex justify-content-center">
-														
+
 													</div>
 												</div>
 
 												<div class="row">
 													<div class="col-1">
 														<div class="row g-10 ">
-															<?php foreach ($lessons as $lesson): ?>
-																<?php if ($lesson['name'] !== 'Robotik Kodlama' && $lesson['name'] !== 'Ders Deneme'): ?>
+															<?php foreach ($lessons as $l): ?>
+																<?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
 																	<div class="col-12 mb-4">
-																		<a href="ders/<?= urlencode($lesson['slug']) ?>">
-																			<img src="assets/media/icons/dersler/<?= htmlspecialchars($lesson['icons']) ?>" alt="Icon" class="img-fluid" style="width: 90px; height: 90px; object-fit: contain;" />
+																		<a href="ders/<?= urlencode($l['slug']) ?>">
+																			<img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 90px; height: 90px; object-fit: contain;" />
 																		</a>
 																	</div>
 																<?php endif; ?>
 															<?php endforeach; ?>
 														</div>
 													</div>
-													<div class="col-11" >
+													<div class="col-11">
 														<div class="row g-10">
-															<?php $units->getUnitsListStudent(); ?>
+															<?php
+															$units->getUnitsListStudent();
+															$testData = $lesson->getTestByTopicLessonUnit($_SESSION['class_id'], $lessonInfo['id']);
+
+															if (!empty($testData)) {
+																foreach ($testData as $test) {
+																	// Örnek: test detayına yönlendirme için slug veya id kullanılabilir
+																	$testLink = 'ogrenci-test-coz.php?id=' . urlencode($test['id']);
+															?>
+
+																	<div class="col-12 mb-4">
+																		<a href="<?= $testLink ?>" class="text-decoration-none">
+																			<div class="card border-2 shadow-sm p-3 d-flex flex-row align-items-center">
+
+																				<!-- Görsel -->
+																				<i class="bi bi-play-fill fs-1 me-3" style="font-size:50px!important; margin-left:10px; color:#58d0cd;"></i>
+
+																				<!-- İçerik -->
+																				<div class="flex-grow-1">
+																					<div class="fw-bold fs-5 text-dark mb-1" style="font-size:20px!important; margin-left:21px;">
+																						<?= htmlspecialchars($test['test_title']) ?>
+																					</div>
+																				</div>
+
+																				<!-- Aksiyon -->
+																				<div class="ms-3">
+																					<i class="bi bi-eye fs-4 text-secondary"></i>
+																				</div>
+																			</div>
+																		</a>
+																	</div>
+
+															<?php
+																}
+															}
+															?>
+
+
 														</div>
 													</div>
 												</div>

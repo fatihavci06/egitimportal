@@ -9,8 +9,20 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 	include_once "classes/units-view.classes.php";
 	include_once "classes/topics.classes.php";
 	include_once "classes/topics-view.classes.php";
+	include_once "classes/classes.classes.php";
+
+	$url = $_SERVER['REQUEST_URI']; // /lineup_campus/ders/turkce
+
+	$parts = explode('/', trim($url, '/')); // ['lineup_campus', 'ders', 'turkce']
+
+	$slug = $parts[2] ?? null; // 'turkce'
+	$lesson = new Classes();
+	$unitInfo = $lesson->getUnitBySlug($slug);
+	
 	$units = new ShowUnit();
 	$topics = new ShowTopic();
+
+	$lessons = $lesson->getLessonsList($_SESSION['class_id']);
 	include_once "views/pages-head.php";
 ?>
 	<!--end::Head-->
@@ -66,27 +78,82 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 										<!--begin::Body-->
 										<div class="card-body p-lg-17">
 											<!--begin::Hero-->
-												<?php $units->getHeaderImageStu(); ?>
+											<?php $units->getHeaderImageStu(); ?>
 											<!--end::-->
 											<!--begin::Layout-->
-											<div class="d-flex flex-column flex-lg-row mb-17">
-												<!--begin::Sidebar-->
-												<div class="flex-lg-row-auto w-100 w-lg-275px w-xxl-350px mb-17">
-													<!--begin::Careers about-->
-													<div class="card bg-light">
-														<!--begin::Body-->
-															<?php $units->getSidebarTopicsStu(); ?>
-														<!--end::Body-->
-													</div>
-													<!--end::Careers about-->
+											<div class="row align-items-center mb-12">
+												<div class="col-2 d-flex ">
+													<h3 class="fs-2x text-gray-900 mb-0">
+														Dersler
+														<i class="ki-duotone ki-clipboard text-warning fs-2x">
+															<span class="path1"></span>
+															<span class="path2"></span>
+															<span class="path3"></span>
+														</i>
+													</h3>
 												</div>
-												<!--end::Sidebar-->
-												<!--begin::Content-->
-												<div class="flex-lg-row-fluid row me-0 ms-lg-20">
-													<?php $topics->getTopicsListStudent(); ?>
+												<div class="col-10 d-flex justify-content-center">
+
 												</div>
-												<!--end::Content-->
 											</div>
+
+											<div class="row">
+												<div class="col-1">
+													<div class="row g-10 ">
+														<?php foreach ($lessons as $l): ?>
+															<?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
+																<div class="col-12 mb-4">
+																	<a href="ders/<?= urlencode($l['slug']) ?>">
+																		<img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 90px; height: 90px; object-fit: contain;" />
+																	</a>
+																</div>
+															<?php endif; ?>
+														<?php endforeach; ?>
+													</div>
+												</div>
+												<div class="col-11">
+													<div class="row g-10">
+
+														<?php
+														$topics->getTopicsListStudent();
+														$testData = $lesson->getTestByTopicLessonUnit($_SESSION['class_id'], null, $unitInfo['id']);
+
+														if (!empty($testData)) {
+															foreach ($testData as $test) {
+																// Örnek: test detayına yönlendirme için slug veya id kullanılabilir
+																$testLink = 'ogrenci-test-coz.php?id=' . urlencode($test['id']);
+														?>
+
+																<div class="card mb-3 border border-2 rounded-3 shadow-sm">
+    <div class="card-body p-3 d-flex align-items-center">
+        <!-- Play ikonu -->
+        <i class="bi bi-play-fill text-muted d-flex align-items-center justify-content-center"
+           style="font-size: 35px !important; width: 40px; height: 40px; line-height: 1; flex-shrink: 0; color: #58d0cd!important;"></i>
+
+        <!-- Metin alanı -->
+        <div class="flex-grow-1 ms-3 d-flex align-items-center">
+            <a href="<?= $testLink ?>" class="text-decoration-none text-dark fw-bold stretched-link"
+               style="font-size: 20px !important; line-height: 1.2;">
+                <?= htmlspecialchars($test['test_title']) ?>
+            </a>
+        </div>
+
+        <!-- Aksiyon -->
+        <div class="ms-3">
+            <i class="bi bi-eye fs-4 text-secondary"></i>
+        </div>
+    </div>
+</div>
+
+
+														<?php
+															}
+														}
+														?>
+													</div>
+												</div>
+											</div>
+
 											<!--end::Layout-->
 										</div>
 										<!--end::Body-->
@@ -104,7 +171,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 					</div>
 					<!--end:::Main-->
 					<!--begin::aside-->
-						<?php include_once "views/aside.php"; ?>
+					<?php include_once "views/aside.php"; ?>
 					<!--end::aside-->
 				</div>
 				<!--end::Wrapper-->
