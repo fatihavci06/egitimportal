@@ -110,7 +110,7 @@ if (strpos($requestUri, $targetDers) !== false) {
                 </ul>
                 <!--end::Breadcrumb-->
                 <!--begin::Title-->
-                <h1 class="page-heading d-flex flex-column justify-content-center text-gray-900 fw-bolder fs-1 lh-0"><?php $slug->getTitle(); ?></h1>
+               <!-- <h1 class="page-heading d-flex flex-column justify-content-center text-gray-900 fw-bolder fs-1 lh-0"><?php $slug->getTitle(); ?></h1>-->
                 <!--end::Title-->
             </div>
             <!--end::Page title-->

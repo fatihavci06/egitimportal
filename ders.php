@@ -106,15 +106,15 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 							<?php include_once "views/toolbar.php"; ?>
 							<!--end::Toolbar-->
 							<!--begin::Content-->
-							<div id="kt_app_content" class="app-content flex-column-fluid">
+							<div id="kt_app_content" class="app-content flex-column-fluid" style="margin-top: -25px;">
 								<!--begin::Content container-->
 								<div id="kt_app_content_container" class="app-container container-fluid">
 									<!--begin::Careers - List-->
-									<div class="card">
+									<div class="card" style="margin-top: -22px;margin-left: -15px;">
 										<!--begin::Body-->
-										<div class="card-body p-lg-17">
+										<div class="card-body p-lg-7">
 											<!--begin::Section-->
-											<div class="mb-19">
+											<div class="mb-19" style="margin-top: -22px;">
 												<div class="row align-items-center mb-12">
 													<header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
                            border-top border-bottom border-custom-red" style="border-width: 5px !important;">
@@ -132,25 +132,21 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 
 													</header>
 												</div>
-												<div class="row align-items-center mb-12">
+												<div class="row align-items-center mb-12" style="margin-top: -30px;">
 													<div class="col-2 d-flex ">
-														<h3 class="fs-2x text-gray-900 mb-0">
+														<h5 class="fs-2x text-gray-900 mb-0" style="font-size:15px!important;margin-left:-20px;">
 															Dersler
-															<i class="ki-duotone ki-clipboard text-warning fs-2x">
-																<span class="path1"></span>
-																<span class="path2"></span>
-																<span class="path3"></span>
-															</i>
-														</h3>
+															
+														</h5>
 													</div>
 													<div class="col-10 d-flex justify-content-center">
 
 													</div>
 												</div>
 
-												<div class="row">
-													<div class="col-1">
-														<div class="row g-10 ">
+												<div class="row" style="margin-top: -30px;margin-left: -30px;">
+													<div class="col-2">
+														<div class="row g-5 ">
 															<?php foreach ($lessons as $l): ?>
 																<?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
 																	<div class="col-12 mb-4">
@@ -162,8 +158,8 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 															<?php endforeach; ?>
 														</div>
 													</div>
-													<div class="col-11">
-														<div class="row g-10">
+													<div class="col-10">
+														<div class="row g-5" >
 															<?php
 															$units->getUnitsListStudent();
 															$testData = $lesson->getTestByTopicLessonUnit($_SESSION['class_id'], $lessonInfo['id']);
@@ -179,11 +175,11 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 																			<div class="card border-2 shadow-sm p-3 d-flex flex-row align-items-center">
 
 																				<!-- Görsel -->
-																				<i class="bi bi-play-fill fs-1 me-3" style="font-size:50px!important; margin-left:10px; color:#58d0cd;"></i>
+																				<i class="bi bi-play-fill fs-1 me-3" style="font-size:20px!important; margin-left:10px; color:#58d0cd;"></i>
 
 																				<!-- İçerik -->
 																				<div class="flex-grow-1">
-																					<div class="fw-bold fs-5 text-dark mb-1" style="font-size:20px!important; margin-left:21px;">
+																					<div class="fw-bold fs-5 text-dark mb-1" style=" margin-left:21px;">
 																						<?= htmlspecialchars($test['test_title']) ?>
 																					</div>
 																				</div>

@@ -12,9 +12,9 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
     include_once "classes/classes.classes.php";
     $url = $_SERVER['REQUEST_URI']; // /lineup_campus/ders/turkce
 
-	$parts = explode('/', trim($url, '/')); // ['lineup_campus', 'ders', 'turkce']
+    $parts = explode('/', trim($url, '/')); // ['lineup_campus', 'ders', 'turkce']
 
-	$slug = $parts[2] ?? null; 
+    $slug = $parts[2] ?? null;
     $topics = new ShowTopic();
     $subtopics = new ShowSubTopic();
     $lesson = new Classes();
@@ -67,87 +67,94 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
                             <?php include_once "views/toolbar.php"; ?>
                             <!--end::Toolbar-->
                             <!--begin::Content-->
-                            <div id="kt_app_content" class="app-content flex-column-fluid">
+                            <div id="kt_app_content" class="app-content flex-column-fluid" style="margin-top: -15px;">
                                 <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <!--begin::Careers - List-->
-                                    <div class="card">
+                                    <div class="card" style="margin-top: -30px;margin-left: -35px;">
                                         <!--begin::Body-->
-                                        <div class="card-body p-lg-17">
+                                        <div class="card-body p-lg-7">
                                             <!--begin::Hero-->
                                             <?php $topics->getHeaderImageStu(); ?>
                                             <!--end::-->
                                             <!--begin::Layout-->
-                                            <div class="row align-items-center mb-12">
+                                            <div class="row align-items-center mb-3" style="margin-top: -21px;">
                                                 <div class="col-2 d-flex ">
-                                                    <h3 class="fs-2x text-gray-900 mb-0">
+                                                    <h5 class="fs-2x text-gray-900 mb-0" style="font-size:15px!important;margin-left:-10px;">
                                                         Dersler
-                                                        <i class="ki-duotone ki-clipboard text-warning fs-2x">
-                                                            <span class="path1"></span>
-                                                            <span class="path2"></span>
-                                                            <span class="path3"></span>
-                                                        </i>
-                                                    </h3>
+
+                                                    </h5>
                                                 </div>
                                                 <div class="col-10 d-flex justify-content-center">
 
                                                 </div>
                                             </div>
-                                            <div class="d-flex flex-column flex-lg-row mb-17">
+                                            <div class="d-flex flex-column flex-lg-row mb-17" style="margin-left:-10px;">
                                                 <!--begin::Sidebar-->
-                                                <div class="col-1">
-                                                    <div class="row g-10 ">
-                                                        <?php foreach ($lessons as $l): ?>
-                                                            <?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
-                                                                <div class="col-12 mb-4">
-                                                                    <a href="ders/<?= urlencode($l['slug']) ?>">
-                                                                        <img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 90px; height: 90px; object-fit: contain;" />
-                                                                    </a>
-                                                                </div>
-                                                            <?php endif; ?>
-                                                        <?php endforeach; ?>
+                                                <div class="row">
+                                                    <div class="col-2">
+                                                        <div class="row g-10 ">
+                                                            <?php foreach ($lessons as $l): ?>
+                                                                <?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
+                                                                    <div class="col-12 mb-1">
+                                                                        <a href="ders/<?= urlencode($l['slug']) ?>">
+                                                                            <img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 70%; height: 70%; object-fit: contain;" />
+                                                                        </a>
+                                                                    </div>
+                                                                <?php endif; ?>
+                                                            <?php endforeach; ?>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-11">
-                                                    <div class="row g-10">
-                                                        <?php
-                                                        $subtopics->getSubTopicsListStudent();
-                                                        $testData = $lesson->getTestByTopicLessonUnit($_SESSION['class_id'], null, null,$topicInfo['id']);
+                                                    <div class="col-10">
+                                                        <div class="row" style="margin-left: -20px;">
+                                                            <?php
+                                                            $subtopics->getSubTopicsListStudent();
+                                                            $testData = $lesson->getTestByTopicLessonUnit($_SESSION['class_id'], null, null, $topicInfo['id']);
 
-                                                        if (!empty($testData)) {
-                                                            foreach ($testData as $test) {
-                                                                // Örnek: test detayına yönlendirme için slug veya id kullanılabilir
-                                                                $testLink = 'ogrenci-test-coz.php?id=' . urlencode($test['id']);
-                                                        ?>
+                                                            if (!empty($testData)) {
+                                                                foreach ($testData as $test) {
+                                                                    $testLink = 'ogrenci-test-coz.php?id=' . urlencode($test['id']);
+                                                                    $testTitle = htmlspecialchars($test['test_title']);
+                                                                    $testSubtitle = "N Harfi"; // İsteğe göre değiştirilebilir
+                                                                    $testImage = ''.htmlspecialchars($test['cover_img']); // Güvenlik için htmlspecialchars
+                                                            ?>
+                                                                    <!--begin::Col-->
+                                                                    <div class="col-md-6 col-xl-4 mb-4">
+                                                                        <div class="card h-100 shadow-sm border-0">
 
-                                                                <div class="col-12 mb-4">
-                                                                    <a href="<?= $testLink ?>" class="text-decoration-none">
-                                                                        <div class="card border-2 shadow-sm p-3 d-flex flex-row align-items-center">
+                                                                            <!-- Kapak Görseli -->
+                                                                            <div class="d-flex justify-content-center align-items-center"
+                                                                                style="height: 180px; background-image: url('includes/<?= $testImage ?>');
+                                    background-size: cover; background-position: center;
+                                    border-top-left-radius: .375rem; border-top-right-radius: .375rem;">
+                                                                            </div>
 
-                                                                            <!-- Görsel -->
-                                                                            <i class="bi bi-play-fill fs-1 me-3" style="font-size:50px!important; color:#58d0cd;"></i>
+                                                                            <!-- Kart İçeriği -->
+                                                                            <div class="card-body d-flex flex-column">
+                                                                                <h5 class="card-title fw-bold text-dark mb-1" style="font-size: 16px;"><?= $testTitle ?></h5>
+                                                                                <p class="card-text text-muted mb-3" style="font-size: 14px;"><?= $testSubtitle ?></p>
 
-                                                                            <!-- İçerik -->
-                                                                            <div class="flex-grow-1">
-                                                                                <div class="fw-bold fs-5 text-dark mb-1" style="font-size:20px!important; margin-left:-10px;">
-                                                                                    <?= htmlspecialchars($test['test_title']) ?>
+                                                                                <!-- Alt Buton -->
+                                                                                <div class="mt-auto d-flex justify-content-start">
+                                                                                    <a href="<?= $testLink ?>"
+                                                                                        style="background-color: #2b8c01 !important; color: white !important; border: 1px solid #2b8c01 !important;
+                                          padding: 8px 28px; font-size: 14px; border-radius: 999px; text-decoration: none;"
+                                                                                        onmouseover="this.style.backgroundColor='#ed5606'"
+                                                                                        onmouseout="this.style.backgroundColor='#2b8c01'">
+                                                                                        Aç
+                                                                                    </a>
                                                                                 </div>
                                                                             </div>
-
-                                                                            <!-- Aksiyon -->
-                                                                            <div class="ms-3">
-                                                                                <i class="bi bi-eye fs-4 text-secondary"></i>
-                                                                            </div>
                                                                         </div>
-                                                                    </a>
-                                                                </div>
-
-                                                        <?php
+                                                                    </div>
+                                                                    <!--end::Col-->
+                                                            <?php
+                                                                }
                                                             }
-                                                        }
-                                                        ?>
-
+                                                            ?>
+                                                        </div>
                                                     </div>
+
                                                 </div>
                                                 <!--end::Sidebar-->
                                                 <!--begin::Content-->

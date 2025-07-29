@@ -71,7 +71,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
             
             .custom-card {
       border: none;
-      padding: 20px;
+      padding: 0px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
       border-radius: 15px;
       background-color: white;
@@ -196,7 +196,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                             <?php include_once "views/toolbar.php"; ?>
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <div id="kt_app_content_container" class="app-container container-fluid">
-                                    <div class="card">
+                                    <div class="card" style="margin-top: -38px;margin-left:-30px;">
                                         <div class="card-header border-0 pt-6">
                                             <div class="card-toolbar">
                                                 <div class="d-flex justify-content-end align-items-center d-none" data-kt-customer-table-toolbar="selected">
@@ -206,65 +206,94 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="card-body pt-0" style="margin-top:-80px;" >
-                                            
-                                            <!-- Satır 1: Özel Ders (sola yaslı) -->
-                                            <div class="row">
-                                                <div class="col-12 col-md-6 left-align">
-                                                    <div class="card custom-card">
-                                                        <div class="card-body">
-                                                            <h3 class="card-title-custom">Özel Ders</h3>
-                                                            <div class="content-wrapper">
-                                                                <i class="fas fa-graduation-cap icon-small"></i>
-                                                                <p class="card-text-custom">
-                                                                    Birebir özel derslerle eksiklerini tamamla, zorlandığın konuları aş. Uzman eğitmenlerimizle kişiye özel müfredat ve öğrenme metotlarıyla başarıya ulaş.
-                                                                </p>
-                                                            </div>
-                                                            <a href="ek-paket-satin-al?tur=ozel-ders" class="btn btn-custom mt-auto" style="margin-top:30px!important">Paketi İncele</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div class="card-body pt-0" style="margin-top:-50px;">
 
-                                            <!-- Satır 2: Rehberlik (sağa yaslı) -->
-                                            <div class="row" >
-                                                <div class="col-12 col-md-6 left-align">
-                                                    <div class="card custom-card">
-                                                        <div class="card-body">
-                                                            <h3 class="card-title-custom">Rehberlik</h3>
-                                                            <div class="content-wrapper">
-                                                                <i class="fas fa-compass icon-small"></i>
-                                                                <p class="card-text-custom">
-                                                                    Doğru kariyer yolunu bulmana yardımcı olacak rehberlik hizmetleri. Sınav stratejileri, motivasyon ve gelecek planlama konularında destek al.
-                                                                </p>
-                                                            </div>
-                                                            <a href="ek-paket-satin-al?tur=rehberlik" class="btn btn-custom mt-auto" style="margin-top:30px!important">Paketi İncele</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+    <!-- Kart: Özel Ders -->
+    <div class="col-12 mb-1">
+        <div class="card custom-card" >
+            <div class="card-body">
+                <h3 class="card-title-custom">Özel Ders</h3>
+                <div class="content-wrapper">
+                    <i class="fas fa-graduation-cap icon-small" style="color:#ed5606!important;"></i>
+                    <p class="card-text-custom">
+                        Birebir özel derslerle eksiklerini tamamla, zorlandığın konuları aş. Uzman eğitmenlerimizle kişiye özel müfredat ve öğrenme metotlarıyla başarıya ulaş.
+                    </p>
+                </div>
+                <div class="row mt-4">
+                    <div class="row align-items-center mb-2">
+    <div class="col-8">
+        <!-- Sol taraf boş bırakıldı veya buraya başka içerik ekleyebilirsiniz -->
+    </div>
+    <div class="col-4 text-end">
+        <a href="ek-paket-satin-al?tur=ozel-ders"
+           class="btn btn-sm text-white"
+           style="background-color: #ed5606; border-color: #ed5606;"
+           onmouseover="this.style.backgroundColor='#2b8c01'; this.style.borderColor='#2b8c01';"
+           onmouseout="this.style.backgroundColor='#ed5606'; this.style.borderColor='#ed5606';">
+            İncele
+        </a>
+    </div>
+</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                                            <!-- Satır 3: Koçluk (sola yaslı) -->
-                                            <div class="row" >
-                                                <div class="col-12 col-md-6 left-align">
-                                                    <div class="card custom-card">
-                                                        <div class="card-body">
-                                                            <h3 class="card-title-custom">Koçluk</h3>
-                                                            <div class="content-wrapper">
-                                                                <i class="fas fa-trophy icon-small"></i>
-                                                                <p class="card-text-custom">
-                                                                    Kişisel gelişim hedeflerine ulaşmak için bireysel koçluk desteği. Ders çalışma alışkanlıklarını geliştir, potansiyelini maksimize et.
-                                                                </p>
-                                                            </div>
-                                                            <a href="ek-paket-satin-al?tur=kocluk" class="btn btn-custom mt-auto" style="margin-top:30px!important">Paketi İncele</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+    <!-- Kart: Rehberlik -->
+    <div class="col-12 mb-1">
+        <div class="card custom-card">
+            <div class="card-body">
+                <h3 class="card-title-custom">Rehberlik</h3>
+                <div class="content-wrapper">
+                    <i class="fas fa-compass icon-small" style="color:#ed5606!important;"></i>
+                    <p class="card-text-custom">
+                        Doğru kariyer yolunu bulmana yardımcı olacak rehberlik hizmetleri. Sınav stratejileri, motivasyon ve gelecek planlama konularında destek al.
+                    </p>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-8"></div>
+                    <div class="col-4 text-end">
+                        <a href="ek-paket-satin-al?tur=rehberlik"
+                          class="btn btn-sm btn-primary"
+                           onmouseover="this.style.backgroundColor='#2b8c01'; this.style.borderColor='#2b8c01';"
+                           onmouseout="this.style.backgroundColor='#ed5606'; this.style.borderColor='#ed5606';">
+                            İncele
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- Kart: Koçluk -->
+    <div class="col-12 mb-3">
+        <div class="card custom-card">
+            <div class="card-body">
+                <h3 class="card-title-custom">Koçluk</h3>
+                <div class="content-wrapper">
+                    <i class="fas fa-trophy icon-small" style="color:#ed5606!important;"></i>
+                    <p class="card-text-custom">
+                        Kişisel gelişim hedeflerine ulaşmak için bireysel koçluk desteği. Ders çalışma alışkanlıklarını geliştir, potansiyelini maksimize et.
+                    </p>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-8"></div>
+                    <div class="col-4 text-end">
+                        <a href="ek-paket-satin-al?tur=kocluk"
+                           class="btn btn-sm btn-primary"
+                         
+                           onmouseover="this.style.backgroundColor='#2b8c01'; this.style.borderColor='#2b8c01';"
+                           onmouseout="this.style.backgroundColor='#ed5606'; this.style.borderColor='#ed5606';">
+                            İncele
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
+</div>
 
-                                        </div>
                                     </div>
                                 </div>
                             </div>

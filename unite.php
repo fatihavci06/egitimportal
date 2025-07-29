@@ -18,7 +18,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 	$slug = $parts[2] ?? null; // 'turkce'
 	$lesson = new Classes();
 	$unitInfo = $lesson->getUnitBySlug($slug);
-	
+
 	$units = new ShowUnit();
 	$topics = new ShowTopic();
 
@@ -70,39 +70,35 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 							<?php include_once "views/toolbar.php"; ?>
 							<!--end::Toolbar-->
 							<!--begin::Content-->
-							<div id="kt_app_content" class="app-content flex-column-fluid">
+							<div id="kt_app_content" class="app-content flex-column-fluid" style="margin-top: -25px;" >
 								<!--begin::Content container-->
 								<div id="kt_app_content_container" class="app-container container-fluid">
 									<!--begin::Careers - List-->
-									<div class="card">
+									<div class="card" style="margin-left: -15px;">
 										<!--begin::Body-->
-										<div class="card-body p-lg-17">
+										<div class="card-body p-lg-7" style="margin-left: -20px;">
 											<!--begin::Hero-->
 											<?php $units->getHeaderImageStu(); ?>
 											<!--end::-->
 											<!--begin::Layout-->
-											<div class="row align-items-center mb-12">
+											<div class="row align-items-center mb-12"  style="margin-top: -22px;">
 												<div class="col-2 d-flex ">
-													<h3 class="fs-2x text-gray-900 mb-0">
-														Dersler
-														<i class="ki-duotone ki-clipboard text-warning fs-2x">
-															<span class="path1"></span>
-															<span class="path2"></span>
-															<span class="path3"></span>
-														</i>
-													</h3>
+													<h5 class="fs-2x text-gray-900 mb-0" style="font-size:15px!important;margin-left:0px;">
+															Dersler
+															
+														</h5>
 												</div>
 												<div class="col-10 d-flex justify-content-center">
 
 												</div>
 											</div>
 
-											<div class="row">
-												<div class="col-1">
+											<div class="row" style="margin-top: -20px;">
+												<div class="col-2">
 													<div class="row g-10 ">
 														<?php foreach ($lessons as $l): ?>
 															<?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
-																<div class="col-12 mb-4">
+																<div class="col-12 mb-1">
 																	<a href="ders/<?= urlencode($l['slug']) ?>">
 																		<img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 90px; height: 90px; object-fit: contain;" />
 																	</a>
@@ -111,7 +107,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 														<?php endforeach; ?>
 													</div>
 												</div>
-												<div class="col-11">
+												<div class="col-10">
 													<div class="row g-10">
 
 														<?php
@@ -125,25 +121,25 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 														?>
 
 																<div class="card mb-3 border border-2 rounded-3 shadow-sm">
-    <div class="card-body p-3 d-flex align-items-center">
-        <!-- Play ikonu -->
-        <i class="bi bi-play-fill text-muted d-flex align-items-center justify-content-center"
-           style="font-size: 35px !important; width: 40px; height: 40px; line-height: 1; flex-shrink: 0; color: #58d0cd!important;"></i>
+																	<div class="card-body p-3 d-flex align-items-center">
+																		<!-- Play ikonu -->
+																		<i class="bi bi-play-fill text-muted d-flex align-items-center justify-content-center"
+																			style="font-size: 35px !important; width: 40px; height: 40px; line-height: 1; flex-shrink: 0; color: #58d0cd!important;"></i>
 
-        <!-- Metin alanı -->
-        <div class="flex-grow-1 ms-3 d-flex align-items-center">
-            <a href="<?= $testLink ?>" class="text-decoration-none text-dark fw-bold stretched-link"
-               style="font-size: 20px !important; line-height: 1.2;">
-                <?= htmlspecialchars($test['test_title']) ?>
-            </a>
-        </div>
+																		<!-- Metin alanı -->
+																		<div class="flex-grow-1 ms-3 d-flex align-items-center">
+																			<a href="<?= $testLink ?>" class="text-decoration-none text-dark fw-bold stretched-link"
+																				style="line-height: 1.2;">
+																				<?= htmlspecialchars($test['test_title']) ?>
+																			</a>
+																		</div>
 
-        <!-- Aksiyon -->
-        <div class="ms-3">
-            <i class="bi bi-eye fs-4 text-secondary"></i>
-        </div>
-    </div>
-</div>
+																		<!-- Aksiyon -->
+																		<div class="ms-3">
+																			<i class="bi bi-eye fs-4 text-secondary"></i>
+																		</div>
+																	</div>
+																</div>
 
 
 														<?php

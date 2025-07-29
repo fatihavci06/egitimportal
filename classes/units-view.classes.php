@@ -248,10 +248,10 @@ class ShowUnit extends Units
                         <a href="' . $link . '" class="text-decoration-none">
                            <div class="border rounded d-flex align-items-center p-2 ' . $class . '" style="border: 2px solid #333; box-shadow: 0 2px 6px rgba(0,0,0,0.15); justify-content: flex-start;">
                                 <button type="button" class="btn btn-light btn-sm me-3">
-                                    <i style="font-size:50px!important" class="bi bi-play-fill"></i>
+                                    <i style="font-size:20px!important" class="bi bi-play-fill"></i>
                                 </button>
                                 <div>
-                                    <div class="fw-semibold fs-5" style="    font-size: 20px !important; color: #000;">' . htmlspecialchars($value['name']) . '</div>
+                                    <div class="fw-semibold fs-5" style="    color: #000;">' . htmlspecialchars($value['name']) . '</div>
                                     ' . $notification . '
                                 </div>
                             </div>
@@ -284,6 +284,7 @@ class ShowUnit extends Units
         margin-top: -40px !important;
         border-top: 5px solid #d22b2b !important;
         border-bottom: 5px solid #d22b2b !important;
+        margin-left:-10px
     ">
     <div class="d-flex align-items-center">
         <div class="">

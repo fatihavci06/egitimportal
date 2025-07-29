@@ -412,7 +412,7 @@ class ShowTopic extends Topics
                 }
 
                 $testList = '
-    <div class="card mb-3 border border-2 rounded-3 shadow-sm">
+    <div class="card mb-3 border border-2 rounded-3 shadow-sm" style="margin-bottom: -32px!important;">
         <div class="card-body p-3 d-flex align-items-center">
             <!-- + işareti -->
             <span class="text-muted d-flex align-items-center justify-content-center"
@@ -423,7 +423,7 @@ class ShowTopic extends Topics
             <!-- Metin alanı -->
             <div class="flex-grow-1 ms-3 d-flex align-items-center">
                 <a href="' . $link . '" class="text-decoration-none text-dark fw-bold stretched-link ' . $class . '"
-                   style="font-size: 20px !important; line-height: 1.2;">
+                   style=" line-height: 1.2;">
                     ' . $value['topicName'] . '
                 </a>
                 ' . $notification . '
@@ -455,9 +455,10 @@ class ShowTopic extends Topics
     style="
         background-color: #e6e6fa !important;
         margin-bottom: 40px !important;
-        margin-top: -40px !important;
+        margin-top: -20px !important;
         border-top: 5px solid #d22b2b !important;
         border-bottom: 5px solid #d22b2b !important;
+        margin-left:-11px;
     ">
     <div class="d-flex align-items-center">
         <div class="">
@@ -1182,29 +1183,43 @@ class ShowSubTopic extends SubTopics
 
                 foreach ($contentInfo as $key => $value) {
 
-                    $contentList = '
+              $contentList = '
 <!--begin::Col-->
-<div class="col-12 mb-4">
-    <a href="icerik/' . $value['slug'] . '" class="text-decoration-none">
-        <div class="border rounded d-flex align-items-center p-3" style="border: 2px solid #dee2e6; box-shadow: 0 2px 6px rgba(0,0,0,0.1); background-color: #fff;font-size: 20px !important;">
-            <!-- Görsel -->
-            <i style="font-size:50px!important" class="bi bi-play-fill"></i>
-            
-            <!-- İçerik -->
-            <div class="flex-grow-1" style="font-size: 20px !important;">
-                <div class="fw-bold fs-5 text-dark mb-1" style="font-size: 20px !important;">' . htmlspecialchars($value['title']) . '</div>
-                <div class="text-muted fs-6" style="font-size: 20px !important;">' . htmlspecialchars($value['summary']) . '</div>
-            </div>
+<div class="col-md-6 col-xl-4 mb-4">
+    <div class="card h-100 shadow-sm border-0">
 
-            <!-- Aksiyon -->
-            <div class="ms-3">
-                <i class="ki-duotone ki-eye fs-2 text-gray-500"></i>
+        <!-- Kapak Görseli -->
+        <div class="d-flex justify-content-center align-items-center"
+             style="height: 180px; background-image: url(\'assets/media/topics/' . htmlspecialchars($value['cover_img']) . '\');
+                    background-size: cover; background-position: center; border-top-left-radius: .375rem; border-top-right-radius: .375rem;">
+        </div>
+
+        <!-- Kart İçeriği -->
+        <div class="card-body d-flex flex-column">
+            <h5 class="card-title fw-bold text-dark mb-1" style="font-size: 16px;">' . htmlspecialchars($value['title']) . '</h5>
+            <p class="card-text text-muted mb-3" style="font-size: 14px;">' . htmlspecialchars($value['summary']) . '</p>
+
+            <!-- Alt Buton -->
+            <div class="mt-auto d-flex justify-content-start">
+                <a href="icerik/' . $value['slug'] . '"
+                   style="background-color: #2b8c01 !important; color: white !important; border: 1px solid #2b8c01 !important;
+                          padding: 8px 28px; font-size: 14px; border-radius: 999px; text-decoration: none;"
+                   onmouseover="this.style.backgroundColor=\'#ed5606\'"
+                   onmouseout="this.style.backgroundColor=\'#2b8c01\'">
+                    Aç
+                </a>
             </div>
         </div>
-    </a>
+    </div>
 </div>
 <!--end::Col-->
 ';
+
+
+
+
+
+
 
 echo $contentList;
                 }
