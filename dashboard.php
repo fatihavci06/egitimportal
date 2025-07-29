@@ -78,7 +78,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 											</ul>
 											<!--end::Breadcrumb-->
 											<!--begin::Title-->
-											<h1 class="page-heading d-flex flex-column justify-content-center text-gray-900 fw-bolder fs-1 lh-0">Paneller</h1>
+											<!-- <h1 class="page-heading d-flex flex-column justify-content-center text-gray-900 fw-bolder fs-1 lh-0">Paneller</h1> -->
 											<!--end::Title-->
 										</div>
 										<!--end::Page title-->
@@ -89,7 +89,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 							</div>
 							<!--end::Toolbar-->
 							<!--begin::Content-->
-							<div id="kt_app_content" class="app-content flex-column-fluid">
+							<div id="kt_app_content" class="app-content flex-column-fluid pt-0">
 								<!--begin::Content container-->
 								<?php if($_SESSION['role'] == 1){
 									include_once "views/admin-dash.php";

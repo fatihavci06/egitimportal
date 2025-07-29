@@ -49,17 +49,17 @@ $knowObj = new DoYouKnow();
 $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION['class_id']);
 
 ?>
-<div id="kt_app_content_container" class="app-container container-fluid">
+<div id="kt_app_content_container" class="app-container container-fluid student-dashboard" style="padding-right: 0px !important;">
     <!--begin::Row-->
-    <div class="row col-lg-12" style="align-items: baseline;">
+    <div class="row col-lg-12" style="align-items: baseline;" >
         <div class="row gx-5 gx-xl-9 col-lg-9" style="align-items: baseline;">
 
             <!--begin::Col-->
-            <div class="col-xxl-12 mb-5 mb-xl-12">
+            <div class="col-xxl-12 mb-1 mb-xl-1" style="padding-right: 0px;">
                 <!--begin::Chart widget 8-->
                 <div class="card card-flush h-xl-100">
                     <!--begin::Header-->
-                    <div class="card-header pt-5">
+                    <div class="card-header pt-0">
                         <!--begin::Title-->
                         <h3 class="card-title align-items-start flex-column">
                             <span class="card-label fw-bold text-gray-900"><i class="fa-solid fa-star me-2 fs-1"></i> Haftalık Görevler</span>
@@ -73,7 +73,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                     </div>
                     <!--end::Header-->
                     <!--begin::Body-->
-                    <div class="card-body pt-6">
+                    <div class="card-body pt-0">
                         <!--begin::Tab content-->
                         <div class="tab-content">
                             <!--begin::Tab pane-->
@@ -90,7 +90,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
 
                                             if (in_array($_SESSION['class_id'], $pieces)) {
 
-                                                echo '<div class="position-relative" style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; min-height: 220px;">';
+                                                echo '<div class="position-relative" style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; min-width: 220px; min-height: 250px;">';
 
                                                 //echo '<div class="mt-5"><span class="text-gray-800 fw-bold fs-4"> ' . $value['name'] . '</span></div>';
 
@@ -103,7 +103,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                                     foreach (array_slice($getUnits, 0, 1) as $unit) {
                                                         echo '<p class="mb-0"><img class="img-fluid" src="assets/media/units/' . $unit['photo'] . '"></p>';
                                                         echo '<div class="mt-3"><span class="text-gray-600 fw-bold fs-6"><a style="font-family: Comic Relief, system-ui; color: #2b8c01 !important;" href="unite/' . $unit['slug'] . '">' . $value['name'] . ' - ' . $unit['name'] . '</a></span></div>';
-                                                        echo '<div class="position-absolute bottom-0 start-50 translate-middle-x mb-2"> <i class="fa-solid fa-hourglass""></i> ' . $kalan_gun_sayisi . ' gün</div>';
+                                                        echo '<div class="position-absolute bottom-0 start-50 translate-middle-x mb-2 kalangun"> <i class="fa-solid fa-hourglass""></i> ' . $kalan_gun_sayisi . ' gün</div>';
                                                         /* $getTopics = $dash->getTopicsDash($value['id'], $unit['id']);
                                                     if (empty($getTopics)) {
                                                         echo '<span class="text-gray-600 fw-bold fs-6"> - Bu üniteye ait konu bulunamadı!</span>';
@@ -125,7 +125,6 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
 
 
                                                 echo '</div>';
-                                                echo '<hr>';
                                             }
                                         } ?>
                                     </div>
@@ -144,7 +143,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
             <!--end::Col-->
 
             <!--begin::Col-->
-            <div class="col-xxl-12 mb-5 mb-xl-12">
+            <div class="col-xxl-12 mb-1 mb-xl-1" style="padding-right: 0px;">
                 <!--begin::Chart widget 8-->
                 <div class="card card-flush h-xl-100">
                     <!--begin::Header-->
@@ -193,7 +192,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
 
                                             if (in_array($_SESSION['class_id'], $pieces)) {
 
-                                                echo '<div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; background-color: ' . $style . '">';
+                                                echo '<div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; background-color: ' . $style . ';  min-width: 220px;">';
 
                                                 $class_id = $_SESSION['class_id'];
                                                 $school_id = $_SESSION['school_id'];
@@ -209,7 +208,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                                 </div>
                                                 </a>';
 
-                                                echo '<a href="ders/' . $value['slug'] . '"><div class="mt-5"><span class="text-gray-800 fw-bold fs-4"> ' . $value['name'] . '</span>
+                                                echo '<a href="ders/' . $value['slug'] . '"><div class="mt-5"><p class="text-gray-800 fw-bold fs-4"> ' . $value['name'] . '</p>
                                                 <p class="text-gray-800 fw-bold fs-6"> ' . $unitCount . ' Ünite</p></div></a>';
 
 
@@ -234,7 +233,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
             <!--end::Col-->
 
             <!--begin::Col-->
-            <div class="col-xxl-6 mb-5 mb-xl-6">
+            <div class="col-xxl-6 mb-1 mb-xl-1" style="padding-right: 0px;">
                 <!--begin::Chart widget 8-->
                 <div class="card card-flush h-xl-100">
                     <!--begin::Header-->
@@ -324,7 +323,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
             <!--end::Col-->
 
             <!--begin::Col-->
-            <div class="col-xxl-6 mb-5 mb-xl-6">
+            <div class="col-xxl-6 mb-1 mb-xl-1" style="padding-right: 0px;">
                 <!--begin::Chart widget 8-->
                 <div class="card card-flush h-xl-100">
                     <!--begin::Header-->
@@ -348,7 +347,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                     <!--begin::Table-->
 
                                     <div style="display: flex; justify-content: space-around; width: 100%; padding: 20px 0;">
-                                        <p style="font-family: Comic Relief, system-ui; color: #2b8c01 !important;"><b>Derslerle ilgili cevabını merak ettiğin sorularını sormayı unutma, LineUp öğretmenleri sorularını senin için cevaplayacak.</b></p>
+                                        <a href="cek-gonder"><p class="kalangun" style="font-family: Comic Relief, system-ui; color: #2b8c01 !important;"><b>Derslerle ilgili cevabını merak ettiğin sorularını sormayı unutma, LineUp öğretmenleri sorularını senin için cevaplayacak.</b></p></a>
                                     </div>
 
                                     <!--end::Table-->
@@ -366,14 +365,14 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
             <!--end::Col-->
         </div>
 
-        <div class="gx-5 gx-xl-10 col-lg-3">
+        <div class="gx-5 gx-xl-10 col-lg-3" style="padding-left: 0px; padding-right: 0px;">
 
             <!--begin::Col-->
-            <div class="col-xxl-12 mb-5 ">
+            <div class="col-xxl-12 mb-1 ">
                 <!--begin::Chart widget 8-->
                 <div class="card card-flush">
                     <!--begin::Header-->
-                    <div class="card-header pt-5">
+                    <div class="card-header pt-0">
                         <!--begin::Title-->
                         <h3 class="card-title d-flex align-items-center">
                             <i class="fa-solid fa-percent me-2 fs-1" style="transform: scaleX(-1)"></i> <span class="card-label fw-bold text-gray-900">Ders Başarıların </span>
@@ -405,7 +404,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
             <!--end::Col-->
 
             <!--begin::Col-->
-            <div class="col-xxl-12 mb-5 ">
+            <div class="col-xxl-12 mb-1">
                 <!--begin::Chart widget 8-->
                 <div class="card card-flush">
                     <!--begin::Header-->
@@ -426,7 +425,9 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                 <!--begin::Table container-->
                                 <div class="table-responsive">
                                     <!--begin::Table-->
+                                    <p class="kalangun">
                                     <?php echo $todaysWord['body'] ?>
+                                    </p>
 
                                 </div>
                                 <!--end::Table container-->
@@ -463,7 +464,9 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                 <!--begin::Table container-->
                                 <div class="table-responsive">
                                     <!--begin::Table-->
+                                    <p class="kalangun">
                                     <?php echo $todaysKnow['body'] ?>
+                                    </p>
 
                                 </div>
                                 <!--end::Table container-->

@@ -255,31 +255,10 @@ var KTSignupGeneral = function () {
                             }
                         }
                     },
-                    'toc': {
-                        validators: {
-                            notEmpty: {
-                                message: 'KVKK Metnini onaylamanız gerekiyor'
-                            }
-                        }
-                    },
                     's_sozlesmesi': {
                         validators: {
                             notEmpty: {
                                 message: 'Mesafeli Satış Sözleşmesini onaylamanız gerekiyor'
-                            }
-                        }
-                    },
-                    's_sozlesmesi': {
-                        validators: {
-                            notEmpty: {
-                                message: 'Mesafeli Satış Sözleşmesini onaylamanız gerekiyor'
-                            }
-                        }
-                    },
-                    'iptal_iade': {
-                        validators: {
-                            notEmpty: {
-                                message: 'İptal İade Prosedürlerini onaylamanız gerekiyor'
                             }
                         }
                     },

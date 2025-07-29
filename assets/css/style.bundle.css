@@ -62966,3 +62966,49 @@ body,
   height: 100%;
   /* Kapsayıcının yüksekliğini al (padding-bottom ile belirlenen) */
 }
+
+.student-dashboard .row {
+  margin-right: 0px !important;
+}
+
+@media (max-width: 1366px) {
+  .symbol-40px>img, .symbol.symbol-40px .symbol-label{
+    width: 30px !important;
+    height: 30px !important;
+  }
+
+  .student-dashboard .fs-6{
+    font-size: 0.8rem !important;
+  }
+
+  .student-dashboard .fs-4{
+    font-size: 0.8rem !important;
+  }
+
+  .student-dashboard .card-label{
+    font-size: 1rem !important;
+  }
+
+  .student-dashboard .fs-1{
+    font-size: 1rem !important;
+  }
+
+  .kalangun, .kalangun i{
+    font-size: 0.8rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .hosgeldin{
+    font-size: 11px !important;
+    padding-left: 10px;
+  }
+
+  .maskotheader img, .mobilekaldir{
+    display: none !important;
+  }
+
+  .app-sidebar-logo img{
+    height: 30px !important;
+  }
+}
