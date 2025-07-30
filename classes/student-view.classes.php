@@ -1115,7 +1115,7 @@ class ShowStudent extends Student
                                 <span class="text-muted fw-semibold d-block fs-7">' . $unitCount . ' Ünite</span>
                             </div>
                             <!--end:Author--><!--begin::Progress-->
-                            <div class="d-flex align-items-center w-100px w-sm-200px flex-column mt-3">
+                            <div class="d-flex align-items-center w-100 flex-column mt-3">
                                 <div class="d-flex justify-content-between w-100 mt-auto mb-2">
                                     <span class="fw-semibold fs-6 text-gray-500">Tamamlama Oranı</span>
                                     <span class="fw-bold fs-6">%' . $percentageT . '</span>
@@ -1212,7 +1212,7 @@ class ShowStudent extends Student
                                 <a class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $value['name'] . '</a>
                             </div>
                             <!--end:Author--><!--begin::Progress-->
-                            <div class="d-flex align-items-center w-100px w-sm-200px flex-column mt-3">
+                            <div class="d-flex align-items-center w-100 flex-column mt-3">
                                 <div class="d-flex justify-content-between w-100 mt-auto mb-2">
                                     <span class="fw-semibold fs-6 text-gray-500">Başarı Oranı</span>
                                     <span class="fw-bold fs-6">%' . $scoreT . '</span>
@@ -1672,7 +1672,7 @@ $packagesList .= '<tr>
                                         </div>
                                         <!--end:Author-->
                                         <!--begin::Progress-->
-                                        <div class="d-flex align-items-center w-100px w-sm-200px flex-column mt-3">
+                                        <div class="d-flex align-items-center w-100 flex-column mt-3">
                                             <div class="d-flex justify-content-between w-100 mt-auto mb-2">
                                                 <span class="fw-semibold fs-6 text-gray-500">Tamamlama Oranı</span>
                                                 <span class="fw-bold fs-6">' . $percentageT . '%</span>
