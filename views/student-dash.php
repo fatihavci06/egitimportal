@@ -52,7 +52,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
 <div id="kt_app_content_container" class="app-container container-fluid student-dashboard" style="padding-right: 0px !important;padding-left: 0px !important;">
     <!--begin::Row-->
     <div class="row col-lg-12" style="align-items: baseline;">
-        <div class="row gx-5 gx-xl-9 col-lg-9" style="align-items: baseline;">
+        <div class="row gx-5 gx-xl-9 col-lg-9" style="align-items: baseline;padding-right: 0px;">
 
             <!--begin::Col-->
             <div class="col-xxl-12 mb-1 mb-xl-1" style="padding-right: 0px;">

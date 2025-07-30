@@ -63017,3 +63017,7 @@ body,
 #kt_app_aside{
   display: none !important;
 }
+
+.dashLand #kt_app_toolbar{
+  display: none !important;
+}
