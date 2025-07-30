@@ -80,6 +80,7 @@ if (strpos($requestUri, $targetDers) !== false) {
     $breadcrumbs = '';
 }
 
+if(0==1){
 ?>
 
 <div id="kt_app_toolbar" class="app-toolbar pt-5">
@@ -118,4 +119,5 @@ if (strpos($requestUri, $targetDers) !== false) {
         <!--end::Toolbar wrapper-->
     </div>
     <!--end::Toolbar container-->
-</div>
+</div> 
+<?php } ?>

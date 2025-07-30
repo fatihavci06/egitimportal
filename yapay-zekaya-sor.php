@@ -93,60 +93,60 @@ if (isset($_SESSION['role'])) {
                             <!--end::Toolbar-->
                             <!--begin::Content-->
                             <div id="kt_app_content" class="app-content flex-column-fluid pt-0">
-    <!--begin::Content container-->
-    <div id="kt_app_content_container" class="app-container container-fluid">
-        
-        <!-- Header -->
-        <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center border-top border-bottom border-custom-red" style="border-width: 5px !important;">
-            <div class="d-flex align-items-center">
-                <div class="me-3 icon-circle-lg">
-                    <img src="assets/media/mascots/lineup-robot-maskot.png" style="width: 80px;" alt="Maskot">
-                </div>
-                <h1 class="fs-3 fw-bold text-dark mb-0">Yapay Zekaya Sorunu Sor</h1>
-            </div>
-        </header>
+                                <!--begin::Content container-->
+                                <div id="kt_app_content_container" class="app-container container-fluid">
 
-        <!-- Main Row -->
-        <div class="row mt-4">
-            
-            <!-- Sidebar: Dersler -->
-            <div class="col-12 col-md-3 col-lg-2 mb-4">
-                <div class="row g-3">
-                    <?php foreach ($lessons as $l): ?>
-                        <?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
-                            <div class="col-6 col-md-12 text-center">
-                                <a href="ders/<?= urlencode($l['slug']) ?>" class="text-decoration-none text-dark d-block">
-                                    <img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" 
-                                         alt="<?= htmlspecialchars($l['name']) ?>" 
-                                         class="img-fluid" 
-                                         style="width: 60px; height: 60px; object-fit: contain;" />
-                                    <div class="mt-2 fw-semibold small"><?= htmlspecialchars($l['name']) ?></div>
-                                </a>
+                                    <!-- Header -->
+                                    <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center border-top border-bottom border-custom-red" style="border-width: 5px !important;">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3 icon-circle-lg">
+                                                <img src="assets/media/mascots/lineup-robot-maskot.png" style="width: 80px;" alt="Maskot">
+                                            </div>
+                                            <h1 class="fs-3 fw-bold text-dark mb-0">Yapay Zekaya Sorunu Sor</h1>
+                                        </div>
+                                    </header>
+
+                                    <!-- Main Row -->
+                                    <div class="row mt-4">
+
+                                        <!-- Sidebar: Dersler -->
+                                        <div class="col-12 col-md-3 col-lg-2 mb-4">
+                                            <div class="row g-3">
+                                                <?php foreach ($lessons as $l): ?>
+                                                    <?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
+                                                        <div class="col-6 col-md-12 text-center">
+                                                            <a href="ders/<?= urlencode($l['slug']) ?>" class="text-decoration-none text-dark d-block">
+                                                                <img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>"
+                                                                    alt="<?= htmlspecialchars($l['name']) ?>"
+                                                                    class="img-fluid"
+                                                                    style="width: 60px; height: 60px; object-fit: contain;" />
+                                                                <div class="mt-2 fw-semibold small"><?= htmlspecialchars($l['name']) ?></div>
+                                                            </a>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        </div>
+
+                                        <!-- Main Chat Card -->
+                                        <div class="col-12 col-md-9 col-lg-10">
+                                            <div class="card shadow-lg border-0 rounded-4 bg-light">
+                                                <div class="card-body px-4 pt-4 pb-3 d-flex flex-column" style="background-color: #f8f9fa;">
+                                                    <div id="chat-box" class="mb-3 p-3 rounded bg-white shadow-sm overflow-auto" style="height: 300px;"></div>
+                                                    <div class="input-group">
+                                                        <input type="text" id="userInput" class="form-control rounded-start-pill" placeholder="Mesajınızı yazın...">
+                                                        <button class="btn btn-primary rounded-end-pill px-4" id="sendBtn">Gönder</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <!--end::Row-->
+
+                                </div>
+                                <!--end::Content container-->
                             </div>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-
-            <!-- Main Chat Card -->
-            <div class="col-12 col-md-9 col-lg-10">
-                <div class="card shadow-lg border-0 rounded-4 bg-light">
-                    <div class="card-body px-4 pt-4 pb-3 d-flex flex-column" style="background-color: #f8f9fa;">
-                        <div id="chat-box" class="mb-3 p-3 rounded bg-white shadow-sm overflow-auto" style="height: 300px;"></div>
-                        <div class="input-group">
-                            <input type="text" id="userInput" class="form-control rounded-start-pill" placeholder="Mesajınızı yazın...">
-                            <button class="btn btn-primary rounded-end-pill px-4" id="sendBtn">Gönder</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-        <!--end::Row-->
-        
-    </div>
-    <!--end::Content container-->
-</div>
 
                             <!--end::Content container-->
                         </div>
