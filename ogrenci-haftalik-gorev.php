@@ -109,10 +109,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] ==
                             <?php include_once "views/toolbar.php"; ?>
                             <!--end::Toolbar-->
                             <div id="kt_app_content" class="app-content flex-column-fluid">
-                                <div id="kt_app_content_container" style="margin-top:-40px!important;" class="app-container container-fluid">
+                                <div id="kt_app_content_container" style="margin-top:-20px!important;" class="app-container container-fluid">
                                     <div class="row align-items-center mb-12">
                                         <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
-       border-top border-bottom border-custom-red" style="border-width: 5px !important;">
+                                             border-top border-bottom border-custom-red" style="border-width: 5px !important;">
 
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle bg-danger me-3 shadow icon-circle-lg d-flex justify-content-center align-items-center"

@@ -13,6 +13,40 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 
 ?>
+<style>
+        /* Minimal custom style for colors not in Bootstrap's palette, 
+           or for specific border widths if Bootstrap's are not enough. */
+        .bg-custom-light {
+            background-color: #e6e6fa;
+            /* Light purple */
+        }
+
+        .border-custom-red {
+            border-color: #d22b2b !important;
+        }
+
+        .text-custom-cart {
+            color: #6a5acd;
+            /* Slate blue for the cart */
+        }
+
+        /* For the circular icon, we'll use a larger padding or fixed size */
+        .icon-circle-lg {
+            width: 60px;
+            /* fixed width */
+            height: 60px;
+            /* fixed height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-circle-lg img {
+            max-width: 100%;
+            /* Ensure image scales within the circle */
+            max-height: 100%;
+        }
+    </style>
     <!--end::Head-->
     <!--begin::Body-->
 
@@ -60,9 +94,22 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             <!--begin::Content-->
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <!--begin::Content container-->
-                                <div id="kt_app_content_container" class="app-container container-fluid">
+                                <div id="kt_app_content_container" class="app-container container-fluid" style="margin-top: -20px !important;">
                                     <!--begin::Card-->
                                     <div class="card">
+                                        <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
+                                             border-top border-bottom border-custom-red" style="border-width: 5px !important; height:85px;">
+
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle bg-danger me-3 shadow icon-circle-lg d-flex justify-content-center align-items-center"
+                                                    style="width: 65px; height: 65px;">
+                                                    <i class="fas fa-bullseye fa-2x text-white"></i>
+                                                </div>
+
+                                                <h1 class="fs-3 fw-bold text-dark mb-0">Özel Ders Taleplerim</h1>
+                                            </div>
+
+                                        </header>
                                         <!--begin::Card header-->
                                         <div class="card-header border-0 pt-6">
                                             <!--begin::Card title-->

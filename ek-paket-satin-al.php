@@ -368,31 +368,40 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
             .swal2-html-container {
                 color: #555 !important;
             }
-             .package-block {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-            padding: 20px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-        }
-        .package-block .fa-icon { /* Font Awesome ikonları için stil */
-            font-size: 3rem; /* İkon boyutunu ayarlayın */
-            color: #ed5606!important; /* İkon rengini pembe yapın */
-            margin-right: 15px;
-            flex-shrink: 0;
-            width: 50px; /* İkonun kapladığı alanı sabit tutmak için */
-            text-align: center;
-        }
-        .package-block h5 {
-            color: #ed5606!important; /* Pembe renk */
-            font-weight: 600;
-        }
-        .package-block p {
-            color: #555;
-            line-height: 1.6;
-        }
+
+            .package-block {
+                background-color: #fff;
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+                padding: 20px;
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+            }
+
+            .package-block .fa-icon {
+                /* Font Awesome ikonları için stil */
+                font-size: 3rem;
+                /* İkon boyutunu ayarlayın */
+                color: #ed5606 !important;
+                /* İkon rengini pembe yapın */
+                margin-right: 15px;
+                flex-shrink: 0;
+                width: 50px;
+                /* İkonun kapladığı alanı sabit tutmak için */
+                text-align: center;
+            }
+
+            .package-block h5 {
+                color: #ed5606 !important;
+                /* Pembe renk */
+                font-weight: 600;
+            }
+
+            .package-block p {
+                color: #555;
+                line-height: 1.6;
+            }
         </style>
     </head>
 
@@ -426,7 +435,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                             <?php include_once "views/toolbar.php"; ?>
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <div id="kt_app_content_container" class="app-container container-fluid">
-                                    <div class="card" style="margin-top: -38px;margin-left:-60px;">
+                                    <div class="card" style="margin-top: -38px;margin-left:-30px;">
                                         <div class="card-header ">
                                             <div class="card-toolbar">
                                                 <div class="d-flex justify-content-end align-items-center d-none" data-kt-customer-table-toolbar="selected">
@@ -451,8 +460,25 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
 
                                             <?php $packages = $data; ?>
                                             <div style="margin-top:-50px;">
-                                                <h2 class="mb-4 text-center">Ek Paket Detayları</h2>
-
+                                              
+                                                <header class="container-fluid py-3 d-flex justify-content-between align-items-center" style="
+                                                    background-color: #e6e6fa !important;
+                                                    margin-bottom: 40px !important;
+                                                    margin-top: -20px !important;
+                                                    border-top: 5px solid #d22b2b !important;
+                                                    border-bottom: 5px solid #d22b2b !important;
+                                                   
+                                                    height:85px;
+                                                ">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="">
+                                                            <img src="assets/media/topics/konuDefault.jpg" alt="Ek Paket Detayları" class="img-fluid" style="width: 90px; height: 90px; object-fit: contain;">
+                                                        </div>
+                                                        <div>
+                                                            <h1 class="fs-3 fw-bold text-dark mb-0 ml-2" style="margin-left: 20px;">Ek Paket Detayları</h1>
+                                                        </div>
+                                                    </div>
+                                                </header>
                                                 <?php foreach ($package_blocks as $block): ?>
                                                     <div class="package-block">
                                                         <i class="fas <?php echo htmlspecialchars($block[0]); ?> fa-icon"></i>

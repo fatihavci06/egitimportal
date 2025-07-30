@@ -79,9 +79,9 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
             }
 
             .card-title-custom {
-                font-size: 1.6rem;
+                font-size: 1.2rem;
                 font-weight: 700;
-                color: #343a40;
+                color: #ed5606;
                 margin-bottom: 15px;
             }
 
@@ -92,7 +92,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
             }
 
             .icon-small {
-                font-size: 80px !important;
+                font-size: 50px !important;
                 color: #e83e8c !important;
             }
 
@@ -145,6 +145,37 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
             .card-body {
                 display: flex;
                 flex-direction: column;
+            }
+
+            .bg-custom-light {
+                background-color: #e6e6fa;
+                /* Light purple */
+            }
+
+            .border-custom-red {
+                border-color: #d22b2b !important;
+            }
+
+            .text-custom-cart {
+                color: #6a5acd;
+                /* Slate blue for the cart */
+            }
+
+            /* For the circular icon, we'll use a larger padding or fixed size */
+            .icon-circle-lg {
+                width: 60px;
+                /* fixed width */
+                height: 60px;
+                /* fixed height */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .icon-circle-lg img {
+                max-width: 100%;
+                /* Ensure image scales within the circle */
+                max-height: 100%;
             }
 
 
@@ -204,51 +235,67 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="card-body pt-0" style="margin-top:-50px;">
+                                        <div class="card-body pt-0" style="margin-top: -53px;">
+                                            <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
+                                             border-top border-bottom border-custom-red mb-2" style="border-width: 5px !important; height:85px;margin-bottom: 26px !important;">
 
-                                            <!-- Kart: Özel Ders -->
-                                            <div class="col-12 mb-1">
-                                                <div class="card custom-card">
-                                                    <div class="card-body">
-                                                        <h3 class="card-title-custom">Özel Ders</h3>
-                                                        <div class="content-wrapper">
-                                                            <i class="fas fa-graduation-cap icon-small" style="color:#ed5606!important;"></i>
-                                                            <p class="card-text-custom">
-                                                                Birebir özel derslerle eksiklerini tamamla, zorlandığın konuları aş. Uzman eğitmenlerimizle kişiye özel müfredat ve öğrenme metotlarıyla başarıya ulaş.
-                                                            </p>
-                                                        </div>
-                                                        <div class="row mt-4">
-                                                            <div class="col-8"></div>
-                                                            <div class="col-4 text-end">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="rounded-circle bg-danger me-3 shadow icon-circle-lg d-flex justify-content-center align-items-center"
+                                                        style="width: 65px; height: 65px;">
+                                                        <i class="fas fa-bullseye fa-2x text-white"></i>
+                                                    </div>
+
+                                                    <h1 class="fs-3 fw-bold text-dark mb-0">Ek Paket Listesi</h1>
+                                                </div>
+
+                                            </header>
+                                            <!-- Kartlar için stil: boşluk azaltıldı -->
+                                            <div class="col-12 mb-2">
+                                                <div class="card custom-card" style="margin-bottom: 10px;">
+                                                    <div class="card-body py-3 px-3">
+                                                        <h3 class="card-title-custom mb-2">Özel Ders</h3>
+
+                                                        <!-- Metin, ikon ve buton aynı satırda -->
+                                                        <div class="d-flex align-items-start justify-content-between mb-2">
+                                                            <div class="d-flex align-items-start flex-grow-1 me-2">
+                                                                <i class="fas fa-graduation-cap icon-small me-2" style="color:#ed5606!important;"></i>
+                                                                <p class="card-text-custom mb-0">
+                                                                    Birebir özel derslerle eksiklerini tamamla, zorlandığın konuları aş. Uzman eğitmenlerimizle kişiye özel müfredat ve öğrenme metotlarıyla başarıya ulaş.
+                                                                </p>
+                                                            </div>
+                                                            <div>
                                                                 <a href="ek-paket-satin-al?tur=ozel-ders"
                                                                     class="btn btn-sm btn-primary"
-
+                                                                    style="background-color: #ed5606; border-color: #ed5606;"
                                                                     onmouseover="this.style.backgroundColor='#2b8c01'; this.style.borderColor='#2b8c01';"
                                                                     onmouseout="this.style.backgroundColor='#ed5606'; this.style.borderColor='#ed5606';">
                                                                     İncele
                                                                 </a>
                                                             </div>
                                                         </div>
+
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <!-- Kart: Rehberlik -->
-                                            <div class="col-12 mb-1">
-                                                <div class="card custom-card">
-                                                    <div class="card-body">
-                                                        <h3 class="card-title-custom">Rehberlik</h3>
-                                                        <div class="content-wrapper">
-                                                            <i class="fas fa-compass icon-small" style="color:#ed5606!important;"></i>
-                                                            <p class="card-text-custom">
-                                                                Doğru kariyer yolunu bulmana yardımcı olacak rehberlik hizmetleri. Sınav stratejileri, motivasyon ve gelecek planlama konularında destek al.
-                                                            </p>
-                                                        </div>
-                                                        <div class="row mt-4">
-                                                            <div class="col-8"></div>
-                                                            <div class="col-4 text-end">
+
+                                            <!-- Rehberlik Kartı -->
+                                            <!-- Rehberlik Kartı -->
+                                            <div class="col-12 mb-2">
+                                                <div class="card custom-card" style="margin-bottom: 10px;">
+                                                    <div class="card-body py-3 px-3">
+                                                        <h3 class="card-title-custom mb-2">Rehberlik</h3>
+                                                        <div class="d-flex align-items-start justify-content-between mb-2">
+                                                            <div class="d-flex align-items-start flex-grow-1 me-2">
+                                                                <i class="fas fa-compass icon-small me-2" style="color:#ed5606!important;"></i>
+                                                                <p class="card-text-custom mb-0">
+                                                                    Doğru kariyer yolunu bulmana yardımcı olacak rehberlik hizmetleri. Sınav stratejileri, motivasyon ve gelecek planlama konularında destek al.
+                                                                </p>
+                                                            </div>
+                                                            <div>
                                                                 <a href="ek-paket-satin-al?tur=rehberlik"
                                                                     class="btn btn-sm btn-primary"
+                                                                    style="background-color: #ed5606; border-color: #ed5606;"
                                                                     onmouseover="this.style.backgroundColor='#2b8c01'; this.style.borderColor='#2b8c01';"
                                                                     onmouseout="this.style.backgroundColor='#ed5606'; this.style.borderColor='#ed5606';">
                                                                     İncele
@@ -259,23 +306,22 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                 </div>
                                             </div>
 
-                                            <!-- Kart: Koçluk -->
-                                            <div class="col-12 mb-3">
-                                                <div class="card custom-card">
-                                                    <div class="card-body">
-                                                        <h3 class="card-title-custom">Koçluk</h3>
-                                                        <div class="content-wrapper">
-                                                            <i class="fas fa-trophy icon-small" style="color:#ed5606!important;"></i>
-                                                            <p class="card-text-custom">
-                                                                Kişisel gelişim hedeflerine ulaşmak için bireysel koçluk desteği. Ders çalışma alışkanlıklarını geliştir, potansiyelini maksimize et.
-                                                            </p>
-                                                        </div>
-                                                        <div class="row mt-4">
-                                                            <div class="col-8"></div>
-                                                            <div class="col-4 text-end">
+                                            <!-- Koçluk Kartı -->
+                                            <div class="col-12">
+                                                <div class="card custom-card" style="margin-bottom: 10px;">
+                                                    <div class="card-body py-3 px-3">
+                                                        <h3 class="card-title-custom mb-2">Koçluk</h3>
+                                                        <div class="d-flex align-items-start justify-content-between mb-2">
+                                                            <div class="d-flex align-items-start flex-grow-1 me-2">
+                                                                <i class="fas fa-trophy icon-small me-2" style="color:#ed5606!important;"></i>
+                                                                <p class="card-text-custom mb-0">
+                                                                    Kişisel gelişim hedeflerine ulaşmak için bireysel koçluk desteği. Ders çalışma alışkanlıklarını geliştir, potansiyelini maksimize et.
+                                                                </p>
+                                                            </div>
+                                                            <div>
                                                                 <a href="ek-paket-satin-al?tur=kocluk"
                                                                     class="btn btn-sm btn-primary"
-
+                                                                    style="background-color: #ed5606; border-color: #ed5606;"
                                                                     onmouseover="this.style.backgroundColor='#2b8c01'; this.style.borderColor='#2b8c01';"
                                                                     onmouseout="this.style.backgroundColor='#ed5606'; this.style.borderColor='#ed5606';">
                                                                     İncele
@@ -286,7 +332,9 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                 </div>
                                             </div>
 
+
                                         </div>
+
 
                                     </div>
                                 </div>
