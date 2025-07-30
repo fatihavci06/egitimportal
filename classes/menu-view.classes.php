@@ -141,20 +141,34 @@ class ShowMenu extends Menus
                         $style = '';
                     }
 
-                    $menuList .= '<div data-kt-menu-trigger="click" class="mb-3 menu-item' . $show . '' . $here . ' menu-accordion">
+                    if($value['has_child'] == 1){
+                        $trigger = 'data-kt-menu-trigger="click"';
+                        $arrow = '<span class="menu-arrow"></span>';
+                    }else{
+                        $trigger = '';
+                        $arrow = '';
+                    }
+
+                    $menuList .= '<div ' . $trigger . ' class="mb-3 menu-item' . $show . '' . $here . ' menu-accordion">
                                 <!--begin:Menu link-->
-                                <span class="menu-link"  >
+                                <span class="menu-link" style="padding-left: 0px;">
+                                <a class="menu-link" href="' . $value['slug'] . '" style="padding-left: 0px;">
                                     <span class="menu-icon">
                                         <i class="' . $value['classes'] . ' fs"></i>
                                     </span>
                                     <span class="menu-title">' . $value['name'] . '</span>
-                                    <span class="menu-arrow"></span>
+                                    ' . $arrow . '
+                                </a>
                                 </span>
-                                <!--end:Menu link-->
+                                <!--end:Menu link-->';
+
+
+                    if($value['has_child'] == 1){
+
+                    $menuList .= '
                                 <!--begin:Menu sub-->
-                                <div class="menu-sub menu-sub-accordion ' . $show2 . '" style="' . $style . '">';
-
-
+                                <div class="menu-sub menu-sub-accordion ' . $show2 . '" style="' . $style . '">
+                    ';
 
                     $subMenuInfo = $this->getSubMenuList($i);
 
@@ -233,10 +247,15 @@ class ShowMenu extends Menus
                             }
                         }
                     }
+                }
 
+                if($value['has_child'] == 1){
                     $menuList .= "</div>
                                 <!--end:Menu sub-->
                               </div>";
+                }else{
+                    $menuList .= "</div>";
+                }
                 }
             }
         }
