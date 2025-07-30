@@ -482,7 +482,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                                         data-package-id="<?= $package['id'] ?>"
                                                                         data-package-price="<?= htmlspecialchars($price) ?>">
                                                                         <div class="card-body d-flex flex-column">
-                                                                            <h5 class="card-title text-primary fw-bold"><?= htmlspecialchars($package['name']) ?></h5>
+                                                                            <h5 class="card-title  fw-bold" style="color: #000!important;"><?= htmlspecialchars($package['name']) ?></h5>
                                                                             <p class="card-text flex-grow-1">
                                                                                 Tür: <strong><?= htmlspecialchars($package['type']) ?></strong><br>
                                                                                 <?php if ($package['type'] === 'Koçluk' || $package['type'] === 'Rehberlik'): ?>
@@ -496,7 +496,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                                                 <span class="text-muted small"><?= htmlspecialchars($package['description'] ?? 'Açıklama mevcut değil.') ?></span>
                                                                             </p>
                                                                             <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
-                                                                                <h4 class="mb-0 text-success"><strong><?= number_format($price, 2, ',', '.') ?> TL</strong></h4>
+                                                                                <h4 class="mb-0 text-success" style="color:#2b8c01!important"><strong><?= number_format($price, 2, ',', '.') ?> TL</strong></h4>
                                                                                 <div class="form-check">
                                                                                     <input class="form-check-input" type="radio" name="package_id" value="<?= $package['id'] ?>" required>
                                                                                     <label class="form-check-label">Seç</label>
@@ -516,7 +516,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                     </div>
                                                     <input type="hidden" name="user_id" value="<?= $_SESSION['id'] ?? 1 ?>">
                                                     <div class="text-end mt-4">
-                                                        <button type="submit" class="btn btn-success" id="selectPackageButton">Seçili Paketi Onayla</button>
+                                                        <button type="submit" class="btn btn-primary btn-sm" id="selectPackageButton">Seçili Paketi Onayla</button>
                                                     </div>
                                                 </form>
                                             </div>
