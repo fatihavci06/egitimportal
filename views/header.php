@@ -36,10 +36,10 @@ $current_uri = $_SERVER['REQUEST_URI'];
         <!--begin::Navbar-->
         <div class="app-navbar flex-grow-1 justify-content-end" id="kt_app_header_navbar">
             <?php if ($_SESSION['role'] == 2 AND strpos($current_uri, '/dashboard') !== false) { ?>
-            <div class="app-navbar-item d-flex align-items-center flex-lg-grow-1 me-2 me-lg-0 fs-1">
+            <div class="app-navbar-item d-flex align-items-center flex-lg-grow-1 me-2 me-lg-0 fs-2 hosgeldin">
                 <b>Hoş geldin <?php echo $_SESSION['name']; ?> haydi görevleri tamamlayarak puan toplamaya başla!</b>
             </div>
-            <div class="app-navbar-item d-flex justify-content align-items-center flex-lg-grow-1 me-2 me-lg-0">
+            <div class="app-navbar-item d-flex justify-content align-items-center flex-lg-grow-1 me-2 me-lg-0 maskotheader">
                 <img src="assets/media/mascots/header-mascots.png" alt="Lineup Campus Maskotlar" class="h-50px theme-light-show" />
             </div>
             <?php } ?>
@@ -58,7 +58,7 @@ $current_uri = $_SERVER['REQUEST_URI'];
             ?>
             <!--end::Action-->
             <!--begin::Header menu toggle-->
-            <div class="app-navbar-item ms-3 ms-lg-4 ms-n2 me-3 d-flex d-lg-none">
+            <div class="app-navbar-item ms-3 ms-lg-4 ms-n2 me-3 d-flex d-lg-none mobilekaldir">
                 <div class="btn btn-icon btn-custom btn-color-gray-600 btn-active-color-primary w-35px h-35px w-md-40px h-md-40px" id="kt_app_aside_mobile_toggle">
                     <i class="ki-duotone ki-burger-menu-2 fs-2">
                         <span class="path1"></span>

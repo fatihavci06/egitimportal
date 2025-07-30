@@ -487,6 +487,20 @@ class Student extends Dbh
 		$stmt = null;
 	}
 
+	public function getStudentLastLoginInfo($id)
+	{
+		$stmt = $this->connect()->prepare('SELECT * FROM logininfo_lnp  WHERE user_id = ? ORDER BY id DESC LIMIT 1');
+
+		if (!$stmt->execute(array($id))) {
+			$stmt = null;
+			exit();
+		}
+
+		$loginData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		return $loginData;
+		$stmt = null;
+	}
+
 	public function getStudentAdditionalPackages($id)
 	{
 		$stmt = $this->connect()->prepare('SELECT * FROM extra_package_payments_lnp WHERE user_id = ?');

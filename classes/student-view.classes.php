@@ -1208,8 +1208,8 @@ class ShowStudent extends Student
                         <!--begin::Section-->
                         <div class="d-flex align-items-center flex-row-fluid flex-wrap">
                             <!--begin:Author-->
-                            <div class="flex-grow-1 me-2">
-                                <a  class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $value['name'] . '</a>
+                            <div class="flex-grow-1 me-2 w-100">
+                                <a class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $value['name'] . '</a>
                             </div>
                             <!--end:Author--><!--begin::Progress-->
                             <div class="d-flex align-items-center w-100px w-sm-200px flex-column mt-3">
@@ -1786,5 +1786,18 @@ $packagesList .= '<tr>
         }
 
         echo $loginList;
+    }
+
+    // Last login Student Details Page
+
+    public function showLastLoginForStudentDetails($id)
+    {
+
+        $loginInfo = $this->getStudentLastLoginInfo($id);
+
+        $dateFormat = new DateFormat();
+
+        
+        echo $dateFormat->changeDateHour($loginInfo[0]['loginTime']);
     }
 }

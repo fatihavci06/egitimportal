@@ -55,13 +55,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 								<!--begin::Heading-->
 								<div class="text-center mb-10">
 									<!--begin::Title-->
-									<h1 class="text-gray-900 mb-3">LineUp Campus'e Giriş Yap</h1>
+									<h1 class="text-gray-900 mb-3" style="font-size: 2.1rem !important">LineUp Campus'e Giriş Yap</h1>
 									<!--end::Title-->
 									<!--begin::Link-->
-									<div class="text-gray-800 fw-semibold fs-4">Yeni Misiniz?</div>
+									<div class="text-gray-800 fw-semibold fs-1">Yeni Misiniz?</div>
 									<div class="text-center mt-4">
 										<!--begin::Hesap Oluştur button-->
-										<a href="hesap-olustur" class="btn btn-primary btn-sm" role="button">Hesap Oluştur</a>
+										<a href="hesap-olustur" class="btn btn-primary btn-lg" role="button">Hesap Oluştur</a>
 										<!--end::Hesap Oluştur button-->
 									</div>
 									<!--end::Link-->
