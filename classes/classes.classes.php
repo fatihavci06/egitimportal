@@ -49,6 +49,23 @@ public function getTestByTopicLessonUnit($class_id, $lesson_id = null, $unit_id 
 
 		return array_values($filtered);
 	}
+
+	public function getPreschoolLessonsList($search_class_id)
+	{
+		$stmt = $this->connect()->prepare('SELECT * FROM main_school_lessons_lnp');
+		if (!$stmt->execute()) {
+			$stmt = null;
+			exit();
+		}
+		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		/* $filtered = array_filter($data, function ($row) use ($search_class_id) {
+			$classIds = explode(';', $row['class_id']);
+			return in_array($search_class_id, $classIds);
+		}); */
+
+		return $data;
+	}
 	
 	public function getTopicBySlug($slug)
 	{

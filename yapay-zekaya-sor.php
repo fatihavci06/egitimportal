@@ -7,7 +7,11 @@ if (isset($_SESSION['role'])) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
     $lesson = new Classes();
-    $lessons = $lesson->getLessonsList($_SESSION['class_id']);
+    if ($_SESSION['role'] == 2) {
+        $lessons = $lesson->getLessonsList($_SESSION['class_id']);
+    }elseif ($_SESSION['role'] == 10002) {
+        $lessons = $lesson->getPreschoolLessonsList($_SESSION['class_id']);
+    }
     include_once "views/pages-head.php";
 ?>
     <!--end::Head-->
@@ -112,19 +116,34 @@ if (isset($_SESSION['role'])) {
                                         <!-- Sidebar: Dersler -->
                                         <div class="col-12 col-md-3 col-lg-2 mb-4">
                                             <div class="row g-3">
-                                                <?php foreach ($lessons as $l): ?>
-                                                    <?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
-                                                        <div class="col-6 col-md-12 text-center">
-                                                            <a href="ders/<?= urlencode($l['slug']) ?>" class="text-decoration-none text-dark d-block">
-                                                                <img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>"
-                                                                    alt="<?= htmlspecialchars($l['name']) ?>"
-                                                                    class="img-fluid"
-                                                                    style="width: 65px; height: 65px; object-fit: contain;" />
-                                                                <div class="mt-2 fw-semibold small"><?= htmlspecialchars($l['name']) ?></div>
-                                                            </a>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                <?php endforeach; ?>
+                                                <?php if ($_SESSION['role'] == 2): foreach ($lessons as $l): ?>
+                                                        <?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
+                                                            <div class="col-6 col-md-12 text-center">
+                                                                <a href="ders/<?= urlencode($l['slug']) ?>" class="text-decoration-none text-dark d-block">
+                                                                    <img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>"
+                                                                        alt="<?= htmlspecialchars($l['name']) ?>"
+                                                                        class="img-fluid"
+                                                                        style="width: 65px; height: 65px; object-fit: contain;" />
+                                                                    <div class="mt-2 fw-semibold small"><?= htmlspecialchars($l['name']) ?></div>
+                                                                </a>
+                                                            </div>
+                                                        <?php endif; ?>
+                                                    <?php endforeach; ?>
+                                                <?php endif; ?>
+                                                <?php if ($_SESSION['role'] == 10002): foreach ($lessons as $l): ?>
+                                                        <?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
+                                                            <div class="col-6 col-md-12 text-center">
+                                                                <a href="#" class="text-decoration-none text-dark d-block">
+                                                                    <img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>"
+                                                                        alt="<?= htmlspecialchars($l['name']) ?>"
+                                                                        class="img-fluid"
+                                                                        style="width: 65px; height: 65px; object-fit: contain;" />
+                                                                    <div class="mt-2 fw-semibold small"><?= htmlspecialchars($l['name']) ?></div>
+                                                                </a>
+                                                            </div>
+                                                        <?php endif; ?>
+                                                    <?php endforeach; ?>
+                                                <?php endif; ?>
                                             </div>
                                         </div>
 
