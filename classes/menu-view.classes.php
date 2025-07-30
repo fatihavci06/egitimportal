@@ -75,8 +75,10 @@ class ShowMenu extends Menus
             $pageTitle = 'Kuponları Listele';
         } elseif ($active_slug == '3dbilimvideo-ekle') {
             $pageTitle = '3D Bilim Video Ekle';
+        } elseif ($active_slug == 'yapay-zekaya-sor') {
+            $pageTitle = 'Yapay Zekaya Sorunu Sor';
         }
-
+        
         $questionmark = strpos($pageTitle, '?');
 
         if ($questionmark !== false) {
