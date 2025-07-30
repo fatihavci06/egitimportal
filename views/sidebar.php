@@ -57,6 +57,31 @@ $menu1 = new ShowMenu();
             </div>
             <!--end::Sidebar profile-->
         <?php } ?>
+        <?php if ($_SESSION['role'] == 10002) { ?>
+            <!--begin::Sidebar profile-->
+            <div class="menu menu-sub-indention menu-column menu-rounded menu-active-bg mb-7 border-bottom-2" style="border-color: #fa6000 !important; border-bottom: solid">
+                <span class="menu-link d-flex align-items-center px-3 py-4" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <span class="symbol symbol-50px">
+                        <?php if ($_SESSION['photo'] == "") { ?>
+                            <img alt="Logo" src="assets/media/avatars/blank.png" alt="user" class="w-100 h-100 rounded-circle" style="width: 50px !important; height: 50px !important;" />
+                        <?php } else { ?>
+                            <img alt="Logo" src="assets/media/profile/<?php echo $_SESSION['photo']; ?>" class="w-50 h-50 rounded-circle" style="width: 50px !important; height: 50px !important;" />
+                        <?php } ?>
+                    </span>
+                    <span style="text-align: center; margin-top: 10px; font-weight: bold; color: #333;">
+                        <?php echo $_SESSION['name']; ?>
+                    </span>
+                </span>
+                <div style="display: flex; justify-content: space-around; width: 100%; padding: 20px 0;">
+                    <div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px;">
+                        <i class="fa-solid fa-hourglass fs-1 mb-3" style="color:black"></i>
+                        <p class="mb-0"><?php echo $timeSpend->dakikayaCevir($timeSpendInfo); ?></p>
+                        <p class="mb-0" style="font-size: 11px;">dakika geçirdin</p>
+                    </div>
+                </div>
+            </div>
+            <!--end::Sidebar profile-->
+        <?php } ?>
         <!--begin::Sidebar menu-->
         <div id="#kt_app_sidebar_menu" data-kt-menu="true" data-kt-menu-expand="false" class="flex-column-fluid menu menu-sub-indention menu-column menu-rounded menu-active-bg mb-7">
             <!--begin:Menu item-->

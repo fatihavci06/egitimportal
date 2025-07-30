@@ -134,6 +134,24 @@ class ShowClass extends Classes
         }
     }
 
+    // Get Class List with preschool Select
+
+    public function getClassSelectListWithPreschool()
+    {
+
+        $classInfo = $this->getClassesListsWithPreschool();
+
+        $dateFormat = new DateFormat();
+
+        foreach ($classInfo as $key => $value) {
+
+            $classList = '
+                    <option value="' . $value['id'] . '">' . $value['name'] . '</option>
+                ';
+            echo $classList;
+        }
+    }
+
     // Show Class
 
     public function showOneClass($slug)

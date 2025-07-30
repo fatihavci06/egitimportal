@@ -4,7 +4,7 @@
 
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 2 or $_SESSION['role'] == 5)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 2 or $_SESSION['role'] == 10002 or $_SESSION['role'] == 5)) {
 	include_once "classes/dbh.classes.php";
 	include_once "classes/addsupport.classes.php";
     include_once "classes/support-view.classes.php";

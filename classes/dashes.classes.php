@@ -102,6 +102,23 @@ class DashesStudent extends Dbh
 		$stmt = null;
 	}
 
+	public function getPreSchoolUnits($lesson_id, $class_id)
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM main_school_units_lnp WHERE lesson_id = ? AND class_id = ?');
+
+		if (!$stmt->execute(array($lesson_id, $class_id))) {
+			$stmt = null;
+			exit();
+		}
+
+		$unitData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $unitData;
+
+		$stmt = null;
+	}
+
 	public function getTopicsDash($lesson_id, $unit_id)
 	{
 

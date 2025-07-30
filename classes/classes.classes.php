@@ -49,6 +49,23 @@ public function getTestByTopicLessonUnit($class_id, $lesson_id = null, $unit_id 
 
 		return array_values($filtered);
 	}
+
+	public function getPreschoolLessonsList($search_class_id)
+	{
+		$stmt = $this->connect()->prepare('SELECT * FROM main_school_lessons_lnp');
+		if (!$stmt->execute()) {
+			$stmt = null;
+			exit();
+		}
+		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		/* $filtered = array_filter($data, function ($row) use ($search_class_id) {
+			$classIds = explode(';', $row['class_id']);
+			return in_array($search_class_id, $classIds);
+		}); */
+
+		return $data;
+	}
 	
 	public function getTopicBySlug($slug)
 	{
@@ -766,6 +783,21 @@ public function getTestByTopicLessonUnit($class_id, $lesson_id = null, $unit_id 
 		return $classData;
 	}
 
+	public function getClassesListsWithPreschool()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT id, name, slug FROM classes_lnp ORDER BY orderBY ASC');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
+
 	public function getClassesListBySchool()
 	{
 
@@ -941,6 +973,7 @@ WHERE t.id = :id";
 
 		return $classData;
 	}
+
 	public function getMainSchoolLessonList()
 	{
 
@@ -955,6 +988,37 @@ WHERE t.id = :id";
 
 		return $classData;
 	}
+	
+	public function getMainSchoolContentListDashboard()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM main_school_content_lnp WHERE lesson_id =? ORDER BY RAND() LIMIT 3');
+
+		if (!$stmt->execute(array("9"))) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
+	
+	public function getMainSchoolLessonListDashboard()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM main_school_lessons_lnp WHERE package_type =?');
+
+		if (!$stmt->execute(array("0"))) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
+
 	public function getMainSchoolTopicList()
 	{
 

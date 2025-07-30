@@ -3,11 +3,11 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] == 10002)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 2)) {
 	include_once "classes/dbh.classes.php";
-	include_once "classes/audio-book.classes.php";
-	include_once "classes/audio-book-view.classes.php";
-	$audioBooks = new ShowAudioBookStudent();
+	include_once "classes/written-book.classes.php";
+	include_once "classes/written-book-view.classes.php";
+	$writtenBooks = new ShowWrittenBookStudent();
 	include_once "views/pages-head.php";
 	?>
 	<!--end::Head-->
@@ -70,7 +70,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] ==
 											<div class="d-flex flex-column flex-lg-row mb-10">
 												<!--begin::Content-->
 												<div class="flex-lg-row-fluid row ">
-													<?php $audioBooks->getAudioBookList($_SESSION['class_id']); ?>
+													<?php $writtenBooks->getWrittenBookList($_SESSION['class_id']); ?>
 												</div>
 												<!--end::Content-->
 											</div>
@@ -124,11 +124,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] ==
 		<script src="assets/js/custom/apps/class/add.js"></script>
 		<script src="assets/js/widgets.bundle.js"></script>
 		<script src="assets/js/custom/widgets.js"></script>
-		<script src="assets/js/custom/apps/chat/chat.js"></script>
-		<script src="assets/js/custom/utilities/modals/upgrade-plan.js"></script>
-		<script src="assets/js/custom/utilities/modals/create-account.js"></script>
-		<script src="assets/js/custom/utilities/modals/create-app.js"></script>
-		<script src="assets/js/custom/utilities/modals/users-search.js"></script>
+
 		<!--end::Custom Javascript-->
 		<!--end::Javascript-->
 

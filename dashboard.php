@@ -95,6 +95,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 									include_once "views/admin-dash.php";
 								}elseif($_SESSION['role'] == 2){
 									include_once "views/student-dash.php";
+								}elseif($_SESSION['role'] == 10002){
+									include_once "views/preschoolstudent-dash.php";
 								}elseif($_SESSION['role'] == 4){
 									include_once "views/teacher-dash.php";
 								}else{ ?>

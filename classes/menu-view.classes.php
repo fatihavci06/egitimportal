@@ -134,7 +134,8 @@ class ShowMenu extends Menus
 
                     // Eğer role 10001 veya 10002 ise gösterilsin
                     if ($role == 10001 || $role == 10002) {
-                        $show2 = ' show';
+                        /* $show2 = ' show'; */
+                        $show2 = '';
                         $style = 'style="display: block"';
                     } else {
                         $show2 = '';
