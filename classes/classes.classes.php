@@ -941,6 +941,7 @@ WHERE t.id = :id";
 
 		return $classData;
 	}
+
 	public function getMainSchoolLessonList()
 	{
 
@@ -955,6 +956,37 @@ WHERE t.id = :id";
 
 		return $classData;
 	}
+	
+	public function getMainSchoolContentListDashboard()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM main_school_content_lnp WHERE lesson_id =? ORDER BY RAND() LIMIT 3');
+
+		if (!$stmt->execute(array("9"))) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
+	
+	public function getMainSchoolLessonListDashboard()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM main_school_lessons_lnp WHERE package_type =?');
+
+		if (!$stmt->execute(array("0"))) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
+
 	public function getMainSchoolTopicList()
 	{
 
