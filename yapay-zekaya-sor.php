@@ -119,7 +119,7 @@ if (isset($_SESSION['role'])) {
                                                                 <img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>"
                                                                     alt="<?= htmlspecialchars($l['name']) ?>"
                                                                     class="img-fluid"
-                                                                    style="width: 60px; height: 60px; object-fit: contain;" />
+                                                                    style="width: 65px; height: 65px; object-fit: contain;" />
                                                                 <div class="mt-2 fw-semibold small"><?= htmlspecialchars($l['name']) ?></div>
                                                             </a>
                                                         </div>

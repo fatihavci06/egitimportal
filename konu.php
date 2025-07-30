@@ -67,23 +67,23 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
                             <?php include_once "views/toolbar.php"; ?>
                             <!--end::Toolbar-->
                             <!--begin::Content-->
-                            <div id="kt_app_content" class="app-content flex-column-fluid" style="margin-top: -15px;">
+                            <div id="kt_app_content" class="app-content flex-column-fluid" style="margin-top: -30px;margin-left: -10px;">
                                 <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <!--begin::Careers - List-->
-                                    <div class="card" style="margin-top: -30px;margin-left: -35px;">
+                                    <div class="card" >
                                         <!--begin::Body-->
                                         <div class="card-body p-lg-7">
                                             <!--begin::Hero-->
                                             <?php $topics->getHeaderImageStu(); ?>
                                             <!--end::-->
                                             <!--begin::Layout-->
-                                            <div class="row align-items-center mb-3" style="margin-top: -21px;">
+                                            <div class="row align-items-center mb-3" style="">
                                                 <div class="col-2 d-flex ">
-                                                    <h5 class="fs-2x text-gray-900 mb-0" style="font-size:15px!important;margin-left:-10px;">
-                                                        Dersler
+                                                    <h5 class="fs-2x text-gray-900 mb-0 text-center" style="font-size:15px!important;margin-left:0px;">
+														Dersler
 
-                                                    </h5>
+													</h5>
                                                 </div>
                                                 <div class="col-10 d-flex justify-content-center">
 
@@ -98,9 +98,10 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
                                                                 <?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
                                                                     <div class="col-12 mb-1 text-center">
                                                                         <a href="ders/<?= urlencode($l['slug']) ?>">
-                                                                            <img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 70%; height: 70%; object-fit: contain;" />
-                                                                        </a>
+                                                                            <img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 65px; height: 65px; object-fit: contain;" />
+                                                                        
                                                                         <div class="mt-1"><?= htmlspecialchars($l['name']) ?></div>
+                                                                    </a>
                                                                     </div>
                                                                 <?php endif; ?>
                                                             <?php endforeach; ?>
@@ -133,14 +134,14 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 
                                                                             <!-- Kart İçeriği -->
                                                                             <div class="card-body d-flex flex-column">
-                                                                                <h5 class="card-title fw-bold text-dark mb-1" style="font-size: 16px;"><?= $testTitle ?></h5>
-                                                                                <p class="card-text text-muted mb-3" style="font-size: 14px;"><?= $testSubtitle ?></p>
+                                                                                <h5 class="card-title fw-bold text-dark mb-1" style="font-size: 12px;"><?= $testTitle ?></h5>
+                                                                                <p class="card-text text-muted mb-3" style="font-size: 12px;"><?= $testSubtitle ?></p>
 
                                                                                 <!-- Alt Buton -->
                                                                                 <div class="mt-auto d-flex justify-content-start">
                                                                                     <a href="<?= $testLink ?>"
                                                                                         style="background-color: #2b8c01 !important; color: white !important; border: 1px solid #2b8c01 !important;
-                                          padding: 8px 28px; font-size: 14px; border-radius: 999px; text-decoration: none;"
+                                          padding: 8px 28px; font-size: 12px; border-radius: 999px; text-decoration: none;"
                                                                                         onmouseover="this.style.backgroundColor='#ed5606'"
                                                                                         onmouseout="this.style.backgroundColor='#2b8c01'">
                                                                                         Aç

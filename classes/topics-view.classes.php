@@ -423,7 +423,7 @@ class ShowTopic extends Topics
             <!-- Metin alanı -->
             <div class="flex-grow-1 ms-3 d-flex align-items-center">
                 <a href="' . $link . '" class="text-decoration-none text-dark fw-bold stretched-link ' . $class . '"
-                   style=" line-height: 1.2;">
+                   style=" line-height: 1.2;font-size:12px!important">
                     ' . $value['topicName'] . '
                 </a>
                 ' . $notification . '
@@ -459,6 +459,7 @@ class ShowTopic extends Topics
         border-top: 5px solid #d22b2b !important;
         border-bottom: 5px solid #d22b2b !important;
         margin-left:-11px;
+        height:85px;
     ">
     <div class="d-flex align-items-center">
         <div class="">
@@ -1730,7 +1731,7 @@ echo $contentList;
                         <div class="scroll-y me-n7 pe-7" id="kt_modal_add_customer_scroll" data-kt-scroll="true"
                             data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto"
                             data-kt-scroll-dependencies="#kt_modal_add_customer_header"
-                            data-kt-scroll-wrappers="#kt_modal_add_customer_scroll" data-kt-scroll-offset="300px">
+                            data-kt-scroll-wrappers="#kt_modal_add_customer_scroll" data-kt-scroll-onset="300px">
                             <!--begin::Input group-->
                             <div class="mb-7">
                                 <!--begin::Label-->

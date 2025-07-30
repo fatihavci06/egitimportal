@@ -110,14 +110,14 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 								<!--begin::Content container-->
 								<div id="kt_app_content_container" class="app-container container-fluid">
 									<!--begin::Careers - List-->
-									<div class="card" style="margin-top: -22px;margin-left: -15px;">
+									<div class="card" style="margin-top: -25px;margin-left: -15px;">
 										<!--begin::Body-->
 										<div class="card-body p-lg-7">
 											<!--begin::Section-->
-											<div class="mb-19" style="margin-top: -22px;">
+											<div class="mb-19" >
 												<div class="row align-items-center mb-12">
 													<header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
-                           border-top border-bottom border-custom-red" style="border-width: 5px !important;">
+                           border-top border-bottom border-custom-red" style="border-width: 5px !important; height: 85px; ">
 
 														<div class="d-flex align-items-center">
 															<div class="rounded-circle bg-danger me-3 shadow icon-circle-lg">
@@ -151,8 +151,8 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 																<?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
 																	<div class="col-12 mb-4 text-center">
 																		<a href="ders/<?= urlencode($l['slug']) ?>">
-																			<img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 90px; height: 90px; object-fit: contain;" />
-																			<div class="mt-2 fw-semibold"><?= htmlspecialchars($l['name']) ?></div>
+																			<img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 65px; height: 65px; object-fit: contain;" />
+																			<div class="mt-2 fw-semibold" ><?= htmlspecialchars($l['name']) ?></div>
 																		</a>
 																	</div>
 																<?php endif; ?>
@@ -181,7 +181,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 
 																				<!-- İçerik -->
 																				<div class="flex-grow-1">
-																					<div class="fw-bold fs-5 text-dark mb-1" style=" margin-left:21px;">
+																					<div class="fw-bold fs-5 text-dark mb-1" style=" margin-left:21px;font-size:12px!important	">
 																						<?= htmlspecialchars($test['test_title']) ?>
 																					</div>
 																				</div>

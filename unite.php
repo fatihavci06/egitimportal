@@ -70,20 +70,20 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 							<?php include_once "views/toolbar.php"; ?>
 							<!--end::Toolbar-->
 							<!--begin::Content-->
-							<div id="kt_app_content" class="app-content flex-column-fluid" style="margin-top: -25px;">
+							<div id="kt_app_content" class="app-content flex-column-fluid" >
 								<!--begin::Content container-->
 								<div id="kt_app_content_container" class="app-container container-fluid">
 									<!--begin::Careers - List-->
 									<div class="card" style="margin-left: -15px;">
 										<!--begin::Body-->
-										<div class="card-body p-lg-7" style="margin-left: -20px;">
+										<div class="card-body p-lg-7" >
 											<!--begin::Hero-->
 											<?php $units->getHeaderImageStu(); ?>
 											<!--end::-->
 											<!--begin::Layout-->
-											<div class="row align-items-center mb-12" style="margin-top: -22px;">
+											<div class="row align-items-center mb-12" style="margin-top: -30px;">
 												<div class="col-2 d-flex ">
-													<h5 class="fs-2x text-gray-900 mb-0" style="font-size:15px!important;margin-left:0px;">
+													<h5 class="fs-2x text-gray-900 mb-0 text-center" style="font-size:15px!important;margin-left:0px;">
 														Dersler
 
 													</h5>
@@ -93,14 +93,14 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 												</div>
 											</div>
 
-											<div class="row" style="margin-top: -20px;">
+											<div class="row" style="margin-top: -30px;margin-left: -30px;">
 												<div class="col-3 col-lg-2">
 													<div class="row g-10">
 														<?php foreach ($lessons as $l): ?>
 															<?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
 																<div class="col-12 mb-1 text-center">
 																	<a href="ders/<?= urlencode($l['slug']) ?>">
-																		<img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 90px; height: 90px; object-fit: contain;" />
+																		<img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 65px; height: 65px; object-fit: contain;" />
 																		<div class="mt-1 small"><?= htmlspecialchars($l['name']) ?></div>
 																	</a>
 																</div>
@@ -131,7 +131,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 																		<!-- Metin alanı -->
 																		<div class="flex-grow-1 ms-3 d-flex align-items-center">
 																			<a href="<?= $testLink ?>" class="text-decoration-none text-dark fw-bold stretched-link"
-																				style="line-height: 1.2;">
+																				style="line-height: 1.2;font-size:12px!important">
 																				<?= htmlspecialchars($test['test_title']) ?>
 																			</a>
 																		</div>
