@@ -134,7 +134,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 												</div>
 												<div class="row align-items-center mb-12" style="margin-top: -30px;">
 													<div class="col-lg-2 col-3 d-flex ">
-														<h5 class="fs-2x text-gray-900 mb-0" style="font-size:15px!important;margin-left:-20px;">
+														<h5 class="fs-2x text-gray-900 mb-0" style="font-size:15px!important">
 															Dersler
 
 														</h5>
@@ -161,7 +161,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 													</div>
 
 													<div class="col-9 col-lg-10">
-														<div class="row g-5">n
+														<div class="row g-5">
 															<?php
 															$units->getUnitsListStudent();
 															$testData = $lesson->getTestByTopicLessonUnit($_SESSION['class_id'], $lessonInfo['id']);

@@ -179,8 +179,11 @@ class ShowMenu extends Menus
                         if ($i == 1) {
                             $url = "ders/";
                             $lessonClass = $this->getLessonsListForSubMenu($subValue['slug']);
-                            $piecesLesson = explode(";", $lessonClass['class_id']);
-                            if (in_array($_SESSION['class_id'], $piecesLesson)) {
+if (is_array($lessonClass) && isset($lessonClass['class_id']) && $lessonClass['class_id'] !== null) {
+    $piecesLesson = explode(";", $lessonClass['class_id']);
+} else {
+    $piecesLesson = []; // boş array döner, veya default bir değer ver
+}                            if (in_array($_SESSION['class_id'], $piecesLesson)) {
                                 $isLesson = 1;
                             }
                         }
