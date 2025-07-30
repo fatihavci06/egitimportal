@@ -766,6 +766,21 @@ public function getTestByTopicLessonUnit($class_id, $lesson_id = null, $unit_id 
 		return $classData;
 	}
 
+	public function getClassesListsWithPreschool()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT id, name, slug FROM classes_lnp ORDER BY orderBY ASC');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
+
 	public function getClassesListBySchool()
 	{
 

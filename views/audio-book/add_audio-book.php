@@ -153,7 +153,7 @@ $chooseLesson = new ShowLesson();
                                 data-placeholder="Sınıf Seçiniz..." data-dropdown-parent="#kt_modal_add_customer"
                                 class="form-select form-select-solid fw-bold">
                                 <option value="">Sınıf Seçin</option>
-                                <?php echo $chooseClass->getClassSelectList(); ?>
+                                <?php echo $chooseClass->getClassSelectListWithPreschool(); ?>
                             </select>
                             <!--end::Input-->
                         </div>
