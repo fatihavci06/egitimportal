@@ -13,21 +13,56 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] ==
     include "classes/weekly-view.classes.php";
     $weekly = new ShowWeekly();
     $chooseLesson = new ShowLesson();
+    $lesson = new Classes();
+    $lessons = $lesson->getLessonsList($_SESSION['class_id']);
     include_once "views/pages-head.php";
 
-    if($_SESSION['role'] == 5){
-        
+    if ($_SESSION['role'] == 5) {
+
         include "classes/userslist.classes.php";
         $user = new User();
         $studentClass = $user->getStudentDataWithParentId($_SESSION['id']);
 
         $classId = $studentClass[0]['class_id'] ?? null;
-        
-    }else{
+    } else {
         $classId = $_SESSION['class_id'];
     }
 
 ?>
+    <style>
+        /* Minimal custom style for colors not in Bootstrap's palette, 
+           or for specific border widths if Bootstrap's are not enough. */
+        .bg-custom-light {
+            background-color: #e6e6fa;
+            /* Light purple */
+        }
+
+        .border-custom-red {
+            border-color: #d22b2b !important;
+        }
+
+        .text-custom-cart {
+            color: #6a5acd;
+            /* Slate blue for the cart */
+        }
+
+        /* For the circular icon, we'll use a larger padding or fixed size */
+        .icon-circle-lg {
+            width: 60px;
+            /* fixed width */
+            height: 60px;
+            /* fixed height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-circle-lg img {
+            max-width: 100%;
+            /* Ensure image scales within the circle */
+            max-height: 100%;
+        }
+    </style>
     <!--end::Head-->
     <!--begin::Body-->
 
@@ -54,6 +89,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] ==
         </script>
         <!--end::Theme mode setup on page load-->
         <!--begin::App-->
+
         <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
             <!--begin::Page-->
             <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
@@ -73,7 +109,23 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] ==
                             <?php include_once "views/toolbar.php"; ?>
                             <!--end::Toolbar-->
                             <div id="kt_app_content" class="app-content flex-column-fluid">
-                                <div id="kt_app_content_container" class="app-container container-fluid">
+                                <div id="kt_app_content_container" style="margin-top:-40px!important;" class="app-container container-fluid">
+                                    <div class="row align-items-center mb-12">
+                                        <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
+       border-top border-bottom border-custom-red" style="border-width: 5px !important;">
+
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle bg-danger me-3 shadow icon-circle-lg d-flex justify-content-center align-items-center"
+                                                    style="width: 80px; height: 80px;">
+                                                    <i class="fas fa-calendar-check fa-2x text-white"></i>
+                                                </div>
+
+                                                <h1 class="fs-3 fw-bold text-dark mb-0">Yapılacak Etkinlikler</h1>
+                                            </div>
+
+                                        </header>
+
+                                    </div>
                                     <div class="row">
                                         <div class="col-lg-4">
                                             <input type="hidden" name="classId" id="classId" value="<?= $classId ?>">
@@ -105,66 +157,118 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] ==
                                         </div> -->
                                     </div>
 
-                                    <div class="row mt-5 mb-5">
-                                        <div class="col-lg-3">
-                                            <button type="button" id="filterButton" class="btn btn-success btn-sm w-100">Filtrele</button>
+                                    <div class="row mt-5 mb-5 justify-content-end">
+                                        <div class="col-auto">
+                                            <button type="button" id="filterButton" class="btn btn-primary btn-sm">Filtrele</button>
                                         </div>
-                                        <div class="col-lg-2">
-                                            <button type="button" id="clearFiltersButton" class="btn btn-secondary btn-sm w-100">Temizle</button>
+                                        <div class="col-auto">
+                                            <button type="button" id="clearFiltersButton" class="btn btn-secondary btn-sm">Temizle</button>
                                         </div>
                                     </div>
 
+
+
                                 </div>
                             </div>
+
                             <!--begin::Content-->
                             <div id="kt_app_content" class="app-content flex-column-fluid">
-                                <!--begin::Content container-->
-                                <div id="kt_app_content_container" class="app-container container-fluid row">
-                                    <?php if ($_SESSION['role'] == 1){
-                                        $column = 'col-lg-12';
-                                    } else {
-                                        $column = 'col-lg-6';
-                                    } ?>
-                                    <!--begin::Card-->
-                                    <div class="card <?php echo $column; ?>">
+                                <div id="kt_app_content_container" style="margin-top:-50px!important;" class="app-container container-fluid">
+                                    <?php
+                                    // PHP değişkenleri tanımlamaları
+                                    $column = ($_SESSION['role'] == 1) ? 'col-lg-10' : 'col-lg-5';
+                                    ?>
 
-                                        <!--begin::Card body-->
-                                        <div class="card-body pt-0">
-                                            <!--begin::Table-->
-                                            <div id="eventResults" class="mt-4">
-
-                                            </div>
-                                            <!--end::Table-->
-                                        </div>
-                                        <!--end::Card body-->
-                                    </div>
-                                     <?php if ($_SESSION['role'] != 1){ ?>
-                                    <div class="card col-lg-6">
-
-                                        <!--begin::Card body-->
-                                        <div class="card-body pt-0">
-                                            <!--begin::Table-->
-                                            <div id="eventResultsTest" class="mt-4">
-                                                
-                                            </div>
-                                            <!--end::Table-->
-                                        </div>
-                                        <!--end::Card body-->
-                                    </div>
-                                    <?php } ?>
-                                    <!--end::Card-->
-                                    <!--begin::Modals-->
-                                    <!--begin::Modal - Customers - Add-->
-                                    <?php if ($_SESSION['role'] == 1) {
-                                        include_once "views/weekly/add_weekly.php";
-                                    } else {
-                                        //include_once "views/weekly/add_unit_teacher.php";
-                                    } ?>
-                                    <!--end::Modal - Customers - Add-->
-                                    <!--end::Modals-->
-                                </div>
-                                <!--end::Content container-->
+                                   <div class="row" style="margin-left: -55px;"> <div class="col-12 col-lg-2 order-1 order-lg-1 mb-4 mb-lg-0">
+        <div class="card h-100 dersler-card-min-height"> <div class="card-body py-4">
+                <div class="row g-2 g-lg-10 justify-content-center">
+                    <?php foreach ($lessons as $l): ?>
+                        <?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
+                            <div class="col-6 col-sm-4 col-lg-12 text-center mb-sm-2 mb-lg-1">
+                                <a href="ders/<?= urlencode($l['slug']) ?>" class="d-block text-decoration-none text-dark">
+                                    <img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 70%; height: 70%; object-fit: contain;" />
+                                    <div class="mt-1 fw-bold"><?= htmlspecialchars($l['name']) ?></div>
+                                </a>
                             </div>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-10 order-2 order-lg-2">
+        <div class="card mb-4"> <div class="card-body pt-0">
+                <div id="eventResults" class="mt-4">
+                    </div>
+            </div>
+        </div>
+
+        <div class="card mb-4"> <div class="card-body pt-0">
+                <div id="odev" class="mt-4">
+                    </div>
+            </div>
+        </div>
+
+        <?php if ($_SESSION['role'] != 1) { ?>
+            <div class="card"> <div class="card-body pt-0">
+                    <div id="eventResultsTest" class="mt-4">
+                        </div>
+                </div>
+            </div>
+        <?php } ?>
+    </div>
+
+    <?php
+    if ($_SESSION['role'] == 1) {
+   
+        include_once "views/weekly/add_weekly.php";
+    } else {
+        // include_once "views/weekly/add_unit_teacher.php";
+    }
+    ?>
+</div>
+<style>
+    /* footer'ın bozulmasını engellemek için sol sütuna minimum yükseklik verme */
+    .dersler-card-min-height {
+        min-height: 400px; /* Bu değeri, sağdaki içeriklerin toplam yüksekliğine göre ayarlayın */
+        /* Örneğin, sağdaki 3 kartın toplam yüksekliği + aralarındaki boşluklar kadar olabilir */
+        /* Bu değeri tarayıcıda incele (inspect) yaparak veya deneyerek bulabilirsiniz */
+    }
+
+    /* Sağdaki kartların da gerektiğinde kendi içlerinde esnemesini sağlamak için */
+    .col-lg-10 > .card {
+        display: flex; /* Kartların içindeki body'yi esnetmek için */
+        flex-direction: column;
+    }
+    .col-lg-10 > .card .card-body {
+        flex-grow: 1; /* card-body'nin tüm boşluğu doldurmasını sağlar */
+    }
+</style>
+                                </div>
+                            </div>
+
+                            <style>
+                                /* Küçük ekranlarda ders isimlerinin alt boşluğunu azalt (çünkü yan yana olacaklar) */
+                                @media (max-width: 991.98px) {
+
+                                    /* Bootstrap'in lg breakpoint'i öncesi */
+                                    .col-6.text-center.mb-sm-2.mb-lg-1 {
+                                        margin-bottom: 0.5rem !important;
+                                        /* mb-2 gibi */
+                                    }
+                                }
+
+                                /* Ders ikonlarının ve metinlerinin linki doldurmasını sağla */
+                                .col-6.text-center.mb-sm-2.mb-lg-1 a {
+                                    display: flex;
+                                    flex-direction: column;
+                                    align-items: center;
+                                    justify-content: center;
+                                    height: 100%;
+                                    /* İçeriği dikey ortalamak için */
+                                }
+                            </style>
                             <!--end::Content-->
                         </div>
                         <!--end::Content wrapper-->
@@ -217,149 +321,59 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] ==
         <script>
             // --- Ders, Ünite, Konu, Alt Konu Seçim Mantığı ---
 
-            // Ders seçimi değiştiğinde üniteleri getir
-            $('#lesson_id').on('change', function() {
-                var lessonId = $(this).val();
-                var classId = $('#classId').val(); // Sınıf ID'sini de gönderiyoruz
-                var $unitSelect = $('#unit_id');
-                $unitSelect.empty().append('<option value="">Ünite seçiniz</option>');
-                $('#topic_id').html('<option value="">Seçiniz</option>');
+            // Hata yönetimi için genel fonksiyon
+            function handleAjaxError(xhr) {
+                console.error('AJAX Error:', xhr.status, xhr.responseText);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hata',
+                    text: 'Sunucu ile iletişimde bir sorun oluştu. Lütfen daha sonra tekrar deneyin.',
+                    confirmButtonText: 'Tamam'
+                });
+            }
 
+            // Tarihi YYYY-MM-DD formatında almak için yardımcı fonksiyon
+            function getFormattedCurrentDate() {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0'); // Ay 0'dan başladığı için +1
+                const day = String(today.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
 
-                if (lessonId !== '') {
-                    $.ajax({
-                        url: 'includes/ajax_yazgul.php?service=getUnitListForStudent',
-                        type: 'POST',
-                        dataType: 'json',
-                        data: {
-                            lesson_id: lessonId,
-                            class_id: classId
-                        },
-                        success: function(response) {
-                            if (response.status === 'success' && response.data.length > 0) {
-                                $.each(response.data, function(index, unit) {
-                                    $unitSelect.append($('<option>', {
-                                        value: unit.id,
-                                        text: unit.name
-                                    }));
-                                });
-                            } else {
-                                $unitSelect.append('<option disabled>Ünite bulunamadı</option>');
-                            }
-                        },
-                        error: function(xhr) {
-                            handleAjaxError(xhr);
-                        }
-                    });
+            // Verileri getirmek ve HTML'i güncellemek için merkezi fonksiyon
+            function fetchWeeklyData(lessonId = '', classId = '', unitId = '', topicId = '', selectedDate = '') {
+                // Eğer lessonId boşsa, varsayılan olarak seçili ders ID'sini al veya boş bırak
+                // Bu fonksiyonun dışarıdan çağrılma durumunda varsayılan değeri olmasını sağlarız.
+                if (!lessonId) {
+                    lessonId = $('#lesson_id').val();
                 }
-            });
-
-            // Ünite seçimi değiştiğinde konuları getir
-            $('#unit_id').on('change', function() {
-                var classId = $('#classId').val();
-                var lessonId = $('#lesson_id').val();
-                var unitId = $(this).val();
-                var $topicSelect = $('#topic_id');
-
-                $topicSelect.empty().append('<option value="">Seçiniz</option>');
-                $('#subtopic_id').html('<option value="">Alt Konu seçiniz</option>');
-
-                if (unitId !== '') {
-                    $.ajax({
-                        url: 'includes/ajax_yazgul.php?service=getTopicListForStudent',
-                        type: 'POST',
-                        dataType: 'json',
-                        data: {
-                            class_id: classId,
-                            lesson_id: lessonId,
-                            unit_id: unitId
-                        },
-                        success: function(response) {
-                            if (response.status === 'success' && response.data.length > 0) {
-                                $.each(response.data, function(index, topic) {
-                                    $topicSelect.append($('<option>', {
-                                        value: topic.id,
-                                        text: topic.name
-                                    }));
-                                });
-                            } else {
-                                $topicSelect.append('<option disabled>Konu bulunamadı</option>');
-                            }
-                        },
-                        error: function(xhr) {
-                            handleAjaxError(xhr);
-                        }
-                    });
-                }
-            });
-
-            // Konu seçimi değiştiğinde alt konuları getir
-            // $('#topic_id').on('change', function() {
-            //     var subtopicId = $('#subtopic_id').val('');
-            //     var classId = $('#classId').val();
-            //     var lessonId = $('#lesson_id').val();
-            //     var unitId = $('#unit_id').val();
-            //     var topicId = $(this).val();
-            // var $subtopicSelect = $('#subtopic_id');
-
-            // $subtopicSelect.empty().append('<option value="">Alt Konu seçiniz</option>');
-
-            // if (topicId !== '') {
-            //     $.ajax({
-            //         url: 'includes/ajax_yazgul.php?service=getSubtopicListForStudent',
-            //         type: 'POST',
-            //         dataType: 'json',
-            //         data: {
-            //             class_id: classId,
-            //             lesson_id: lessonId,
-            //             unit_id: unitId,
-            //             topic_id: topicId
-            //         },
-            //         success: function(response) {
-            //             if (response.status === 'success' && response.data.length > 0) {
-            //                 $.each(response.data, function(index, subtopic) {
-
-            //                 });
-            //             } else {
-            //                 $subtopicSelect.append('<option disabled>Alt konu bulunamadı</option>');
-            //             }
-            //         },
-            //         error: function(xhr) {
-            //             handleAjaxError(xhr);
-            //         }
-            //     });
-            // }
-            //});
-
-            // Filtreleme butonu tıklaması
-            $('#filterButton').on('click', function() {
-                var lessonId = $('#lesson_id').val();
-                
-                
-                if (!lessonId || lessonId === '') {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Uyarı',
-                        text: 'Lütfen bir ders seçiniz.',
-                        confirmButtonText: 'Tamam'
-                    });
-                    $('#lesson_id').addClass('is-invalid'); // Bootstrap ile görsel uyarı
-                    return; // Filtreleme işlemini durdur
-                } else {
-                    $('#lesson_id').removeClass('is-invalid');
+                if (!classId) {
+                    classId = $('#classId').val(); // classId'nin zaten mevcut bir inputtan geldiğini varsayıyorum
                 }
 
-                var classId = $('#classId').val();
-                var lessonId = $('#lesson_id').val();
-                var unitId = $('#unit_id').val();
-                var topicId = $('#topic_id').val();
+                // Eğer ders seçili değilse uyarı ver ve işlemi durdur (sadece manuel filtreleme için geçerli)
+                // Sayfa ilk yüklendiğinde varsayılan olarak filtreleme yapılacaksa bu uyarı mantığı gerekmez.
+                // Ancak bu fonksiyon filterButton'a bağlı olduğu için bu kontrolü koruyalım.
+                // if ($('#filterButton').length && (!lessonId || lessonId === '')) { // Sadece filtre butonu varsa bu kontrolü yap
+                //     Swal.fire({
+                //         icon: 'warning',
+                //         title: 'Uyarı',
+                //         text: 'Lütfen bir ders seçiniz.',
+                //         confirmButtonText: 'Tamam'
+                //     });
+                //     $('#lesson_id').addClass('is-invalid'); // Bootstrap ile görsel uyarı
+                //     return; // Filtreleme işlemini durdur
+                // } else if ($('#lesson_id').length) {
+                //     $('#lesson_id').removeClass('is-invalid');
+                // }
 
-                // Prepare data to be sent
                 var postData = {
                     class_id: classId,
                     lesson_id: lessonId,
                     unit_id: unitId,
-                    topic_id: topicId
+                    topic_id: topicId,
+                    selectedDate: selectedDate || getFormattedCurrentDate() // Eğer selectedDate gönderilmediyse varsayılan olarak şimdi
                 };
 
                 // Send AJAX POST request
@@ -370,7 +384,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] ==
                     dataType: 'json', // Expecting JSON response from the PHP script
                     success: function(response) {
                         // Handle success response from PHP
-                        console.log(response)
+                        console.log(response);
                         if (response.status === 'success') {
                             var eventList = response.data;
                             console.log('Events:', eventList);
@@ -385,10 +399,30 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] ==
                                 return str.normalize('NFKD').replace(/\s+/g, ' ').trim().toLowerCase();
                             }
 
+                            function formatDate(dateStr) {
+                                const date = new Date(dateStr);
+                                return date.toLocaleDateString('tr-TR', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric'
+                                });
+                            }
+
+                            function calculateRemaining(endDateStr) {
+                                const now = new Date();
+                                const endDate = new Date(endDateStr);
+                                const diff = endDate - now;
+
+                                if (diff <= 0) return '0 gün';
+
+                                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                                return `${days} gün`;
+                            }
+
                             function formatDate(dateString) {
                                 const date = new Date(dateString);
                                 const options = {
-                                    month: 'long', // ✅ "short" yerine "long"
+                                    month: 'long',
                                     day: 'numeric'
                                 };
                                 return date.toLocaleDateString('tr-TR', options);
@@ -398,64 +432,121 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] ==
                                 return str.charAt(0).toUpperCase() + str.slice(1);
                             }
 
-                            eventList.sort((a, b) => new Date(a.start) - new Date(b.start));
+                            // Separate events by type
+                            const generalEvents = eventList.filter(event => event.type !== 'homework');
+                            const homeworkEvents = eventList.filter(event => event.type === 'homework');
 
-                            const grouped = {};
-                            let html = '';
+                            // --- Render General Events ---
+                            generalEvents.sort((a, b) => new Date(a.start) - new Date(b.start));
 
-                            eventList.forEach(event => {
+                            const groupedGeneral = {};
+                            let generalHtml = '';
+
+                            generalEvents.forEach(event => {
                                 const key = getMonthYear(event.start);
-                                if (!grouped[key]) grouped[key] = [];
-                                grouped[key].push(event);
+                                if (!groupedGeneral[key]) groupedGeneral[key] = [];
+                                groupedGeneral[key].push(event);
                             });
 
-                            for (const key in grouped) {
-                                html += `<h2 class="text-center event-month mt-4 mb-4">${capitalize(key)}</h2>`;
+                            for (const key in groupedGeneral) {
+                                generalHtml += `<h2 class="text-center event-month mt-4 mb-4">${capitalize(key)}</h2>`;
 
-                                grouped[key].forEach(event => {
-                                    html += `
-                                        <div class="card mb-3 shadow-sm event-card">
-                                            <div class="card-body">
-                                                <div class="d-flex align-items-center mb-2">
-                                                    <i class="fas fa-calendar-alt text-primary me-2"></i>
-                                                    <h6 class="card-subtitle text-muted flex-grow-1 mb-0">
-                                                        <small style="font-size: 1.2rem;"> 
-                                                            ${formatDate(event.start)} - ${formatDate(event.end)}
-                                                        </small>
-                                                    </h6>
-                                                </div>
-                                                <h5 class="card-title text-dark mb-0" style="font-size: 1.3rem;">${event.name}</h5> 
-                                            </div>
-                                        </div>
-                                    `;
+                                groupedGeneral[key].forEach(event => {
+                                    generalHtml += `
+                        <div class="card mb-2 shadow-sm event-card" style="padding: 0;">
+                            <div class="card-body py-2 px-3">
+                                <div class="row align-items-center">
+                                    <div class="col-4">
+                                        <h5 class="card-title text-dark mb-0" style="font-size: 1.2rem;">
+                                            ${event.name}
+                                        </h5>
+                                    </div>
+
+                                    <div class="col-4 d-flex align-items-center">
+                                        <i class="fas fa-calendar-alt text-primary me-2"></i>
+                                        <small class="text-muted" style="font-size: 1.1rem;">
+                                            ${formatDate(event.start)} - ${formatDate(event.end)}
+                                        </small>
+                                    </div>
+
+                                    <div class="col-4 text-end">
+                                        ${new Date(event.end) < new Date() 
+                                            ? '<span class="badge bg-danger">Sona ermiştir</span>' 
+                                            : '<span class="badge bg-success">Kalan: ' + calculateRemaining(event.end) + '</span>'
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
                                 });
                             }
 
-                            $('#eventResults').html(html);
+                            $('#eventResults').html(generalHtml);
+
+                            // --- Render Homework Events ---
+                            let homeworkHtml = '';
+                            if (homeworkEvents.length > 0) {
+                                homeworkHtml += '<h2 class="text-center event-month mt-4 mb-4">Ödevler</h2>';
+                                homeworkEvents.forEach(event => {
+                                    homeworkHtml += `
+                        <div class="card mb-2 shadow-sm event-card" style="padding: 0;">
+                            <div class="card-body py-2 px-3">
+                                <div class="row align-items-center">
+                                    <div class="col-4">
+                                        <h5 class="card-title text-dark mb-0" style="font-size: 1.2rem;">
+                                            ${event.name}
+                                        </h5>
+                                    </div>
+
+                                    <div class="col-4 d-flex align-items-center">
+                                        <i class="fas fa-clipboard-list text-info me-2"></i>
+                                        <small class="text-muted" style="font-size: 1.1rem;">
+                                            ${formatDate(event.start)} - ${formatDate(event.end)}
+                                        </small>
+                                    </div>
+
+                                    <div class="col-4 text-end">
+                                        ${new Date(event.end) < new Date() 
+                                            ? '<span class="badge bg-danger">Sona ermiştir</span>' 
+                                            : '<span class="badge bg-warning">Kalan: ' + calculateRemaining(event.end) + '</span>'
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                                });
+                                $('#odev').html(homeworkHtml); // Display homework in the #odev div
+                            } else {
+                                $('#odev').html(`<div class="alert alert-info">Henüz tanımlanmış ödev bulunmamaktadır.</div>`);
+                            }
+
+
                             if (Array.isArray(response.testData) && response.testData.length > 0) {
                                 let testHtml = '<h2 class="text-center event-month mt-4 mb-4">Testler</h2>';
 
                                 response.testData.forEach(test => {
                                     testHtml += `
-            <div class="card mb-3 shadow-sm border-start border-3 border-primary">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div>
-                            <i class="fas fa-vial text-danger me-2"></i>
-                            <strong style="font-size: 1.3rem;">${test.test_title}</strong>
+                        <div class="card mb-3 shadow-sm border-start border-3 border-primary">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div>
+                                        <i class="fas fa-vial text-danger me-2"></i>
+                                        <strong style="font-size: 1.3rem;">${test.test_title}</strong>
+                                    </div>
+                                    <a href="ogrenci-test-coz.php?id=${test.id}" target="_blank" class="btn btn-success btn-sm">
+                                        Sınava Gir
+                                    </a>
+                                </div>
+                                <div class="text-muted" style="font-size: 1.2rem;">
+                                    <i class="fas fa-clock me-1"></i>
+                                    ${formatDate(test.start_date)} - ${formatDate(test.end_date)} 
+                                    <span class="badge bg-${new Date(test.end_date) < new Date() ? 'danger' : 'success'} ms-2">${new Date(test.end_date) < new Date() ? 'Tarihi Geçmiş' : 'Aktif'}</span>
+                                </div>
+                            </div>
                         </div>
-                        <a href="ogrenci-test-coz.php?id=${test.id}" target="_blank" class="btn btn-success btn-sm">
-                            Sınava Gir
-                        </a>
-                    </div>
-                    <div class="text-muted" style="font-size: 1.2rem;">
-                        <i class="fas fa-clock me-1"></i>
-                        ${formatDate(test.start_date)} - ${formatDate(test.end_date)} 
-                        <span class="badge bg-${test.label === 'Tarihi Geçmiş' ? 'danger' : 'success'} ms-2">${test.label}</span>
-                    </div>
-                </div>
-            </div>
-        `;
+                    `;
                                 });
 
                                 $('#eventResultsTest').html(testHtml);
@@ -473,21 +564,163 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] ==
                         alert('Bir hata oluştu. Lütfen tekrar deneyin.');
                     }
                 });
+            }
 
-            });
+            // Sayfa yüklendiğinde (DOM hazır olduğunda) çalışacak kod
+            $(document).ready(function() {
+                // İlk yüklemede, ders seçili değilse bile şimdiki tarihle verileri getir
+                // Eğer ders seçimi zorunluysa, bu satırı kaldırmanız veya varsayılan bir ders ID'si eklemeniz gerekebilir.
+                // Örneğin, eğer ilk ders option'ının value'su doluysa:
+                var initialLessonId = $('#lesson_id').val();
+                var initialClassId = $('#classId').val(); // Eğer classId elementi varsa
 
-            // Temizle butonu tıklaması
-            $('#clearFiltersButton').on('click', function() {
-                // Filtreleme alanlarını temizle
-                $('#title').val('');
-                $('#class_id').val('').trigger('change'); // 'change' olayı ile diğer bağımlı selectbox'ları da temizle
-                $('#lesson_id').val('');
-                $('#unit_id').val('');
-                $('#topic_id').val('');
-                $('#subtopic_id').val('');
-                // Temizlenmiş filtrelerle DataTable'ı yeniden yükle.
-                // Bu, 'getFilteredTests' servisinize boş filtre değerleri gönderecektir.
+                fetchWeeklyData(initialLessonId, initialClassId, '', '', getFormattedCurrentDate());
 
+
+                // Ders seçimi değiştiğinde üniteleri getir
+                $('#lesson_id').on('change', function() {
+                    var lessonId = $(this).val();
+                    var classId = $('#classId').val(); // Sınıf ID'sini de gönderiyoruz
+                    var $unitSelect = $('#unit_id');
+                    $unitSelect.empty().append('<option value="">Ünite seçiniz</option>');
+                    $('#topic_id').html('<option value="">Konu seçiniz</option>'); // Konu seçimini de temizle
+                    $('#subtopic_id').html('<option value="">Alt Konu seçiniz</option>'); // Alt Konu seçimini de temizle
+
+
+                    if (lessonId !== '') {
+                        $.ajax({
+                            url: 'includes/ajax_yazgul.php?service=getUnitListForStudent',
+                            type: 'POST',
+                            dataType: 'json',
+                            data: {
+                                lesson_id: lessonId,
+                                class_id: classId
+                            },
+                            success: function(response) {
+                                if (response.status === 'success' && response.data.length > 0) {
+                                    $.each(response.data, function(index, unit) {
+                                        $unitSelect.append($('<option>', {
+                                            value: unit.id,
+                                            text: unit.name
+                                        }));
+                                    });
+                                } else {
+                                    $unitSelect.append('<option disabled>Ünite bulunamadı</option>');
+                                }
+                            },
+                            error: function(xhr) {
+                                handleAjaxError(xhr);
+                            }
+                        });
+                    }
+                });
+
+                // Ünite seçimi değiştiğinde konuları getir
+                $('#unit_id').on('change', function() {
+                    var classId = $('#classId').val();
+                    var lessonId = $('#lesson_id').val();
+                    var unitId = $(this).val();
+                    var $topicSelect = $('#topic_id');
+
+                    $topicSelect.empty().append('<option value="">Konu seçiniz</option>');
+                    $('#subtopic_id').html('<option value="">Alt Konu seçiniz</option>'); // Alt Konu seçimini de temizle
+
+                    if (unitId !== '') {
+                        $.ajax({
+                            url: 'includes/ajax_yazgul.php?service=getTopicListForStudent',
+                            type: 'POST',
+                            dataType: 'json',
+                            data: {
+                                class_id: classId,
+                                lesson_id: lessonId,
+                                unit_id: unitId
+                            },
+                            success: function(response) {
+                                if (response.status === 'success' && response.data.length > 0) {
+                                    $.each(response.data, function(index, topic) {
+                                        $topicSelect.append($('<option>', {
+                                            value: topic.id,
+                                            text: topic.name
+                                        }));
+                                    });
+                                } else {
+                                    $topicSelect.append('<option disabled>Konu bulunamadı</option>');
+                                }
+                            },
+                            error: function(xhr) {
+                                handleAjaxError(xhr);
+                            }
+                        });
+                    }
+                });
+
+                // Konu seçimi değiştiğinde alt konuları getir (şu an yorum satırında, ancak düzgün çalışması için ekledim)
+                $('#topic_id').on('change', function() {
+                    var classId = $('#classId').val();
+                    var lessonId = $('#lesson_id').val();
+                    var unitId = $('#unit_id').val();
+                    var topicId = $(this).val();
+                    var $subtopicSelect = $('#subtopic_id');
+
+                    $subtopicSelect.empty().append('<option value="">Alt Konu seçiniz</option>');
+
+                    if (topicId !== '') {
+                        $.ajax({
+                            url: 'includes/ajax_yazgul.php?service=getSubtopicListForStudent',
+                            type: 'POST',
+                            dataType: 'json',
+                            data: {
+                                class_id: classId,
+                                lesson_id: lessonId,
+                                unit_id: unitId,
+                                topic_id: topicId
+                            },
+                            success: function(response) {
+                                if (response.status === 'success' && response.data.length > 0) {
+                                    $.each(response.data, function(index, subtopic) {
+                                        $subtopicSelect.append($('<option>', {
+                                            value: subtopic.id,
+                                            text: subtopic.name
+                                        }));
+                                    });
+                                } else {
+                                    $subtopicSelect.append('<option disabled>Alt konu bulunamadı</option>');
+                                }
+                            },
+                            error: function(xhr) {
+                                handleAjaxError(xhr);
+                            }
+                        });
+                    }
+                });
+
+
+                // Filtreleme butonu tıklaması
+                $('#filterButton').on('click', function() {
+                    var lessonId = $('#lesson_id').val();
+                    var classId = $('#classId').val();
+                    var unitId = $('#unit_id').val();
+                    var topicId = $('#topic_id').val();
+
+                    // Sadece buton tıklamasında ders seçimi kontrolü yapılır
+                    fetchWeeklyData(lessonId, classId, unitId, topicId);
+                });
+
+                // Temizle butonu tıklaması
+                $('#clearFiltersButton').on('click', function() {
+                    // Filtreleme alanlarını temizle
+                    $('#title').val(''); // Eğer böyle bir input varsa
+                    $('#class_id').val('').trigger('change'); // 'change' olayı ile diğer bağımlı selectbox'ları da temizle
+                    $('#lesson_id').val('').trigger('change'); // Ders seçimi de temizlensin ve üniteleri tetiklesin
+                    // Diğer selectbox'lar ders değiştiğinde zaten temizlenecek ama yine de emin olalım
+                    $('#unit_id').empty().append('<option value="">Ünite seçiniz</option>');
+                    $('#topic_id').empty().append('<option value="">Konu seçiniz</option>');
+                    $('#subtopic_id').empty().append('<option value="">Alt Konu seçiniz</option>');
+
+                    // Temizlenmiş filtrelerle varsayılan (şimdiki tarih) verileri yeniden yükle.
+                    // Bu, 'getweeklylistforsudent' servisinize boş filtre değerleri ve şimdiki tarih gönderecektir.
+                    fetchWeeklyData('', '', '', '', getFormattedCurrentDate());
+                });
             });
         </script>
     </body>

@@ -94,7 +94,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 											</div>
 
 											<div class="row" style="margin-top: -20px;">
-												<div class="col-2">
+												<div class="col-3 col-lg-2">
 													<div class="row g-10">
 														<?php foreach ($lessons as $l): ?>
 															<?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
@@ -109,7 +109,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 													</div>
 												</div>
 
-												<div class="col-10">
+												<div class="col-9 col-lg-10">
 													<div class="row g-10">
 
 														<?php

@@ -56,6 +56,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or  $_SESSION['role'] =
                             <?php include_once "views/toolbar.php"; ?>
                             <!--end::Toolbar-->
                             <div id="kt_app_content" class="app-content flex-column-fluid">
+                                
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <div class="row">
 

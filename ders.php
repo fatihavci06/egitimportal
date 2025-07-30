@@ -133,19 +133,19 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 													</header>
 												</div>
 												<div class="row align-items-center mb-12" style="margin-top: -30px;">
-													<div class="col-2 d-flex ">
+													<div class="col-lg-2 col-3 d-flex ">
 														<h5 class="fs-2x text-gray-900 mb-0" style="font-size:15px!important;margin-left:-20px;">
 															Dersler
 
 														</h5>
 													</div>
-													<div class="col-10 d-flex justify-content-center">
+													<div class="col-9 col-lg-10 d-flex justify-content-center">
 
 													</div>
 												</div>
 
 												<div class="row" style="margin-top: -30px;margin-left: -30px;">
-													<div class="col-2">
+													<div class="col-3 col-lg-2">
 														<div class="row g-5">
 															<?php foreach ($lessons as $l): ?>
 																<?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
@@ -160,8 +160,8 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 														</div>
 													</div>
 
-													<div class="col-10">
-														<div class="row g-5">
+													<div class="col-9 col-lg-10">
+														<div class="row g-5">n
 															<?php
 															$units->getUnitsListStudent();
 															$testData = $lesson->getTestByTopicLessonUnit($_SESSION['class_id'], $lessonInfo['id']);
