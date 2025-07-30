@@ -94,18 +94,18 @@ if (strpos($requestUri, $targetDers) !== false) {
                     <!--begin::Item-->
                     <li class="breadcrumb-item text-gray-700 fw-bold lh-1">
                         <a href="index.html" class="text-gray-500 text-hover-primary">
-                            <i class="ki-duotone ki-home fs-3 text-gray-500 me-n1"></i>
+                            <!-- <i class="ki-duotone ki-home fs-3 text-gray-500 me-n1"></i> -->
                         </a>
                     </li>
                     <!--end::Item-->
-                    <?php echo $breadcrumbs; ?>
+                  
                     <!--begin::Item-->
-                    <li class="breadcrumb-item">
+                    <!-- <li class="breadcrumb-item">
                         <i class="ki-duotone ki-right fs-4 text-gray-700 mx-n1"></i>
-                    </li>
+                    </li> -->
                     <!--end::Item-->
                     <!--begin::Item-->
-                    <li class="breadcrumb-item text-gray-700 fw-bold lh-1"><?php $slug->getTitle(); ?></li>
+               
                     <!--end::Item-->
                 </ul>
                 <!--end::Breadcrumb-->
