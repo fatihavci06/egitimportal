@@ -2,6 +2,7 @@
 
 var KTCustomersList = function () {
 
+
     var datatable;
     var table
 
@@ -16,12 +17,21 @@ var KTCustomersList = function () {
             }
         });
 
+            if (dateRow.length >= 7 && dateRow[6].innerHTML.trim() !== '') {
+                const realDate = moment(dateRow[6].innerHTML, "DD MMM YYYY, LT").format();
+                dateRow[6].setAttribute('data-order', realDate);
+            }
+        });
+
         datatable = $(table).DataTable({
             "info": false,
             'order': [
                 [6, 'asc']
+                [6, 'asc']
             ],
             'columnDefs': [
+                { orderable: false, targets: 0 },
+                { orderable: false, targets: 7 },
                 { orderable: false, targets: 0 },
                 { orderable: false, targets: 7 },
             ]
@@ -30,7 +40,9 @@ var KTCustomersList = function () {
         datatable.on('draw', function () {
             initToggleToolbar();
             handleAlterActiveStatusRow();
+            handleAlterActiveStatusRow();
             toggleToolbars();
+            KTMenu.init();
             KTMenu.init();
         });
     }
@@ -42,6 +54,7 @@ var KTCustomersList = function () {
         });
     }
 
+    var handleAlterActiveStatusRow = () => {
     var handleAlterActiveStatusRow = () => {
         const deleteButtons = table.querySelectorAll('[data-kt-customer-table-filter="delete_row"]');
 
@@ -63,6 +76,7 @@ var KTCustomersList = function () {
 
 
                 Swal.fire({
+                    text: customerName + " isimli bildirimi " + activeStatus + " yapmak istediğinizden emin misiniz?",
                     text: customerName + " isimli bildirimi " + activeStatus + " yapmak istediğinizden emin misiniz?",
                     icon: "warning",
                     showCancelButton: true,
@@ -101,7 +115,9 @@ var KTCustomersList = function () {
 
     var initToggleToolbar = () => {
 
+
         const checkboxes = table.querySelectorAll('[type="checkbox"]');
+        const deactivateSelected = document.querySelector('[data-kt-customer-table-select="delete_selected"]');
         const deactivateSelected = document.querySelector('[data-kt-customer-table-select="delete_selected"]');
 
         checkboxes.forEach(c => {
@@ -136,11 +152,38 @@ var KTCustomersList = function () {
                 return;
             }
 
+        deactivateSelected.addEventListener('click', function () {
+            const selectedCheckboxes = table.querySelectorAll('tbody [type="checkbox"]:checked');
+            const selectedIds = [];
+
+            selectedCheckboxes.forEach(c => {
+                const row = c.closest('tr');
+                const rowId = row.getAttribute('id');
+                if (rowId) {
+                    selectedIds.push(rowId);
+                }
+            });
+            if (selectedIds.length === 0) {
+                Swal.fire({
+                    text: "Lütfen en az bir bildirim seçin.",
+                    icon: "warning",
+                    buttonsStyling: false,
+                    confirmButtonText: "Tamam, anladım!",
+                    customClass: {
+                        confirmButton: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+
             Swal.fire({
+                text: "Seçilen bildirimleri pasif yapmak istediğinizden emin misiniz?",
                 text: "Seçilen bildirimleri pasif yapmak istediğinizden emin misiniz?",
                 icon: "warning",
                 showCancelButton: true,
                 buttonsStyling: false,
+                confirmButtonText: "Evet, pasif yap!",
+                cancelButtonText: "Hayır, iptal et",
                 confirmButtonText: "Evet, pasif yap!",
                 cancelButtonText: "Hayır, iptal et",
                 customClass: {
@@ -159,15 +202,28 @@ var KTCustomersList = function () {
                             const headerCheckbox = table.querySelector('[type="checkbox"]');
                             headerCheckbox.checked = false;
                             toggleToolbars();
+                    sendAlterRequest(
+                        { 'ids[]': selectedIds },
+                        "Seçilen bilidirimler başarıyla pasif hale getirildi.",
+                        function () {
+                            selectedCheckboxes.forEach(c => {
+                                datatable.row($(c.closest('tr'))).remove().draw();
+                            });
+                            const headerCheckbox = table.querySelector('[type="checkbox"]');
+                            headerCheckbox.checked = false;
+                            toggleToolbars();
                         }
+                    );
                     );
                 }
             });
         });
 
+
     }
 
     const toggleToolbars = () => {
+
 
         const toolbarBase = document.querySelector('[data-kt-customer-table-toolbar="base"]');
         const toolbarSelected = document.querySelector('[data-kt-customer-table-toolbar="selected"]');
@@ -254,6 +310,7 @@ var KTCustomersList = function () {
             initCustomerList();
             initToggleToolbar();
             handleSearchDatatable();
+            handleAlterActiveStatusRow();
             handleAlterActiveStatusRow();
         }
     }
