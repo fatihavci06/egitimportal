@@ -14,7 +14,7 @@ $lessons = new Classes();
 
 $dateFormat = new DateFormat();
 
-$getLessonsContent = $lessons->getMainSchoolContentListDashboard();
+$getLessonsContent = $lessons->getMainSchoolContentListDashboard($_SESSION['class_id']);
 
 $getLessons = $lessons->getMainSchoolLessonListDashboard();
 
@@ -89,7 +89,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                         foreach ($getLessonsContent as $value) {
 
                                             echo '<div class="position-relative" style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; min-width: 180px; ">';
-                                            echo '<p class="mb-0"><img class="img-fluid" src="assets/media/units/uniteDefault.jpg"></p>';
+                                            echo '<p class="mb-0"><a style="font-family: Comic Relief, system-ui; color: #2b8c01 !important;" href="ana-okulu-icerikler-detay.php?id=' . $value['id'] . '"><img class="img-fluid" src="assets/media/units/uniteDefault.jpg"></a></p>';
                                             echo '<div class="mt-3"><span class="text-gray-600 fw-bold fs-6"><a style="font-family: Comic Relief, system-ui; color: #2b8c01 !important;" href="ana-okulu-icerikler-detay.php?id=' . $value['id'] . '">' . $value['subject'] . '</a></span></div>';
                                             echo '</div>';
                                         } ?>
