@@ -71,7 +71,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
                                 <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <!--begin::Careers - List-->
-                                    <div class="card" >
+                                    <div class="card">
                                         <!--begin::Body-->
                                         <div class="card-body p-lg-7">
                                             <!--begin::Hero-->
@@ -81,9 +81,9 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
                                             <div class="row align-items-center mb-3" style="">
                                                 <div class="col-2 d-flex ">
                                                     <h5 class="fs-2x text-gray-900 mb-0 text-center" style="font-size:15px!important;margin-left:0px;">
-														Dersler
+                                                        Dersler
 
-													</h5>
+                                                    </h5>
                                                 </div>
                                                 <div class="col-10 d-flex justify-content-center">
 
@@ -99,9 +99,9 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
                                                                     <div class="col-12 mb-1 text-center">
                                                                         <a href="ders/<?= urlencode($l['slug']) ?>">
                                                                             <img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 65px; height: 65px; object-fit: contain;" />
-                                                                        
-                                                                        <div class="mt-1"><?= htmlspecialchars($l['name']) ?></div>
-                                                                    </a>
+
+                                                                            <div class="mt-1"><?= htmlspecialchars($l['name']) ?></div>
+                                                                        </a>
                                                                     </div>
                                                                 <?php endif; ?>
                                                             <?php endforeach; ?>
@@ -117,9 +117,9 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
                                                             if (!empty($testData)) {
                                                                 foreach ($testData as $test) {
                                                                     $testLink = 'ogrenci-test-coz.php?id=' . urlencode($test['id']);
-                                                                    $testTitle = htmlspecialchars($test['test_title']);
+                                                                    $testTitle = htmlspecialchars($test['test_title'] ?? '', ENT_QUOTES, 'UTF-8');
                                                                     $testSubtitle = "N Harfi"; // İsteğe göre değiştirilebilir
-                                                                    $testImage = '' . htmlspecialchars($test['cover_img']); // Güvenlik için htmlspecialchars
+                                                                    $testImage = htmlspecialchars($test['cover_img'] ?? '', ENT_QUOTES, 'UTF-8') ?: 'uploads/test/image.jpg'; // Varsayılan kapak resmi
                                                             ?>
                                                                     <!--begin::Col-->
                                                                     <div class="col-md-6 col-xl-4 mb-4">
