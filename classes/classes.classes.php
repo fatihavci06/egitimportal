@@ -1029,6 +1029,21 @@ WHERE t.id = :id";
 
 		return $classData;
 	}
+	
+	public function getMainSchoolGamesListDashboard($class_id)
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM games_lnp WHERE class_id =? ORDER BY RAND() LIMIT 3');
+
+		if (!$stmt->execute(array($class_id))) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
 
 	public function getMainSchoolLessonListDashboard()
 	{
