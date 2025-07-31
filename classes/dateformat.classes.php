@@ -107,4 +107,37 @@ class DateFormat
 
         return $result ? implode(', ', $result) : '0 saniye';
     }
+
+
+        public function timeDifferenceRe($now, $created_at)
+    {
+        $createTime = new DateTime($created_at);
+        $difference = $createTime->diff($now);
+
+        $yil = $difference->y;
+        $ay = $difference->m;
+        $gun = $difference->d;
+        $saat = $difference->h;
+        $dakika = $difference->i;
+        $saniye = $difference->s;
+
+        $result = '';
+        if ($yil > 0) {
+            $result .= $yil . ' yıl ';
+        }
+        if ($ay > 0) {
+            $result .= $ay . ' ay ';
+        }
+        if ($gun > 0) {
+            $result .= $gun . ' gün ';
+        }
+        if ($saat > 0) {
+            $result .= $saat . ' saat ';
+        }
+
+
+        $result .= 'önce';
+
+        return $result;
+    }
 }
