@@ -148,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $stmtSubtopics = null;
 
         // --- Ödevleri Getirme ---
-        $homeworkSql = 'SELECT id AS homeworkId, title AS homeworkTitle, start_date AS homeworkStartDate, end_date AS homeworkEndDate FROM homework_content_lnp WHERE class_id = ?';
+        $homeworkSql = 'SELECT id AS homeworkId, title AS homeworkTitle, start_date AS homeworkStartDate, end_date AS homeworkEndDate,slug FROM homework_content_lnp WHERE class_id = ?';
         $homeworkParams = [$classId];
 
         if (!empty($lessonId)) {
@@ -173,7 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             $homeworks = $stmtHomework->fetchAll(PDO::FETCH_ASSOC);
             foreach ($homeworks as $homework) {
                 $events[] = [
-                    'slug' => 'homework-' . $homework['homeworkId'], // Ödevler için benzersiz bir slug oluşturun
+                    'slug' => $homework['slug'], // Ödevler için benzersiz bir slug oluşturun
                     'name' => $homework['homeworkTitle'],
                     'start' => $homework['homeworkStartDate'],
                     'end' => $homework['homeworkEndDate'],

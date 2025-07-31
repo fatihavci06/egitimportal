@@ -627,11 +627,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         },
                         dataType: 'json',
                         success: function(response) {
+                            console.log(response);
+
                             var $lessonSelect = $('#lesson_id');
                             $('#option_count').val(response.data.optionCount);
                             $lessonSelect.empty();
                             $lessonSelect.append('<option value="">Ders seçiniz</option>');
-                            $.each(response.data.lessons, function(index, lesson) {
+                            $.each(response.data, function(index, lesson) {
                                 $lessonSelect.append($('<option>', {
                                     value: lesson.id,
                                     text: lesson.name,
