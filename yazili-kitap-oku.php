@@ -57,14 +57,14 @@ ini_set('display_errors', '1');
 					        <?php include_once "views/toolbar.php"; ?>
                         <!--end::Toolbar-->
                         <!--begin::Content-->
-                        <div id="kt_app_content" class="app-content flex-column-fluid">
+							<div id="kt_app_content" class="app-content flex-column-fluid">
 								<!--begin::Content container-->
 								<div id="kt_app_content_container" class="app-container container-fluid">
 									<!--begin::Careers - List-->
-									<div class="card">
+									<div class="card" style="margin-left: -15px;">
 										<!--begin::Body-->
-										<div class="card-body p-lg-10">
-											<!--begin::Hero-->
+										<div class="card-body p-lg-7">
+
 												<?php $book->getHeaderImageInWrittenBookStu(); ?>
 											<!--end::-->
 											<!--begin::Layout-->
