@@ -126,7 +126,7 @@ class AddUser extends Dbh
 		$stmt2 = null;
 	}
 
-	public function setParent($kullanici_ad, $kullanici_soyad, $username, $password2)
+	public function setParent($kullanici_ad, $kullanici_soyad, $username, $password2, $parentRole)
 	{
 
 		$stmt2 = $this->connect()->prepare('SELECT id FROM users_lnp ORDER BY id DESC LIMIT 1');
@@ -142,7 +142,7 @@ class AddUser extends Dbh
 
 		$stmt = $this->connect()->prepare('INSERT INTO users_lnp SET name = ?, surname = ?, username = ?, password = ?, role = ?, active = ?, child_id=?');
 
-		if (!$stmt->execute([$kullanici_ad, $kullanici_soyad, $username, $password2, "5", "1", $lastId])) {
+		if (!$stmt->execute([$kullanici_ad, $kullanici_soyad, $username, $password2, $parentRole, "1", $lastId])) {
 			$stmt = null;
 			//header("location: ../admin.php?error=stmtfailed");
 			exit();

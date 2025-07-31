@@ -62,9 +62,9 @@ ini_set('display_errors', '1');
 								<!--begin::Content container-->
 								<div id="kt_app_content_container" class="app-container container-fluid">
 									<!--begin::Careers - List-->
-									<div class="card" style="margin-left: -15px;">
+                                    <div class="card" style="margin-left: -15px; border:0px !important;box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.00);">
 										<!--begin::Body-->
-										<div class="card-body ">
+                                        <div class="card-body row p-lg-7" style="padding: 2rem 1.25rem;    padding-right: 0.5rem;">
 
 												<?php $book->getHeaderImageInWrittenBookStu(); ?>
 											<!--end::-->

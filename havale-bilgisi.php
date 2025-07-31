@@ -97,8 +97,10 @@ $birth_day = $_SESSION['birth_day'];
 $class = $_SESSION['classes'];
 if($class == 10 OR $class == 11 OR $class == 12) {
     $role = 10002;
+    $parentRole = 10005;
 } else {
     $role = 2;
+    $parentRole = 5;
 }
 
 $classes = new Classes();
@@ -139,7 +141,7 @@ $kisiekle = new AddUser();
 
 $gonder = $kisiekle->setStudentMoneyTransfer($firstName, $lastName, $username, $kullanici_tckn, $gender, $birth_dayDb, $kullanici_mail, $class, $pack, $password, $kullanici_gsm, $kullanici_adresiyaz, $district, $postcode, $kullanici_il, $role);
 
-$gonderVeli = $kisiekle->setParent($veli_ad, $veli_soyad, $username2, $password2);
+$gonderVeli = $kisiekle->setParent($veli_ad, $veli_soyad, $username2, $password2, $parentRole);
 
 $gonderHavale = $kisiekle->setWaitingMoneyTransfer($kullanici_tckn, $pack, $price, $siparis_no, $kupon_kodu, $vatAmount, $vat);
 

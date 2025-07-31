@@ -63026,3 +63026,7 @@ body,
 .dashLand #kt_app_toolbar{
   display: none !important;
 }
+
+#embededGame{
+  max-width: 100% !important;
+}

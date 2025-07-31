@@ -77,19 +77,19 @@ if (empty($userInfo['photo'])) {
                     ?>
                 </div>
 
-                <div class="d-flex flex-wrap fw-semibold fs-6 mb-4 pe-2 mt-3 mb-2">
+                <div class="d-flex flex-wrap  flex-column flex-md-row fw-semibold fs-6 mb-4 pe-2 mt-3 mb-2">
 
-                    <div class="d-flex justify-content-end " data-kt-customer-table-toolbar="base">
+                    <div class="d-flex justify-content-end mb-5" data-kt-customer-table-toolbar="base">
                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
                             data-bs-target="#kt_modal_update_customer">Bilgilerimi
                             Güncelle</button>
                     </div>
-                    <div class="d-flex justify-content-end ms-8" data-kt-customer-table-toolbar="base">
+                    <div class="d-flex justify-content-end ms-8 mb-5" data-kt-customer-table-toolbar="base">
                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
                             data-bs-target="#kt_modal_update_password">Şifremi
                             Güncelle</button>
                     </div>
-                    <div class="d-flex justify-content-end ms-8" data-kt-customer-table-toolbar="base">
+                    <div class="d-flex justify-content-end ms-8 mb-5" data-kt-customer-table-toolbar="base">
                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
                             data-bs-target="#kt_modal_update_email">E-Posta'mı
                             Değiştir</button>

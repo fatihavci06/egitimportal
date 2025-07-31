@@ -56,16 +56,16 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2 or $_SESSION['role'] == 
                                 <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <!--begin::Careers - List-->
-                                    <div class="card" style="margin-left: -15px;">
+                                    <div class="card" style="margin-left: -15px; border:0px !important;box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.00);">
                                         <!--begin::Body-->
-                                        <div class="card-body p-lg-7">
+                                        <div class="card-body row p-lg-7" style="padding: 2rem 1.25rem;    padding-right: 0.5rem;">
                                             <?php $games->getHeaderImageStu(); ?>
 
-											<div class="d-flex flex-column flex-lg-row mb-10">
+											<div class="d-flex flex-column flex-wrap flex-lg-row mb-10">
 												<!--begin::Content-->
-												<div class="flex-lg-row-fluid row">
+												<!-- <div class="flex-lg-row-fluid row"> -->
 													<?php $games->getGamesListStudent($_SESSION['class_id']); ?>
-												</div>
+												<!-- </div> -->
 												<!--end::Content-->
 											</div>
 											<!--end::Layout-->
