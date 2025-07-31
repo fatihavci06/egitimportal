@@ -1,7 +1,7 @@
 
 
 function handleDelete({ id, url, reload = true, customSuccess, customError }) {
-   
+   console.log("handleDelete called with id:", id, "url:", url);
     Swal.fire({
         title: "Emin misiniz?",
         text: "Bu işlem geri alınamaz!",

@@ -346,7 +346,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <!--end::Vendors Javascript-->
         <!--begin::Custom Javascript(used for this page only)-->
         <script src="assets/js/custom/apps/class/list/export.js"></script>
-        <script src="assets/js/custom/apps/class/list/list.js"></script>
+        <!-- <script src="assets/js/custom/apps/class/list/list.js"></script> -->
         <script src="assets/js/custom/apps/class/add_week.js"></script>
         <script src="assets/js/widgets.bundle.js"></script>
         <script src="assets/js/custom/widgets.js"></script>
