@@ -22,6 +22,25 @@ class Menus extends Dbh
 		return $menuData;
 	}
 
+	protected function getTopMenuPreschoolList()
+	{
+
+
+		//$stmt = $this->connect()->prepare('SELECT menus_lnp.name AS menuName, menus_lnp.slug AS menuSlug, menus_lnp.role AS menuRole, menus_lnp.parent AS menuParent, menusparent_lnp.name AS accordionName, menusparent_lnp.accordion AS accordionNo, menusparent_lnp.classes AS accordionClasses FROM menusparent_lnp INNER JOIN menus_lnp ON menusparent_lnp.accordion = menus_lnp.parent');
+
+		//$stmt = $this->connect()->prepare('SELECT name, slug, role, parent, accordion, classes FROM menus_lnp');
+		$stmt = $this->connect()->prepare('SELECT name, classes, role, parent, accordion, slug, has_child FROM menusparent_lnp ORDER BY order_no ASC');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$menuData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $menuData;
+	}
+
 	protected function getTopMenuNumber()
 	{
 		$stmt = $this->connect()->prepare('SELECT accordion FROM menusparent_lnp ORDER BY accordion DESC LIMIT 1');
