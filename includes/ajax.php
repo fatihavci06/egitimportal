@@ -923,6 +923,8 @@ switch ($service) {
             $whereClauses[] = 'main_school_class_id = :main_school_class_id';
             $params[':main_school_class_id'] = $main_school_class_id;
         }
+        $whereClauses[] = 'status = :isactive'; // Aktif olanları filtrele
+        $params[':isactive'] = 1;
 
         // WHERE cümlesi oluştur
         $whereSQL = '';
