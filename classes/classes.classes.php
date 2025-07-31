@@ -31,7 +31,7 @@ class Classes extends Dbh
 
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
-
+	
 
 	public function getLessonsList($search_class_id)
 	{

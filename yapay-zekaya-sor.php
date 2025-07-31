@@ -133,7 +133,7 @@ if (isset($_SESSION['role'])) {
                                                 <?php if ($_SESSION['role'] == 10002): foreach ($lessons as $l): ?>
                                                         <?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
                                                             <div class="col-6 col-md-12 text-center">
-                                                                <a href="#" class="text-decoration-none text-dark d-block">
+                                                                <a href="ana-okulu-icerikler" class="text-decoration-none text-dark d-block">
                                                                     <img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>"
                                                                         alt="<?= htmlspecialchars($l['name']) ?>"
                                                                         class="img-fluid"
