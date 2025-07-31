@@ -1084,9 +1084,6 @@ class ShowWrittenBookStudent extends WrittenBookStudent
             $audioBookList = '
                     <!--begin::Description-->
                     <div class="m-0">
-                        <!--begin::Title-->
-                        <h4 class="fs-1 text-gray-800 w-bolder mb-6">Oyun İçeriği</h4>
-                        <!--end::Title-->
                         <!--begin::Text-->
                         <p class="fw-semibold fs-4 text-gray-600 mb-2">' . $value['game_url'] . '</p>
                         <!--end::Text-->

@@ -22,7 +22,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
     $audioBookDb = new AudioBooks();
 
-    $audioBook_slug = isset($_GET['q']) ? filter_var($_GET['q'], FILTER_SANITIZE_STRING) : '';
+    $audioBook_slug = isset($_GET['q']) ? htmlspecialchars(strip_tags($_GET['q'])) : '';
 
     $currentBook = $audioBookDb->getOneAudioBook($audioBook_slug);
     ?>
@@ -69,16 +69,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
                         <!--begin::Content wrapper-->
                         <div class="d-flex flex-column flex-column-fluid">
-                            <!--begin::Toolbar-->
-                            <?php include_once "views/toolbar.php"; ?>
-                            <!--end::Toolbar-->
                             <!--begin::Content-->
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
-                                    <!--begin::Card-->
-                                    <div class="card">
-                                        <div class="card-body pt-0">
+                                    <!--begin::Careers - List-->
+                                    <div class="card" style="margin-left: -15px;">
+                                        <div class="card-body p-lg-7">
+                                            <?php $audioBookObj->getHeaderImageForOne(); ?>
                                             <table class="table align-middle table-row-dashed fs-6 gy-5"
                                                 id="kt_customers_table">
                                                 <thead>
@@ -216,7 +214,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                                         <input type="text" id="iframe"
                                                             class="form-control form-control-solid"
-                                                            value="<?php echo  htmlspecialchars($currentBook['book_url']); ?>"
+                                                            value="<?php echo htmlspecialchars($currentBook['book_url']); ?>"
                                                             placeholder="iframe Kodunu Yazın" name="iframe" />
                                                     </div>
 
