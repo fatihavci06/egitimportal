@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $weeklyFilterClause = ' AND (start_date <= ? AND end_date >= ?)';
     $weeklyFilterParams = [$sunday, $monday];
 
-    try {
+    // try {
         // --- Üniteleri Getirme ---
         $unitSql = 'SELECT id AS unitId, slug AS unitSlug, name AS unitName, start_date AS unitStartDate, end_date AS unitEndDate FROM units_lnp WHERE class_id = ?';
         $unitParams = [$classId];
@@ -184,6 +184,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         }
         $stmtHomework = null;
 
+        
+
 
         // Tekrarlayan girişleri önlemek için benzersizleştirme
         $uniqueEvents = [];
@@ -195,15 +197,53 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         }
         $events = array_values($uniqueEvents);
 
+                // --- Test Verilerini Getirme ---
+        $testSql = 'SELECT id, test_title, start_date AS testStartDate, end_date AS testEndDate FROM tests_lnp WHERE class_id = ?';
+        $testParams = [$classId];
+
+        if (!empty($lessonId)) {
+            $testSql .= ' AND lesson_id = ?';
+            $testParams[] = $lessonId;
+        }
+        if (!empty($unitId)) {
+            $testSql .= ' AND unit_id = ?';
+            $testParams[] = $unitId;
+        }
+        if (!empty($topicId)) {
+            $testSql .= ' AND topic_id = ?';
+            $testParams[] = $topicId;
+        }
+        // Haftalık filtreyi ekle (başlangıç <= pazar && bitiş >= pazartesi)
+        $testSql .= $weeklyFilterClause;
+        $testParams = array_merge($testParams, $weeklyFilterParams);
+
+        $stmtTests = $pdo->prepare($testSql);
+        if (!$stmtTests->execute($testParams)) {
+            error_log("Failed to fetch tests. SQL: " . $testSql . " Params: " . implode(', ', $testParams));
+        } else {
+            $tests = $stmtTests->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($tests as $test) {
+                $testData[] = [
+                    'id' => $test['id'],
+                    'name' => $test['test_title'],
+                    'start_date' => $test['testStartDate'],
+                    'end_date' => $test['testEndDate'],
+                    'allDay' => true,
+                    'type' => 'test'
+                ];
+            }
+        }
+        $stmtTests = null;
+
 
         // Başarı yanıtı
         echo json_encode(['status' => 'success', 'data' => $events, 'testData' => $testData]);
 
-    } catch (Exception $e) {
-        error_log("Veritabanı hatası: " . $e->getMessage());
-        echo json_encode(['status' => 'error', 'message' => 'Veri alınamadı.']);
-        exit();
-    }
+    // } catch (Exception $e) {
+    //     error_log("Veritabanı hatası: " . $e->getMessage());
+    //     echo json_encode(['status' => 'error', 'message' => 'Veri alınamadı.']);
+    //     exit();
+    // }
 } else {
     // POST dışındaki istekleri reddet
     echo json_encode(['status' => 'error', 'message' => 'Geçersiz istek metodu.']);

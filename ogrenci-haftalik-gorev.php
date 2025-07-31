@@ -551,7 +551,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] ==
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <div>
                         <i class="fas fa-vial text-danger me-2"></i>
-                        <strong style="font-size: 1.3rem;">${test.test_title}</strong>
+                        <strong style="font-size: 1.3rem;">${test.name}</strong>
                     </div>
                     <a href="ogrenci-test-coz.php?id=${test.id}" target="_blank" class="btn btn-success btn-sm">
                         Sınava Gir
