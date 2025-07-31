@@ -6,8 +6,6 @@ define('GUARD', true);
 if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001 or $_SESSION['role'] == 10002)) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
-    $unit = new Classes();
-    $unitList = $unit->getMainSchoolUnitByClassId($_SESSION['class_id']);
 
     include_once "views/pages-head.php";
 ?>
@@ -193,7 +191,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <i class="fas fa-bullseye fa-2x text-white"></i>
                                                     </div>
 
-                                                    <h1 class="fs-3 fw-bold text-dark mb-0">İngilizce Üniteler</h1>
+                                                    <h1 class="fs-3 fw-bold text-dark mb-0">İngilizce</h1>
                                                 </div>
 
                                             </header>
@@ -328,28 +326,15 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </div>
                                         </div> -->
                                     </div>
-                                    <div class="row container-fluid">
-                                        <?php foreach ($unitList as $u): ?>
-                                            <div class="col-12" style=" font-size:12px!important">
-                                                <a href="ana-okulu-icerikler_konu?id=<?=$u['id']?>" class="text-decoration-none">
-                                                    <div class="border rounded d-flex align-items-center p-2"
-                                                        style="border: 2px solid #333; box-shadow: 0 2px 6px rgba(0,0,0,0.15); justify-content: flex-start;">
-                                                        <button type="button" class="btn btn-light btn-sm me-3">
-                                                            <i style="font-size:20px!important" class="bi bi-play-fill"></i>
-                                                        </button>
-                                                        <div>
-                                                            <div class="fw-semibold fs-5" style="font-size:12px!important; color: #000;">
-                                                                <?= htmlspecialchars($u['unit_name']) ?>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </div>
-                                        <?php endforeach; ?>
+
+                                    <div class="row container-fluid mt-3">
+                                        <table id="myTable" class="table align-middle table-row-dashed fs-6 gy-5">
+                                            <thead>
+
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
                                     </div>
-
-
-
 
 
                                 </div>
@@ -388,223 +373,223 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/js/custom/utilities/modals/create-app.js"></script>
         <script src="assets/js/custom/utilities/modals/users-search.js"></script>
         <script>
-            // $(document).ready(function() {
+            $(document).ready(function() {
 
-            //     // Sayfa yüklendiğinde tabloyu dolduran fonksiyon
-            //     function loadInitialTableData() {
-            //         var lessonId = $('#lesson_id option:eq(1)').val() || null;
+                // Sayfa yüklendiğinde tabloyu dolduran fonksiyon
+                function loadInitialTableData() {
+                    var lessonId = $('#lesson_id option:eq(1)').val() || null;
 
-            //         const data = {
-            //             month: $('#month').val(),
-            //             week: $('#week').val(),
-            //             activity_title: $('#activity_title').val(),
-            //             content_title: $('#content_title').val(),
-            //             concept_title: $('#concept_title').val(),
-            //             main_school_class_id: $('#main_school_class_id').val(),
-            //             lesson_id: lessonId,
-            //             unit_id: $('#unit_id').val(),
-            //             topic_id: $('#topic_id').val()
-            //         };
+                    const data = {
+                        month: $('#month').val(),
+                        week: $('#week').val(),
+                        activity_title: $('#activity_title').val(),
+                        content_title: $('#content_title').val(),
+                        concept_title: $('#concept_title').val(),
+                        main_school_class_id: $('#main_school_class_id').val(),
+                        lesson_id: lessonId,
+                        unit_id: $('#unit_id').val(),
+                        topic_id: $('#topic_id').val()
+                    };
 
-            //         $.ajax({
-            //             url: 'includes/ajax.php?service=filter-main-school-content',
-            //             method: 'POST',
-            //             data: data,
-            //             dataType: 'json',
-            //             success: function(response) {
-            //                 if (response.status === 'success' && Array.isArray(response.data)) {
+                    $.ajax({
+                        url: 'includes/ajax.php?service=filter-main-school-content',
+                        method: 'POST',
+                        data: data,
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.status === 'success' && Array.isArray(response.data)) {
 
-            //                     if ($.fn.DataTable.isDataTable('#myTable')) {
-            //                         $('#myTable').DataTable().clear().destroy();
-            //                     }
+                                if ($.fn.DataTable.isDataTable('#myTable')) {
+                                    $('#myTable').DataTable().clear().destroy();
+                                }
 
-            //                     $('#myTable').DataTable({
-            //                         data: response.data,
-            //                         columns: [{
-            //                             data: 'subject',
-            //                             title: 'Konu',
-            //                             render: function(data, type, row) {
-            //                                 // row.slug varsa kullan, yoksa default url
-            //                                 var urlSlug = row.slug || 'ana-okulu-icerikler-detay.php?id=' + row.id;
-            //                                 var subjectName = data;
+                                $('#myTable').DataTable({
+                                    data: response.data,
+                                    columns: [{
+                                        data: 'subject',
+                                        title: 'Konu',
+                                        render: function(data, type, row) {
+                                            // row.slug varsa kullan, yoksa default url
+                                            var urlSlug = row.slug || 'ana-okulu-icerikler-detay.php?id=' + row.id;
+                                            var subjectName = data;
 
-            //                                 return `
-            //                                                 <div class="col-12" style="margin-bottom: -20px; font-size:12px!important;">
-            //                                                     <a href="${urlSlug}" class="text-decoration-none">
-            //                                                         <div class="border rounded d-flex align-items-center p-2" 
-            //                                                             style="border: 2px solid #333; box-shadow: 0 2px 6px rgba(0,0,0,0.15); justify-content: flex-start;">
-            //                                                             <button type="button" class="btn btn-light btn-sm me-3">
-            //                                                                 <i style="font-size:20px!important" class="bi bi-play-fill"></i>
-            //                                                             </button>
-            //                                                             <div>
-            //                                                                 <div class="fw-semibold fs-5" style="font-size:12px!important; color: #000;">${subjectName}</div>
-            //                                                                 <div style="font-size:10px; color: #666;">${row.month}</div>  <!-- Buraya ay bilgisi -->
-            //                                                             </div>
-            //                                                         </div>
-            //                                                     </a>
-            //                                                 </div>`;
-            //                             }
-            //                         }]
-            //                     });
+                                            return `
+                                                            <div class="col-12" style="margin-bottom: -20px; font-size:12px!important;">
+                                                                <a href="${urlSlug}" class="text-decoration-none">
+                                                                    <div class="border rounded d-flex align-items-center p-2" 
+                                                                        style="border: 2px solid #333; box-shadow: 0 2px 6px rgba(0,0,0,0.15); justify-content: flex-start;">
+                                                                        <button type="button" class="btn btn-light btn-sm me-3">
+                                                                            <i style="font-size:20px!important" class="bi bi-play-fill"></i>
+                                                                        </button>
+                                                                        <div>
+                                                                            <div class="fw-semibold fs-5" style="font-size:12px!important; color: #000;">${subjectName}</div>
+                                                                            <div style="font-size:10px; color: #666;">${row.month}</div>  <!-- Buraya ay bilgisi -->
+                                                                        </div>
+                                                                    </div>
+                                                                </a>
+                                                            </div>`;
+                                        }
+                                    }]
+                                });
 
 
-            //                     $('#lesson_id option:eq(1)').prop('selected', true).trigger('change');
+                                $('#lesson_id option:eq(1)').prop('selected', true).trigger('change');
 
-            //                 } else {
-            //                     alert("Veri boş geldi veya status success değil.");
-            //                 }
-            //             },
-            //             error: function(err) {
-            //                 console.error("Hata:", err);
-            //             }
-            //         });
-            //     }
+                            } else {
+                                alert("Veri boş geldi veya status success değil.");
+                            }
+                        },
+                        error: function(err) {
+                            console.error("Hata:", err);
+                        }
+                    });
+                }
 
-            //     // Sayfa yüklenince tabloyu doldur
-            //     loadInitialTableData();
+                // Sayfa yüklenince tabloyu doldur
+                loadInitialTableData();
 
-            //     $('#lesson_id').on('change', function() {
-            //         var selectedLessonId = $(this).val();
+                $('#lesson_id').on('change', function() {
+                    var selectedLessonId = $(this).val();
 
-            //         $.ajax({
-            //             url: 'includes/ajax.php?service=mainSchoolGetUnits',
-            //             type: 'POST',
-            //             data: {
-            //                 class_id: $('#main_school_class_id').val(),
-            //                 lesson_id: selectedLessonId
-            //             },
-            //             dataType: 'json',
-            //             success: function(response) {
-            //                 if (response.status === 'success') {
-            //                     var unitSelect = $('#unit_id');
-            //                     unitSelect.empty();
+                    $.ajax({
+                        url: 'includes/ajax.php?service=mainSchoolGetUnits',
+                        type: 'POST',
+                        data: {
+                            class_id: $('#main_school_class_id').val(),
+                            lesson_id: selectedLessonId
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                var unitSelect = $('#unit_id');
+                                unitSelect.empty();
 
-            //                     if (response.data.length > 0) {
-            //                         unitSelect.append('<option selected disabled>Ünite Seçiniz...</option>');
+                                if (response.data.length > 0) {
+                                    unitSelect.append('<option selected disabled>Ünite Seçiniz...</option>');
 
-            //                         $.each(response.data, function(index, lesson) {
-            //                             unitSelect.append(
-            //                                 $('<option></option>')
-            //                                 .val(lesson.id)
-            //                                 .text(lesson.name)
-            //                             );
-            //                         });
-            //                     } else {
-            //                         unitSelect.append('<option disabled>Bu sınıfa ait ders bulunamadı.</option>');
-            //                     }
-            //                 }
-            //             },
-            //             error: function() {
-            //                 alert('Sunucu ile iletişimde hata oluştu!');
-            //             }
-            //         });
-            //     });
+                                    $.each(response.data, function(index, lesson) {
+                                        unitSelect.append(
+                                            $('<option></option>')
+                                            .val(lesson.id)
+                                            .text(lesson.name)
+                                        );
+                                    });
+                                } else {
+                                    unitSelect.append('<option disabled>Bu sınıfa ait ders bulunamadı.</option>');
+                                }
+                            }
+                        },
+                        error: function() {
+                            alert('Sunucu ile iletişimde hata oluştu!');
+                        }
+                    });
+                });
 
-            //     $('#unit_id').on('change', function() {
-            //         var selectedUnitId = $(this).val();
+                $('#unit_id').on('change', function() {
+                    var selectedUnitId = $(this).val();
 
-            //         $.ajax({
-            //             url: 'includes/ajax.php?service=mainSchoolGetTopics',
-            //             type: 'POST',
-            //             data: {
-            //                 unit_id: selectedUnitId
-            //             },
-            //             dataType: 'json',
-            //             success: function(response) {
-            //                 if (response.status === 'success') {
-            //                     var topicSelect = $('#topic_id');
-            //                     topicSelect.empty();
+                    $.ajax({
+                        url: 'includes/ajax.php?service=mainSchoolGetTopics',
+                        type: 'POST',
+                        data: {
+                            unit_id: selectedUnitId
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                var topicSelect = $('#topic_id');
+                                topicSelect.empty();
 
-            //                     if (response.data.length > 0) {
-            //                         topicSelect.append('<option selected disabled>Konu Seçiniz...</option>');
+                                if (response.data.length > 0) {
+                                    topicSelect.append('<option selected disabled>Konu Seçiniz...</option>');
 
-            //                         $.each(response.data, function(index, topic) {
-            //                             topicSelect.append(
-            //                                 $('<option></option>')
-            //                                 .val(topic.id)
-            //                                 .text(topic.name)
-            //                             );
-            //                         });
-            //                     } else {
-            //                         topicSelect.append('<option disabled>Bu sınıfa ait ders bulunamadı.</option>');
-            //                     }
-            //                 }
-            //             },
-            //             error: function() {
-            //                 alert('Sunucu ile iletişimde hata oluştu!');
-            //             }
-            //         });
-            //     });
+                                    $.each(response.data, function(index, topic) {
+                                        topicSelect.append(
+                                            $('<option></option>')
+                                            .val(topic.id)
+                                            .text(topic.name)
+                                        );
+                                    });
+                                } else {
+                                    topicSelect.append('<option disabled>Bu sınıfa ait ders bulunamadı.</option>');
+                                }
+                            }
+                        },
+                        error: function() {
+                            alert('Sunucu ile iletişimde hata oluştu!');
+                        }
+                    });
+                });
 
-            //     // Select2 başlatma
-            //     $('#week, #activity_title, #content_title, #concept_title').select2({
-            //         placeholder: "Seçiniz",
-            //         allowClear: true
-            //     });
+                // Select2 başlatma
+                $('#week, #activity_title, #content_title, #concept_title').select2({
+                    placeholder: "Seçiniz",
+                    allowClear: true
+                });
 
-            //     // Filtrele butonu
-            //     $('#filterBtn').on('click', function(e) {
-            //         e.preventDefault();
-            //         loadInitialTableData();
-            //     });
+                // Filtrele butonu
+                $('#filterBtn').on('click', function(e) {
+                    e.preventDefault();
+                    loadInitialTableData();
+                });
 
-            //     // Temizle butonu
-            //     $('#clearFilterBtn').on('click', function() {
-            //         $('#month').val('');
-            //         $('#week, #activity_title, #content_title, #concept_title, #main_school_class_id').val('').trigger('change');
-            //         $('#lesson_id').val('Seçiniz').trigger('change');
-            //         $('#unit_id').val('Seçiniz').trigger('change');
-            //         $('#topic_id').val('Seçiniz').trigger('change');
+                // Temizle butonu
+                $('#clearFilterBtn').on('click', function() {
+                    $('#month').val('');
+                    $('#week, #activity_title, #content_title, #concept_title, #main_school_class_id').val('').trigger('change');
+                    $('#lesson_id').val('Seçiniz').trigger('change');
+                    $('#unit_id').val('Seçiniz').trigger('change');
+                    $('#topic_id').val('Seçiniz').trigger('change');
 
-            //         if ($.fn.DataTable.isDataTable('#myTable')) {
-            //             $('#myTable').DataTable().clear().draw();
-            //         }
-            //     });
+                    if ($.fn.DataTable.isDataTable('#myTable')) {
+                        $('#myTable').DataTable().clear().draw();
+                    }
+                });
 
-            //     // Yaş grubu değiştiğinde dersleri getir
-            //     $('#main_school_class_id').on('change', function() {
-            //         var selectedClassId = $(this).val();
-            //         var lessonSelect = $('#lesson_id');
-            //         var unitSelect = $('#unit_id');
-            //         var topicSelect = $('#topic_id');
+                // Yaş grubu değiştiğinde dersleri getir
+                $('#main_school_class_id').on('change', function() {
+                    var selectedClassId = $(this).val();
+                    var lessonSelect = $('#lesson_id');
+                    var unitSelect = $('#unit_id');
+                    var topicSelect = $('#topic_id');
 
-            //         lessonSelect.empty();
-            //         unitSelect.empty();
-            //         topicSelect.empty();
+                    lessonSelect.empty();
+                    unitSelect.empty();
+                    topicSelect.empty();
 
-            //         lessonSelect.append('<option selected disabled>Seçiniz</option>');
-            //         unitSelect.append('<option selected disabled>Önce ders seçiniz...</option>');
-            //         topicSelect.append('<option selected disabled>Önce ünite seçiniz...</option>');
+                    lessonSelect.append('<option selected disabled>Seçiniz</option>');
+                    unitSelect.append('<option selected disabled>Önce ders seçiniz...</option>');
+                    topicSelect.append('<option selected disabled>Önce ünite seçiniz...</option>');
 
-            //         if (selectedClassId) {
-            //             $.ajax({
-            //                 url: 'includes/ajax.php?service=getMainSchoolLessonList',
-            //                 type: 'POST',
-            //                 data: {
-            //                     class_id: selectedClassId
-            //                 },
-            //                 dataType: 'json',
-            //                 success: function(response) {
-            //                     if (response.status === 'success' && response.data.length > 0) {
-            //                         $.each(response.data, function(index, lesson) {
-            //                             lessonSelect.append(
-            //                                 $('<option></option>')
-            //                                 .val(lesson.id)
-            //                                 .text(lesson.name)
-            //                             );
-            //                         });
-            //                     } else {
-            //                         lessonSelect.append('<option disabled>Bu yaş grubuna ait ders bulunamadı.</option>');
-            //                     }
-            //                 },
-            //                 error: function() {
-            //                     alert('Dersler yüklenirken bir hata oluştu!');
-            //                 }
-            //             });
-            //         }
-            //     });
+                    if (selectedClassId) {
+                        $.ajax({
+                            url: 'includes/ajax.php?service=getMainSchoolLessonList',
+                            type: 'POST',
+                            data: {
+                                class_id: selectedClassId
+                            },
+                            dataType: 'json',
+                            success: function(response) {
+                                if (response.status === 'success' && response.data.length > 0) {
+                                    $.each(response.data, function(index, lesson) {
+                                        lessonSelect.append(
+                                            $('<option></option>')
+                                            .val(lesson.id)
+                                            .text(lesson.name)
+                                        );
+                                    });
+                                } else {
+                                    lessonSelect.append('<option disabled>Bu yaş grubuna ait ders bulunamadı.</option>');
+                                }
+                            },
+                            error: function() {
+                                alert('Dersler yüklenirken bir hata oluştu!');
+                            }
+                        });
+                    }
+                });
 
-            // });
+            });
         </script>
 
     </body>

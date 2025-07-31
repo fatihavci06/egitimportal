@@ -2,35 +2,35 @@
 
 class Classes extends Dbh
 {
-public function getTestByTopicLessonUnit($class_id, $lesson_id = null, $unit_id = null, $topic_id = null)
-{
-	
-	$sql = 'SELECT * FROM tests_lnp WHERE class_id = ?';
-	$params = [$class_id];
+	public function getTestByTopicLessonUnit($class_id, $lesson_id = null, $unit_id = null, $topic_id = null)
+	{
 
-	if ($lesson_id !== null) {
-		$sql .= ' AND lesson_id = ?';
-		$params[] = $lesson_id;
-	} 
+		$sql = 'SELECT * FROM tests_lnp WHERE class_id = ?';
+		$params = [$class_id];
 
-	if ($unit_id !== null) {
-		$sql .= ' AND unit_id = ?';
-		$params[] = $unit_id;
-	} 
+		if ($lesson_id !== null) {
+			$sql .= ' AND lesson_id = ?';
+			$params[] = $lesson_id;
+		}
 
-	if ($topic_id !== null) {
-		$sql .= ' AND topic_id = ?';
-		$params[] = $topic_id;
-	} 
+		if ($unit_id !== null) {
+			$sql .= ' AND unit_id = ?';
+			$params[] = $unit_id;
+		}
 
-	$stmt = $this->connect()->prepare($sql);
-	if (!$stmt->execute($params)) {
-		$stmt = null;
-		exit();
+		if ($topic_id !== null) {
+			$sql .= ' AND topic_id = ?';
+			$params[] = $topic_id;
+		}
+
+		$stmt = $this->connect()->prepare($sql);
+		if (!$stmt->execute($params)) {
+			$stmt = null;
+			exit();
+		}
+
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
-	
-	return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
 
 
 	public function getLessonsList($search_class_id)
@@ -66,7 +66,7 @@ public function getTestByTopicLessonUnit($class_id, $lesson_id = null, $unit_id 
 
 		return $data;
 	}
-	
+
 	public function getTopicBySlug($slug)
 	{
 		$stmt = $this->connect()->prepare('SELECT * FROM topics_lnp WHERE slug = :slug LIMIT 1');
@@ -97,6 +97,32 @@ public function getTestByTopicLessonUnit($class_id, $lesson_id = null, $unit_id 
 	{
 		$stmt = $this->connect()->prepare('SELECT * FROM units_lnp WHERE slug = :slug LIMIT 1');
 		$stmt->bindParam(':slug', $slug, PDO::PARAM_STR);
+
+		if (!$stmt->execute()) {
+			$stmt = null;
+			exit();
+		}
+
+		$lesson = $stmt->fetch(PDO::FETCH_ASSOC);
+		return $lesson ?: null;
+	}
+	public function getMainSchoolUnitById($id)
+	{
+		$stmt = $this->connect()->prepare('SELECT * FROM main_school_units_lnp WHERE id = :id LIMIT 1');
+		$stmt->bindParam(':id', $id, PDO::PARAM_STR);
+
+		if (!$stmt->execute()) {
+			$stmt = null;
+			exit();
+		}
+
+		$lesson = $stmt->fetch(PDO::FETCH_ASSOC);
+		return $lesson ?: null;
+	}
+	public function getMainSchoolTopicById($id)
+	{
+		$stmt = $this->connect()->prepare('SELECT * FROM main_school_topics_lnp WHERE id = :id LIMIT 1');
+		$stmt->bindParam(':id', $id, PDO::PARAM_STR);
 
 		if (!$stmt->execute()) {
 			$stmt = null;
@@ -988,7 +1014,7 @@ WHERE t.id = :id";
 
 		return $classData;
 	}
-	
+
 	public function getMainSchoolContentListDashboard()
 	{
 
@@ -1003,7 +1029,7 @@ WHERE t.id = :id";
 
 		return $classData;
 	}
-	
+
 	public function getMainSchoolLessonListDashboard()
 	{
 
@@ -1049,6 +1075,59 @@ WHERE t.id = :id";
 
 		return $classData;
 	}
+	public function getMainSchoolUnitByClassId($class_id)
+	{
+		$stmt = $this->connect()->prepare('
+    SELECT 
+        mu.name AS unit_name, 
+        mu.id AS id, 
+        mu.unit_order
+    FROM main_school_units_lnp mu 
+    WHERE mu.class_id = :class_id 
+    ORDER BY mu.unit_order ASC
+');
+
+		if (!$stmt->execute(['class_id' => $class_id])) {
+			$stmt = null;
+			exit();
+		}
+
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
+	public function getMainSchoolTopicByUnitId($unit_id)
+	{
+		$stmt = $this->connect()->prepare('
+    SELECT * from main_school_topics_lnp where unit_id = :unit_id ORDER BY id ASC
+');
+
+		if (!$stmt->execute(['unit_id' => $unit_id])) {
+			$stmt = null;
+			exit();
+		}
+
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
+	public function getMainSchoolContentByUnitAndTopicId($unit_id, $topic_id)
+{
+    $stmt = $this->connect()->prepare('
+        SELECT * 
+        FROM main_school_content_lnp 
+        WHERE unit_id = :unit_id AND topic_id = :topic_id 
+        ORDER BY id ASC
+    ');
+
+    if (!$stmt->execute([
+        'unit_id' => $unit_id,
+        'topic_id' => $topic_id
+    ])) {
+        $stmt = null;
+        exit();
+    }
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
 	public function getClassId($userId)
 	{
 		$stmt = $this->connect()->prepare('

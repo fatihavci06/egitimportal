@@ -7,8 +7,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
     $unit = new Classes();
-    $unitList = $unit->getMainSchoolUnitByClassId($_SESSION['class_id']);
+    $topicList = $unit->getMainSchoolTopicByUnitId($_GET['id']);
+    $unitInfo = $unit->getMainSchoolUnitById($_GET['id']);
 
+   
     include_once "views/pages-head.php";
 ?>
     <style>
@@ -193,7 +195,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <i class="fas fa-bullseye fa-2x text-white"></i>
                                                     </div>
 
-                                                    <h1 class="fs-3 fw-bold text-dark mb-0">İngilizce Üniteler</h1>
+                                                    <h1 class="fs-3 fw-bold text-dark mb-0"><?= $unitInfo['name']?></h1>
                                                 </div>
 
                                             </header>
@@ -329,9 +331,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         </div> -->
                                     </div>
                                     <div class="row container-fluid">
-                                        <?php foreach ($unitList as $u): ?>
+                                        <?php foreach ($topicList as $u): ?>
                                             <div class="col-12" style=" font-size:12px!important">
-                                                <a href="ana-okulu-icerikler_konu?id=<?=$u['id']?>" class="text-decoration-none">
+                                                <a href="ana-okulu-icerikler_icerik?unit_id=<?=$u['unit_id']?>&topic_id=<?=$u['id']?>" class="text-decoration-none">
                                                     <div class="border rounded d-flex align-items-center p-2"
                                                         style="border: 2px solid #333; box-shadow: 0 2px 6px rgba(0,0,0,0.15); justify-content: flex-start;">
                                                         <button type="button" class="btn btn-light btn-sm me-3">
@@ -339,7 +341,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         </button>
                                                         <div>
                                                             <div class="fw-semibold fs-5" style="font-size:12px!important; color: #000;">
-                                                                <?= htmlspecialchars($u['unit_name']) ?>
+                                                                <?= htmlspecialchars($u['name']) ?>
                                                             </div>
                                                         </div>
                                                     </div>
