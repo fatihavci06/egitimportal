@@ -10,12 +10,141 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     include_once "views/pages-head.php";
 ?>
     <style>
-/* .red-border {
-    border: 2px solid red;
-    padding: 15px;
-    border-radius: 5px;
-} */ /* Removed the red-border style */
-</style>
+        /* Genel Stil İyileştirmeleri */
+
+        .main-card-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            border: 1px solid #e0e0e0;
+        }
+
+        .custom-card {
+            border: none;
+            padding: 0px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            background-color: white;
+            margin-bottom: 25px;
+        }
+
+        .card-title-custom {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #ed5606;
+            margin-bottom: 15px;
+        }
+
+        .content-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .icon-small {
+            font-size: 50px !important;
+            color: #e83e8c !important;
+        }
+
+
+
+        .btn-custom {
+            background-color: #1b84ff;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .btn-custom:hover {
+            background-color: #1a9c7b;
+        }
+
+        .left-align {
+            margin-left: 0;
+            margin-right: auto;
+        }
+
+        .right-align {
+            margin-left: auto;
+            margin-right: 0;
+        }
+
+        .left-align .card-body {
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .left-align .content-wrapper {
+            flex-direction: row;
+        }
+
+        .right-align .card-body {
+            align-items: flex-end;
+            text-align: right;
+        }
+
+        .right-align .content-wrapper {
+            flex-direction: row-reverse;
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bg-custom-light {
+            background-color: #e6e6fa;
+            /* Light purple */
+        }
+
+        .border-custom-red {
+            border-color: #d22b2b !important;
+        }
+
+        .text-custom-cart {
+            color: #6a5acd;
+            /* Slate blue for the cart */
+        }
+
+        /* For the circular icon, we'll use a larger padding or fixed size */
+        .icon-circle-lg {
+            width: 60px;
+            /* fixed width */
+            height: 60px;
+            /* fixed height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-circle-lg img {
+            max-width: 100%;
+            /* Ensure image scales within the circle */
+            max-height: 100%;
+        }
+
+
+        /* Animasyonlar */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+
     <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" class="app-default">
         <script>
             var defaultThemeMode = "light";
@@ -44,10 +173,26 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
                         <div class="d-flex flex-column flex-column-fluid">
                             <?php include_once "views/toolbar.php"; ?>
+
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <div id="kt_app_content_container" class="app-container container-fluid">
-                                    <div class="card-body pt-5">
-                                        <div class="row mt-4">
+                                    <div class="card-body pt-5 ">
+                                        <div class="row container-fluid" style="margin-top:-25px;">
+                                            <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
+                                             border-top border-bottom border-custom-red mb-2" style="border-width: 5px !important; height:85px;margin-bottom: 26px !important;">
+
+                                                <div class="d-flex align-items-center">
+                                                    <div class="rounded-circle bg-danger me-3 shadow icon-circle-lg d-flex justify-content-center align-items-center"
+                                                        style="width: 65px; height: 65px;">
+                                                        <i class="fas fa-bullseye fa-2x text-white"></i>
+                                                    </div>
+
+                                                    <h1 class="fs-3 fw-bold text-dark mb-0">İçerikler</h1>
+                                                </div>
+
+                                            </header>
+                                        </div>
+                                        <div class="row mt-1 container-fluid">
                                             <div class="col-lg-4">
                                                 <label class="fs-6 fw-semibold mb-2" for="main_school_class_id">Yaş Grubu </label>
                                                 <?php
@@ -78,7 +223,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <select class="form-select form-control" id="lesson_id" name="lesson_id">
                                                     <option selected disabled>Seçiniz</option>
                                                     <?php foreach ($lessonList as $lesson) { ?>
-                                                        <option value="<?= $lesson['id'] ?>"><?= $lesson['name'] ?></option>    
+                                                        <option value="<?= $lesson['id'] ?>">
+                                                            <?= $lesson['name'] ?>
+                                                        </option>
                                                     <?php } ?>
                                                 </select>
                                             </div>
@@ -89,7 +236,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="row mt-4">
+                                        <div class="row mt-4 container-fluid">
                                             <div class="col-lg-4">
                                                 <label for="topic_id" class="form-label">Konu Adı</label>
                                                 <select class="form-select form-control" id="topic_id" name="lesson_id">
@@ -129,7 +276,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </div>
                                         </div>
 
-                                        <div class="row mt-4">
+                                        <div class="row mt-4 container-fluid">
                                             <div class="col-lg-4">
                                                 <label class=" fs-6 fw-semibold mb-2" for="activity_type">Etkinlik Türü Başlığı</label>
                                                 <select class="form-select form-control" id="activity_title" aria-label="Default select example">
@@ -168,15 +315,15 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </div>
                                         </div>
 
-                                        <div class="row mt-4">
+                                        <div class="row mt-4 container-fluid">
                                             <div class="mt-4 text-end">
                                                 <button id="filterBtn" class="btn btn-primary btn-sm">Filtrele</button>
-                                                <button id="clearFilterBtn" class="btn btn-secondary">Filtreyi Temizle</button>
+                                                <button id="clearFilterBtn" class="btn btn-secondary btn-sm">Filtreyi Temizle</button>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class="row">
+                                    <div class="row container-fluid mt-3">
                                         <table id="myTable" class="table align-middle table-row-dashed fs-6 gy-5">
                                             <thead>
 
@@ -187,14 +334,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 
                                 </div>
-                                </div>
                             </div>
                         </div>
-                    <?php include_once "views/footer.php"; ?>
                     </div>
-                <?php include_once "views/aside.php"; ?>
+                    <?php include_once "views/footer.php"; ?>
                 </div>
+                <?php include_once "views/aside.php"; ?>
             </div>
+        </div>
         </div>
         <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
             <i class="ki-duotone ki-arrow-up">
@@ -223,26 +370,100 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/js/custom/utilities/modals/users-search.js"></script>
         <script>
             $(document).ready(function() {
+
+                // Sayfa yüklendiğinde tabloyu dolduran fonksiyon
+                function loadInitialTableData() {
+                    var lessonId = $('#lesson_id option:eq(1)').val() || null;
+
+                    const data = {
+                        month: $('#month').val(),
+                        week: $('#week').val(),
+                        activity_title: $('#activity_title').val(),
+                        content_title: $('#content_title').val(),
+                        concept_title: $('#concept_title').val(),
+                        main_school_class_id: $('#main_school_class_id').val(),
+                        lesson_id: lessonId,
+                        unit_id: $('#unit_id').val(),
+                        topic_id: $('#topic_id').val()
+                    };
+
+                    $.ajax({
+                        url: 'includes/ajax.php?service=filter-main-school-content',
+                        method: 'POST',
+                        data: data,
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.status === 'success' && Array.isArray(response.data)) {
+
+                                if ($.fn.DataTable.isDataTable('#myTable')) {
+                                    $('#myTable').DataTable().clear().destroy();
+                                }
+
+                                $('#myTable').DataTable({
+                                    data: response.data,
+                                    columns: [{
+                                            data: 'subject',
+                                            title: 'Konu',
+                                            render: function(data, type, row) {
+                                                // row.slug varsa kullan, yoksa default url
+                                                var urlSlug = row.slug || 'ana-okulu-icerikler-detay.php?id=' + row.id;
+                                                var subjectName = data;
+
+                                                return `
+                                                            <div class="col-12" style="margin-bottom: -20px; font-size:12px!important;">
+                                                                <a href="${urlSlug}" class="text-decoration-none">
+                                                                    <div class="border rounded d-flex align-items-center p-2" 
+                                                                        style="border: 2px solid #333; box-shadow: 0 2px 6px rgba(0,0,0,0.15); justify-content: flex-start;">
+                                                                        <button type="button" class="btn btn-light btn-sm me-3">
+                                                                            <i style="font-size:20px!important" class="bi bi-play-fill"></i>
+                                                                        </button>
+                                                                        <div>
+                                                                            <div class="fw-semibold fs-5" style="font-size:12px!important; color: #000;">${subjectName}</div>
+                                                                            <div style="font-size:10px; color: #666;">${row.month}</div>  <!-- Buraya ay bilgisi -->
+                                                                        </div>
+                                                                    </div>
+                                                                </a>
+                                                            </div>`;
+                                            }
+                                        }
+                                    ]
+                                });
+
+
+                                $('#lesson_id option:eq(1)').prop('selected', true).trigger('change');
+
+                            } else {
+                                alert("Veri boş geldi veya status success değil.");
+                            }
+                        },
+                        error: function(err) {
+                            console.error("Hata:", err);
+                        }
+                    });
+                }
+
+                // Sayfa yüklenince tabloyu doldur
+                loadInitialTableData();
+
                 $('#lesson_id').on('change', function() {
                     var selectedLessonId = $(this).val();
 
                     $.ajax({
-                        url: 'includes/ajax.php?service=mainSchoolGetUnits', // Backend dosyanın yolu
+                        url: 'includes/ajax.php?service=mainSchoolGetUnits',
                         type: 'POST',
                         data: {
-                            class_id:$('#main_school_class_id').val(),
+                            class_id: $('#main_school_class_id').val(),
                             lesson_id: selectedLessonId
                         },
-                        dataType: 'json', // JSON olarak bekliyoruz
+                        dataType: 'json',
                         success: function(response) {
                             if (response.status === 'success') {
                                 var unitSelect = $('#unit_id');
-                                unitSelect.empty(); // Önceki optionları temizle
+                                unitSelect.empty();
 
                                 if (response.data.length > 0) {
                                     unitSelect.append('<option selected disabled>Ünite Seçiniz...</option>');
 
-                                    // Gelen datayı option olarak ekle
                                     $.each(response.data, function(index, lesson) {
                                         unitSelect.append(
                                             $('<option></option>')
@@ -253,8 +474,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 } else {
                                     unitSelect.append('<option disabled>Bu sınıfa ait ders bulunamadı.</option>');
                                 }
-                            } else {
-                                
                             }
                         },
                         error: function() {
@@ -262,26 +481,25 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         }
                     });
                 });
+
                 $('#unit_id').on('change', function() {
                     var selectedUnitId = $(this).val();
 
                     $.ajax({
-                        url: 'includes/ajax.php?service=mainSchoolGetTopics', // Backend dosyanın yolu
+                        url: 'includes/ajax.php?service=mainSchoolGetTopics',
                         type: 'POST',
                         data: {
                             unit_id: selectedUnitId
                         },
-                        dataType: 'json', // JSON olarak bekliyoruz
+                        dataType: 'json',
                         success: function(response) {
                             if (response.status === 'success') {
                                 var topicSelect = $('#topic_id');
-                                topicSelect.empty(); // Önceki optionları temizle
+                                topicSelect.empty();
 
                                 if (response.data.length > 0) {
-                                    console.log(response.data);
                                     topicSelect.append('<option selected disabled>Konu Seçiniz...</option>');
 
-                                    // Gelen datayı option olarak ekle
                                     $.each(response.data, function(index, topic) {
                                         topicSelect.append(
                                             $('<option></option>')
@@ -292,8 +510,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 } else {
                                     topicSelect.append('<option disabled>Bu sınıfa ait ders bulunamadı.</option>');
                                 }
-                            } else {
-                                
                             }
                         },
                         error: function() {
@@ -301,164 +517,81 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         }
                     });
                 });
-                $('#week').select2({
+
+                // Select2 başlatma
+                $('#week, #activity_title, #content_title, #concept_title').select2({
                     placeholder: "Seçiniz",
                     allowClear: true
                 });
-                $('#activity_title').select2({
-                    placeholder: "Seçiniz",
-                    allowClear: true
-                });
-                $('#content_title').select2({
-                    placeholder: "Seçiniz",
-                    allowClear: true
-                });
-                $('#concept_title').select2({
-                    placeholder: "Seçiniz",
-                    allowClear: true
-                });
+
+                // Filtrele butonu
                 $('#filterBtn').on('click', function(e) {
                     e.preventDefault();
-
-                    const data = {
-                        month: $('#month').val(),
-                        week: $('#week').val(),
-                        activity_title: $('#activity_title').val(),
-                        content_title: $('#content_title').val(),
-                        concept_title: $('#concept_title').val(),
-                        main_school_class_id: $('#main_school_class_id').val(),
-                        lesson_id: $('#lesson_id').val(),
-                        unit_id: $('#unit_id').val(),
-                        topic_id: $('#topic_id').val()
-
-                    };
-
-                    $.ajax({
-                        url: 'includes/ajax.php?service=filter-main-school-content', // 🔁 burayı backend URL'in ile değiştir
-                        method: 'POST',
-                        data: data,
-                        dataType: 'json',
-                        success: function(response) {
-                            if (response.status === 'success' && Array.isArray(response.data)) {
-
-                                // DataTable önceden başlatıldıysa temizle
-                                if ($.fn.DataTable.isDataTable('#myTable')) {
-                                    $('#myTable').DataTable().clear().destroy();
-                                }
-
-                                // Yeni tabloyu başlat
-                                $('#myTable').DataTable({
-                                    data: response.data,
-                                    columns: [{
-                                            data: 'id',
-                                            title: 'ID'
-                                        },
-                                        {
-                                            data: 'subject',
-                                            title: 'Konu'
-                                        },
-                                        {
-                                            data: 'month',
-                                            title: 'Ay'
-                                        },
-                                        {
-                                            data: 'class_name',
-                                            title: 'Yaş Grubu'
-                                        },
-                                        {
-                                            data: 'id',
-                                            title: 'İşlemler',
-                                            render: function(data, type, row, meta) {
-                                                // `data` burada ID oluyor
-                                                return `<a href="ana-okulu-icerikler-detay.php?id=${data}" class="btn btn-sm btn-primary">Görüntüle</a>`;
-                                            }
-                                        }
-                                    ]
-                                });
-
-                            } else {
-                                alert("Veri boş geldi veya status success değil.");
-                            }
-                        },
-                        error: function(err) {
-                            console.error("Hata:", err);
-                        }
-                    });
+                    loadInitialTableData();
                 });
 
+                // Temizle butonu
+                $('#clearFilterBtn').on('click', function() {
+                    $('#month').val('');
+                    $('#week, #activity_title, #content_title, #concept_title, #main_school_class_id').val('').trigger('change');
+                    $('#lesson_id').val('Seçiniz').trigger('change');
+                    $('#unit_id').val('Seçiniz').trigger('change');
+                    $('#topic_id').val('Seçiniz').trigger('change');
 
-            });
-            
-            $('#clearFilterBtn').on('click', function() {
-                $('#month').val('');
-
-                // select2 ile oluşturulan selectbox'ları sıfırla ve görünümü güncelle
-                $('#week').val('').trigger('change');
-                $('#activity_title').val('').trigger('change');
-                $('#content_title').val('').trigger('change');
-                $('#concept_title').val('').trigger('change');
-                $('#main_school_class_id').val('').trigger('change');
-                $('#lesson_id').val('Seçiniz').trigger('change');
-                $('#unit_id').val('Seçiniz').trigger('change');
-                $('#topic_id').val('Seçiniz').trigger('change');
-
-                // Eğer DataTable varsa içeriğini temizle
-                if ($.fn.DataTable.isDataTable('#myTable')) {
-                    $('#myTable').DataTable().clear().draw();
-                }
-
-                // (Opsiyonel) select2 kullanıyorsan .trigger('change') ekle
-                // $('.form-select').val('').trigger('change');
-
-                // Eğer tablo daha önce yüklenmişse sıfırla
-                if ($.fn.DataTable.isDataTable('#myTable')) {
-                    $('#myTable').DataTable().clear().draw();
-                }
-            });
-            $('#main_school_class_id').on('change', function() {
-        var selectedClassId = $(this).val();
-        var lessonSelect = $('#lesson_id');
-        var unitSelect = $('#unit_id');
-        var topicSelect = $('#topic_id');
-
-        lessonSelect.empty(); // Clear existing lessons
-        unitSelect.empty();   // Clear existing units
-        topicSelect.empty();  // Clear existing topics
-
-        lessonSelect.append('<option selected disabled>Seçiniz</option>');
-        unitSelect.append('<option selected disabled>Önce ders seçiniz...</option>');
-        topicSelect.append('<option selected disabled>Önce ünite seçiniz...</option>');
-
-        if (selectedClassId) { // Only make AJAX call if a class is selected
-            $.ajax({
-                url: 'includes/ajax.php?service=getMainSchoolLessonList', // New service for fetching lessons
-                type: 'POST',
-                data: {
-                    class_id: selectedClassId
-                },
-                dataType: 'json',
-                success: function(response) {
-                    if (response.status === 'success' && response.data.length > 0) {
-                        $.each(response.data, function(index, lesson) {
-                            lessonSelect.append(
-                                $('<option></option>')
-                                .val(lesson.id)
-                                .text(lesson.name)
-                            );
-                        });
-                    } else {
-                        lessonSelect.append('<option disabled>Bu yaş grubuna ait ders bulunamadı.</option>');
+                    if ($.fn.DataTable.isDataTable('#myTable')) {
+                        $('#myTable').DataTable().clear().draw();
                     }
-                },
-                error: function() {
-                    alert('Dersler yüklenirken bir hata oluştu!');
-                }
+                });
+
+                // Yaş grubu değiştiğinde dersleri getir
+                $('#main_school_class_id').on('change', function() {
+                    var selectedClassId = $(this).val();
+                    var lessonSelect = $('#lesson_id');
+                    var unitSelect = $('#unit_id');
+                    var topicSelect = $('#topic_id');
+
+                    lessonSelect.empty();
+                    unitSelect.empty();
+                    topicSelect.empty();
+
+                    lessonSelect.append('<option selected disabled>Seçiniz</option>');
+                    unitSelect.append('<option selected disabled>Önce ders seçiniz...</option>');
+                    topicSelect.append('<option selected disabled>Önce ünite seçiniz...</option>');
+
+                    if (selectedClassId) {
+                        $.ajax({
+                            url: 'includes/ajax.php?service=getMainSchoolLessonList',
+                            type: 'POST',
+                            data: {
+                                class_id: selectedClassId
+                            },
+                            dataType: 'json',
+                            success: function(response) {
+                                if (response.status === 'success' && response.data.length > 0) {
+                                    $.each(response.data, function(index, lesson) {
+                                        lessonSelect.append(
+                                            $('<option></option>')
+                                            .val(lesson.id)
+                                            .text(lesson.name)
+                                        );
+                                    });
+                                } else {
+                                    lessonSelect.append('<option disabled>Bu yaş grubuna ait ders bulunamadı.</option>');
+                                }
+                            },
+                            error: function() {
+                                alert('Dersler yüklenirken bir hata oluştu!');
+                            }
+                        });
+                    }
+                });
+
             });
-        }
-    });
         </script>
-        </body>
-    </html>
+
+    </body>
+
+</html>
 <?php } else {
     header("location: index");
 }
