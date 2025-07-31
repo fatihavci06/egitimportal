@@ -10,61 +10,62 @@ class ContentTracker
         $this->db = (new dbh())->connect();
     }
 
-public function getSubscriptionState($schoolId)
-{
-    try {
-        $db = $this->db;
+    public function getSubscriptionState($schoolId)
+    {
+        try {
+            $db = $this->db;
 
-        // Define SQL queries
-        $weeklySql = "SELECT WEEK(subscribed_at) as week, COUNT(*) as count 
+            // Define SQL queries
+            $weeklySql = "SELECT WEEK(subscribed_at) as week, COUNT(*) as count 
             FROM users_lnp 
             WHERE YEAR(subscribed_at) = YEAR(NOW()) AND school_id = :school_id AND role = 2 AND active = 1
             GROUP BY WEEK(subscribed_at)";
 
-        $monthlySql = "SELECT MONTH(subscribed_at) as month, COUNT(*) as count 
+            $monthlySql = "SELECT MONTH(subscribed_at) as month, COUNT(*) as count 
             FROM users_lnp 
             WHERE YEAR(subscribed_at) = YEAR(NOW()) AND school_id = :school_id AND role = 2 AND active = 1
             GROUP BY MONTH(subscribed_at)";
 
-        $yearlySql = "SELECT YEAR(subscribed_at) as year, COUNT(*) as count 
+            $yearlySql = "SELECT YEAR(subscribed_at) as year, COUNT(*) as count 
             FROM users_lnp 
             WHERE school_id = :school_id AND role = 2 AND active = 1
             GROUP BY YEAR(subscribed_at)";
 
-        // Execute weekly query
-        $stmt = $db->prepare($weeklySql);
-        $stmt->execute([':school_id' => $schoolId]);
-        $weeklyData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            // Execute weekly query
+            $stmt = $db->prepare($weeklySql);
+            $stmt->execute([':school_id' => $schoolId]);
+            $weeklyData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Execute monthly query
-        $stmt = $db->prepare($monthlySql);
-        $stmt->execute([':school_id' => $schoolId]);
-        $monthlyData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            // Execute monthly query
+            $stmt = $db->prepare($monthlySql);
+            $stmt->execute([':school_id' => $schoolId]);
+            $monthlyData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Execute yearly query
-        $stmt = $db->prepare($yearlySql);
-        $stmt->execute([':school_id' => $schoolId]);
-        $yearlyData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            // Execute yearly query
+            $stmt = $db->prepare($yearlySql);
+            $stmt->execute([':school_id' => $schoolId]);
+            $yearlyData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Combine results
-        $subscriptionStats = [
-            'weekly' => $weeklyData,
-            'monthly' => $monthlyData,
-            'yearly' => $yearlyData,
-        ];
+            // Combine results
+            $subscriptionStats = [
+                'weekly' => $weeklyData,
+                'monthly' => $monthlyData,
+                'yearly' => $yearlyData,
+            ];
 
-        return $subscriptionStats;
+            return $subscriptionStats;
 
-    } catch (PDOException $e) {
-        return [
-            'error' => true,
-            'message' => 'Failed to retrieve subscription stats.'
-        ];
+        } catch (PDOException $e) {
+            return [
+                'error' => true,
+                'message' => 'Failed to retrieve subscription stats.'
+            ];
+        }
     }
-}
 
-    public function getExamsWithStudentId($userId){
-    
+    public function getExamsWithStudentId($userId)
+    {
+
         try {
             $sql = "
                 SELECT *

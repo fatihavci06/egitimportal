@@ -7,6 +7,14 @@ include_once "classes/todayword.php";
 include_once "classes/doyouknow.php";
 require_once "classes/student.classes.php";
 require_once "classes/student-view.classes.php";
+require_once "classes/content-tracker.classes.php";
+
+$contentObj = new ContentTracker();
+
+$resultProfile = $contentObj->getSchoolContentAnalyticsOverall($_SESSION['id']);
+$resultProfileW = ($resultProfile == null) ? 0 : $resultProfile;
+$resultProfileT = ($resultProfile == null) ? '-' : $resultProfile;
+
 
 $student = new ShowStudent();
 
@@ -26,7 +34,7 @@ $getHomeworks = $dash->getHomeworksStudent();
 
 $bugun = new DateTime();
 
-$haftanin_gunu_sayisi = (int)$bugun->format('w'); // 0 (Pazar) - 6 (Cumartesi)
+$haftanin_gunu_sayisi = (int) $bugun->format('w'); // 0 (Pazar) - 6 (Cumartesi)
 
 if ($haftanin_gunu_sayisi === 0) { // Bugün Pazar ise
     $haftanin_sonu = clone $bugun; // Haftanın sonu bugün
@@ -49,7 +57,8 @@ $knowObj = new DoYouKnow();
 $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION['class_id']);
 
 ?>
-<div id="kt_app_content_container" class="app-container container-fluid student-dashboard" style="padding-right: 0px !important;padding-left: 0px !important;">
+<div id="kt_app_content_container" class="app-container container-fluid student-dashboard"
+    style="padding-right: 0px !important;padding-left: 0px !important;">
     <!--begin::Row-->
     <div class="row col-lg-12" style="align-items: baseline;">
         <div class="row gx-5 gx-xl-9 col-lg-9" style="align-items: baseline;padding-right: 0px;">
@@ -62,7 +71,8 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                     <div class="card-header pt-0" style="padding: 10px;">
                         <!--begin::Title-->
                         <h3 class="card-title align-items-start flex-column">
-                            <span class="card-label fw-bold text-gray-900"><i class="fa-solid fa-star me-2 fs-1"></i> Haftalık Görevler</span>
+                            <span class="card-label fw-bold text-gray-900"><i class="fa-solid fa-star me-2 fs-1"></i>
+                                Haftalık Görevler</span>
                         </h3>
 
 
@@ -81,7 +91,8 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                 <!--begin::Table container-->
                                 <div class="table-responsive">
                                     <!--begin::Table-->
-                                    <div style="display: flex; justify-content: space-around; width: 100%; padding: 5px 0;">
+                                    <div
+                                        style="display: flex; justify-content: space-around; width: 100%; padding: 5px 0;">
                                         <?php
                                         $i = 0;
                                         foreach ($getLessons as $value) {
@@ -95,7 +106,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                                 echo '<div class="position-relative" style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; min-width: 180px; ">';
 
                                                 //echo '<div class="mt-5"><span class="text-gray-800 fw-bold fs-4"> ' . $value['name'] . '</span></div>';
-
+                                        
                                                 $getUnits = $dash->getUnitsDash($value['id']);
 
                                                 if (empty($getUnits)) {
@@ -156,7 +167,8 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                     <div class="card-header pt-5" style="padding: 10px;">
                         <!--begin::Title-->
                         <h5 class="card-title d-flex align-items-center">
-                            <i class="fa-solid fa-person-chalkboard me-2 fs-1"></i> <span class="card-label fw-bold text-gray-900">Dersler</span>
+                            <i class="fa-solid fa-person-chalkboard me-2 fs-1"></i> <span
+                                class="card-label fw-bold text-gray-900">Dersler</span>
                         </h5>
 
                         <!--end::Title-->
@@ -172,7 +184,8 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                 <div class="table-responsive">
                                     <!--begin::Table-->
 
-                                    <div style="display: flex; justify-content: space-around; width: 100%; padding: 5px 0;">
+                                    <div
+                                        style="display: flex; justify-content: space-around; width: 100%; padding: 5px 0;">
                                         <?php
 
                                         $styles = ["#0fadf54a", "#3571804a", "#4d38f74a", "#004eb04a", "#f9f9f94a", "#fa60004a", "#2b8c014a", "#fcecb24a"];
@@ -246,7 +259,8 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                     <div class="card-header pt-5" style="padding: 10px;">
                         <!--begin::Title-->
                         <h5 class="card-title d-flex align-items-center">
-                            <i class="fa-solid fa-chart-line me-2 fs-1"></i> <span class="card-label fw-bold text-gray-900">Başarını Arttır</span>
+                            <i class="fa-solid fa-chart-line me-2 fs-1"></i> <span
+                                class="card-label fw-bold text-gray-900">Başarını Arttır</span>
                         </h5>
 
                         <!--end::Title-->
@@ -262,7 +276,8 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                 <div class="table-responsive">
                                     <!--begin::Table-->
 
-                                    <div style="display: flex; justify-content: space-around; width: 100%; padding: 5px 0;">
+                                    <div
+                                        style="display: flex; justify-content: space-around; width: 100%; padding: 5px 0;">
                                         <?php
                                         /*
                                         $styles = ["#0fadf54a", "#3571804a", "#4d38f74a", "#004eb04a", "#f9f9f94a", "#fa60004a", "#2b8c014a", "#fcecb24a"];
@@ -336,7 +351,8 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                     <div class="card-header pt-5" style="padding: 10px;">
                         <!--begin::Title-->
                         <h5 class="card-title d-flex align-items-center">
-                            <i class="fa-solid fa-comments me-2 fs-1"></i> <span class="card-label fw-bold" style="font-family: Comic Relief, system-ui; color: #2b8c01 !important;">Soru-Cevap</span>
+                            <i class="fa-solid fa-comments me-2 fs-1"></i> <span class="card-label fw-bold"
+                                style="font-family: Comic Relief, system-ui; color: #2b8c01 !important;">Soru-Cevap</span>
                         </h5>
 
                         <!--end::Title-->
@@ -352,9 +368,14 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                 <div class="table-responsive">
                                     <!--begin::Table-->
 
-                                    <div style="display: flex; justify-content: space-around; width: 100%; padding: 5px 0;">
+                                    <div
+                                        style="display: flex; justify-content: space-around; width: 100%; padding: 5px 0;">
                                         <a href="cek-gonder">
-                                            <p class="kalangun" style="font-family: Comic Relief, system-ui; color: #2b8c01 !important;"><b>Derslerle ilgili cevabını merak ettiğin sorularını sormayı unutma, LineUp öğretmenleri sorularını senin için cevaplayacak.</b></p>
+                                            <p class="kalangun"
+                                                style="font-family: Comic Relief, system-ui; color: #2b8c01 !important;">
+                                                <b>Derslerle ilgili cevabını merak ettiğin sorularını sormayı unutma,
+                                                    LineUp öğretmenleri sorularını senin için cevaplayacak.</b>
+                                            </p>
                                         </a>
                                     </div>
 
@@ -383,7 +404,8 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                     <div class="card-header pt-0" style="padding: 10px;">
                         <!--begin::Title-->
                         <h3 class="card-title d-flex align-items-center">
-                            <i class="fa-solid fa-percent me-2 fs-1" style="transform: scaleX(-1)"></i> <span class="card-label fw-bold text-gray-900">Ders Başarıların </span>
+                            <i class="fa-solid fa-percent me-2 fs-1" style="transform: scaleX(-1)"></i> <span
+                                class="card-label fw-bold text-gray-900">Ders Başarıların </span>
                         </h3>
                     </div>
                     <!--end::Header-->
@@ -419,7 +441,8 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                     <div class="card-header pt-5" style="padding: 10px;">
                         <!--begin::Title-->
                         <h3 class="card-title d-flex align-items-center">
-                            <i class="fa-regular fa-comment me-2 fs-1" style="transform: scaleX(-1)"></i> <span class="card-label fw-bold text-gray-900">Günün Kelimesi
+                            <i class="fa-regular fa-comment me-2 fs-1" style="transform: scaleX(-1)"></i> <span
+                                class="card-label fw-bold text-gray-900">Günün Kelimesi
                                 "<?php echo $todaysWord['word'] ?>"</span>
                         </h3>
                     </div>
@@ -450,6 +473,45 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
             </div>
             <!--end::Col-->
 
+            <?php
+            $percentage = $resultProfileW;
+
+            if ($percentage <= 20) {
+                $image = "image-1.jpg";
+            } elseif ($percentage <= 40) {
+                $image = "image-2.jpg";
+            } elseif ($percentage <= 60) {
+                $image = "image-3.jpg";
+            } elseif ($percentage <= 80) {
+                $image = "image-4.jpg";
+            } else {
+                $image = "image-5.jpg";
+            }
+            ?>
+            <div class="col-xxl-12 mb-1">
+
+
+                <div class="text-center">
+                    <img src="assets/media/dash/<?php echo $image; ?>" alt="Progress Image" class="img-fluid" />
+                    
+                    <div class="d-flex align-items-center w-200px w-sm-300px flex-column mt-3">
+                        <div class="d-flex justify-content-between w-100 mt-auto mb-2">
+                            <span class="fw-semibold fs-6 text-gray-500">Tamamlama Oranı</span>
+                            <span class="fw-bold fs-6"><?= $resultProfileT ?>%</span>
+                        </div>
+                        <div class="h-5px mx-3 w-100 bg-light mb-3">
+                            <div class="bg-success rounded h-5px" role="progressbar"
+                                style="width: <?= $resultProfileW ?>%;" aria-valuenow="50" aria-valuemin="0"
+                                aria-valuemax="100"></div>
+                        </div>
+                    </div>
+
+                    <a href="/" class="btn btn-secondary btn-icon rounded p-4 w-auto">
+                        <i class="ki-duotone ki-arrow-right fs-4">Çiçeği Sula</i>
+                    </a>
+                </div>
+            </div>
+
             <!--begin::Col-->
             <div class="col-xxl-12 mb-5 mb-xl-10">
                 <!--begin::Chart widget 8-->
@@ -458,7 +520,8 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                     <div class="card-header pt-5" style="padding: 10px;">
                         <!--begin::Title-->
                         <h3 class="d-flex align-items-center">
-                            <i class="fa-solid fa-graduation-cap me-2 fs-1" style="transform: scaleX(-1)"></i> <span class="card-label fw-bold text-gray-900">Bunu Biliyor Musunuz?
+                            <i class="fa-solid fa-graduation-cap me-2 fs-1" style="transform: scaleX(-1)"></i> <span
+                                class="card-label fw-bold text-gray-900">Bunu Biliyor Musunuz?
                             </span>
                         </h3>
                     </div>

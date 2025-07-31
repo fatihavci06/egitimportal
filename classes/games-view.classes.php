@@ -4,6 +4,41 @@ include_once "dateformat.classes.php";
 class ShowGame extends Games
 {
 
+    public function getHeaderImageStuForOne()
+    {
+        $link = "$_SERVER[REQUEST_URI]";
+
+        $active_slug = htmlspecialchars(basename($link, ".php"));
+
+        $unitInfo = $this->getOneGame($active_slug);
+
+        $view = '
+                <header class="container-fluid py-3 d-flex justify-content-between align-items-center"
+                    style="
+                        background-color: #e6e6fa !important;
+                        margin-bottom: 40px !important;
+                        margin-top: -45px !important;
+                        border-top: 5px solid #d22b2b !important;
+                        border-bottom: 5px solid #d22b2b !important;
+                        height:85px;
+                        margin-left:-10px
+                    ">
+                    <div class="d-flex align-items-center">
+                        <div class="">
+                            <img src="assets/media/games/' . $unitInfo['cover_img'] . '" alt="' . $unitInfo['game_name'] . ' Icon"
+                                class="img-fluid"
+                                style="width: 90px; height: 90px; object-fit: contain;">
+                        </div>
+                        <div>
+                            <h1 class="fs-3 fw-bold text-dark mb-0 ml-2" style="margin-left: 20px;">' . $unitInfo['game_name'] . '</h1>
+                        </div>
+                    </div>
+                </header>';
+
+        echo $view;
+
+    }
+
     public function getGameList()
     {
 
@@ -170,12 +205,12 @@ class ShowGame extends Games
 
         /* $unitInfo = $this->getGamesListForHead(); */
 
-            $lessonList = '
+        $lessonList = '
                     <div class="position-relative mb-17">
                         <!--begin::Overlay-->
                         <div class="overlay overlay-show">
                             <!--begin::Image-->
-                            <div class="bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-250px" style="background-image:url(\'assets/media/games/' . $unitInfo['cover_img'] .  '\')"></div>
+                            <div class="bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-250px" style="background-image:url(\'assets/media/games/' . $unitInfo['cover_img'] . '\')"></div>
                             <!--end::Image-->
                             <!--begin::layer-->
                             <div class="overlay-layer rounded bg-black" style="opacity: 0.4"></div>
@@ -194,8 +229,8 @@ class ShowGame extends Games
                         <!--end::Heading-->
                     </div>
                 ';
-            echo $lessonList;
-        
+        echo $lessonList;
+
     }
 
     public function getSidebarTopicsStu()
@@ -324,7 +359,7 @@ class ShowGame extends Games
         $alter_button = $gameInfo['is_active'] ? "Pasif Yap" : "Aktif Yap";
 
 
-      $gameHtml = '
+        $gameHtml = '
                 <tr id="' . $gameInfo['id'] . '">
                     <td>
                         <a  class="cursor-pointer symbol symbol-90px symbol-lg-90px">
