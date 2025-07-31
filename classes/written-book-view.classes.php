@@ -112,7 +112,7 @@ class ShowWrittenBook extends WrittenBook
 
         /* $audioBookInfo = $this->getAudioBooksList(); */
         $view = '
-                <header class="container-fluid py-3 d-flex justify-content-between align-items-center"
+                <header class="  d-flex justify-content-between align-items-center"
                     style="
                         background-color: #e6e6fa !important;
                         margin-bottom: 40px !important;
@@ -134,22 +134,7 @@ class ShowWrittenBook extends WrittenBook
                     </div>
                 </header>';
 
-        $view .= '
-            <div class="position-relative mb-17 " style="width: 200px; height: 300px; ">
-                <div class="overlay overlay-show w-100 h-100 position-relative">
-                    <div id="soundcloud-thumbnail"
-                        class="card-rounded"
-                        style="width: 100%; height: 100%; background-image: url(\'assets/media/sesli-kitap/' . $audioBookInfo['cover_img'] . '\'); background-size: contain; background-repeat: no-repeat; background-position: center; border-radius: 12px; position: relative; z-index: 1;">
-                    </div>
-                    <div class="overlay-layer rounded bg-black"
-                        style="opacity: 0.2; position: absolute; top: 0; left: 0; width: 100%; height: 100%;  z-index: 2;">
-                    </div>
-                </div>
-                <div class="position-absolute text-white mb-8 ms-10 bottom-0" style="z-index: 3;">
-                    <h3 class="text-white fs-2qx fw-bold mb-3 m"></h3>
-                </div>
-            </div>
-        ';
+    
         echo $view;
 
     }
@@ -493,7 +478,7 @@ class ShowWrittenBook extends WrittenBook
 
 
         $audioBookList = '
-            <div class="card">
+            <div class="card " style="margin-left:-13px;">
             '
             . $bookUrl .
             '
