@@ -179,14 +179,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] ==
                                     $column = ($_SESSION['role'] == 1) ? 'col-lg-10' : 'col-lg-5';
                                     ?>
 
-                                   <div class="row" style="margin-left: -55px;"> <div class="col-12 col-lg-2 order-1 order-lg-1 mb-4 mb-lg-0">
+                                   <div class="row" > <div class="col-12 col-lg-2 order-1 order-lg-1 mb-4 mb-lg-0">
         <div class="card h-100 dersler-card-min-height"> <div class="card-body py-4">
                 <div class="row g-2 g-lg-10 justify-content-center">
                     <?php foreach ($lessons as $l): ?>
                         <?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
                             <div class="col-6 col-sm-4 col-lg-12 text-center mb-sm-2 mb-lg-1">
                                 <a href="ders/<?= urlencode($l['slug']) ?>" class="d-block text-decoration-none text-dark">
-                                    <img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 70%; height: 70%; object-fit: contain;" />
+                                    <img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 65px; height: 65px; object-fit: contain;" />
                                     <div class="mt-1 fw-bold"><?= htmlspecialchars($l['name']) ?></div>
                                 </a>
                             </div>
@@ -377,193 +377,212 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] ==
                 };
 
                 // Send AJAX POST request
-                $.ajax({
-                    url: 'includes/getweeklylistforsudent.inc.php',
-                    type: 'POST',
-                    data: postData,
-                    dataType: 'json', // Expecting JSON response from the PHP script
-                    success: function(response) {
-                        // Handle success response from PHP
-                        console.log(response);
-                        if (response.status === 'success') {
-                            var eventList = response.data;
-                            console.log('Events:', eventList);
+               $.ajax({
+    url: 'includes/getweeklylistforsudent.inc.php',
+    type: 'POST',
+    data: postData,
+    dataType: 'json', // Expecting JSON response from the PHP script
+    success: function(response) {
+        // Handle success response from PHP
+        console.log(response);
+        if (response.status === 'success') {
+            var eventList = response.data;
+            console.log('Events:', eventList);
 
-                            function getMonthYear(dateString) {
-                                const date = new Date(dateString);
-                                const options = {
-                                    year: 'numeric',
-                                    month: 'long'
-                                };
-                                const str = date.toLocaleDateString('tr-TR', options);
-                                return str.normalize('NFKD').replace(/\s+/g, ' ').trim().toLowerCase();
-                            }
+            function getMonthYear(dateString) {
+                const date = new Date(dateString);
+                const options = {
+                    year: 'numeric',
+                    month: 'long'
+                };
+                const str = date.toLocaleDateString('tr-TR', options);
+                return str.normalize('NFKD').replace(/\s+/g, ' ').trim().toLowerCase();
+            }
 
-                            function formatDate(dateStr) {
-                                const date = new Date(dateStr);
-                                return date.toLocaleDateString('tr-TR', {
-                                    day: '2-digit',
-                                    month: '2-digit',
-                                    year: 'numeric'
-                                });
-                            }
-
-                            function calculateRemaining(endDateStr) {
-                                const now = new Date();
-                                const endDate = new Date(endDateStr);
-                                const diff = endDate - now;
-
-                                if (diff <= 0) return '0 gün';
-
-                                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                                return `${days} gün`;
-                            }
-
-                            function formatDate(dateString) {
-                                const date = new Date(dateString);
-                                const options = {
-                                    month: 'long',
-                                    day: 'numeric'
-                                };
-                                return date.toLocaleDateString('tr-TR', options);
-                            }
-
-                            function capitalize(str) {
-                                return str.charAt(0).toUpperCase() + str.slice(1);
-                            }
-
-                            // Separate events by type
-                            const generalEvents = eventList.filter(event => event.type !== 'homework');
-                            const homeworkEvents = eventList.filter(event => event.type === 'homework');
-
-                            // --- Render General Events ---
-                            generalEvents.sort((a, b) => new Date(a.start) - new Date(b.start));
-
-                            const groupedGeneral = {};
-                            let generalHtml = '';
-
-                            generalEvents.forEach(event => {
-                                const key = getMonthYear(event.start);
-                                if (!groupedGeneral[key]) groupedGeneral[key] = [];
-                                groupedGeneral[key].push(event);
-                            });
-
-                            for (const key in groupedGeneral) {
-                                generalHtml += `<h2 class="text-center event-month mt-4 mb-4">${capitalize(key)}</h2>`;
-
-                                groupedGeneral[key].forEach(event => {
-                                    generalHtml += `
-                        <div class="card mb-2 shadow-sm event-card" style="padding: 0;">
-                            <div class="card-body py-2 px-3">
-                                <div class="row align-items-center">
-                                    <div class="col-4">
-                                        <h5 class="card-title text-dark mb-0" style="font-size: 1.2rem;">
-                                            ${event.name}
-                                        </h5>
-                                    </div>
-
-                                    <div class="col-4 d-flex align-items-center">
-                                        <i class="fas fa-calendar-alt text-primary me-2"></i>
-                                        <small class="text-muted" style="font-size: 1.1rem;">
-                                            ${formatDate(event.start)} - ${formatDate(event.end)}
-                                        </small>
-                                    </div>
-
-                                    <div class="col-4 text-end">
-                                        ${new Date(event.end) < new Date() 
-                                            ? '<span class="badge bg-danger">Sona ermiştir</span>' 
-                                            : '<span class="badge bg-success">Kalan: ' + calculateRemaining(event.end) + '</span>'
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                                });
-                            }
-
-                            $('#eventResults').html(generalHtml);
-
-                            // --- Render Homework Events ---
-                            let homeworkHtml = '';
-                            if (homeworkEvents.length > 0) {
-                                homeworkHtml += '<h2 class="text-center event-month mt-4 mb-4">Ödevler</h2>';
-                                homeworkEvents.forEach(event => {
-                                    homeworkHtml += `
-                        <div class="card mb-2 shadow-sm event-card" style="padding: 0;">
-                            <div class="card-body py-2 px-3">
-                                <div class="row align-items-center">
-                                    <div class="col-4">
-                                        <h5 class="card-title text-dark mb-0" style="font-size: 1.2rem;">
-                                            ${event.name}
-                                        </h5>
-                                    </div>
-
-                                    <div class="col-4 d-flex align-items-center">
-                                        <i class="fas fa-clipboard-list text-info me-2"></i>
-                                        <small class="text-muted" style="font-size: 1.1rem;">
-                                            ${formatDate(event.start)} - ${formatDate(event.end)}
-                                        </small>
-                                    </div>
-
-                                    <div class="col-4 text-end">
-                                        ${new Date(event.end) < new Date() 
-                                            ? '<span class="badge bg-danger">Sona ermiştir</span>' 
-                                            : '<span class="badge bg-warning">Kalan: ' + calculateRemaining(event.end) + '</span>'
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                                });
-                                $('#odev').html(homeworkHtml); // Display homework in the #odev div
-                            } else {
-                                $('#odev').html(`<div class="alert alert-info">Henüz tanımlanmış ödev bulunmamaktadır.</div>`);
-                            }
-
-
-                            if (Array.isArray(response.testData) && response.testData.length > 0) {
-                                let testHtml = '<h2 class="text-center event-month mt-4 mb-4">Testler</h2>';
-
-                                response.testData.forEach(test => {
-                                    testHtml += `
-                        <div class="card mb-3 shadow-sm border-start border-3 border-primary">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <div>
-                                        <i class="fas fa-vial text-danger me-2"></i>
-                                        <strong style="font-size: 1.3rem;">${test.test_title}</strong>
-                                    </div>
-                                    <a href="ogrenci-test-coz.php?id=${test.id}" target="_blank" class="btn btn-success btn-sm">
-                                        Sınava Gir
-                                    </a>
-                                </div>
-                                <div class="text-muted" style="font-size: 1.2rem;">
-                                    <i class="fas fa-clock me-1"></i>
-                                    ${formatDate(test.start_date)} - ${formatDate(test.end_date)} 
-                                    <span class="badge bg-${new Date(test.end_date) < new Date() ? 'danger' : 'success'} ms-2">${new Date(test.end_date) < new Date() ? 'Tarihi Geçmiş' : 'Aktif'}</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                                });
-
-                                $('#eventResultsTest').html(testHtml);
-                            } else {
-                                $('#eventResultsTest').html(`<div class="alert alert-warning">Henüz sınav tanımlanmamış.</div>`);
-                            }
-
-                        } else {
-                            alert('Filtreleme başarısız: ' + response.message);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        // Handle error
-                        console.error('AJAX Error:', status, error);
-                        alert('Bir hata oluştu. Lütfen tekrar deneyin.');
-                    }
+            function formatDate(dateStr) {
+                const date = new Date(dateStr);
+                return date.toLocaleDateString('tr-TR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
                 });
+            }
+
+            function calculateRemaining(endDateStr) {
+                const now = new Date();
+                const endDate = new Date(endDateStr);
+                const diff = endDate - now;
+
+                if (diff <= 0) return '0 gün';
+
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                return `${days} gün`;
+            }
+
+            function formatDateShort(dateString) {
+                const date = new Date(dateString);
+                const options = {
+                    month: 'long',
+                    day: 'numeric'
+                };
+                return date.toLocaleDateString('tr-TR', options);
+            }
+
+            function capitalize(str) {
+                return str.charAt(0).toUpperCase() + str.slice(1);
+            }
+
+            // type'a göre path eşlemesi
+            function buildEventHref(event) {
+                const map = {
+                    unit: 'unite',
+                    topic: 'konu',
+                    subtopic: 'alt-konu',
+                    homework: 'ogrenci-odev-detay'
+                };
+                const base = map[event.type] || 'unite';
+                return `${base}/${encodeURIComponent(event.slug)}`;
+            }
+
+            // Separate events by type
+            const generalEvents = eventList.filter(event => event.type !== 'homework');
+            const homeworkEvents = eventList.filter(event => event.type === 'homework');
+
+            // --- Render General Events ---
+            generalEvents.sort((a, b) => new Date(a.start) - new Date(b.start));
+
+            const groupedGeneral = {};
+            let generalHtml = '';
+
+            generalEvents.forEach(event => {
+                const key = getMonthYear(event.start);
+                if (!groupedGeneral[key]) groupedGeneral[key] = [];
+                groupedGeneral[key].push(event);
+            });
+
+            for (const key in groupedGeneral) {
+                generalHtml += `<h2 class="text-center event-month mt-4 mb-4">${capitalize(key)}</h2>`;
+
+                groupedGeneral[key].forEach(event => {
+                    const href = buildEventHref(event);
+                    generalHtml += `
+        <div class="card mb-2 shadow-sm event-card" style="padding: 0;">
+            <div class="card-body py-2 px-3">
+                <div class="row align-items-center">
+                    <div class="col-4">
+                        <h5 class="card-title text-dark mb-0" style="font-size: 1.2rem;">
+                            <a href="${href}" class="text-decoration-none text-dark">
+                                ${event.name}
+                            </a>
+                        </h5>
+                    </div>
+
+                    <div class="col-4 d-flex align-items-center">
+                        <i class="fas fa-calendar-alt text-primary me-2"></i>
+                        <small class="text-muted" style="font-size: 1.1rem;">
+                            ${formatDateShort(event.start)} - ${formatDateShort(event.end)}
+                        </small>
+                    </div>
+
+                    <div class="col-4 text-end">
+                        ${new Date(event.end) < new Date() 
+                            ? '<span class="badge bg-danger">Sona ermiştir</span>' 
+                            : '<span class="badge bg-success">Kalan: ' + calculateRemaining(event.end) + '</span>'
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+                });
+            }
+
+            $('#eventResults').html(generalHtml);
+
+            // --- Render Homework Events ---
+            let homeworkHtml = '';
+            if (homeworkEvents.length > 0) {
+                homeworkHtml += '<h2 class="text-center event-month mt-4 mb-4">Ödevler</h2>';
+                homeworkEvents.forEach(event => {
+                    const href = buildEventHref(event);
+                    homeworkHtml += `
+        <div class="card mb-2 shadow-sm event-card" style="padding: 0;">
+            <div class="card-body py-2 px-3">
+                <div class="row align-items-center">
+                    <div class="col-4">
+                        <h5 class="card-title text-dark mb-0" style="font-size: 1.2rem;">
+                            <a href="${href}" class="text-decoration-none text-dark">
+                                ${event.name}
+                            </a>
+                        </h5>
+                    </div>
+
+                    <div class="col-4 d-flex align-items-center">
+                        <i class="fas fa-clipboard-list text-info me-2"></i>
+                        <small class="text-muted" style="font-size: 1.1rem;">
+                            ${formatDateShort(event.start)} - ${formatDateShort(event.end)}
+                        </small>
+                    </div>
+
+                    <div class="col-4 text-end">
+                        ${new Date(event.end) < new Date() 
+                            ? '<span class="badge bg-danger">Sona ermiştir</span>' 
+                            : '<span class="badge bg-warning">Kalan: ' + calculateRemaining(event.end) + '</span>'
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+                });
+                $('#odev').html(homeworkHtml); // Display homework in the #odev div
+            } else {
+                $('#odev').html(`<div class="alert alert-info">Henüz tanımlanmış ödev bulunmamaktadır.</div>`);
+            }
+
+
+            if (Array.isArray(response.testData) && response.testData.length > 0) {
+                let testHtml = '<h2 class="text-center event-month mt-4 mb-4">Testler</h2>';
+
+                response.testData.forEach(test => {
+                    testHtml += `
+        <div class="card mb-3 shadow-sm border-start border-3 border-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <i class="fas fa-vial text-danger me-2"></i>
+                        <strong style="font-size: 1.3rem;">${test.name}</strong>
+                    </div>
+                    <a href="ogrenci-test-coz.php?id=${test.id}" target="_blank" class="btn btn-success btn-sm">
+                        Sınava Gir
+                    </a>
+                </div>
+                <div class="text-muted" style="font-size: 1.2rem;">
+                    <i class="fas fa-clock me-1"></i>
+                    ${formatDateShort(test.start_date)} - ${formatDateShort(test.end_date)} 
+                    <span class="badge bg-${new Date(test.end_date) < new Date() ? 'danger' : 'success'} ms-2">${new Date(test.end_date) < new Date() ? 'Tarihi Geçmiş' : 'Aktif'}</span>
+                </div>
+            </div>
+        </div>
+    `;
+                });
+
+                $('#eventResultsTest').html(testHtml);
+            } else {
+                $('#eventResultsTest').html(`<div class="alert alert-warning">Henüz sınav tanımlanmamış.</div>`);
+            }
+
+        } else {
+            alert('Filtreleme başarısız: ' + response.message);
+        }
+    },
+    error: function(xhr, status, error) {
+        // Handle error
+        console.error('AJAX Error:', status, error);
+        alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+    }
+});
+
             }
 
             // Sayfa yüklendiğinde (DOM hazır olduğunda) çalışacak kod

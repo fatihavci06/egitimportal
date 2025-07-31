@@ -26,7 +26,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         }
     }
 
-?>
+    ?>
     <?php
 
     ?>
@@ -166,7 +166,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         }
     </style>
 
-    <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
+    <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true"
+        data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true"
+        data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true"
+        data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true"
+        data-kt-app-aside-push-footer="true" class="app-default">
 
         <script>
             var defaultThemeMode = "light";
@@ -232,10 +236,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                             <div id="kt_app_content" class="app-content flex-column-fluid">
 
-                                <div id="kt_app_content_container" class="app-container2 container-fluid" style="margin-top: -40px">
+                                <div id="kt_app_content_container" class="app-container2 container-fluid"
+                                    style="margin-top: -40px">
                                     <div class="card-body col-12 row pt-5">
                                         <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
-                                             border-top border-bottom border-custom-red " style="border-width: 5px !important; height:85px;margin-bottom: 26px !important;">
+                                             border-top border-bottom border-custom-red "
+                                            style="border-width: 5px !important; height:85px;margin-bottom: 26px !important;">
 
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle bg-danger me-3 shadow icon-circle-lg d-flex justify-content-center align-items-center"
@@ -251,31 +257,36 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             <p><?= $data['content_description']; ?></p>
                                         </div>
                                         <div class="tab-content " id="myTabContent">
-                                            <div class="tab-pane fade show active" id="video" role="tabpanel" aria-labelledby="video-tab">
+                                            <div class="tab-pane fade show active" id="video" role="tabpanel"
+                                                aria-labelledby="video-tab">
                                                 <div class="row">
                                                     <?php
 
                                                     if (isset($data['images']) && count($data['images']) > 0) {
-                                                        foreach ($data['images'] as $img) : ?>
+                                                        foreach ($data['images'] as $img): ?>
                                                             <div class="col-md-12 mb-4">
                                                                 <div class="card shadow-sm">
                                                                     <div class="card-body p-0" style="height: 700px;">
-                                                                        <img src="<?= $img['file_path'] ?>" alt="Yüklenen Görsel" class="w-100 h-100 rounded shadow" style="object-fit: cover;">
+                                                                        <img src="<?= $img['file_path'] ?>" alt="Yüklenen Görsel"
+                                                                            class="w-100 h-100 rounded shadow"
+                                                                            style="object-fit: cover;">
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                    <?php endforeach;
+                                                        <?php endforeach;
                                                     } ?>
                                                 </div>
 
-                                                <div class="row mt-4" id="videoContent" style="justify-content: center; margin-top: -35px !important;">
+                                                <div class="row mt-4" id="videoContent"
+                                                    style="justify-content: center; margin-top: -35px !important;">
                                                     <div class="video-responsive" style="background: none; max-width: 95%;">
 
                                                         <?php
+
                                                         $videoUrl = $data['video_url'] ?? ''; // video_url'nin tanımlı olduğundan emin olun
                                                         $embedUrl = convertToEmbedUrl($videoUrl);
 
-                                                        if ($embedUrl) :
+                                                        if ($embedUrl):
                                                             // YouTube veya Vimeo iframe özelliklerini ayarla
                                                             $iframeProperties = 'width="80%" height="600px" frameborder="0" allowfullscreen';
                                                             if (strpos($embedUrl, 'youtube.com') !== false) { // YouTube'a özgü izinler
@@ -283,10 +294,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             } elseif (strpos($embedUrl, 'vimeo.com') !== false) { // Vimeo'ya özgü izinler
                                                                 $iframeProperties .= ' allow="autoplay; fullscreen; picture-in-picture"';
                                                             }
-                                                        ?>
-                                                            <iframe src="<?= htmlspecialchars($embedUrl, ENT_QUOTES, 'UTF-8') ?>" title="Video player" <?= $iframeProperties ?>>
+                                                            ?>
+                                                            <iframe id="<?= $data['id'] ?>"
+                                                                src="<?= htmlspecialchars($embedUrl, ENT_QUOTES, 'UTF-8') ?>"
+                                                                title="Video player" <?= $iframeProperties ?>>
                                                             </iframe>
-                                                        <?php else : ?>
+
+                                                        <?php else: ?>
                                                             <p>Video bulunamadı veya geçersiz bir video linki.</p>
                                                         <?php endif; ?>
                                                     </div>
@@ -295,16 +309,20 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <?php
 
                                                     if (isset($data['wordwalls']) && count($data['wordwalls']) > 0) {
-                                                        foreach ($data['wordwalls'] as $wordWall) : ?>
+                                                        foreach ($data['wordwalls'] as $wordWall): ?>
                                                             <div class="col-md-12 mb-4">
                                                                 <div class="card shadow-sm">
-                                                                    <h3 class="card-title mt-4 mb-4"><?= $wordWall['wordwall_title']; ?></h3>
+                                                                    <h3 class="card-title mt-4 mb-4">
+                                                                        <?= $wordWall['wordwall_title']; ?>
+                                                                    </h3>
                                                                     <div class="card-body p-0" style="height: 400px;">
-                                                                        <iframe style="max-width:100%" src="<?= $wordWall['wordwall_url'] ?>" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+                                                                        <iframe style="max-width:100%"
+                                                                            src="<?= $wordWall['wordwall_url'] ?>" width="100%"
+                                                                            height="100%" frameborder="0" allowfullscreen></iframe>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                    <?php endforeach;
+                                                        <?php endforeach;
                                                     } ?>
                                                 </div>
                                                 <div class="row " style="font-size:17px; margin-top:35px;">
@@ -321,22 +339,27 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <div class="row" id="files" role="tabpanel" aria-labelledby="files-tab">
                                                     <?php
                                                     if (!empty($data['files'])) {
-                                                    ?>
+                                                        ?>
                                                         <h1 style="margin-top:50px;margin-bottom:30px">Dosyalar</h1>
-                                                        <?php foreach ($data['files'] as $file) : ?>
+                                                        <?php foreach ($data['files'] as $file): ?>
                                                             <div class="col-md-12 mb-4" style="font-size: 20px;">
                                                                 <div class="card shadow-sm">
                                                                     <div class="card-body">
                                                                         <h5 class="card-title">
-                                                                            <a href="<?= $file['file_path'] ?>" target="_blank" class="text-decoration-none text-primary">
-                                                                                <i class="bi bi-file-earmark"></i> <?= basename($file['file_path']) ?>
+                                                                            <a href="<?= $file['file_path'] ?>" target="_blank"
+                                                                                class="text-decoration-none text-primary">
+                                                                                <i class="bi bi-file-earmark"></i>
+                                                                                <?= basename($file['file_path']) ?>
                                                                             </a>
                                                                         </h5>
 
-                                                                        <p><strong>Açıklama:</strong> <?= htmlspecialchars($file['description'] ?? 'Açıklama mevcut değil.') ?></p>
+                                                                        <p><strong>Açıklama:</strong>
+                                                                            <?= htmlspecialchars($file['description'] ?? 'Açıklama mevcut değil.') ?>
+                                                                        </p>
 
                                                                         <div class="d-flex justify-content-between">
-                                                                            <a href="<?= $file['file_path'] ?>" class="btn btn-primary btn-sm" target="_blank">
+                                                                            <a href="<?= $file['file_path'] ?>"
+                                                                                class="btn btn-primary btn-sm" target="_blank">
                                                                                 <i class="bi bi-download"></i> Dosyayı Görüntüle
                                                                             </a>
 
@@ -345,7 +368,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                 </div>
                                                             </div>
                                                         <?php endforeach; ?>
-                                                    <?php
+                                                        <?php
                                                     }
                                                     ?>
                                                 </div>
@@ -377,15 +400,22 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script>
             var hostUrl = "assets/";
         </script>
+
+
+        <script src="https://player.vimeo.com/api/player.js"></script>
+        <script src="assets/js/custom/trackTimeOnVimeo.js"></script>
+        <script src="assets/js/custom/contentTracker.js"></script>
+
+
         <script src="assets/plugins/global/plugins.bundle.js"></script>
         <script src="assets/js/scripts.bundle.js"></script>
         <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
         <script src="assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
-        <script src="assets/js/custom/apps/subtopics/list/export.js"></script>
+        <!-- <script src="assets/js/custom/apps/subtopics/list/export.js"></script>
         <script src="assets/js/custom/apps/subtopics/list/list.js"></script>
         <script src="assets/js/custom/apps/subtopics/list/topicadd.js"></script>
         <script src="assets/js/custom/apps/subtopics/add.js"></script>
-        <script src="assets/js/custom/apps/subtopics/create.js"></script>
+        <script src="assets/js/custom/apps/subtopics/create.js"></script> -->
         <script src="assets/js/widgets.bundle.js"></script>
         <script src="assets/js/custom/widgets.js"></script>
         <script src="assets/js/custom/apps/chat/chat.js"></script>
@@ -397,7 +427,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
     </body>
 
-</html>
+    </html>
 <?php } else {
     header("location: index");
 }
