@@ -76,7 +76,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     </i>
                                                     <input type="text" data-kt-customer-table-filter="search"
                                                         class="form-control form-control-solid w-250px ps-12"
-                                                        placeholder="Sesli Kitap Ara" />
+                                                        placeholder="Kitap Ara" />
                                                 </div>
                                                 <!--end::Search-->
                                             </div>
@@ -88,7 +88,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     data-kt-customer-table-toolbar="base">
                                                     <!--begin::Add school-->
                                                     <button type="button" class="btn btn-primary btn-sm"
-                                                        data-bs-toggle="modal" data-bs-target="#kt_modal_add_customer">Sesli
+                                                        data-bs-toggle="modal" data-bs-target="#kt_modal_add_customer">
                                                         Kitap Ekle</button>
                                                     <!--end::Add school-->
                                                 </div>
