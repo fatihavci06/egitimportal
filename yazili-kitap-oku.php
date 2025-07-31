@@ -64,7 +64,7 @@ ini_set('display_errors', '1');
 									<!--begin::Careers - List-->
 									<div class="card" style="margin-left: -15px;">
 										<!--begin::Body-->
-										<div class="card-body p-lg-7">
+										<div class="card-body ">
 
 												<?php $book->getHeaderImageInWrittenBookStu(); ?>
 											<!--end::-->
