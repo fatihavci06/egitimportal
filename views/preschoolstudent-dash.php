@@ -68,7 +68,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                         </h3>
 
 
-                        <a href="#"><button type="button"
+                        <a href="ana-okulu-icerikler"><button type="button"
                                 class="btn btn-primary btn-sm mt-5">Tümü</button></a>
 
                         <!--end::Title-->
@@ -161,13 +161,13 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                                 $unitCount = count($unitData);
 
                                                 echo '
-                                                <a href="#">
+                                                <a href="ana-okulu-icerikler">
                                                 <div class="symbol symbol-40px">
                                                     ' . $ico . '
                                                 </div>
                                                 </a>';
 
-                                                echo '<a href="#"><div class="mt-5"><p class="text-gray-800 fw-bold fs-4"> ' . $value['name'] . '</p>
+                                                echo '<a href="ana-okulu-icerikler"><div class="mt-5"><p class="text-gray-800 fw-bold fs-4"> ' . $value['name'] . '</p>
                                                 <p class="text-gray-800 fw-bold fs-6"> ' . $unitCount . ' Ünite</p></div></a>';
 
 
@@ -175,50 +175,6 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                             
                                             $styleIndex++;
                                         } ?>
-                                    </div>
-
-                                    <!--end::Table-->
-                                </div>
-                                <!--end::Table container-->
-                            </div>
-                            <!--end::Tab pane-->
-                        </div>
-                        <!--end::Tab content-->
-                    </div>
-                    <!--end::Body-->
-                </div>
-                <!--end::Chart widget 8-->
-            </div>
-            <!--end::Col-->
-
-            <!--begin::Col-->
-            <div class="col-xxl-12 mb-1 mb-xl-1" style="padding-right: 0px;">
-                <!--begin::Chart widget 8-->
-                <div class="card card-flush h-xl-100">
-                    <!--begin::Header-->
-                    <div class="card-header pt-5" style="padding: 10px;">
-                        <!--begin::Title-->
-                        <h5 class="card-title d-flex align-items-center">
-                            <i class="fa-solid fa-comments me-2 fs-1"></i> <span class="card-label fw-bold" style="font-family: Comic Relief, system-ui; color: #2b8c01 !important;">Soru-Cevap</span>
-                        </h5>
-
-                        <!--end::Title-->
-                    </div>
-                    <!--end::Header-->
-                    <!--begin::Body-->
-                    <div class="card-body pt-0" style="padding: 10px;">
-                        <!--begin::Tab content-->
-                        <div class="tab-content">
-                            <!--begin::Tab pane-->
-                            <div class="tab-pane fade active show" id="kt_chart_widget_8_month_tab" role="tabpanel">
-                                <!--begin::Table container-->
-                                <div class="table-responsive">
-                                    <!--begin::Table-->
-
-                                    <div style="display: flex; justify-content: space-around; width: 100%; padding: 5px 0;">
-                                        <a href="cek-gonder">
-                                            <p class="kalangun" style="font-family: Comic Relief, system-ui; color: #2b8c01 !important;"><b>Derslerle ilgili cevabını merak ettiğin sorularını sormayı unutma, LineUp öğretmenleri sorularını senin için cevaplayacak.</b></p>
-                                        </a>
                                     </div>
 
                                     <!--end::Table-->

@@ -27,147 +27,148 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     }
 
 ?>
-<?php
+    <?php
 
-?>
- <style>
-            /* Genel Stil İyileştirmeleri */
+    ?>
+    <style>
+        /* Genel Stil İyileştirmeleri */
 
-            .main-card-container {
-                background-color: #ffffff;
-                padding: 40px;
-                border-radius: 15px;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-                width: 100%;
-                border: 1px solid #e0e0e0;
+        .main-card-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            border: 1px solid #e0e0e0;
+        }
+
+        .custom-card {
+            border: none;
+            padding: 0px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            background-color: white;
+            margin-bottom: 25px;
+        }
+
+        .card-title-custom {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #ed5606;
+            margin-bottom: 15px;
+        }
+
+        .content-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .icon-small {
+            font-size: 50px !important;
+            color: #e83e8c !important;
+        }
+
+
+
+        .btn-custom {
+            /*  background-color: #1b84ff; */
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .btn-custom:hover {
+            background-color: #1a9c7b;
+        }
+
+        .left-align {
+            margin-left: 0;
+            margin-right: auto;
+        }
+
+        .right-align {
+            margin-left: auto;
+            margin-right: 0;
+        }
+
+        .left-align .card-body {
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .left-align .content-wrapper {
+            flex-direction: row;
+        }
+
+        .right-align .card-body {
+            align-items: flex-end;
+            text-align: right;
+        }
+
+        .right-align .content-wrapper {
+            flex-direction: row-reverse;
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bg-custom-light {
+            background-color: #e6e6fa;
+            /* Light purple */
+        }
+
+        .border-custom-red {
+            border-color: #d22b2b !important;
+        }
+
+        .text-custom-cart {
+            color: #6a5acd;
+            /* Slate blue for the cart */
+        }
+
+        /* For the circular icon, we'll use a larger padding or fixed size */
+        .icon-circle-lg {
+            width: 60px;
+            /* fixed width */
+            height: 60px;
+            /* fixed height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-circle-lg img {
+            max-width: 100%;
+            /* Ensure image scales within the circle */
+            max-height: 100%;
+        }
+
+
+        /* Animasyonlar */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
             }
 
-            .custom-card {
-                border: none;
-                padding: 0px;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-                border-radius: 15px;
-                background-color: white;
-                margin-bottom: 25px;
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
+        }
+    </style>
 
-            .card-title-custom {
-                font-size: 1.2rem;
-                font-weight: 700;
-                color: #ed5606;
-                margin-bottom: 15px;
-            }
-
-            .content-wrapper {
-                display: flex;
-                align-items: center;
-                gap: 15px;
-            }
-
-            .icon-small {
-                font-size: 50px !important;
-                color: #e83e8c !important;
-            }
-
-
-
-            .btn-custom {
-                background-color: #1b84ff;
-                color: white;
-                border: none;
-                padding: 10px 25px;
-                border-radius: 25px;
-                font-size: 1rem;
-                font-weight: 600;
-                transition: background-color 0.3s ease;
-                margin-top: 15px;
-            }
-
-            .btn-custom:hover {
-                background-color: #1a9c7b;
-            }
-
-            .left-align {
-                margin-left: 0;
-                margin-right: auto;
-            }
-
-            .right-align {
-                margin-left: auto;
-                margin-right: 0;
-            }
-
-            .left-align .card-body {
-                align-items: flex-start;
-                text-align: left;
-            }
-
-            .left-align .content-wrapper {
-                flex-direction: row;
-            }
-
-            .right-align .card-body {
-                align-items: flex-end;
-                text-align: right;
-            }
-
-            .right-align .content-wrapper {
-                flex-direction: row-reverse;
-            }
-
-            .card-body {
-                display: flex;
-                flex-direction: column;
-            }
-
-            .bg-custom-light {
-                background-color: #e6e6fa;
-                /* Light purple */
-            }
-
-            .border-custom-red {
-                border-color: #d22b2b !important;
-            }
-
-            .text-custom-cart {
-                color: #6a5acd;
-                /* Slate blue for the cart */
-            }
-
-            /* For the circular icon, we'll use a larger padding or fixed size */
-            .icon-circle-lg {
-                width: 60px;
-                /* fixed width */
-                height: 60px;
-                /* fixed height */
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .icon-circle-lg img {
-                max-width: 100%;
-                /* Ensure image scales within the circle */
-                max-height: 100%;
-            }
-
-
-            /* Animasyonlar */
-            @keyframes fadeIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(-10px);
-                }
-
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-        </style>
     <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
-      
-       <script>
+
+        <script>
             var defaultThemeMode = "light";
             var themeMode;
             if (document.documentElement) {
@@ -214,38 +215,38 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                     return 'https://www.youtube.com/embed/' . $matches[1];
                                 }
                                 // Vimeo URL'sini işleme
-                               if (preg_match('/vimeo\.com\/(\d+)\/?([a-zA-Z0-9]+)?/', $url, $matches)) {
-                                $vimeoId = $matches[1];
-                                // İkinci yakalama grubunun (hash) varlığını kontrol et
-                                $vimeoHash = isset($matches[2]) && !empty($matches[2]) ? $matches[2] : '';
-                                
-                                $embedUrl = 'https://player.vimeo.com/video/' . $vimeoId;
-                                if (!empty($vimeoHash)) {
-                                    $embedUrl .= '?h=' . $vimeoHash;
+                                if (preg_match('/vimeo\.com\/(\d+)\/?([a-zA-Z0-9]+)?/', $url, $matches)) {
+                                    $vimeoId = $matches[1];
+                                    // İkinci yakalama grubunun (hash) varlığını kontrol et
+                                    $vimeoHash = isset($matches[2]) && !empty($matches[2]) ? $matches[2] : '';
+
+                                    $embedUrl = 'https://player.vimeo.com/video/' . $vimeoId;
+                                    if (!empty($vimeoHash)) {
+                                        $embedUrl .= '?h=' . $vimeoHash;
+                                    }
+                                    return $embedUrl;
                                 }
-                                return $embedUrl;
-                            }
                                 return null; // Geçerli bir YouTube veya Vimeo linki değilse null döndür
                             }
                             ?>
 
                             <div id="kt_app_content" class="app-content flex-column-fluid">
 
-                                <div id="kt_app_content_container" class="app-container container-fluid" style="margin-top: -40px">
+                                <div id="kt_app_content_container" class="app-container2 container-fluid" style="margin-top: -40px">
                                     <div class="card-body col-12 row pt-5">
                                         <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
                                              border-top border-bottom border-custom-red " style="border-width: 5px !important; height:85px;margin-bottom: 26px !important;">
 
-                                                <div class="d-flex align-items-center">
-                                                    <div class="rounded-circle bg-danger me-3 shadow icon-circle-lg d-flex justify-content-center align-items-center"
-                                                        style="width: 65px; height: 65px;">
-                                                        <i class="fas fa-bullseye fa-2x text-white"></i>
-                                                    </div>
-
-                                                    <h1 class="fs-3 fw-bold text-dark mb-0"><?= $data['subject']; ?></h1>
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle bg-danger me-3 shadow icon-circle-lg d-flex justify-content-center align-items-center"
+                                                    style="width: 65px; height: 65px;">
+                                                    <i class="fas fa-bullseye fa-2x text-white"></i>
                                                 </div>
 
-                                            </header>
+                                                <h1 class="fs-3 fw-bold text-dark mb-0"><?= $data['subject']; ?></h1>
+                                            </div>
+
+                                        </header>
                                         <div class="row">
                                             <p><?= $data['content_description']; ?></p>
                                         </div>
@@ -266,28 +267,29 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <?php endforeach;
                                                     } ?>
                                                 </div>
-                                                
-                                                <div class="row mt-4" id="videoContent">
-                                              
-                                                    <?php
-                                                    $videoUrl = $data['video_url'] ?? ''; // video_url'nin tanımlı olduğundan emin olun
-                                                    $embedUrl = convertToEmbedUrl($videoUrl);
-                                                   
-                                                    if ($embedUrl) :
-                                                        // YouTube veya Vimeo iframe özelliklerini ayarla
-                                                        $iframeProperties = 'width="100%" height="400" frameborder="0" allowfullscreen';
-                                                        if (strpos($embedUrl, 'youtube.com') !== false) { // YouTube'a özgü izinler
-                                                            $iframeProperties .= ' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"';
-                                                        } elseif (strpos($embedUrl, 'vimeo.com') !== false) { // Vimeo'ya özgü izinler
-                                                            $iframeProperties .= ' allow="autoplay; fullscreen; picture-in-picture"';
-                                                        }
-                                                    ?>
-                                                        <iframe src="<?= htmlspecialchars($embedUrl, ENT_QUOTES, 'UTF-8') ?>" title="Video player" <?= $iframeProperties ?>>
-                                                        </iframe>
-                                                    <?php else : ?>
-                                                        <p>Video bulunamadı veya geçersiz bir video linki.</p>
-                                                    <?php endif; ?>
 
+                                                <div class="row mt-4" id="videoContent" style="justify-content: center; margin-top: -35px !important;">
+                                                    <div class="video-responsive" style="background: none; max-width: 95%;">
+
+                                                        <?php
+                                                        $videoUrl = $data['video_url'] ?? ''; // video_url'nin tanımlı olduğundan emin olun
+                                                        $embedUrl = convertToEmbedUrl($videoUrl);
+
+                                                        if ($embedUrl) :
+                                                            // YouTube veya Vimeo iframe özelliklerini ayarla
+                                                            $iframeProperties = 'width="80%" height="600px" frameborder="0" allowfullscreen';
+                                                            if (strpos($embedUrl, 'youtube.com') !== false) { // YouTube'a özgü izinler
+                                                                $iframeProperties .= ' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"';
+                                                            } elseif (strpos($embedUrl, 'vimeo.com') !== false) { // Vimeo'ya özgü izinler
+                                                                $iframeProperties .= ' allow="autoplay; fullscreen; picture-in-picture"';
+                                                            }
+                                                        ?>
+                                                            <iframe src="<?= htmlspecialchars($embedUrl, ENT_QUOTES, 'UTF-8') ?>" title="Video player" <?= $iframeProperties ?>>
+                                                            </iframe>
+                                                        <?php else : ?>
+                                                            <p>Video bulunamadı veya geçersiz bir video linki.</p>
+                                                        <?php endif; ?>
+                                                    </div>
                                                 </div>
                                                 <div class="row mt-4">
                                                     <?php
@@ -318,7 +320,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                                 <div class="row" id="files" role="tabpanel" aria-labelledby="files-tab">
                                                     <?php
-                                                    if (isset($data['files'])) {
+                                                    if (!empty($data['files'])) {
                                                     ?>
                                                         <h1 style="margin-top:50px;margin-bottom:30px">Dosyalar</h1>
                                                         <?php foreach ($data['files'] as $file) : ?>
@@ -342,7 +344,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                    <?php endforeach; ?>
+                                                        <?php endforeach; ?>
                                                     <?php
                                                     }
                                                     ?>
@@ -350,21 +352,21 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                             </div>
 
-                                            </div>
+                                        </div>
                                     </div>
 
 
 
 
                                 </div>
-                                </div>
                             </div>
                         </div>
-                    <?php include_once "views/footer.php"; ?>
                     </div>
-                <?php include_once "views/aside.php"; ?>
+                    <?php include_once "views/footer.php"; ?>
                 </div>
+                <?php include_once "views/aside.php"; ?>
             </div>
+        </div>
         </div>
         <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
             <i class="ki-duotone ki-arrow-up">
@@ -393,8 +395,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/js/custom/utilities/modals/users-search.js"></script>
 
 
-        </body>
-    </html>
+    </body>
+
+</html>
 <?php } else {
     header("location: index");
 }

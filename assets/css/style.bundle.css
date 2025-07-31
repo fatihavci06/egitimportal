@@ -60325,6 +60325,11 @@ body,
     padding-left: 20px !important;
     padding-right: 20px !important;
   }
+  .app-container2 {
+    max-width: none;
+    padding-left: 15px !important;
+    padding-right: 0px !important;
+  }
 
   .app-container-fit-mobile {
     padding-left: 0 !important;

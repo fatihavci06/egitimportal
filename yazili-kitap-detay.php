@@ -4,7 +4,7 @@
 
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 10002 or $_SESSION['role'] == 2)) {
     include_once "classes/dbh.classes.php";
     include_once "classes/written-book.classes.php";
     include_once "classes/written-book-view.classes.php";
