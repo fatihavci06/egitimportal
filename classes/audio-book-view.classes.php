@@ -143,38 +143,68 @@ class ShowAudioBook extends AudioBooks
     public function getHeaderImageStu()
     {
 
-        $audioBookInfo = $this->getAudioBooksList();
 
-        foreach ($audioBookInfo as $key => $value) {
-
-            $audioBookList = '
-                    <div class="position-relative mb-17">
-                        <!--begin::Overlay-->
-                        <div class="overlay overlay-show">
-                            <!--begin::Image-->
-                            <div class="bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-250px" style="background-image:url(\'assets/media/games/gameDefault.jpg\')"></div>
-                            <!--end::Image-->
-                            <!--begin::layer-->
-                            <div class="overlay-layer rounded bg-black" style="opacity: 0.4"></div>
-                            <!--end::layer-->
+        $view = '
+                <header class="container-fluid py-3 d-flex justify-content-between align-items-center"
+                    style="
+                        background-color: #e6e6fa !important;
+                        margin-bottom: 40px !important;
+                        margin-top: -45px !important;
+                        border-top: 5px solid #d22b2b !important;
+                        border-bottom: 5px solid #d22b2b !important;
+                        height:85px;
+                        margin-left:-10px
+                    ">
+                    <div class="d-flex align-items-center">
+                        <div class="">
+                            <img src="assets/media/sesli-kitap/sesli-kitap.jpg" alt="sesli kitap Icon"
+                                class="img-fluid"
+                                style="width: 90px; height: 66px; object-fit: contain;">
                         </div>
-                        <!--end::Overlay-->
-                        <!--begin::Heading-->
-                        <div class="position-absolute text-white mb-8 ms-10 bottom-0">
-                            <!--begin::Title-->
-                            <h3 class="text-white fs-2qx fw-bold mb-3 m"></h3>
-                            <!--end::Title-->
-                            <!--begin::Text-->
-                            <!--<div class="fs-5 fw-semibold">You sit down. You stare at your screen. The cursor blinks.</div>-->
-                            <!--end::Text-->
+                        <div>
+                            <h1 class="fs-3 fw-bold text-dark mb-0 ml-2" style="margin-left: 20px;"> Sesli Kitaplar </h1>
                         </div>
-                        <!--end::Heading-->
                     </div>
-                ';
-            echo $audioBookList;
-        }
+                </header>';
+
+        echo $view;
+
     }
 
+    public function getHeaderImageForOne()
+    {
+        $link = "$_SERVER[REQUEST_URI]";
+
+        $active_slug = htmlspecialchars(basename($link, ".php"));
+
+        $unitInfo = $this->getOneAudioBook($active_slug);
+
+        $view = '
+                <header class="container-fluid py-3 d-flex justify-content-between align-items-center"
+                    style="
+                        background-color: #e6e6fa !important;
+                        margin-bottom: 40px !important;
+                        margin-top: -45px !important;
+                        border-top: 5px solid #d22b2b !important;
+                        border-bottom: 5px solid #d22b2b !important;
+                        height:85px;
+                        margin-left:-10px
+                    ">
+                    <div class="d-flex align-items-center">
+                        <div class="">
+                            <img src="assets/media/sesli-kitap/' . $unitInfo['cover_img'] . '" alt="' . $unitInfo['book_name'] . ' Icon"
+                                class="img-fluid"
+                                style="width: 90px; height: 90px; object-fit: contain;">
+                        </div>
+                        <div>
+                            <h1 class="fs-3 fw-bold text-dark mb-0 ml-2" style="margin-left: 20px;">' . $unitInfo['book_name'] . '</h1>
+                        </div>
+                    </div>
+                </header>';
+
+        echo $view;
+
+    }
     public function getHeaderImageInAudioBookStu()
     {
 
@@ -185,9 +215,30 @@ class ShowAudioBook extends AudioBooks
         $audioBookInfo = $this->getOneAudioBook($active_slug);
 
         /* $audioBookInfo = $this->getAudioBooksList(); */
+        $view = '
+                <header class="container-fluid py-3 d-flex justify-content-between align-items-center"
+                    style="
+                        background-color: #e6e6fa !important;
+                        margin-bottom: 40px !important;
+                        margin-top: -45px !important;
+                        border-top: 5px solid #d22b2b !important;
+                        border-bottom: 5px solid #d22b2b !important;
+                        height:85px;
+                        margin-left:-10px
+                    ">
+                    <div class="d-flex align-items-center">
+                        <div class="">
+                            <img src="assets/media/sesli-kitap/' . $audioBookInfo['cover_img'] . '" alt="' . $audioBookInfo['book_name'] . ' Icon"
+                                class="img-fluid"
+                                style="width: 90px; height: 90px; object-fit: contain;">
+                        </div>
+                        <div>
+                            <h1 class="fs-3 fw-bold text-dark mb-0 ml-2" style="margin-left: 20px;">' . $audioBookInfo['book_name'] . '</h1>
+                        </div>
+                    </div>
+                </header>';
 
-
-        $audioBookList = '
+        $view .= '
             <div class="position-relative mb-17 " style="width: 200px; height: 300px; ">
                 <div class="overlay overlay-show w-100 h-100 position-relative">
                     <div id="soundcloud-thumbnail"
@@ -203,7 +254,7 @@ class ShowAudioBook extends AudioBooks
                 </div>
             </div>
         ';
-        echo $audioBookList;
+        echo $view;
 
     }
 
@@ -605,41 +656,69 @@ class ShowAudioBookStudent extends AudioBooksStudent
         }
     }
 
-    // Get AudioBook Image For Students
-
     public function getHeaderImageStu()
     {
 
-        $audioBookInfo = $this->getAudioBooksListImage();
 
-        foreach ($audioBookInfo as $key => $value) {
-
-            $audioBookList = '
-                    <div class="position-relative mb-17">
-                        <!--begin::Overlay-->
-                        <div class="overlay overlay-show">
-                            <!--begin::Image-->
-                            <div class="bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-250px" style="background-image:url(\'assets/media/sesli-kitap/default.jpg\')"></div>
-                            <!--end::Image-->
-                            <!--begin::layer-->
-                            <div class="overlay-layer rounded bg-black" style="opacity: 0.4"></div>
-                            <!--end::layer-->
+        $view = '
+                <header class="container-fluid py-3 d-flex justify-content-between align-items-center"
+                    style="
+                        background-color: #e6e6fa !important;
+                        margin-bottom: 40px !important;
+                        margin-top: -45px !important;
+                        border-top: 5px solid #d22b2b !important;
+                        border-bottom: 5px solid #d22b2b !important;
+                        height:85px;
+                        margin-left:-10px
+                    ">
+                    <div class="d-flex align-items-center">
+                        <div class="">
+                            <img src="assets/media/sesli-kitap/sesli-kitap.jpg" alt="sesli kitap Icon"
+                                class="img-fluid"
+                                style="width: 90px; height: 66px; object-fit: contain;">
                         </div>
-                        <!--end::Overlay-->
-                        <!--begin::Heading-->
-                        <div class="position-absolute text-white mb-8 ms-10 bottom-0">
-                            <!--begin::Title-->
-                            <h3 class="text-white fs-2qx fw-bold mb-3 m"></h3>
-                            <!--end::Title-->
-                            <!--begin::Text-->
-                            <!--<div class="fs-5 fw-semibold">You sit down. You stare at your screen. The cursor blinks.</div>-->
-                            <!--end::Text-->
+                        <div>
+                            <h1 class="fs-3 fw-bold text-dark mb-0 ml-2" style="margin-left: 20px;"> Sesli Kitaplar </h1>
                         </div>
-                        <!--end::Heading-->
                     </div>
-                ';
-            echo $audioBookList;
-        }
+                </header>';
+
+        echo $view;
+
+    }
+    public function getHeaderImageStuForOne()
+    {
+        $link = "$_SERVER[REQUEST_URI]";
+
+        $active_slug = htmlspecialchars(basename($link, ".php"));
+
+        $unitInfo = $this->getOneAudioBook($active_slug);
+
+        $view = '
+                <header class="container-fluid py-3 d-flex justify-content-between align-items-center"
+                    style="
+                        background-color: #e6e6fa !important;
+                        margin-bottom: 40px !important;
+                        margin-top: -45px !important;
+                        border-top: 5px solid #d22b2b !important;
+                        border-bottom: 5px solid #d22b2b !important;
+                        height:85px;
+                        margin-left:-10px
+                    ">
+                    <div class="d-flex align-items-center">
+                        <div class="">
+                            <img src="assets/media/sesli-kitap/' . $unitInfo['cover_img'] . '" alt="' . $unitInfo['book_name'] . ' Icon"
+                                class="img-fluid"
+                                style="width: 90px; height: 90px; object-fit: contain;">
+                        </div>
+                        <div>
+                            <h1 class="fs-3 fw-bold text-dark mb-0 ml-2" style="margin-left: 20px;">' . $unitInfo['book_name'] . '</h1>
+                        </div>
+                    </div>
+                </header>';
+
+        echo $view;
+
     }
 
     // Get AudioBooks Topics Sidebar For Students

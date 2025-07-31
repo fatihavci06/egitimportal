@@ -55,17 +55,15 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2)) {
 					<div class="app-main flex-column flex-row-fluid" id="kt_app_main">
 						<!--begin::Content wrapper-->
 						<div class="d-flex flex-column flex-column-fluid">
-							<!--begin::Toolbar-->
-							<?php include_once "views/toolbar-without-title.php"; ?>
-							<!--end::Toolbar-->
-							<!--begin::Content-->
+
 							<div id="kt_app_content" class="app-content flex-column-fluid">
 								<!--begin::Content container-->
 								<div id="kt_app_content_container" class="app-container container-fluid">
 									<!--begin::Careers - List-->
-									<div class="card bg-gray-200">
+									<div class="card" style="margin-left: -15px;">
 										<!--begin::Body-->
-										<div class="card-body p-lg-10">
+										<div class="card-body p-lg-7">
+											<?php $writtenBooks->getHeaderImageStu(); ?>
 											<!--begin::Layout-->
 											<div class="d-flex flex-column flex-lg-row mb-10">
 												<!--begin::Content-->

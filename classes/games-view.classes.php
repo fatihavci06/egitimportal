@@ -162,36 +162,32 @@ class ShowGame extends Games
     public function getHeaderImageStu()
     {
 
-        $unitInfo = $this->getGamesListForHead();
-
-        foreach ($unitInfo as $key => $value) {
-
-            $lessonList = '
-                    <div class="position-relative mb-17">
-                        <!--begin::Overlay-->
-                        <div class="overlay overlay-show">
-                            <!--begin::Image-->
-                            <div class="bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-250px" style="background-image:url(\'assets/media/games/gameDefault.jpg\')"></div>
-                            <!--end::Image-->
-                            <!--begin::layer-->
-                            <div class="overlay-layer rounded bg-black" style="opacity: 0.4"></div>
-                            <!--end::layer-->
+       
+        $view = '
+                <header class="container-fluid py-3 d-flex justify-content-between align-items-center"
+                    style="
+                        background-color: #e6e6fa !important;
+                        margin-bottom: 40px !important;
+                        margin-top: -45px !important;
+                        border-top: 5px solid #d22b2b !important;
+                        border-bottom: 5px solid #d22b2b !important;
+                        height:85px;
+                        margin-left:-10px
+                    ">
+                    <div class="d-flex align-items-center">
+                        <div class="">
+                            <img src="assets/media/games/icon.avif" alt="Oyunlar Icon"
+                                class="img-fluid"
+                                style="width: 90px; height: 66px; object-fit: contain;">
                         </div>
-                        <!--end::Overlay-->
-                        <!--begin::Heading-->
-                        <div class="position-absolute text-white mb-8 ms-10 bottom-0">
-                            <!--begin::Title-->
-                            <h3 class="text-white fs-2qx fw-bold mb-3 m"></h3>
-                            <!--end::Title-->
-                            <!--begin::Text-->
-                            <!--<div class="fs-5 fw-semibold">You sit down. You stare at your screen. The cursor blinks.</div>-->
-                            <!--end::Text-->
+                        <div>
+                            <h1 class="fs-3 fw-bold text-dark mb-0 ml-2" style="margin-left: 20px;"> Oyunlar </h1>
                         </div>
-                        <!--end::Heading-->
                     </div>
-                ';
-            echo $lessonList;
-        }
+                </header>';
+
+        echo $view;
+        
     }
 
     public function getHeaderImageInGameStu()
@@ -422,9 +418,6 @@ class ShowGame extends Games
         $lessonList = '
                     <!--begin::Description-->
                     <div class="m-0">
-                        <!--begin::Title-->
-                        <h4 class="fs-1 text-gray-800 w-bolder mb-6">Oyun İçeriği</h4>
-                        <!--end::Title-->
                         <!--begin::Text-->
                         <p class="fw-semibold fs-4 text-gray-600 mb-2">' . $unitInfo['game_url'] . '</p>
                         <!--end::Text-->

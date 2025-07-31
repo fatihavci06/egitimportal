@@ -1014,13 +1014,13 @@ WHERE t.id = :id";
 
 		return $classData;
 	}
-
+	
 	public function getMainSchoolContentListDashboard()
 	{
 
-		$stmt = $this->connect()->prepare('SELECT * FROM main_school_content_lnp WHERE lesson_id =? ORDER BY RAND() LIMIT 3');
+		$stmt = $this->connect()->prepare('SELECT * FROM main_school_content_lnp WHERE lesson_id =? AND main_school_class_id = ? ORDER BY RAND() LIMIT 3');
 
-		if (!$stmt->execute(array("9"))) {
+		if (!$stmt->execute(array("9", $class_id))) {
 			$stmt = null;
 			exit();
 		}

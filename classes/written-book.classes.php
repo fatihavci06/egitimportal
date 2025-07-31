@@ -390,7 +390,7 @@ class WrittenBookStudent extends Dbh
 		$stmt = null;
 	}
 
-	public function getOneWrittenBooks($slug)
+	public function getOneWrittenBook($slug)
 	{
 
 		$stmt = $this->connect()->prepare('SELECT * FROM written_book_lnp WHERE slug = ?');

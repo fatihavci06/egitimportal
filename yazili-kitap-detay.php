@@ -22,7 +22,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
     $writtenBookDb = new WrittenBook();
 
-    $writtenBook_slug = isset($_GET['q']) ? filter_var($_GET['q'], FILTER_SANITIZE_STRING) : '';
+    $writtenBook_slug = isset($_GET['q']) ? htmlspecialchars(strip_tags($_GET['q'])) : '';
 
     $currentBook = $writtenBookDb->getOneWrittenBook($writtenBook_slug);
     ?>
@@ -76,9 +76,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
-                                    <!--begin::Card-->
-                                    <div class="card">
-                                        <div class="card-body pt-0">
+                                    <!--begin::Careers - List-->
+                                    <div class="card" style="margin-left: -15px;">
+                                        <div class="card-body p-lg-7">
+                                            <?php $writtenBookObj->getHeaderImageForOne(); ?>
                                             <table class="table align-middle table-row-dashed fs-6 gy-5"
                                                 id="kt_customers_table">
                                                 <thead>
