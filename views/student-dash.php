@@ -544,9 +544,6 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                         </div>
                     </div>
 
-                    <a href="/" class="btn btn-secondary btn-icon rounded p-4 w-auto">
-                        <i class="ki-duotone ki-arrow-right fs-4">Çiçeği Sula</i>
-                    </a>
                 </div>
             </div>
 
