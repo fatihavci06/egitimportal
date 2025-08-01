@@ -35,14 +35,14 @@ $current_uri = $_SERVER['REQUEST_URI'];
         </div>
         <!--begin::Navbar-->
         <div class="app-navbar flex-grow-1 justify-content-end" id="kt_app_header_navbar">
-            <?php if ($_SESSION['role'] == 2 AND strpos($current_uri, '/dashboard') !== false) { ?>
+            <?php if ($_SESSION['role'] == 2) { ?>
             <div class="app-navbar-item d-flex align-items-center flex-lg-grow-1 me-2 me-lg-0 fs-2 hosgeldin">
                 <b>Hoş geldin <?php echo $_SESSION['name']; ?> haydi görevleri tamamlayarak puan toplamaya başla!</b>
             </div>
             <div class="app-navbar-item d-flex justify-content align-items-center flex-lg-grow-1 me-2 me-lg-0 maskotheader">
                 <img src="assets/media/mascots/header-mascots.png" alt="Lineup Campus Maskotlar" class="h-50px theme-light-show" />
             </div>
-            <?php }elseif($_SESSION['role'] == 10002 AND strpos($current_uri, '/dashboard') !== false) { ?>
+            <?php }elseif($_SESSION['role'] == 10002 OR $_SESSION['role'] == 10005) { ?>
             <div class="app-navbar-item d-flex align-items-center flex-lg-grow-1 me-2 me-lg-0 fs-2 hosgeldin">
                 <b>Hoş geldin <?php echo $_SESSION['name']; ?>!</b>
             </div>
