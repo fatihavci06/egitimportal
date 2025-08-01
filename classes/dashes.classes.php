@@ -3,6 +3,73 @@
 class Dashes extends Dbh
 {
 
+	public function getPrivateLessonList()
+	{
+
+
+		$stmt = null;
+		$userId = $_SESSION['id'] ?? null;
+
+		$events = [];
+
+		$today = date('Y-m-d');
+		$endDate = date('Y-m-d', strtotime('+5 days'));
+
+		$sql = "
+    SELECT 
+        m.id, 
+        m.description, 
+        m.meeting_date,
+        m.zoom_start_url,
+        m.zoom_join_url,
+        CONCAT_WS(' ', u_organizer.name, u_organizer.surname) AS organizer_fullname,
+        CONCAT_WS(' ', u_participant.name, u_participant.surname) AS participant_fullname
+    FROM meetings_lnp m
+    LEFT JOIN users_lnp u_organizer ON m.organizer_id = u_organizer.id
+    LEFT JOIN users_lnp u_participant ON m.participant_id = u_participant.id
+    WHERE DATE(m.meeting_date) BETWEEN :today AND :endDate
+";
+
+		$params = [
+			':today' => $today,
+			':endDate' => $endDate,
+		];
+
+		if ($userId !== null) {
+			$sql .= " AND (m.organizer_id = :userId OR m.participant_id = :userId)";
+			$params[':userId'] = $userId;
+		}
+
+		
+		try {
+			$stmt = $this->connect()->prepare($sql);
+			$stmt->execute($params);
+			$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+			foreach ($results as $row) {
+				$events[] = [
+					'id' => 'meeting_' . $row['id'],
+					'title' => $row['description'],
+					'start' => $row['meeting_date'],
+					'zoom_join_url' => $row['zoom_join_url'],
+					'allDay' => false,
+					'extendedProps' => [
+						'type' => 'Toplantı',
+						'description' => $row['description'],
+						'organizerName' => $row['organizer_fullname'],
+						'participantName' => $row['participant_fullname'],
+					],
+					'backgroundColor' => '#007bff',
+					'borderColor' => '#007bff',
+				];
+			}
+
+			return $events;
+		} catch (PDOException $e) {
+			error_log("Veritabanı hatası (getCalendarEvents - meetings_lnp): " . $e->getMessage());
+			echo json_encode([]);
+		}
+	}
 	public function getTests()
 	{
 
@@ -83,7 +150,7 @@ class DashesStudent extends Dbh
 		$stmt = null;
 	}
 
-	
+
 
 	public function getUnits($lesson_id, $class_id, $school_id)
 	{
@@ -203,7 +270,6 @@ class DashesStudent extends Dbh
 
 		$stmt = null;
 	}
-	
 }
 
 class DashesTeacher extends Dbh
