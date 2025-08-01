@@ -100,81 +100,93 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     </div>
                                                 </div>
                                                 <div class="col-9 col-lg-10">
-                                                <?php
-// Türkçe ay isimleri
-$turkishMonths = [
-    1 => 'Ocak', 2 => 'Şubat', 3 => 'Mart', 4 => 'Nisan',
-    5 => 'Mayıs', 6 => 'Haziran', 7 => 'Temmuz', 8 => 'Ağustos',
-    9 => 'Eylül', 10 => 'Ekim', 11 => 'Kasım', 12 => 'Aralık'
-];
-function formatDate($dateStr) {
-    global $turkishMonths;
-    if (!$dateStr) return '-';
-    try {
-        $dt = new DateTime($dateStr);
-        return $dt->format('j') . ' ' . $turkishMonths[(int)$dt->format('n')];
-    } catch (\Exception $e) {
-        return '-';
-    }
-}
-$today = new DateTime('now');
-?>
-<!-- DataTable için container -->
-<table id="singleColumnTable" class="table table-borderless w-100">
-    <thead class="d-none"><!-- başlık gizli, sadece arka planda lazım -->
-        <tr><th>Testler</th></tr>
-    </thead>
-    <tbody>
-        <?php foreach ($dataTest as $test):
-            $start = !empty($test['start_date']) ? new DateTime($test['start_date']) : null;
-            $end = !empty($test['end_date']) ? new DateTime($test['end_date']) : null;
-            $range = ( $start ? formatDate($start->format('Y-m-d')) : '-' )
-                   . ' - '
-                   . ( $end ? formatDate($end->format('Y-m-d')) : '-' );
-            if ($end) {
-                $remaining = $today <= $end ? $today->diff($end)->days : 0;
-            } else {
-                $remaining = null;
-            }
-        ?>
-        <tr>
-            <td class="p-0">
-                <div class="mb-3 p-3 border rounded shadow-sm w-100" style="border:2px solid #333;">
-                    <div class="row align-items-center">
-                        <div class="col-4 d-flex align-items-center">
-                            <a href="ogrenci-test-coz.php?id=<?=$test['id']?>" class="text-decoration-none text-dark start-exam d-flex align-items-center" data-id="<?= htmlspecialchars($test['id']) ?>">
-                                <button type="button" class="btn btn-light btn-sm me-2">
-                                    <i style="font-size:16px;" class="bi bi-play-fill"></i>
-                                </button>
-                                <h5 class="card-title mb-0 fw-semibold" style="font-size:1.2rem;">
-                                    <?= htmlspecialchars($test['test_title']) ?>
-                                </h5>
-                            </a>
-                        </div>
+                                                    <?php
+                                                    // Türkçe ay isimleri
+                                                    $turkishMonths = [
+                                                        1 => 'Ocak',
+                                                        2 => 'Şubat',
+                                                        3 => 'Mart',
+                                                        4 => 'Nisan',
+                                                        5 => 'Mayıs',
+                                                        6 => 'Haziran',
+                                                        7 => 'Temmuz',
+                                                        8 => 'Ağustos',
+                                                        9 => 'Eylül',
+                                                        10 => 'Ekim',
+                                                        11 => 'Kasım',
+                                                        12 => 'Aralık'
+                                                    ];
+                                                    function formatDate($dateStr)
+                                                    {
+                                                        global $turkishMonths;
+                                                        if (!$dateStr) return '-';
+                                                        try {
+                                                            $dt = new DateTime($dateStr);
+                                                            return $dt->format('j') . ' ' . $turkishMonths[(int)$dt->format('n')];
+                                                        } catch (\Exception $e) {
+                                                            return '-';
+                                                        }
+                                                    }
+                                                    $today = new DateTime('now');
+                                                    ?>
+                                                    <!-- DataTable için container -->
+                                                    <table id="singleColumnTable" class="table table-borderless w-100">
+                                                        <thead class="d-none"><!-- başlık gizli, sadece arka planda lazım -->
+                                                            <tr>
+                                                                <th>Testler</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <?php foreach ($dataTest as $test):
+                                                                $start = !empty($test['start_date']) ? new DateTime($test['start_date']) : null;
+                                                                $end = !empty($test['end_date']) ? new DateTime($test['end_date']) : null;
+                                                                $range = ($start ? formatDate($start->format('Y-m-d')) : '-')
+                                                                    . ' - '
+                                                                    . ($end ? formatDate($end->format('Y-m-d')) : '-');
+                                                                if ($end) {
+                                                                    $remaining = $today <= $end ? $today->diff($end)->days : 0;
+                                                                } else {
+                                                                    $remaining = null;
+                                                                }
+                                                            ?>
+                                                                <tr>
+                                                                    <td class="p-0">
+                                                                        <div class="mb-3 p-3 border rounded shadow-sm w-100" style="border:2px solid #333;">
+                                                                            <div class="row align-items-center">
+                                                                                <div class="col-4 d-flex align-items-center">
+                                                                                    <a href="ogrenci-test-coz.php?id=<?= $test['id'] ?>" class="text-decoration-none text-dark start-exam d-flex align-items-center" data-id="<?= htmlspecialchars($test['id']) ?>">
+                                                                                        <button type="button" class="btn btn-light btn-sm me-2">
+                                                                                            <i style="font-size:16px;" class="bi bi-play-fill"></i>
+                                                                                        </button>
+                                                                                        <h5 class="card-title mb-0 fw-semibold" style="font-size:1.2rem;">
+                                                                                            <?= htmlspecialchars($test['test_title']) ?>
+                                                                                        </h5>
+                                                                                    </a>
+                                                                                </div>
 
-                        <div class="col-4 d-flex align-items-center">
-                            <i class="fas fa-calendar-alt text-primary me-2"></i>
-                            <small class="text-muted" style="font-size:1.1rem;">
-                                <?= $range ?>
-                            </small>
-                        </div>
+                                                                                <div class="col-4 d-flex align-items-center">
+                                                                                    <i class="fas fa-calendar-alt text-primary me-2"></i>
+                                                                                    <small class="text-muted" style="font-size:1.1rem;">
+                                                                                        <?= $range ?>
+                                                                                    </small>
+                                                                                </div>
 
-                        <div class="col-4 text-end">
-                            <?php if ($remaining === null): ?>
-                                <span class="badge bg-secondary">Tarih yok</span>
-                            <?php elseif ($remaining > 0): ?>
-                                <span class="badge bg-success">Kalan: <?= $remaining ?> gün</span>
-                            <?php else: ?>
-                                <span class="badge bg-danger">Süre doldu</span>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
-            </td>
-        </tr>
-        <?php endforeach; ?>
-    </tbody>
-</table>
+                                                                                <div class="col-4 text-end">
+                                                                                    <?php if ($remaining === null): ?>
+                                                                                        <span class="badge bg-secondary">Tarih yok</span>
+                                                                                    <?php elseif ($remaining > 0): ?>
+                                                                                        <span class="badge bg-success">Kalan: <?= $remaining ?> gün</span>
+                                                                                    <?php else: ?>
+                                                                                        <span class="badge bg-danger">Süre doldu</span>
+                                                                                    <?php endif; ?>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            <?php endforeach; ?>
+                                                        </tbody>
+                                                    </table>
 
                                                 </div>
                                             </div>
@@ -235,37 +247,35 @@ $today = new DateTime('now');
             });
         </script>
         <script>
-    $(function(){
-        $('#singleColumnTable').DataTable({
-            // sadece tek sütun var; varsayılan sıralamayı kapatabiliriz
-            ordering: false,
-            info: true,
-            paging: true,
-            lengthChange: false,
-            pageLength: 5, // isteğe göre değiştir
-            searching: true,
-            language: {
-                search: "Ara:",
-                paginate: {
-                    previous: "Önceki",
-                    next: "Sonraki"
-                },
-                info: "_TOTAL_ içerikten _PAGE_ sayfası gösteriliyor",
-                infoEmpty: "Gösterilecek içerik yok",
-                zeroRecords: "Eşleşen sonuç yok"
-            },
-            // görünümü daha "kart" odaklı göstermek için satır içinde padding zaten var
-            drawCallback: function() {
-                // ek davranış gerekiyorsa burada koy
-            }
-        });
+            $(function() {
+                $('#singleColumnTable').DataTable({
+                    // sadece tek sütun var; varsayılan sıralamayı kapatabiliriz
+                    ordering: false,
+                    info: true,
+                    paging: true,
+                    lengthChange: false,
+                    pageLength: 5, // isteğe göre değiştir
+                    searching: true,
+                    language: {
+                        search: "Ara:",
+                        paginate: {
+                            previous: "Önceki",
+                            next: "Sonraki"
+                        },
+                        info: "_TOTAL_ içerikten _PAGE_ sayfası gösteriliyor",
+                        infoEmpty: "Gösterilecek içerik yok",
+                        zeroRecords: "Eşleşen sonuç yok"
+                    },
+                    // görünümü daha "kart" odaklı göstermek için satır içinde padding zaten var
+                    drawCallback: function() {
+                        // ek davranış gerekiyorsa burada koy
+                    }
+                });
 
-        // Örnek: tıklayınca seçili görünümü verme
-        $('#singleColumnTable tbody').on('click', 'tr', function(){
-            $(this).toggleClass('selected');
-        });
-    });
-</script>
+                // Örnek: tıklayınca seçili görünümü verme
+                
+            });
+        </script>
     </body>
 
 </html>
