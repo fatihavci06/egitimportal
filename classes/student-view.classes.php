@@ -457,7 +457,9 @@ class ShowStudent extends Student
                 default:
                     $type = '-';
             }
-            $readibleTime = $timeDifference->timeDifferenceRe(new DateTime(), $value['event_time']);
+            // $readibleTime = $timeDifference->timeDifferenceRe(new DateTime(), $value['event_time']);
+            // $readibleTime = $timeDifference->changeDateHourSecond($value['event_time']);
+            $readibleTime = date("d.m.Y H:i:s", strtotime($value['event_time']));
 
             $studentList .= '
                 <div class="border rounded shadow-sm m-3 p-3 bg-white">
@@ -478,7 +480,7 @@ class ShowStudent extends Student
                                 içeriğinde   ' . $type . '.
                             </div>
                             <div class="text-muted fs-7 mt-1">
-                            ' . $readibleTime . ' - ' . $value['event_time'] . '
+                            ' . $readibleTime . '
                             </div>
                         </div>
                     </div>
@@ -496,15 +498,7 @@ class ShowStudent extends Student
 
 
         $view = '
-                <header class="container-fluid py-3 d-flex justify-content-between align-items-center"
-                    style="
-                        background-color: #e6e6fa !important;
-                        margin-bottom: 40px !important;
-                        margin-top: -45px !important;
-                        border-top: 5px solid #d22b2b !important;
-                        border-bottom: 5px solid #d22b2b !important;
-                        height:85px;
-                    ">
+				<header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center border-top border-bottom border-custom-red" style="border-width: 5px !important; height: 85px; ">
                     <div class="d-flex align-items-center">
                         <div class="symbol symbol-100px">
                             <i class="ki-duotone ki-brifecase-timer fs-3x">

@@ -13,6 +13,21 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     include_once "views/pages-head.php";
 
 
+    include_once "classes/units.classes.php";
+    include_once "classes/units-view.classes.php";
+    include_once "classes/classes.classes.php";
+    $units = new ShowUnit();
+    $lesson = new Classes();
+    $url = $_SERVER['REQUEST_URI'];
+    $parts = explode('/', trim($url, '/'));
+    $slug = $parts[2] ?? null;
+
+    $lessons = $lesson->getLessonsList($_SESSION['class_id']);
+    $lessonInfo = $lesson->getLessonBySlug($slug);
+
+
+
+
     $studentObj = new Student();
     $student = new ShowStudent();
     $query_student_id = $_GET['q'];
@@ -102,16 +117,63 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <!--begin::Card-->
 
-                                    <div class="card h-100 "  style="margin-left: -15px; border:0px !important;box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.00);">
-                                        <div class="card-body h-100 d-flex flex-column " style="padding: 2rem 1.25rem; padding-right: 0.5rem;">
-                                            <?php $student->getHeaderImageStu(); ?>
+                                    <div class="card" style="margin-top: -25px;margin-left: -15px;">
+                                        <!--begin::Body-->
 
-                                            <div class="flex-grow-1">
+                                        <div class="card-body p-lg-7">
+                                            <!--begin::Section-->
+                                            <div class="mb-19">
+                                                <div class="row align-items-center mb-12">
+                                                    <?php $student->getHeaderImageStu(); ?>
 
-                                                <?php $student->getStudentActivitiesRow($studentModel['id'], $studentModel['class_id']); ?>
+                                                </div>
 
+                                                <div class="row align-items-center mb-12" style="margin-top: -30px;">
+                                                    <div class="col-lg-2 col-3 d-flex ">
+                                                        <h5 class="fs-2x text-gray-900 mb-0"
+                                                            style="font-size:15px!important">
+                                                            Dersler
+
+                                                        </h5>
+                                                    </div>
+                                                    <div class="col-9 col-lg-10 d-flex justify-content-center">
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="row" style="margin-top: -30px;margin-left: -30px;">
+                                                    <div class="col-3 col-lg-2">
+                                                        <div class="row g-5">
+                                                            <?php foreach ($lessons as $l): ?>
+                                                                <?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
+                                                                    <div class="col-12 mb-4 text-center">
+                                                                        <a href="ders/<?= urlencode($l['slug']) ?>">
+                                                                            <img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>"
+                                                                                alt="Icon" class="img-fluid"
+                                                                                style="width: 65px; height: 65px; object-fit: contain;" />
+                                                                            <div class="mt-2 fw-semibold">
+                                                                                <?= htmlspecialchars($l['name']) ?>
+                                                                            </div>
+                                                                        </a>
+                                                                    </div>
+                                                                <?php endif; ?>
+                                                            <?php endforeach; ?>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-9 col-lg-10">
+                                                        <div class="row g-5">
+
+                                                            <?php $student->getStudentActivitiesRow($studentModel['id'], $studentModel['class_id']); ?>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
+
+                                            <!--end::Section-->
                                         </div>
+                                        <!--end::Body-->
                                     </div>
 
                                     <!--end::Card-->
@@ -170,6 +232,144 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <!--end::Modal - Upgrade plan-->
         <!--end::Modals-->
         <!--begin::Javascript-->
+            <style>
+        /* Genel Stil İyileştirmeleri */
+
+        .main-card-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            border: 1px solid #e0e0e0;
+        }
+
+        .custom-card {
+            border: none;
+            padding: 0px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            background-color: white;
+            margin-bottom: 25px;
+        }
+
+        .card-title-custom {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #ed5606;
+            margin-bottom: 15px;
+        }
+
+        .content-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .icon-small {
+            font-size: 50px !important;
+            color: #e83e8c !important;
+        }
+
+
+
+        .btn-custom {
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            margin-top: 15px;
+        }
+
+        #myTable thead {
+            display: none;
+        }
+
+        .btn-custom:hover {
+            background-color: #1a9c7b;
+        }
+
+        .left-align {
+            margin-left: 0;
+            margin-right: auto;
+        }
+
+        .right-align {
+            margin-left: auto;
+            margin-right: 0;
+        }
+
+        .left-align .card-body {
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .left-align .content-wrapper {
+            flex-direction: row;
+        }
+
+        .right-align .card-body {
+            align-items: flex-end;
+            text-align: right;
+        }
+
+        .right-align .content-wrapper {
+            flex-direction: row-reverse;
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bg-custom-light {
+            background-color: #e6e6fa;
+            /* Light purple */
+        }
+
+        .border-custom-red {
+            border-color: #d22b2b !important;
+        }
+
+        .text-custom-cart {
+            color: #6a5acd;
+            /* Slate blue for the cart */
+        }
+
+        /* For the circular icon, we'll use a larger padding or fixed size */
+        .icon-circle-lg {
+            width: 60px;
+            /* fixed width */
+            height: 60px;
+            /* fixed height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-circle-lg img {
+            max-width: 100%;
+            /* Ensure image scales within the circle */
+            max-height: 100%;
+        }
+
+
+        /* Animasyonlar */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
         <script>
             var hostUrl = "assets/";
         </script>
