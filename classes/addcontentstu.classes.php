@@ -180,7 +180,6 @@ class GetContent extends Dbh
 		return $contentData;
 
 		$stmt = null;
-
 	}
 
 	public function getContentWordwallsById($id)
@@ -197,7 +196,6 @@ class GetContent extends Dbh
 		return $contentData;
 
 		$stmt = null;
-
 	}
 
 	public function getContentVideosById($id)
@@ -214,12 +212,11 @@ class GetContent extends Dbh
 		return $contentData;
 
 		$stmt = null;
-
 	}
 
 	//Vimeo linkinden iframe kodu oluşturma fonksiyonu
 
-	public function generateVimeoIframe($vimeoUrl, $id,$video_timestamp)
+	public function generateVimeoIframe($vimeoUrl, $id, $video_timestamp)
 	{
 		// Vimeo linkinden video ID'sini ve varsa hash'i ayıklamak için bir düzenli ifade kullanalım.
 		// Bu ifade hem "https://vimeo.com/VIDEO_ID" hem de "https://vimeo.com/VIDEO_ID/HASH" formatlarını yakalar.
@@ -267,7 +264,6 @@ class GetContent extends Dbh
 		return $contentData;
 
 		$stmt = null;
-
 	}
 
 	public function getContentInfoByIdsUnderSubTopic($subTopicId, $topicId, $unitId, $lessonId, $classId)
@@ -284,8 +280,9 @@ class GetContent extends Dbh
 		return $contentData;
 
 		$stmt = null;
-
 	}
+	
+
 
 	public function getContentInfoByIdUnderSubTopic($subTopicId)
 	{
@@ -301,7 +298,6 @@ class GetContent extends Dbh
 		return $contentData;
 
 		$stmt = null;
-
 	}
 
 	public function getContentInfoByIdUnderTopic($topicId)
@@ -318,7 +314,6 @@ class GetContent extends Dbh
 		return $contentData;
 
 		$stmt = null;
-
 	}
 
 	protected function setContent($imgName, $slug, $name, $classes, $lessons, $units, $short_desc, $topics, $sub_topics, $content, $video_url, $file_urls, $imageFiles, $descriptions, $titles, $urls)

@@ -67,7 +67,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
                     <!--begin::Main-->
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
                         <!--begin::Content wrapper-->
-                        <div class="d-flex flex-column flex-column-fluid">
+                        <div class="d-flex flex-column flex-column-fluid" style="margin-top:-20px;">
                             <!--begin::Toolbar-->
                             <?php include_once "views/toolbar.php"; ?>
                             <!--end::Toolbar-->
@@ -83,7 +83,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
                                             <?php // $contents->getHeaderImageStu(); ?>
                                             <!--end::-->
                                             <!--begin::Layout-->
-                                            <div class="flex-column flex-lg-row mb-17">
+                                            <div class="flex-column flex-lg-row mb-17" style="margin-top:-30px">
                                                 <!--begin::Content-->
                                                 <?php $contents->showOneContent(); ?>
                                                 <!--end::Content-->

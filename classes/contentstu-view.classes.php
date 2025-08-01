@@ -455,23 +455,18 @@ class ShowContents extends GetContent
 
     public function getContentListForStudent()
     {
-
         $testResults = new TestsResult();
-
         $subtopics = new SubTopics();
-
         $dateFormat = new DateFormat();
 
         $today = date('Y-m-d');
-
         $link = "$_SERVER[REQUEST_URI]";
-
         $active_slug = htmlspecialchars(basename($link, ".php"));
 
         $subtopic = new SubTopics();
-
         $subTopicInfo = $subtopic->getSubTopicIdBySlug($active_slug);
         $subTopicId = $subTopicInfo['id'];
+
         $getLessonId = $subTopicInfo['lesson_id'];
         $getClassId = $subTopicInfo['class_id'];
         $getUnitId = $subTopicInfo['unit_id'];
@@ -485,78 +480,72 @@ class ShowContents extends GetContent
             $prevSubTopicId = $getPreviousSubTopicId['id'];
             $getTestResult = $testResults->getSubTopicTestResults($getUnitId, $getClassId, $getTopicId, $prevSubTopicId, $_SESSION['id']);
             $result = $getTestResult['score'] ?? 0;
-            $testQuery = $result >= 80; // If the previous unit's test is not passed, the current unit cannot be accessed.
+            $testQuery = $result >= 80;
         }
 
-        if ($today >= $subTopicInfo['start_date'] or $testQuery) {
-        } else {
-            header("Location: ../404.php"); // 404 sayfasına yönlendir
+        if (!($today >= $subTopicInfo['start_date'] or $testQuery)) {
+            header("Location: ../404.php");
             exit();
         }
 
         if (empty($subTopicInfo)) {
-            header("Location: ../404.php"); // 404 sayfasına yönlendir
+            header("Location: ../404.php");
             exit();
         }
 
         $contentInfo = $this->getContentInfoByIdUnderSubTopic($subTopicId);
 
         if ($contentInfo == NULL) {
-
-            $contentList = '
-                        <!--begin::Col-->
-                            <div class="col-md-12 d-flex flex-center">
-                                <i class="fa-regular fa-face-frown-open text-danger fs-4x"></i>
-                                
-                            </div>
-
-                            <div class="text-center mt-2">
-                                <h4 class="fs-2hx text-gray-900 mb-5">İçerik Mevcut Değil!</h4>
-                            </div>
-
-                        <!--end::Col-->
-                        ';
-            echo $contentList;
+            echo '
+            <!--begin::Col-->
+            <div class="col-md-12 d-flex flex-center">
+                <i class="fa-regular fa-face-frown-open text-danger fs-4x"></i>
+            </div>
+            <div class="text-center mt-2">
+                <h4 class="fs-2hx text-gray-900 mb-5">İçerik Mevcut Değil!</h4>
+            </div>
+            <!--end::Col-->
+        ';
         } else {
-
             foreach ($contentInfo as $key => $value) {
+                $title = htmlspecialchars($value['title']);
+                $summary = htmlspecialchars($value['summary']);
+                $slug = htmlspecialchars($value['slug']);
+                $coverImg = !empty($value['cover_img']) ? "uploads/contents/" . htmlspecialchars($value['cover_img']) : "assets/media/topics/konuDefault.jpg";
 
-                $contentList = '
-                            <!--begin::Col-->
-                            <div class="col-md-6 col-lg-6 col-xl-6">
-                                <!--begin::Publications post-->
-                                <div class="card-xl-stretch me-md-6">
-                                    <!--begin::Overlay-->
-                                    <a class="d-block overlay mb-4" href="icerik/' . $value['slug'] . '">
-                                        <!--begin::Image-->
-                                        <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-175px" style="background-image:url(\'uploads/contents/' . $value['cover_img'] . '\')"></div>
-                                        <!--end::Image-->
-                                        <!--begin::Action-->
-                                        <div class="overlay-layer bg-dark card-rounded bg-opacity-25">
-                                            <i class="ki-duotone ki-eye fs-2x text-white"></i>
-                                        </div>
-                                        <!--end::Action-->
-                                    </a>
-                                    <!--end::Overlay-->
-                                    <!--begin::Body-->
-                                    <div class="m-0">
-                                        <!--begin::Title-->
-                                        <a href="icerik/' . $value['slug'] . '" class="fs-4 text-gray-900 fw-bold text-hover-primary text-gray-900 lh-base">' . $value['title'] . '</a>
-                                        <!--end::Title-->
-                                        <!--begin::Text-->
-                                        <div class="fw-semibold fs-5 text-gray-600 text-gray-900 mt-3 mb-5">' . $value['summary'] . '</div>
-                                        <!--end::Text-->
-                                    </div>
-                                    <!--end::Body-->
-                                </div>
-                                <!--end::Publications post-->
-                            </div>
-                            <!--end::Col-->
-                    ';
-                echo $contentList;
+               echo '
+    <!--begin::Col-->
+    <div class="col-12 col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 shadow-sm border-0">
+            <!-- Kapak Görseli -->
+            <div class="d-flex justify-content-center align-items-center"
+                 style="height: 180px; background-image: url(\'' . $coverImg . '\');
+                        background-size: cover; background-position: center; border-top-left-radius: .375rem; border-top-right-radius: .375rem;">
+            </div>
+            <!-- Kart İçeriği -->
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title fw-bold text-dark mb-1" style="font-size: 16px;">' . $title . '</h5>
+                <p class="card-text text-muted mb-3" style="font-size: 14px;">' . $summary . '</p>
+                <!-- Alt Buton -->
+                <div class="mt-auto d-flex justify-content-start">
+                    <a href="icerik/' . $slug . '"
+                       style="background-color: #2b8c01 !important; color: white !important; border: 1px solid #2b8c01 !important;
+                              padding: 8px 28px; font-size: 14px; border-radius: 999px; text-decoration: none;"
+                       onmouseover="this.style.backgroundColor=\'#ed5606\'"
+                       onmouseout="this.style.backgroundColor=\'#2b8c01\'">
+                        Aç
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::Col-->
+';
+
             }
         }
     }
+
 
 
 

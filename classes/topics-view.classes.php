@@ -999,169 +999,187 @@ class ShowSubTopic extends SubTopics
     }
 
     // Get SubTopics Student
-
-   public function getSubTopicsListStudent()
-{
-    $testResults = new TestsResult();
-    $getTopics = new Topics();
-    $dateFormat = new DateFormat();
-
-    $link = "$_SERVER[REQUEST_URI]";
-    $today = date('Y-m-d');
-    $active_slug = htmlspecialchars(basename($link, ".php"));
-    $topicInfo = $this->getTopicIdBySlug($active_slug);
-    $topicId = $topicInfo['id'];
-
-    $getLessonId = $topicInfo['lesson_id'];
-    $getClassId = $topicInfo['class_id'];
-    $getUnitId = $topicInfo['unit_id'];
-    $getOrderNo = $topicInfo['order_no'];
-
-    if ($getOrderNo == 1) {
-        $testQuery = 80 >= 80;
-    } else {
-        $getPreviousTopicId = $getTopics->getPrevTopicId($getOrderNo - 1, $getClassId, $getLessonId, $getUnitId, $_SESSION['school_id']);
-        $prevTopicId = $getPreviousTopicId['id'];
-        $getTestResult = $testResults->getTopicTestResults($getUnitId, $getClassId, $prevTopicId, $_SESSION['id']);
-        $result = $getTestResult['score'] ?? 0;
-        $testQuery = $result >= 80;
-    }
-
-    if (!($today >= $topicInfo['start_date'] or $testQuery)) {
-        header("Location: ../404.php");
-        exit();
-    }
-
-    if (empty($topicInfo)) {
-        header("Location: ../404.php");
-        exit();
-    }
-
-    $controlSubTopic = $this->controlIsThereSubTopic($topicId, $_SESSION['class_id']);
-
-    if (!empty($controlSubTopic)) {
-        $unitInfo = $this->showSubTopicsStudent($active_slug);
-
-        if ($unitInfo == NULL) {
-            echo '
-                <!--begin::Col-->
-                <div class="col-md-12 d-flex flex-center">
-                    <i class="fa-regular fa-face-frown-open text-danger fs-4x"></i>
-                </div>
-                <div class="text-center mt-2">
-                    <h4 class="fs-2hx text-gray-900 mb-5">Konu Mevcut Değil!</h4>
-                </div>
-                <!--end::Col-->
-            ';
-        } else {
-            foreach ($unitInfo as $key => $value) {
-                $getLessonId = $value['lesson_id'];
-                $getClassId = $value['class_id'];
-                $getUnitId = $value['unit_id'];
-                $getTopicId = $value['topic_id'];
-                $getOrderNo = $value['order_no'];
-
-                if ($getOrderNo == 1) {
-                    $testQuery = 80 >= 80;
-                } else {
-                    $getPreviousSubTopicId = $this->getPrevSubTopicId($getOrderNo - 1, $getClassId, $getLessonId, $getUnitId, $getTopicId, $_SESSION['school_id']);
-                    $prevSubTopicId = $getPreviousSubTopicId['id'];
-                    $getTestResult = $testResults->getSubTopicTestResults($getUnitId, $getClassId, $getTopicId, $prevSubTopicId, $_SESSION['id']);
-                    $result = $getTestResult['score'] ?? 0;
-                    $testQuery = $result >= 80;
-                }
-
-                if ($today >= $value['start_date'] or $testQuery) {
-                    $link = "alt-konu/{$value['topicSlug']}";
-                    $class = "";
-                    $notification = '';
-                    $buttonDisabled = false;
-                } else {
-                    $link = "#";
-                    $class = "pe-none";
-                    $notification = '<div class="fw-semibold fs-5 text-danger mt-3 mb-5">Bu alt konunun tarihi gelmemiş veya bir önceki alt konunun sınavı başarı ile tamamlanmamıştır.</div>';
-                    $buttonDisabled = true;
-                }
-
-                $testText = "";
-                $unclickable = "";
-                if ($value['is_test'] == 1) {
-                    $testSolved = $this->isSolvedUser($value['topicID'], $_SESSION['id']);
-                    if (!empty($testSolved)) {
-                        $testText = '<span class="fw-semibold fs-5 text-success mb-5">Bu testi ' . $dateFormat->changeDate($testSolved['created_at']) . ' tarihinde çözdünüz!</span>';
-                        $unclickable = "pe-none";
-                    }
-                }
-                if ($value['is_question'] == 1) {
-                    $testSolved = $this->isSolvedQuestionUser($value['topicID'], $_SESSION['id']);
-                    if (!empty($testSolved)) {
-                        $testText = '<span class="fw-semibold fs-5 text-success mb-5">Bu testi ' . $dateFormat->changeDate($testSolved['created_at']) . ' tarihinde çözdünüz!</span>';
-                        $unclickable = "pe-none";
-                    }
-                }
-
-                $disabledStyle = $buttonDisabled ? 'opacity:0.5; pointer-events:none;' : '';
-
-                echo '
-                <!--begin::Col-->
-                <div class="col-md-6 col-lg-6 col-xl-6 mb-4">
-                    <!--begin::Publications post-->
-                    <div class="card-xl-stretch me-md-6">
-                        <!--begin::Overlay-->
-                        <div class="overlay mb-4">
-                            <!--begin::Image-->
-                            <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-175px" style="background-image:url(\'assets/media/topics/' . $value['topicImage'] . '\')"></div>
-                            <!--end::Image-->
-                            <!--begin::Action-->
-                            <div class="overlay-layer bg-dark card-rounded bg-opacity-25 d-flex justify-content-center align-items-center" style="height:175px;">
-                                <i class="ki-duotone ki-eye fs-2x text-white"></i>
-                            </div>
-                            <!--end::Action-->
-                        </div>
-                        <!--end::Overlay-->
-                        <!--begin::Body-->
-                        <div class="m-0">
-                            <!--begin::Title-->
-                            <div class="fs-4 text-gray-900 fw-bold text-gray-900 lh-base ' . $class . '">' . $value['topicName'] . '</div>
-                            <!--end::Title-->
-                            <!--begin::Text-->
-                            
-                            <!--end::Text-->
-                            ' . $notification . '
-                            <!-- Aç Butonu -->
-                            <a 
-                                href="' . ($buttonDisabled ? '#' : $link) . '" 
-                                style="background-color: #2b8c01 !important; color: white !important; border: 1px solid #2b8c01 !important;
-                                       padding: 8px 28px; font-size: 14px; border-radius: 999px; text-decoration: none; display: inline-block; ' . $disabledStyle . '"
-                                onmouseover="if(!this.hasAttribute(\'disabled\')) this.style.backgroundColor=\'#ed5606\';"
-                                onmouseout="if(!this.hasAttribute(\'disabled\')) this.style.backgroundColor=\'#2b8c01\';"
-                                ' . ($buttonDisabled ? 'onclick="return false;" aria-disabled="true"' : '') . '
-                            >
-                                Aç
-                            </a>
-                        </div>
-                        <!--end::Body-->
-                    </div>
-                    <!--end::Publications post-->
-                </div>
-                <!--end::Col-->
-                ';
-            }
+    public function getCountSubTopicByTopic(int $topicId): int
+    {
+        // class_id session'da yoksa 0 dönebilir veya exception fırlatabilirsin
+        if (empty($_SESSION['class_id'])) {
+            // İsteğe bağlı: burada exception da atabilirsin
+            return 0;
         }
-    } else {
-        // İçerik kısmı, senin orijinal hali ile aynı, buton stilini buraya da ekledim:
 
-        $contents = new GetContent();
+        $sql = 'SELECT COUNT(*) FROM subtopics_lnp WHERE topic_id = :topic_id AND class_id = :class_id AND active = 1';
+        $stmt = $this->connect()->prepare($sql);
+
+        $success = $stmt->execute([
+            ':topic_id' => $topicId,
+            ':class_id' => $_SESSION['class_id'],
+        ]);
+
+        if (!$success) {
+            // Hata logging yapılabilir: $stmt->errorInfo()
+            $stmt = null;
+            return 0; // veya throw new \RuntimeException('Veri sayısı alınamadı');
+        }
+
+        $count = (int) $stmt->fetchColumn();
+        $stmt = null; // bağlantı serbest bırak
+        return $count;
+    }
+    public function getSubTopicsListStudent()
+    {
+        $testResults = new TestsResult();
+        $getTopics = new Topics();
+        $dateFormat = new DateFormat();
 
         $link = "$_SERVER[REQUEST_URI]";
+        $today = date('Y-m-d');
         $active_slug = htmlspecialchars(basename($link, ".php"));
-        $topic = new SubTopics();
-        $topicInfo = $topic->getTopicIdBySlug($active_slug);
+        $topicInfo = $this->getTopicIdBySlug($active_slug);
         $topicId = $topicInfo['id'];
-        $contentInfo = $contents->getContentInfoByIdUnderTopic($topicId);
 
-        if ($contentInfo == NULL) {
-            echo '
+        $getLessonId = $topicInfo['lesson_id'];
+        $getClassId = $topicInfo['class_id'];
+        $getUnitId = $topicInfo['unit_id'];
+        $getOrderNo = $topicInfo['order_no'];
+
+        if ($getOrderNo == 1) {
+            $testQuery = 80 >= 80;
+        } else {
+            $getPreviousTopicId = $getTopics->getPrevTopicId($getOrderNo - 1, $getClassId, $getLessonId, $getUnitId, $_SESSION['school_id']);
+            $prevTopicId = $getPreviousTopicId['id'];
+            $getTestResult = $testResults->getTopicTestResults($getUnitId, $getClassId, $prevTopicId, $_SESSION['id']);
+            $result = $getTestResult['score'] ?? 0;
+            $testQuery = $result >= 80;
+        }
+
+        if (!($today >= $topicInfo['start_date'] or $testQuery)) {
+            header("Location: ../404.php");
+            exit();
+        }
+
+        if (empty($topicInfo)) {
+            header("Location: ../404.php");
+            exit();
+        }
+
+        $controlSubTopic = $this->controlIsThereSubTopic($topicId, $_SESSION['class_id']);
+        $countSunTopicByTopic = $this->getCountSubTopicByTopic($topicId);
+
+        if ($countSunTopicByTopic > 0) {
+            $unitInfo = $this->showSubTopicsStudent($active_slug);
+
+            if ($unitInfo == NULL) {
+                echo '
+        <!--begin::Col-->
+        <div class="col-md-12 d-flex flex-center">
+            <i class="fa-regular fa-face-frown-open text-danger fs-4x"></i>
+        </div>
+        <div class="text-center mt-2">
+            <h4 class="fs-2hx text-gray-900 mb-5">Konu Mevcut Değil!</h4>
+        </div>
+        <!--end::Col-->
+        ';
+            } else {
+                foreach ($unitInfo as $key => $value) {
+                    $getLessonId = $value['lesson_id'];
+                    $getClassId = $value['class_id'];
+                    $getUnitId = $value['unit_id'];
+                    $getTopicId = $value['topic_id'];
+                    $getOrderNo = $value['order_no'];
+
+                    if ($getOrderNo == 1) {
+                        $testQuery = 80 >= 80;
+                    } else {
+                        $getPreviousSubTopicId = $this->getPrevSubTopicId(
+                            $getOrderNo - 1,
+                            $getClassId,
+                            $getLessonId,
+                            $getUnitId,
+                            $getTopicId,
+                            $_SESSION['school_id']
+                        );
+                        $prevSubTopicId = $getPreviousSubTopicId['id'];
+                        $getTestResult = $testResults->getSubTopicTestResults(
+                            $getUnitId,
+                            $getClassId,
+                            $getTopicId,
+                            $prevSubTopicId,
+                            $_SESSION['id']
+                        );
+                        $result = $getTestResult['score'] ?? 0;
+                        $testQuery = $result >= 80;
+                    }
+
+                    if ($today >= $value['start_date'] or $testQuery) {
+                        $link = "alt-konu/{$value['topicSlug']}";
+                        $class = "";
+                        $notification = '';
+                        $buttonDisabled = false;
+                    } else {
+                        $link = "#";
+                        $class = "pe-none";
+                        $notification = '<div class="fw-semibold fs-5 text-danger mt-2 mb-1" style="font-size:11px;">Bu alt konunun tarihi gelmemiş veya bir önceki alt konunun sınavı başarı ile tamamlanmamıştır.</div>';
+                        $buttonDisabled = true;
+                    }
+
+                    $testText = "";
+                    $unclickable = "";
+                    if ($value['is_test'] == 1) {
+                        $testSolved = $this->isSolvedUser($value['topicID'], $_SESSION['id']);
+                        if (!empty($testSolved)) {
+                            $testText = '<div class="fw-semibold fs-6 text-success" style="font-size:11px;">Bu testi ' . $dateFormat->changeDate($testSolved['created_at']) . ' tarihinde çözdünüz!</div>';
+                            $unclickable = "pe-none";
+                        }
+                    }
+                    if ($value['is_question'] == 1) {
+                        $testSolved = $this->isSolvedQuestionUser($value['topicID'], $_SESSION['id']);
+                        if (!empty($testSolved)) {
+                            $testText = '<div class="fw-semibold fs-6 text-success" style="font-size:11px;">Bu testi ' . $dateFormat->changeDate($testSolved['created_at']) . ' tarihinde çözdünüz!</div>';
+                            $unclickable = "pe-none";
+                        }
+                    }
+
+                    // Link tıklanabilirliği ve görünümü
+                    $anchorHref = $buttonDisabled ? '#' : $link;
+                    $ariaDisabled = $buttonDisabled ? 'aria-disabled="true"' : '';
+                    $opacityStyle = $buttonDisabled ? 'opacity:0.5; pointer-events:none;' : '';
+                    $displayTitle = htmlspecialchars($value['topicName'], ENT_QUOTES, 'UTF-8');
+
+                    echo '
+            <div class="col-12 mb-4">
+                <div class="card mb-3 border border-2 rounded-3 shadow-sm" style="margin-bottom: -10px !important;">
+                    <div class="card-body p-3 d-flex align-items-center">
+                        <span class="text-muted d-flex align-items-center justify-content-center" style="font-size:35px; width:40px; height:40px; line-height:1; flex-shrink:0;">
+                            +
+                        </span>
+                        <div class="flex-grow-1 ms-3 d-flex flex-column">
+                            <div class="d-flex align-items-start">
+                                <a href="' . $anchorHref . '" class="text-decoration-none text-dark fw-bold stretched-link ' . $class . '" style="line-height:1.2; font-size:12px; ' . $opacityStyle . '" ' . $ariaDisabled . '>' . ($getOrderNo) . '. ' . $displayTitle . '</a>
+                            </div>
+                            ' . $testText . '
+                            ' . $notification . '
+                        </div>
+                       
+                    </div>
+                </div>
+            </div>
+            ';
+                }
+            }
+        }  else {
+            // İçerik kısmı, senin orijinal hali ile aynı, buton stilini buraya da ekledim:
+
+            $contents = new GetContent();
+
+            $link = "$_SERVER[REQUEST_URI]";
+            $active_slug = htmlspecialchars(basename($link, ".php"));
+            $topic = new SubTopics();
+            $topicInfo = $topic->getTopicIdBySlug($active_slug);
+            $topicId = $topicInfo['id'];
+            $contentInfo = $contents->getContentInfoByIdUnderTopic($topicId);
+
+            if ($contentInfo == NULL) {
+                echo '
                 <!--begin::Col-->
                 <div class="col-md-12 d-flex flex-center">
                     <i class="fa-regular fa-face-frown-open text-danger fs-4x"></i>
@@ -1171,9 +1189,9 @@ class ShowSubTopic extends SubTopics
                 </div>
                 <!--end::Col-->
             ';
-        } else {
-            foreach ($contentInfo as $key => $value) {
-                echo '
+            } else {
+                foreach ($contentInfo as $key => $value) {
+                    echo '
                 <!--begin::Col-->
                 <div class="col-md-6 col-xl-4 mb-4">
                     <div class="card h-100 shadow-sm border-0">
@@ -1201,10 +1219,10 @@ class ShowSubTopic extends SubTopics
                 </div>
                 <!--end::Col-->
                 ';
+                }
             }
         }
     }
-}
 
 
     // Get Topic Image For Students

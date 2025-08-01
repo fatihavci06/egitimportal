@@ -66,7 +66,19 @@ class Classes extends Dbh
 
 		return $data;
 	}
+	public function getSubTopicBySlug($slug)
+	{
+		$stmt = $this->connect()->prepare('SELECT name. FROM subtopics_lnp WHERE slug = :slug LIMIT 1');
+		$stmt->bindParam(':slug', $slug, PDO::PARAM_STR);
 
+		if (!$stmt->execute()) {
+			$stmt = null;
+			exit();
+		}
+
+		$lesson = $stmt->fetch(PDO::FETCH_ASSOC);
+		return $lesson ?: null;
+	}
 	public function getTopicBySlug($slug)
 	{
 		$stmt = $this->connect()->prepare('SELECT * FROM topics_lnp WHERE slug = :slug LIMIT 1');
