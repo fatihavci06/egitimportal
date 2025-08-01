@@ -1034,7 +1034,7 @@ class ContentTracker
 
 
 
-    public function getUserActivityRecords($user_id, $class_id )
+    public function getUserActivityRecords($user_id, $class_id)
     {
         $classFilter = $class_id ? "AND sc.class_id = :class_id" : "";
         $sql = "
@@ -1055,12 +1055,15 @@ class ContentTracker
             
             CONCAT('/content/', sc.slug) as content_url,
             ts.name AS topic_name,
-            sts.name AS subtopic_name
+            sts.name AS subtopic_name,
+            les.name AS lesson_name
 
         FROM content_visits cv
         LEFT JOIN school_content_lnp sc ON cv.content_id = sc.id
         LEFT JOIN topics_lnp ts ON sc.topic_id = ts.id AND sc.lesson_id = ts.lesson_id 
         LEFT JOIN subtopics_lnp sts ON sc.subtopic_id = sts.id AND sc.lesson_id = sts.lesson_id
+        LEFT JOIN lessons_lnp les ON sc.lesson_id = les.id 
+
         WHERE cv.user_id = :user_id 
         AND sc.active = 1 
         AND sc.class_id = :class_id
@@ -1084,7 +1087,8 @@ class ContentTracker
             
             CONCAT('/content/', sc.slug) as content_url,
             ts.name AS topic_name,
-            sts.name AS subtopic_name
+            sts.name AS subtopic_name,
+            les.name AS lesson_name
 
         FROM video_timestamp_lnp vt
         LEFT JOIN school_content_videos_url scv ON vt.video_id = scv.id
@@ -1092,6 +1096,8 @@ class ContentTracker
         LEFT JOIN video_durations vd ON vt.video_id = vd.video_id
         LEFT JOIN topics_lnp ts ON sc.topic_id = ts.id AND sc.lesson_id = ts.lesson_id 
         LEFT JOIN subtopics_lnp sts ON sc.subtopic_id = sts.id AND sc.lesson_id = sts.lesson_id
+        LEFT JOIN lessons_lnp les ON sc.lesson_id = les.id 
+
         WHERE vt.user_id = :user_id 
         AND sc.active = 1 
         AND sc.class_id = :class_id
@@ -1115,13 +1121,17 @@ class ContentTracker
             
             CONCAT('/content/', sc.slug) as content_url,
             ts.name AS topic_name,
-            sts.name AS subtopic_name
+            sts.name AS subtopic_name,
+            les.name AS lesson_name
+
 
         FROM file_downloads fd
         LEFT JOIN school_content_files_lnp scf ON fd.file_id = scf.id
         LEFT JOIN school_content_lnp sc ON scf.school_content_id = sc.id
         LEFT JOIN topics_lnp ts ON sc.topic_id = ts.id AND sc.lesson_id = ts.lesson_id 
         LEFT JOIN subtopics_lnp sts ON sc.subtopic_id = sts.id AND sc.lesson_id = sts.lesson_id
+        LEFT JOIN lessons_lnp les ON sc.lesson_id = les.id 
+
         WHERE fd.user_id = :user_id 
         AND sc.active = 1 
         AND sc.class_id = :class_id
@@ -1145,13 +1155,16 @@ class ContentTracker
             
             CONCAT('/content/', sc.slug) as content_url,
             ts.name AS topic_name,
-            sts.name AS subtopic_name
+            sts.name AS subtopic_name,
+            les.name AS lesson_name
 
         FROM wordwall_views wv
         LEFT JOIN school_content_wordwall_lnp scw ON wv.wordwall_id = scw.id
         LEFT JOIN school_content_lnp sc ON scw.school_content_id = sc.id
         LEFT JOIN topics_lnp ts ON sc.topic_id = ts.id AND sc.lesson_id = ts.lesson_id 
         LEFT JOIN subtopics_lnp sts ON sc.subtopic_id = sts.id AND sc.lesson_id = sts.lesson_id
+        LEFT JOIN lessons_lnp les ON sc.lesson_id = les.id 
+
         WHERE wv.user_id = :user_id 
         AND sc.active = 1 
         AND sc.class_id = :class_id
@@ -1202,7 +1215,7 @@ class ContentTracker
             CONCAT('/content/', sc.slug) as content_url,
             ts.name AS topic_name,
             sts.name AS subtopic_name,
-            
+            les.name AS lesson_name
             CASE WHEN cv.user_id IS NOT NULL THEN 1 ELSE 0 END as content_visited,
             CASE WHEN EXISTS(SELECT 1 FROM video_timestamp_lnp vt2 
                            JOIN school_content_videos_url scv2 ON vt2.video_id = scv2.id 
@@ -1242,6 +1255,8 @@ class ContentTracker
         LEFT JOIN wordwall_views wv ON scw.id = wv.wordwall_id AND wv.user_id = :user_id
         LEFT JOIN topics_lnp ts ON sc.topic_id = ts.id AND sc.lesson_id = ts.lesson_id 
         LEFT JOIN subtopics_lnp sts ON sc.subtopic_id = sts.id AND sc.lesson_id = sts.lesson_id 
+        LEFT JOIN lessons_lnp les ON sc.lesson_id = les.id 
+
         WHERE sc.active = 1 
         {$classFilter}
         AND (cv.user_id IS NOT NULL 

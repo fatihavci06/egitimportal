@@ -12,6 +12,144 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     include_once "views/pages-head.php";
 ?>
     <!--end::Head-->
+    <style>
+        /* Genel Stil İyileştirmeleri */
+
+        .main-card-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            border: 1px solid #e0e0e0;
+        }
+
+        .custom-card {
+            border: none;
+            padding: 0px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            background-color: white;
+            margin-bottom: 25px;
+        }
+
+        .card-title-custom {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #ed5606;
+            margin-bottom: 15px;
+        }
+
+        .content-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .icon-small {
+            font-size: 50px !important;
+            color: #e83e8c !important;
+        }
+
+
+
+        .btn-custom {
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            margin-top: 15px;
+        }
+
+        #myTable thead {
+            display: none;
+        }
+
+        .btn-custom:hover {
+            background-color: #1a9c7b;
+        }
+
+        .left-align {
+            margin-left: 0;
+            margin-right: auto;
+        }
+
+        .right-align {
+            margin-left: auto;
+            margin-right: 0;
+        }
+
+        .left-align .card-body {
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .left-align .content-wrapper {
+            flex-direction: row;
+        }
+
+        .right-align .card-body {
+            align-items: flex-end;
+            text-align: right;
+        }
+
+        .right-align .content-wrapper {
+            flex-direction: row-reverse;
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bg-custom-light {
+            background-color: #e6e6fa;
+            /* Light purple */
+        }
+
+        .border-custom-red {
+            border-color: #d22b2b !important;
+        }
+
+        .text-custom-cart {
+            color: #6a5acd;
+            /* Slate blue for the cart */
+        }
+
+        /* For the circular icon, we'll use a larger padding or fixed size */
+        .icon-circle-lg {
+            width: 60px;
+            /* fixed width */
+            height: 60px;
+            /* fixed height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-circle-lg img {
+            max-width: 100%;
+            /* Ensure image scales within the circle */
+            max-height: 100%;
+        }
+
+
+        /* Animasyonlar */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
     <!--begin::Body-->
 
     <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
@@ -55,6 +193,21 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             <!--begin::Toolbar-->
                             <?php include_once "views/toolbar.php"; ?>
                             <!--end::Toolbar-->
+                            <div class="row container-fluid" style="margin-top:-19px; padding-right:0px;margin-right:0px !important;width:auto !important;">
+                                <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
+                                             border-top border-bottom border-custom-red mb-2" style="    margin-top: 19px; border-width: 5px !important; height:85px;margin-bottom: 26px !important;">
+
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-danger me-3 shadow icon-circle-lg d-flex justify-content-center align-items-center"
+                                            style="width: 65px; height: 65px;">
+                                            <i class="fa-regular fa-user fa-2x text-white"></i>
+                                        </div>
+
+                                        <h1 class="fs-3 fw-bold text-dark mb-0">Çözülmüş Destek Talepleri</h1>
+                                    </div>
+
+                                </header>
+                            </div>
                             <!--begin::Content-->
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <!--begin::Content container-->

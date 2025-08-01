@@ -68,7 +68,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2 or $_SESSION['role'] == 
                                     <!--begin::Careers - List-->
                                     <div class="card" style="margin-left: -15px; border:0px !important;box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.00);">
                                         <!--begin::Body-->
-                                        <div class="card-body row p-lg-7" style="padding: 2rem 1.25rem;    padding-right: 0.5rem;">
+                                        <div class="card-body row p-lg-7" style="padding: 2rem 1.25rem; padding-right: 0.5rem;">
                                             <?php $games->getHeaderImageStu(); ?>
 
 											<div class="d-flex flex-column flex-wrap flex-lg-row mb-10">

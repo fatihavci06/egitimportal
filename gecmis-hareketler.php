@@ -13,6 +13,21 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     include_once "views/pages-head.php";
 
 
+    include_once "classes/units.classes.php";
+    include_once "classes/units-view.classes.php";
+    include_once "classes/classes.classes.php";
+    $units = new ShowUnit();
+    $lesson = new Classes();
+    $url = $_SERVER['REQUEST_URI'];
+    $parts = explode('/', trim($url, '/'));
+    $slug = $parts[2] ?? null;
+
+    $lessons = $lesson->getLessonsList($_SESSION['class_id']);
+    $lessonInfo = $lesson->getLessonBySlug($slug);
+
+
+
+
     $studentObj = new Student();
     $student = new ShowStudent();
     $query_student_id = $_GET['q'];
@@ -40,11 +55,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         exit();
     }
 
-    if ($query_student_id != $_SESSION['id']){
-        header("HTTP/1.0 404 Not Found");
-        header("Location: ../404.php");
-        exit(); 
-    }
+    // if ($query_student_id != $_SESSION['id']){
+    //     header("HTTP/1.0 404 Not Found");
+    //     header("Location: ../404.php");
+    //     exit(); 
+    // }
     // $viewList = $student->getStudentProgress($studentModel['id'],$studentModel['class_id']);
 
 
@@ -95,86 +110,72 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
                         <!--begin::Content wrapper-->
                         <div class="d-flex flex-column flex-column-fluid">
-                            <!--begin::Toolbar-->
-                            <div id="kt_app_toolbar" class="app-toolbar pt-5">
-                                <div id="kt_app_toolbar_container"
-                                    class="app-container container-fluid d-flex align-items-stretch">
-                                    <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
-                                        <div class="page-title d-flex flex-column gap-1 me-3 mb-2">
-                                            <h1
-                                                class="page-heading d-flex flex-column justify-content-center text-gray-900 fw-bolder fs-1 lh-0">
-                                                <?php echo $studentModel['name'] . ' ' . $studentModel['surname']; ?>
-                                            </h1>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!--end::Toolbar-->
+
                             <!--begin::Content-->
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <!--begin::Card-->
-                                    <div class="card">
-                                        <!--begin::Card header-->
-                                        <div class="card-header border-0 pt-6">
-                                            <!--begin::Card title-->
-                                            <div class="card-title">
-                                                <!--begin::Search-->
-                                                <div class="d-flex align-items-center position-relative my-1">
-                                                    <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5">
-                                                        <span class="path1"></span>
-                                                        <span class="path2"></span>
-                                                    </i>
-                                                    <input type="text" data-kt-customer-table-filter="search"
-                                                        class="form-control form-control-solid w-250px ps-12"
-                                                        placeholder="İçerik Ara" />
-                                                </div>
-                                                <!--end::Search-->
-                                            </div>
-                                            <!--begin::Card title-->
-                                            <!--begin::Card toolbar-->
-                                            <div class="card-toolbar">
-                                                <!--begin::Toolbar-->
-                                                <div class="d-flex justify-content-end"
-                                                    data-kt-customer-table-toolbar="base">
-                                                    <!--begin::Filter-->
-                                                </div>
-                                                <!--end::Toolbar-->
-                                            </div>
-                                            <!--end::Card toolbar-->
-                                        </div>
-                                        <!--end::Card header-->
-                                        <!--begin::Card body-->
-                                        <div class="card-body pt-0">
-                                            <!--begin::Table-->
-                                            <table class="table align-middle table-row-dashed fs-6 gy-5"
-                                                id="kt_customers_table">
-                                                <thead>
-                                                    <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                        <th class="min-w-120px">İçerik</th>
-                                                        <th class="min-w-100px">Konu</th>
-                                                        <th class="min-w-100px">Altkonu</th>
-                                                        <th class="min-w-70px">İçerik Türü</th>
-                                                        <th class="min-w-100px">Tarih</th>
-                                                        <th class="min-w-100px">Zaman</th>
 
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="fw-semibold text-gray-600">
-                                                    <?php
-                                                    if ($studentModel['role'] == 2) {
-                                                        $student->getStudentActivities($studentModel['id'], $studentModel['class_id']);
-                                                    } else if ($studentModel['role'] == 10002) {
-                                                        $student->getStudentActivities($studentModel['id'], $studentModel['class_id']);
-                                                    }
-                                                    ?>
-                                                </tbody>
-                                            </table>
-                                            <!--end::Table-->
+                                    <div class="card" style="margin-top: -25px;margin-left: -15px;">
+                                        <!--begin::Body-->
+
+                                        <div class="card-body p-lg-7">
+                                            <!--begin::Section-->
+                                            <div class="mb-19">
+                                                <div class="row align-items-center mb-12">
+                                                    <?php $student->getHeaderImageStu(); ?>
+
+                                                </div>
+
+                                                <div class="row align-items-center mb-12" style="margin-top: -30px;">
+                                                    <div class="col-lg-2 col-3 d-flex ">
+                                                        <h5 class="fs-2x text-gray-900 mb-0"
+                                                            style="font-size:15px!important">
+                                                            Dersler
+
+                                                        </h5>
+                                                    </div>
+                                                    <div class="col-9 col-lg-10 d-flex justify-content-center">
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="row" style="margin-top: -30px;margin-left: -30px;">
+                                                    <div class="col-3 col-lg-2">
+                                                        <div class="row g-5">
+                                                            <?php foreach ($lessons as $l): ?>
+                                                                <?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
+                                                                    <div class="col-12 mb-4 text-center">
+                                                                        <a href="ders/<?= urlencode($l['slug']) ?>">
+                                                                            <img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>"
+                                                                                alt="Icon" class="img-fluid"
+                                                                                style="width: 65px; height: 65px; object-fit: contain;" />
+                                                                            <div class="mt-2 fw-semibold">
+                                                                                <?= htmlspecialchars($l['name']) ?>
+                                                                            </div>
+                                                                        </a>
+                                                                    </div>
+                                                                <?php endif; ?>
+                                                            <?php endforeach; ?>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-9 col-lg-10">
+                                                        <div class="row g-5">
+
+                                                            <?php $student->getStudentActivitiesRow($studentModel['id'], $studentModel['class_id']); ?>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!--end::Section-->
                                         </div>
-                                        <!--end::Card body-->
+                                        <!--end::Body-->
                                     </div>
+
                                     <!--end::Card-->
                                 </div>
                                 <!--end::Content container-->
@@ -231,6 +232,144 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <!--end::Modal - Upgrade plan-->
         <!--end::Modals-->
         <!--begin::Javascript-->
+            <style>
+        /* Genel Stil İyileştirmeleri */
+
+        .main-card-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            border: 1px solid #e0e0e0;
+        }
+
+        .custom-card {
+            border: none;
+            padding: 0px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            background-color: white;
+            margin-bottom: 25px;
+        }
+
+        .card-title-custom {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #ed5606;
+            margin-bottom: 15px;
+        }
+
+        .content-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .icon-small {
+            font-size: 50px !important;
+            color: #e83e8c !important;
+        }
+
+
+
+        .btn-custom {
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            margin-top: 15px;
+        }
+
+        #myTable thead {
+            display: none;
+        }
+
+        .btn-custom:hover {
+            background-color: #1a9c7b;
+        }
+
+        .left-align {
+            margin-left: 0;
+            margin-right: auto;
+        }
+
+        .right-align {
+            margin-left: auto;
+            margin-right: 0;
+        }
+
+        .left-align .card-body {
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .left-align .content-wrapper {
+            flex-direction: row;
+        }
+
+        .right-align .card-body {
+            align-items: flex-end;
+            text-align: right;
+        }
+
+        .right-align .content-wrapper {
+            flex-direction: row-reverse;
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bg-custom-light {
+            background-color: #e6e6fa;
+            /* Light purple */
+        }
+
+        .border-custom-red {
+            border-color: #d22b2b !important;
+        }
+
+        .text-custom-cart {
+            color: #6a5acd;
+            /* Slate blue for the cart */
+        }
+
+        /* For the circular icon, we'll use a larger padding or fixed size */
+        .icon-circle-lg {
+            width: 60px;
+            /* fixed width */
+            height: 60px;
+            /* fixed height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-circle-lg img {
+            max-width: 100%;
+            /* Ensure image scales within the circle */
+            max-height: 100%;
+        }
+
+
+        /* Animasyonlar */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
         <script>
             var hostUrl = "assets/";
         </script>
