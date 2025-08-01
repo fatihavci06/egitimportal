@@ -40,11 +40,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         exit();
     }
 
-    if ($query_student_id != $_SESSION['id']){
-        header("HTTP/1.0 404 Not Found");
-        header("Location: ../404.php");
-        exit(); 
-    }
+    // if ($query_student_id != $_SESSION['id']){
+    //     header("HTTP/1.0 404 Not Found");
+    //     header("Location: ../404.php");
+    //     exit(); 
+    // }
     // $viewList = $student->getStudentProgress($studentModel['id'],$studentModel['class_id']);
 
 
@@ -115,66 +115,17 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <!--begin::Card-->
-                                    <div class="card">
-                                        <!--begin::Card header-->
-                                        <div class="card-header border-0 pt-6">
-                                            <!--begin::Card title-->
-                                            <div class="card-title">
-                                                <!--begin::Search-->
-                                                <div class="d-flex align-items-center position-relative my-1">
-                                                    <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5">
-                                                        <span class="path1"></span>
-                                                        <span class="path2"></span>
-                                                    </i>
-                                                    <input type="text" data-kt-customer-table-filter="search"
-                                                        class="form-control form-control-solid w-250px ps-12"
-                                                        placeholder="İçerik Ara" />
-                                                </div>
-                                                <!--end::Search-->
-                                            </div>
-                                            <!--begin::Card title-->
-                                            <!--begin::Card toolbar-->
-                                            <div class="card-toolbar">
-                                                <!--begin::Toolbar-->
-                                                <div class="d-flex justify-content-end"
-                                                    data-kt-customer-table-toolbar="base">
-                                                    <!--begin::Filter-->
-                                                </div>
-                                                <!--end::Toolbar-->
-                                            </div>
-                                            <!--end::Card toolbar-->
-                                        </div>
-                                        <!--end::Card header-->
-                                        <!--begin::Card body-->
-                                        <div class="card-body pt-0">
-                                            <!--begin::Table-->
-                                            <table class="table align-middle table-row-dashed fs-6 gy-5"
-                                                id="kt_customers_table">
-                                                <thead>
-                                                    <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                        <th class="min-w-120px">İçerik</th>
-                                                        <th class="min-w-100px">Konu</th>
-                                                        <th class="min-w-100px">Altkonu</th>
-                                                        <th class="min-w-70px">İçerik Türü</th>
-                                                        <th class="min-w-100px">Tarih</th>
-                                                        <th class="min-w-100px">Zaman</th>
 
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="fw-semibold text-gray-600">
-                                                    <?php
-                                                    if ($studentModel['role'] == 2) {
-                                                        $student->getStudentActivities($studentModel['id'], $studentModel['class_id']);
-                                                    } else if ($studentModel['role'] == 10002) {
-                                                        $student->getStudentActivities($studentModel['id'], $studentModel['class_id']);
-                                                    }
-                                                    ?>
-                                                </tbody>
-                                            </table>
-                                            <!--end::Table-->
+                                    <div class="card h-100 bg-gray-200">
+                                        <div class="card-body h-100 d-flex flex-column bg-gray-200">
+                                            <div class="flex-grow-1">
+
+                                                <?php $student->getStudentActivitiesRow($studentModel['id'], $studentModel['class_id']);?>
+                                               
+                                            </div>
                                         </div>
-                                        <!--end::Card body-->
                                     </div>
+
                                     <!--end::Card-->
                                 </div>
                                 <!--end::Content container-->
