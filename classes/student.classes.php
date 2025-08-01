@@ -647,4 +647,21 @@ class Student extends Dbh
 
 		$stmt = null;
 	}
+
+	public function getPreSchoolStudentsInfoForParents($parent_id)
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM users_lnp WHERE active = ? AND role = ? AND parent_id = ?');
+
+		if (!$stmt->execute(array("1", "10002", $parent_id))) {
+			$stmt = null;
+			exit();
+		}
+
+		$studentData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $studentData;
+
+		$stmt = null;
+	}
 }

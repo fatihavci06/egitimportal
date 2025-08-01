@@ -4,7 +4,7 @@
 
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 2 or $_SESSION['role'] == 5)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 2 or $_SESSION['role'] == 5 or $_SESSION['role'] == 10005)) {
     include_once "classes/dbh.classes.php";
     include_once "classes/addsupport.classes.php";
     include_once "classes/support-view.classes.php";
@@ -65,7 +65,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         <div class="card-body pt-0">
                                             <!--begin::List-->
                                             <?php
-                                                if ($_SESSION['role'] == 2 OR $_SESSION['role'] == 5) {
+                                                if ($_SESSION['role'] == 2 OR $_SESSION['role'] == 5 OR $_SESSION['role'] == 10005) {
                                                     $supportList->getSupportDetails($_SESSION['id'], $_GET['id']);
                                                 }
                                                 if ($_SESSION['role'] == 1) {

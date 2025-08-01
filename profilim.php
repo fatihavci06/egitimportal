@@ -93,7 +93,7 @@ $timeSpendInfo = $timeSpend->getTimeSpend($userInfo["id"]);
 
         require_once "views/profile/profilim-koordinator.php";
 
-    } elseif ($_SESSION["role"] == 5) {
+    } elseif ($_SESSION["role"] == 5 OR $_SESSION["role"] == 10005) {
 
         require_once "views/profile/profilim-veli.php";
 

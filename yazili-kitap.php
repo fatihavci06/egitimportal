@@ -3,11 +3,20 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] == 10002)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] == 10002 or $_SESSION['role'] == 10005)) {
 	include_once "classes/dbh.classes.php";
 	include_once "classes/written-book.classes.php";
 	include_once "classes/written-book-view.classes.php";
+    require_once "classes/student.classes.php";
 	$writtenBooks = new ShowWrittenBookStudent();
+    $studentInfo = new Student();
+
+    if ($_SESSION['role'] == 10005) {
+        $getPreSchoolStudent = $studentInfo->getPreSchoolStudentsInfoForParents($_SESSION['id']);
+        $class_idsi = $getPreSchoolStudent[0]['class_id'];
+    } else {
+        $class_idsi = $_SESSION['class_id'];
+    }
 	include_once "views/pages-head.php";
 	?>
 	<!--end::Head-->
@@ -60,15 +69,15 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] ==
 								<!--begin::Content container-->
 								<div id="kt_app_content_container" class="app-container container-fluid">
 									<!--begin::Careers - List-->
-									<div class="card" style="margin-left: -15px;">
+                                    <div class="card" style="margin-left: -15px; border:0px !important;box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.00);">
 										<!--begin::Body-->
-										<div class="card-body p-lg-7">
+                                        <div class="card-body row p-lg-7" style="padding: 2rem 1.25rem;    padding-right: 0.5rem;">
 											<?php $writtenBooks->getHeaderImageStu(); ?>
 											<!--begin::Layout-->
 											<div class="d-flex flex-column flex-lg-row mb-10">
 												<!--begin::Content-->
 												<div class="flex-lg-row-fluid row ">
-													<?php $writtenBooks->getWrittenBookList($_SESSION['class_id']); ?>
+													<?php $writtenBooks->getWrittenBookList($class_idsi); ?>
 												</div>
 												<!--end::Content-->
 											</div>

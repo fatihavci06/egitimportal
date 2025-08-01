@@ -9,8 +9,14 @@ if (isset($_SESSION['role'])) {
     $lesson = new Classes();
     if ($_SESSION['role'] == 2) {
         $lessons = $lesson->getLessonsList($_SESSION['class_id']);
-    }elseif ($_SESSION['role'] == 10002) {
+    } elseif ($_SESSION['role'] == 10002) {
         $lessons = $lesson->getPreschoolLessonsList($_SESSION['class_id']);
+    } elseif ($_SESSION['role'] == 10005) {
+        require_once "classes/student.classes.php";
+        $studentInfo = new Student();
+        $getPreSchoolStudent = $studentInfo->getPreSchoolStudentsInfoForParents($_SESSION['id']);
+        $class_idsi = $getPreSchoolStudent[0]['class_id'];
+        $lessons = $lesson->getPreschoolLessonsList($class_idsi);
     }
     include_once "views/pages-head.php";
 ?>
@@ -130,7 +136,7 @@ if (isset($_SESSION['role'])) {
                                                         <?php endif; ?>
                                                     <?php endforeach; ?>
                                                 <?php endif; ?>
-                                                <?php if ($_SESSION['role'] == 10002): foreach ($lessons as $l): ?>
+                                                <?php if ($_SESSION['role'] == 10002 or $_SESSION['role'] == 10005): foreach ($lessons as $l): ?>
                                                         <?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
                                                             <div class="col-6 col-md-12 text-center">
                                                                 <a href="ana-okulu-icerikler" class="text-decoration-none text-dark d-block">

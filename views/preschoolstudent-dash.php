@@ -8,15 +8,26 @@ include_once "classes/doyouknow.php";
 require_once "classes/student.classes.php";
 require_once "classes/student-view.classes.php";
 
+$studentInfo = new Student();
+
 $student = new ShowStudent();
 
 $lessons = new Classes();
 
 $dateFormat = new DateFormat();
 
-$getLessonsContent = $lessons->getMainSchoolContentListDashboard($_SESSION['class_id']);
+if ($_SESSION['role'] == 10005) {
+    $getPreSchoolStudent = $studentInfo->getPreSchoolStudentsInfoForParents($_SESSION['id']);
+    $class_idsi = $getPreSchoolStudent[0]['class_id'];
+    $school_idsi = $getPreSchoolStudent[0]['school_id'];
+} else {
+    $class_idsi = $_SESSION['class_id'];
+    $school_idsi = $_SESSION['school_id'];
+}
 
-$getGamesContent = $lessons->getMainSchoolGamesListDashboard($_SESSION['class_id']);
+$getLessonsContent = $lessons->getMainSchoolContentListDashboard($class_idsi);
+
+$getGamesContent = $lessons->getMainSchoolGamesListDashboard($class_idsi);
 
 $getLessons = $lessons->getMainSchoolLessonListDashboard();
 
@@ -46,11 +57,11 @@ if ($haftanin_gunu_sayisi === 0) { // Bugün Pazar ise
 }
 
 $todayWordObj = new TodayWord();
-$todaysWord = $todayWordObj->getTodaysOrRandomWord($_SESSION['school_id'], $_SESSION['class_id']);
+$todaysWord = $todayWordObj->getTodaysOrRandomWord($school_idsi, $class_idsi);
 
 
 $knowObj = new DoYouKnow();
-$todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION['class_id']);
+$todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
 
 ?>
 <div id="kt_app_content_container" class="app-container container-fluid student-dashboard" style="padding-right: 0px !important;padding-left: 0px !important;">
@@ -206,27 +217,27 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                                 $style = '#' . $value['bg-color'];
                                             }
 
-                                                echo '<div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; background-color: ' . $style . ';  min-width: 150px;">';
+                                            echo '<div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; background-color: ' . $style . ';  min-width: 150px;">';
 
-                                                $class_id = $_SESSION['class_id'];
-                                                $lesson_id = $value['id'];
+                                            $class_id = $class_idsi;
+                                            $lesson_id = $value['id'];
 
-                                                $unitData = $dash->getPreSchoolUnits($lesson_id, $class_id);
-                                                $unitCount = count($unitData);
+                                            $unitData = $dash->getPreSchoolUnits($lesson_id, $class_id);
+                                            $unitCount = count($unitData);
 
-                                                echo '
+                                            echo '
                                                 <a href="ana-okulu-icerikler">
                                                 <div class="symbol symbol-40px">
                                                     ' . $ico . '
                                                 </div>
                                                 </a>';
 
-                                                echo '<a href="ana-okulu-icerikler"><div class="mt-5"><p class="text-gray-800 fw-bold fs-4"> ' . $value['name'] . '</p>
+                                            echo '<a href="ana-okulu-icerikler"><div class="mt-5"><p class="text-gray-800 fw-bold fs-4"> ' . $value['name'] . '</p>
                                                 <p class="text-gray-800 fw-bold fs-6"> ' . $unitCount . ' Ünite</p></div></a>';
 
 
-                                                echo '</div>';
-                                            
+                                            echo '</div>';
+
                                             $styleIndex++;
                                         } ?>
                                     </div>

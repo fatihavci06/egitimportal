@@ -3,11 +3,23 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001 or $_SESSION['role'] == 10002)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001 or $_SESSION['role'] == 10002 or $_SESSION['role'] == 10005)) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
+    require_once "classes/student.classes.php";
     $unit = new Classes();
-    $unitList = $unit->getMainSchoolUnitByClassId($_SESSION['class_id']);
+    $studentInfo = new Student();
+
+    if ($_SESSION['role'] == 10005) {
+        $getPreSchoolStudent = $studentInfo->getPreSchoolStudentsInfoForParents($_SESSION['id']);
+        $class_idsi = $getPreSchoolStudent[0]['class_id'];
+        $studentidsi = $getPreSchoolStudent[0]['id'];
+    } else {
+        $class_idsi = $_SESSION['class_id'];
+        $studentidsi = $_SESSION['id'];
+    }
+
+    $unitList = $unit->getMainSchoolUnitByClassId($class_idsi);
 
     include_once "views/pages-head.php";
 ?>
@@ -53,7 +65,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 
         .btn-custom {
-            background-color: #1b84ff;
+            /* background-color: #1b84ff; */
             color: white;
             border: none;
             padding: 10px 25px;
@@ -205,8 +217,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 $class = new Classes();
                                                 $roleId = $_SESSION['role'];
 
-                                                if ($roleId == 10002) {
-                                                    $classId = $class->getClassId($_SESSION['id']);
+                                                if ($roleId == 10002 OR $roleId == 10005) {
+                                                    $classId = $class->getClassId($studentidsi);
                                                     $mainSchoolClasses = $class->getAgeGroup($classId);
                                                     $_SESSION['class_id'] = $classId;
                                                 } else {
@@ -331,7 +343,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                     <div class="row container-fluid">
                                         <?php foreach ($unitList as $u): ?>
                                             <div class="col-12" style=" font-size:12px!important">
-                                                <a href="ana-okulu-icerikler_konu?id=<?=$u['id']?>" class="text-decoration-none">
+                                                <a href="ana-okulu-icerikler_konu?id=<?= $u['id'] ?>" class="text-decoration-none">
                                                     <div class="border rounded d-flex align-items-center p-2"
                                                         style="border: 2px solid #333; box-shadow: 0 2px 6px rgba(0,0,0,0.15); justify-content: flex-start;">
                                                         <button type="button" class="btn btn-light btn-sm me-3">

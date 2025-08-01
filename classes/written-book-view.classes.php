@@ -120,7 +120,6 @@ class ShowWrittenBook extends WrittenBook
                         border-top: 5px solid #d22b2b !important;
                         border-bottom: 5px solid #d22b2b !important;
                         height:85px;
-                        margin-left:-10px
                     ">
                     <div class="d-flex align-items-center">
                         <div class="">
@@ -546,7 +545,7 @@ class ShowWrittenBookStudent extends WrittenBookStudent
 
             foreach ($audioBookInfo as $key => $value) {
                 $audioBookList = '
-                    <div class="col-7 col-sm-6 col-md-5 col-lg-4 col-xl-3  p-3">
+                    <div class="col-12 col-sm-6 col-md-5 col-lg-4 col-xl-3  p-3">
                         <div class=" card-xl-stretch border p-3 rounded bg-white me-md-6">
                             <a class="d-block overlay mb-4" href="./yazili-kitap-oku/' . $value['slug'] . '">
                               <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-175px"
@@ -658,7 +657,6 @@ class ShowWrittenBookStudent extends WrittenBookStudent
                         border-top: 5px solid #d22b2b !important;
                         border-bottom: 5px solid #d22b2b !important;
                         height:85px;
-                        margin-left:-10px
                     ">
                     <div class="d-flex align-items-center">
                         <div class="">
