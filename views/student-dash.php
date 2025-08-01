@@ -82,22 +82,32 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
 
 
                             <div class="row g-3">
-                                <?php foreach ($showPrivateLessons as $lesson): ?>
-                                    <div class="col-md-6 col-xl-4">
-                                        <div class="card h-100 shadow-sm">
-                                            <div class="card-body d-flex flex-column">
-                                                <h5 class="card-title"><?= htmlspecialchars($lesson['title']) ?></h5>
-                                                <p class="card-text mb-1"><strong>Öğretmen:</strong> <?= htmlspecialchars($lesson['extendedProps']['organizerName']) ?></p>
-                                                <p class="card-text mb-1"><strong>Tarih:</strong> <?= date('d-m-Y H:i', strtotime($lesson['start'])) ?></p>
+    <?php foreach ($showPrivateLessons as $lesson): ?>
+        <?php
+            // Resim yolu (senin verdiğin sabit resim)
+            $imagePath = 'includes/uploads/ozelders.png';
+            // Eğer dinamik olacaksa örneğin $lesson['image'] gibi kullanırsın ve sanitize edersin.
+            if (file_exists($imagePath)):
+                $imgTag = '<img src="'.htmlspecialchars($imagePath, ENT_QUOTES, 'UTF-8').'" alt="Özel Ders" class="card-img-top" style="object-fit: cover; height: 150px; width: 100%;">';
+            else:
+                // Fallback görsel yoksa
+                $imgTag = '<div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height:150px;">Resim yok</div>';
+            endif;
+        ?>
+        <div class="col-md-6 col-xl-4">
+            <div class="card h-100 shadow-sm">
+                <?= $imgTag ?>
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title"><?= htmlspecialchars($lesson['title'], ENT_QUOTES, 'UTF-8') ?></h5>
+                    <p class="card-text mb-1"><strong>Öğretmen:</strong> <?= htmlspecialchars($lesson['extendedProps']['organizerName'], ENT_QUOTES, 'UTF-8') ?></p>
+                    <p class="card-text mb-1"><strong>Tarih:</strong> <?= date('d-m-Y H:i', strtotime($lesson['start'])) ?></p>
+                    <a href="<?= htmlspecialchars($lesson['zoom_join_url'], ENT_QUOTES, 'UTF-8') ?>" class="btn btn-primary mt-auto btn-sm" target="_blank">Derse Katıl</a>
+                </div>
+            </div>
+        </div>
+    <?php endforeach; ?>
+</div>
 
-                                                <a href="<?= htmlspecialchars($lesson['zoom_join_url']) ?>" class="btn btn-primary mt-auto btn-sm" target="_blank">Derse Katıl</a>
-
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
 
                         </div>
                     </div>
