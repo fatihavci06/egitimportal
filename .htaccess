@@ -43,6 +43,7 @@ RewriteRule ^ogrenci-odev-detay/([A-Za-z0-9_-]+)    ./ogrenci-odev-detay.php?q=$
 RewriteRule ^icerik-ilerleme-takip/([A-Za-z0-9_-]+)    ./icerik-ilerleme-takip.php?q=$1     [L,QSA]
 RewriteRule ^yazili-kitap-detay/([A-Za-z0-9_-]+)    ./yazili-kitap-detay.php?q=$1     [L,QSA]
 RewriteRule ^yazili-kitap-oku/([A-Za-z0-9_-]+)    ./yazili-kitap-oku.php?q=$1     [L,QSA]
+RewriteRule ^gecmis-hareketler/([A-Za-z0-9_-]+)    ./gecmis-hareketler.php?q=$1     [L,QSA]
 
 
 ErrorDocument 404 http://localhost/lineup_campus/404
