@@ -1034,4 +1034,241 @@ class ContentTracker
 
 
 
+    public function getUserActivityRecords($user_id, $class_id )
+    {
+        $classFilter = $class_id ? "AND sc.class_id = :class_id" : "";
+        $sql = "
+        SELECT 
+            'content' as type,
+            cv.id as activity_id,
+            cv.user_id,
+            cv.content_id as resource_id,
+            cv.event_time,
+            sc.title,
+            sc.slug,
+            
+            sc.class_id,
+            sc.lesson_id,
+            sc.unit_id,
+            sc.topic_id,
+            sc.subtopic_id,
+            
+            CONCAT('/content/', sc.slug) as content_url,
+            ts.name AS topic_name,
+            sts.name AS subtopic_name
+
+        FROM content_visits cv
+        LEFT JOIN school_content_lnp sc ON cv.content_id = sc.id
+        LEFT JOIN topics_lnp ts ON sc.topic_id = ts.id AND sc.lesson_id = ts.lesson_id 
+        LEFT JOIN subtopics_lnp sts ON sc.subtopic_id = sts.id AND sc.lesson_id = sts.lesson_id
+        WHERE cv.user_id = :user_id 
+        AND sc.active = 1 
+        AND sc.class_id = :class_id
+        
+        UNION ALL
+        
+        SELECT 
+            'video' as type,
+            vt.id as activity_id,
+            vt.user_id,
+            sc.id as resource_id,
+            vt.event_time,
+            sc.title,
+            sc.slug,
+            
+            sc.class_id,
+            sc.lesson_id,
+            sc.unit_id,
+            sc.topic_id,
+            sc.subtopic_id,
+            
+            CONCAT('/content/', sc.slug) as content_url,
+            ts.name AS topic_name,
+            sts.name AS subtopic_name
+
+        FROM video_timestamp_lnp vt
+        LEFT JOIN school_content_videos_url scv ON vt.video_id = scv.id
+        LEFT JOIN school_content_lnp sc ON scv.school_content_id = sc.id
+        LEFT JOIN video_durations vd ON vt.video_id = vd.video_id
+        LEFT JOIN topics_lnp ts ON sc.topic_id = ts.id AND sc.lesson_id = ts.lesson_id 
+        LEFT JOIN subtopics_lnp sts ON sc.subtopic_id = sts.id AND sc.lesson_id = sts.lesson_id
+        WHERE vt.user_id = :user_id 
+        AND sc.active = 1 
+        AND sc.class_id = :class_id
+        
+        UNION ALL
+        
+        SELECT 
+            'file' as type,
+            fd.id as activity_id,
+            fd.user_id,
+            sc.id as resource_id,
+            fd.event_time,
+            sc.title,
+            sc.slug,
+            
+            sc.class_id,
+            sc.lesson_id,
+            sc.unit_id,
+            sc.topic_id,
+            sc.subtopic_id,
+            
+            CONCAT('/content/', sc.slug) as content_url,
+            ts.name AS topic_name,
+            sts.name AS subtopic_name
+
+        FROM file_downloads fd
+        LEFT JOIN school_content_files_lnp scf ON fd.file_id = scf.id
+        LEFT JOIN school_content_lnp sc ON scf.school_content_id = sc.id
+        LEFT JOIN topics_lnp ts ON sc.topic_id = ts.id AND sc.lesson_id = ts.lesson_id 
+        LEFT JOIN subtopics_lnp sts ON sc.subtopic_id = sts.id AND sc.lesson_id = sts.lesson_id
+        WHERE fd.user_id = :user_id 
+        AND sc.active = 1 
+        AND sc.class_id = :class_id
+        
+        UNION ALL
+        
+        SELECT 
+            'wordwall' as type,
+            wv.id as activity_id,
+            wv.user_id,
+            sc.id as resource_id,
+            wv.event_time,
+            sc.title,
+            sc.slug,
+            
+            sc.class_id,
+            sc.lesson_id,
+            sc.unit_id,
+            sc.topic_id,
+            sc.subtopic_id,
+            
+            CONCAT('/content/', sc.slug) as content_url,
+            ts.name AS topic_name,
+            sts.name AS subtopic_name
+
+        FROM wordwall_views wv
+        LEFT JOIN school_content_wordwall_lnp scw ON wv.wordwall_id = scw.id
+        LEFT JOIN school_content_lnp sc ON scw.school_content_id = sc.id
+        LEFT JOIN topics_lnp ts ON sc.topic_id = ts.id AND sc.lesson_id = ts.lesson_id 
+        LEFT JOIN subtopics_lnp sts ON sc.subtopic_id = sts.id AND sc.lesson_id = sts.lesson_id
+        WHERE wv.user_id = :user_id 
+        AND sc.active = 1 
+        AND sc.class_id = :class_id
+        
+        ORDER BY event_time DESC, type, activity_id
+    ";
+
+        try {
+            $stmt = $this->db->prepare($sql);
+            $params = ['user_id' => $user_id];
+            if ($class_id) {
+                $params['class_id'] = $class_id;
+            }
+            $stmt->execute($params);
+            $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // foreach ($items as $key => $item) {
+            //     if ($item['type'] === 'video' && $item['duration'] > 0) {
+            //         $items[$key]['completion_percentage'] = min(100, ($item['max_timestamp'] / $item['duration']) * 100);
+            //         $items[$key]['is_completed'] = $item['max_timestamp'] >= ($item['duration'] * 0.9);
+            //     }
+            // }
+
+            return $items;
+        } catch (PDOException $e) {
+            return null;
+        }
+    }
+
+    public function getUserActivitySummary($user_id, $class_id)
+    {
+        $classFilter = $class_id ? "AND sc.class_id = :class_id" : "";
+        $sql = "
+        SELECT 
+            sc.id as content_id,
+            sc.slug,
+            sc.title,
+            sc.summary,
+            sc.school_id,
+            sc.teacher_id,
+            sc.class_id,
+            sc.lesson_id,
+            sc.unit_id,
+            sc.topic_id,
+            sc.subtopic_id,
+            sc.cover_img,
+            sc.order_no,
+            CONCAT('/content/', sc.slug) as content_url,
+            ts.name AS topic_name,
+            sts.name AS subtopic_name,
+            
+            CASE WHEN cv.user_id IS NOT NULL THEN 1 ELSE 0 END as content_visited,
+            CASE WHEN EXISTS(SELECT 1 FROM video_timestamp_lnp vt2 
+                           JOIN school_content_videos_url scv2 ON vt2.video_id = scv2.id 
+                           WHERE scv2.school_content_id = sc.id AND vt2.user_id = :user_id) 
+                 THEN 1 ELSE 0 END as has_video_activity,
+            CASE WHEN EXISTS(SELECT 1 FROM file_downloads fd2 
+                           JOIN school_content_files_lnp scf2 ON fd2.file_id = scf2.id 
+                           WHERE scf2.school_content_id = sc.id AND fd2.user_id = :user_id) 
+                 THEN 1 ELSE 0 END as has_file_downloads,
+            CASE WHEN EXISTS(SELECT 1 FROM wordwall_views wv2 
+                           JOIN school_content_wordwall_lnp scw2 ON wv2.wordwall_id = scw2.id 
+                           WHERE scw2.school_content_id = sc.id AND wv2.user_id = :user_id) 
+                 THEN 1 ELSE 0 END as has_wordwall_views,
+            
+            COUNT(DISTINCT scv.id) as total_videos,
+            SUM(CASE WHEN vd.duration > 0 AND vt.max_timestamp >= (vd.duration * 0.9) THEN 1 ELSE 0 END) as completed_videos,
+            COUNT(DISTINCT scf.id) as total_files,
+            SUM(CASE WHEN fd.user_id IS NOT NULL THEN 1 ELSE 0 END) as downloaded_files,
+            COUNT(DISTINCT scw.id) as total_wordwalls,
+            SUM(CASE WHEN wv.user_id IS NOT NULL THEN 1 ELSE 0 END) as viewed_wordwalls,
+            
+            CONCAT_WS(',',
+                CASE WHEN cv.user_id IS NOT NULL THEN 'content' END,
+                CASE WHEN EXISTS(SELECT 1 FROM video_timestamp_lnp vt3 JOIN school_content_videos_url scv3 ON vt3.video_id = scv3.id WHERE scv3.school_content_id = sc.id AND vt3.user_id = :user_id) THEN 'video' END,
+                CASE WHEN EXISTS(SELECT 1 FROM file_downloads fd3 JOIN school_content_files_lnp scf3 ON fd3.file_id = scf3.id WHERE scf3.school_content_id = sc.id AND fd3.user_id = :user_id) THEN 'file' END,
+                CASE WHEN EXISTS(SELECT 1 FROM wordwall_views wv3 JOIN school_content_wordwall_lnp scw3 ON wv3.wordwall_id = scw3.id WHERE scw3.school_content_id = sc.id AND wv3.user_id = :user_id) THEN 'wordwall' END
+            ) as activity_types
+            
+        FROM school_content_lnp sc
+        LEFT JOIN content_visits cv ON sc.id = cv.content_id AND cv.user_id = :user_id
+        LEFT JOIN school_content_videos_url scv ON sc.id = scv.school_content_id
+        LEFT JOIN video_durations vd ON scv.id = vd.video_id
+        LEFT JOIN video_timestamp_lnp vt ON scv.id = vt.video_id AND vt.user_id = :user_id
+        LEFT JOIN school_content_files_lnp scf ON sc.id = scf.school_content_id
+        LEFT JOIN file_downloads fd ON scf.id = fd.file_id AND fd.user_id = :user_id
+        LEFT JOIN school_content_wordwall_lnp scw ON sc.id = scw.school_content_id
+        LEFT JOIN wordwall_views wv ON scw.id = wv.wordwall_id AND wv.user_id = :user_id
+        LEFT JOIN topics_lnp ts ON sc.topic_id = ts.id AND sc.lesson_id = ts.lesson_id 
+        LEFT JOIN subtopics_lnp sts ON sc.subtopic_id = sts.id AND sc.lesson_id = sts.lesson_id 
+        WHERE sc.active = 1 
+        {$classFilter}
+        AND (cv.user_id IS NOT NULL 
+             OR EXISTS(SELECT 1 FROM video_timestamp_lnp vt4 JOIN school_content_videos_url scv4 ON vt4.video_id = scv4.id WHERE scv4.school_content_id = sc.id AND vt4.user_id = :user_id)
+             OR EXISTS(SELECT 1 FROM file_downloads fd4 JOIN school_content_files_lnp scf4 ON fd4.file_id = scf4.id WHERE scf4.school_content_id = sc.id AND fd4.user_id = :user_id)
+             OR EXISTS(SELECT 1 FROM wordwall_views wv4 JOIN school_content_wordwall_lnp scw4 ON wv4.wordwall_id = scw4.id WHERE scw4.school_content_id = sc.id AND wv4.user_id = :user_id))
+        GROUP BY 
+            sc.id, sc.slug, sc.title, sc.summary, sc.school_id, sc.teacher_id, 
+            sc.class_id, sc.lesson_id, sc.unit_id, sc.topic_id, sc.subtopic_id, 
+            sc.cover_img, sc.order_no, cv.user_id, ts.name, sts.name
+        ORDER BY sc.order_no ASC, sc.id ASC
+    ";
+
+        try {
+            $stmt = $this->db->prepare($sql);
+            $params = ['user_id' => $user_id];
+            if ($class_id) {
+                $params['class_id'] = $class_id;
+            }
+            $stmt->execute($params);
+            $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $items;
+        } catch (PDOException $e) {
+            return null;
+        }
+    }
+
+
 }

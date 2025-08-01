@@ -1,7 +1,6 @@
 <?php
 include_once "dateformat.classes.php";
 
-
 class ShowStudent extends Student
 {
 
@@ -338,6 +337,85 @@ class ShowStudent extends Student
         echo $studentList;
     }
 
+    public function getStudentActivities($userId, $classId)
+    {
+        $schoolInfo = $this->getStudentsList();
+
+        $dateFormat = new DateFormat();
+        $studentList = '';
+
+        require_once "content-tracker.classes.php";
+        $contentObj = new ContentTracker();
+
+
+        include_once "classes/dateformat.classes.php";
+
+        $timeDifference = new DateFormat();
+
+        // $items = $contentObj->getSchoolContentAnalyticsListByUserId($userId, $classId);
+        $items = $contentObj->getUserActivityRecords($userId, $classId);
+        // $items2 = $contentObj->getUserActivitySummary($userId, $classId);
+        // echo "<pre>";
+        // var_dump($items1);
+        // echo "</pre>";
+        // die();
+        //     echo "<pre>";
+        //     var_dump([$items]);
+        //     echo "</pre>";
+        // die();
+
+        foreach ($items as $key => $value) {
+
+            $placeholder = "placeholder";
+
+            $topic_name = $value['topic_name'] ?? '-';
+            $subtopic_name = $value['subtopic_name'] ?? '-';
+
+            switch ($value['type']) {
+                case 'content':
+                    $type = 'İçerik İzleme';
+                    break;
+                case 'video':
+                    $type = 'Video İzleme';
+                    break;
+                case 'file':
+                    $type = 'Dosya İndirme';
+                    break;
+                case 'wordwall':
+                    $type = 'Wordwall İzleme';
+                    break;
+                default:
+                    $type = '-';
+            }
+            $readibleTime = $timeDifference->timeDifferenceRe(new DateTime(), $value['event_time']);
+
+            $studentList .= '
+                    <tr>
+                        <td>
+                            <a href="./icerik-detay/' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
+                        </td>
+                        <td>
+                            ' . $topic_name . '
+                        </td>
+                        <td>
+                            ' . $subtopic_name . '
+                        </td>
+
+                        <td>
+                            ' . $type . '
+                        </td>
+                        <td>
+                            ' . $value['event_time'] . '
+                        </td>
+                        <td>
+                             ' . $readibleTime . '
+                        </td>
+                    </tr>
+                ';
+        }
+        echo $studentList;
+    }
+
     public function getStudentProgress($userId, $classId)
     {
         $schoolInfo = $this->getStudentsList();
@@ -472,7 +550,8 @@ class ShowStudent extends Student
         echo $total;
     }
 
-    public function getStudentTestNumberForSidebar($userId){
+    public function getStudentTestNumberForSidebar($userId)
+    {
 
         require_once "content-tracker.classes.php";
         $contentObj = new ContentTracker();
@@ -1093,9 +1172,9 @@ class ShowStudent extends Student
                 $scoreW = ($score == null) ? 0 : $score;
                 $scoreT = ($score === null) ? '-' : $score;
 
-                if($value['icons'] != NULL){
+                if ($value['icons'] != NULL) {
                     $ico = "<img src='assets/media/icons/dersler/" . $value['icons'] . "'>";
-                }else{
+                } else {
                     $ico = "<div class='symbol-label fs-2 fw-semibold bg-$style text-inverse-$style'>" . mb_substr($value['name'], 0, 1, 'UTF-8') . "</div>";
                 }
 
@@ -1191,9 +1270,9 @@ class ShowStudent extends Student
                 $scoreW = ($score == null) ? 0 : $score;
                 $scoreT = ($score === null) ? '-' : $score;
 
-                if($value['icons'] != NULL){
+                if ($value['icons'] != NULL) {
                     $ico = "<img src='assets/media/icons/dersler/" . $value['icons'] . "'>";
-                }else{
+                } else {
                     $ico = "<div class='symbol-label fs-2 fw-semibold bg-$style text-inverse-$style'>" . mb_substr($value['name'], 0, 1, 'UTF-8') . "</div>";
                 }
 
@@ -1797,7 +1876,7 @@ $packagesList .= '<tr>
 
         $dateFormat = new DateFormat();
 
-        
+
         echo $dateFormat->changeDateHour($loginInfo[0]['loginTime']);
     }
 }
