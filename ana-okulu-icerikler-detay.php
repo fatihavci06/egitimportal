@@ -7,18 +7,28 @@ session_start();
 define('GUARD', true);
 
 
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001 or $_SESSION['role'] == 10002)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001 or $_SESSION['role'] == 10002 or $_SESSION['role'] == 10005)) {
 
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
+    require_once "classes/student.classes.php";
 
     include_once "views/pages-head.php";
 
     $data = new Classes();
-    if ($_SESSION['role'] == 10002) {
+    $studentInfo = new Student();
+
+    if ($_SESSION['role'] == 10005) {
+        $getPreSchoolStudent = $studentInfo->getPreSchoolStudentsInfoForParents($_SESSION['id']);
+        $studentidsi = $getPreSchoolStudent[0]['id'];
+    } else {
+        $studentidsi = $_SESSION['id'];
+    }
+
+    if ($_SESSION['role'] == 10002 OR $_SESSION['role'] == 10005) {
 
         $contentId = $_GET['id'];
-        $exists = $data->permissionControl($contentId, $_SESSION['id']);
+        $exists = $data->permissionControl($contentId, $studentidsi);
         if (!$exists) {
             // Kullanıcının yetkisi yoksa login sayfasına yönlendir
             header("Location: ana-okulu-icerikler");

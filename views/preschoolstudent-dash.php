@@ -16,9 +16,8 @@ $lessons = new Classes();
 
 $dateFormat = new DateFormat();
 
-$getPreSchoolStudent = $studentInfo->getPreSchoolStudentsInfoForParents($_SESSION['id']);
-
-if($_SESSION['role'] == 10005) {
+if ($_SESSION['role'] == 10005) {
+    $getPreSchoolStudent = $studentInfo->getPreSchoolStudentsInfoForParents($_SESSION['id']);
     $class_idsi = $getPreSchoolStudent[0]['class_id'];
     $school_idsi = $getPreSchoolStudent[0]['school_id'];
 } else {
@@ -218,27 +217,27 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
                                                 $style = '#' . $value['bg-color'];
                                             }
 
-                                                echo '<div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; background-color: ' . $style . ';  min-width: 150px;">';
+                                            echo '<div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; background-color: ' . $style . ';  min-width: 150px;">';
 
-                                                $class_id = $class_idsi;
-                                                $lesson_id = $value['id'];
+                                            $class_id = $class_idsi;
+                                            $lesson_id = $value['id'];
 
-                                                $unitData = $dash->getPreSchoolUnits($lesson_id, $class_id);
-                                                $unitCount = count($unitData);
+                                            $unitData = $dash->getPreSchoolUnits($lesson_id, $class_id);
+                                            $unitCount = count($unitData);
 
-                                                echo '
+                                            echo '
                                                 <a href="ana-okulu-icerikler">
                                                 <div class="symbol symbol-40px">
                                                     ' . $ico . '
                                                 </div>
                                                 </a>';
 
-                                                echo '<a href="ana-okulu-icerikler"><div class="mt-5"><p class="text-gray-800 fw-bold fs-4"> ' . $value['name'] . '</p>
+                                            echo '<a href="ana-okulu-icerikler"><div class="mt-5"><p class="text-gray-800 fw-bold fs-4"> ' . $value['name'] . '</p>
                                                 <p class="text-gray-800 fw-bold fs-6"> ' . $unitCount . ' Ünite</p></div></a>';
 
 
-                                                echo '</div>';
-                                            
+                                            echo '</div>';
+
                                             $styleIndex++;
                                         } ?>
                                     </div>

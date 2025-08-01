@@ -333,7 +333,7 @@ $menu1 = new ShowMenu();
             } elseif ($_SESSION['role'] == 10001) {
 
                 $menu1->showMenuSuperAdminList();
-            } elseif ($_SESSION['role'] == 10002) {
+            } elseif ($_SESSION['role'] == 10002 OR $_SESSION['role'] == 10005) {
                 $menu1->showMenuPreschoolStudentList();
             } elseif ($_SESSION['role'] == 8) {
                 $menu1->showMenuSuperAdminList();

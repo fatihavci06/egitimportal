@@ -3,10 +3,19 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001 or $_SESSION['role'] == 10002)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001 or $_SESSION['role'] == 10002 or $_SESSION['role'] == 10005)) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
+    require_once "classes/student.classes.php";
     $unit = new Classes();
+    $studentInfo = new Student();
+
+    if ($_SESSION['role'] == 10005) {
+        $getPreSchoolStudent = $studentInfo->getPreSchoolStudentsInfoForParents($_SESSION['id']);
+        $studentidsi = $getPreSchoolStudent[0]['id'];
+    } else {
+        $studentidsi = $_SESSION['id'];
+    }
     $contentList = $unit->getMainSchoolContentByUnitAndTopicId($_GET['unit_id'],$_GET['topic_id']);
     $topicInfo = $unit->getMainSchoolTopicById($_GET['topic_id']);
    
@@ -54,7 +63,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 
         .btn-custom {
-            background-color: #1b84ff;
+            /* background-color: #1b84ff; */
             color: white;
             border: none;
             padding: 10px 25px;
@@ -206,8 +215,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 $class = new Classes();
                                                 $roleId = $_SESSION['role'];
 
-                                                if ($roleId == 10002) {
-                                                    $classId = $class->getClassId($_SESSION['id']);
+                                                if ($roleId == 10002 OR $roleId == 10005) {
+                                                    $classId = $class->getClassId($studentidsi);
                                                     $mainSchoolClasses = $class->getAgeGroup($classId);
                                                     $_SESSION['class_id'] = $classId;
                                                 } else {
