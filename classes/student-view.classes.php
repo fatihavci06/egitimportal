@@ -368,6 +368,7 @@ class ShowStudent extends Student
 
             $placeholder = "placeholder";
 
+            $lesson_name = $value['lesson_name'] ?? '-';
             $topic_name = $value['topic_name'] ?? '-';
             $subtopic_name = $value['subtopic_name'] ?? '-';
 
@@ -395,7 +396,10 @@ class ShowStudent extends Student
                             <a href="./icerik-detay/' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
                         </td>
                         <td>
-                            ' . $topic_name . '
+                           ' . $lesson_name . '
+                        </td>
+                        <td>
+                           ' . $topic_name . '
                         </td>
                         <td>
                             ' . $subtopic_name . '
@@ -415,7 +419,77 @@ class ShowStudent extends Student
         }
         echo $studentList;
     }
+    public function getStudentActivitiesRow($userId, $classId)
+    {
+        $schoolInfo = $this->getStudentsList();
 
+        $dateFormat = new DateFormat();
+        $studentList = '';
+
+        require_once "content-tracker.classes.php";
+        $contentObj = new ContentTracker();
+        include_once "classes/dateformat.classes.php";
+
+        $timeDifference = new DateFormat();
+        $items = $contentObj->getUserActivityRecords($userId, $classId);
+
+        foreach ($items as $key => $value) {
+
+            $placeholder = "placeholder";
+
+            $lesson_name = $value['lesson_name'] ?? ' ';
+            $topic_name = $value['topic_name'] ?? ' ';
+            $subtopic_name = $value['subtopic_name'] ?? ' ';
+
+            switch ($value['type']) {
+                case 'content':
+                    $type = 'İçerik görüntüledi';
+                    break;
+                case 'video':
+                    $type = 'Video İzledi';
+                    break;
+                case 'file':
+                    $type = 'Dosya İndirdi';
+                    break;
+                case 'wordwall':
+                    $type = 'Wordwall görüntüledi';
+                    break;
+                default:
+                    $type = '-';
+            }
+            $readibleTime = $timeDifference->timeDifferenceRe(new DateTime(), $value['event_time']);
+
+            $studentList .= '
+                <div class="border rounded shadow-sm m-3 p-3 bg-white">
+                    <div class="d-flex align-items-start">
+                        <div class="symbol symbol-40px pe-3 bg-white">
+                            <span class="symbol-label ">
+                                <i class="ki-duotone ki-to-right fs-1 text-success"></i>
+                            </span>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="text-gray-800  fs-6">
+                                ' . $lesson_name . ' dersine ait 
+                                <strong>
+                                    <a href="./icerik-detay/' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">
+                                    ' . $value['title'] . ' (' . $topic_name . ' ' . $subtopic_name . ')
+                                    </a>
+                                </strong>
+                                içeriğinde   ' . $type . '.
+                            </div>
+                            <div class="text-muted fs-7 mt-1">15 
+                            ' . $readibleTime . ' - ' . $value['event_time'] . '
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            '; 
+
+
+    
+        }
+        echo $studentList;
+    }
     public function getStudentProgress($userId, $classId)
     {
         $schoolInfo = $this->getStudentsList();
