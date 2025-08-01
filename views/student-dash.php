@@ -64,43 +64,46 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
     <!--begin::Row-->
     <div class="row col-lg-12" style="align-items: baseline;">
         <div class="row gx-5 gx-xl-9 col-lg-9" style="align-items: baseline;padding-right: 0px;">
-            <div class="col-xxl-12 mb-1 mb-xl-1" style="padding-right: 0px;">
-                <!--begin::Chart widget 8-->
-                <div class="card card-flush h-xl-100">
-                    <div class="card-header pt-0" style="padding: 10px;">
-                        <h3 class="card-title align-items-start flex-column">
-                            <span class="card-label fw-bold text-gray-900">
-                                <i class="fa-solid fa-chalkboard-teacher me-2 fs-1"></i>
-                                Özel Dersler
-                            </span>
-                        </h3>
-                    </div>
+            <?php if (count($showPrivateLessons) > 0) { ?>
+                <div class="col-xxl-12 mb-1 mb-xl-1" style="padding-right: 0px;">
+                    <!--begin::Chart widget 8-->
 
-                    <div class="card-body p-3">
-
-
-                        <div class="row g-3">
-                            <?php foreach ($showPrivateLessons as $lesson): ?>
-                                <div class="col-md-6 col-xl-4">
-                                    <div class="card h-100 shadow-sm">
-                                        <div class="card-body d-flex flex-column">
-                                            <h5 class="card-title"><?= htmlspecialchars($lesson['title']) ?></h5>
-                                            <p class="card-text mb-1"><strong>Öğretmen:</strong> <?= htmlspecialchars($lesson['extendedProps']['organizerName']) ?></p>
-                                            <p class="card-text mb-1"><strong>Tarih:</strong> <?= date('d-m-Y H:i', strtotime($lesson['start'])) ?></p>
-                                    
-                                          <a href="<?= htmlspecialchars($lesson['zoom_join_url']) ?>" class="btn btn-primary mt-auto btn-sm" target="_blank">Derse Katıl</a>
-
-
-                                        </div>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
+                    <div class="card card-flush h-xl-100">
+                        <div class="card-header pt-0" style="padding: 10px;">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label fw-bold text-gray-900">
+                                    <i class="fa-solid fa-chalkboard-teacher me-2 fs-1"></i>
+                                    Özel Dersler
+                                </span>
+                            </h3>
                         </div>
 
-                    </div>
-                </div>
-            </div>
+                        <div class="card-body p-3">
 
+
+                            <div class="row g-3">
+                                <?php foreach ($showPrivateLessons as $lesson): ?>
+                                    <div class="col-md-6 col-xl-4">
+                                        <div class="card h-100 shadow-sm">
+                                            <div class="card-body d-flex flex-column">
+                                                <h5 class="card-title"><?= htmlspecialchars($lesson['title']) ?></h5>
+                                                <p class="card-text mb-1"><strong>Öğretmen:</strong> <?= htmlspecialchars($lesson['extendedProps']['organizerName']) ?></p>
+                                                <p class="card-text mb-1"><strong>Tarih:</strong> <?= date('d-m-Y H:i', strtotime($lesson['start'])) ?></p>
+
+                                                <a href="<?= htmlspecialchars($lesson['zoom_join_url']) ?>" class="btn btn-primary mt-auto btn-sm" target="_blank">Derse Katıl</a>
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            <?php } ?>
             <!--begin::Col-->
             <div class="col-xxl-12 mb-1 mb-xl-1" style="padding-right: 0px;">
                 <!--begin::Chart widget 8-->
