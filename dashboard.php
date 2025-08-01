@@ -117,6 +117,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 													<!--end::Title-->
 													<!--begin::Toolbar-->
 													<div class="card-toolbar">
+														<?php echo 22;die;?>
 														<ul class="nav" id="kt_chart_widget_8_tabs">
 															<li class="nav-item">
 																<a class="nav-link btn btn-sm btn-color-muted btn-active btn-active-light fw-bold px-4 me-1" data-bs-toggle="tab" id="kt_chart_widget_8_week_toggle" href="#kt_chart_widget_8_week_tab">Ay</a>

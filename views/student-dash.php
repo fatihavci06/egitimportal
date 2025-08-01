@@ -15,6 +15,8 @@ $resultProfile = $contentObj->getSchoolContentAnalyticsOverall($_SESSION['id']);
 $resultProfileW = ($resultProfile == null) ? 0 : $resultProfile;
 $resultProfileT = ($resultProfile == null) ? '-' : $resultProfile;
 
+$privateLessons = new Dashes();
+$showPrivateLessons = $privateLessons->getPrivateLessonList();
 
 $student = new ShowStudent();
 
@@ -62,6 +64,42 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
     <!--begin::Row-->
     <div class="row col-lg-12" style="align-items: baseline;">
         <div class="row gx-5 gx-xl-9 col-lg-9" style="align-items: baseline;padding-right: 0px;">
+            <div class="col-xxl-12 mb-1 mb-xl-1" style="padding-right: 0px;">
+                <!--begin::Chart widget 8-->
+                <div class="card card-flush h-xl-100">
+                    <div class="card-header pt-0" style="padding: 10px;">
+                        <h3 class="card-title align-items-start flex-column">
+                            <span class="card-label fw-bold text-gray-900">
+                                <i class="fa-solid fa-chalkboard-teacher me-2 fs-1"></i>
+                                Özel Dersler
+                            </span>
+                        </h3>
+                    </div>
+
+                    <div class="card-body p-3">
+
+
+                        <div class="row g-3">
+                            <?php foreach ($showPrivateLessons as $lesson): ?>
+                                <div class="col-md-6 col-xl-4">
+                                    <div class="card h-100 shadow-sm">
+                                        <div class="card-body d-flex flex-column">
+                                            <h5 class="card-title"><?= htmlspecialchars($lesson['title']) ?></h5>
+                                            <p class="card-text mb-1"><strong>Öğretmen:</strong> <?= htmlspecialchars($lesson['extendedProps']['organizerName']) ?></p>
+                                            <p class="card-text mb-1"><strong>Tarih:</strong> <?= date('d-m-Y H:i', strtotime($lesson['start'])) ?></p>
+                                    
+                                          <a href="<?= htmlspecialchars($lesson['zoom_join_url']) ?>" class="btn btn-primary mt-auto btn-sm" target="_blank">Derse Katıl</a>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
 
             <!--begin::Col-->
             <div class="col-xxl-12 mb-1 mb-xl-1" style="padding-right: 0px;">
@@ -106,7 +144,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                                 echo '<div class="position-relative" style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; min-width: 180px; ">';
 
                                                 //echo '<div class="mt-5"><span class="text-gray-800 fw-bold fs-4"> ' . $value['name'] . '</span></div>';
-                                        
+
                                                 $getUnits = $dash->getUnitsDash($value['id']);
 
                                                 if (empty($getUnits)) {
@@ -493,7 +531,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
 
                 <div class="text-center">
                     <img src="assets/media/dash/<?php echo $image; ?>" alt="Progress Image" class="img-fluid" />
-                    
+
                     <div class="d-flex align-items-center w-200px w-sm-300px flex-column mt-3">
                         <div class="d-flex justify-content-between w-100 mt-auto mb-2">
                             <span class="fw-semibold fs-6 text-gray-500">Tamamlama Oranı</span>
@@ -506,9 +544,6 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                         </div>
                     </div>
 
-                    <a href="/" class="btn btn-secondary btn-icon rounded p-4 w-auto">
-                        <i class="ki-duotone ki-arrow-right fs-4">Çiçeği Sula</i>
-                    </a>
                 </div>
             </div>
 

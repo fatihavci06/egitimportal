@@ -11,10 +11,53 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     $class = new Classes();
     $data = $class->getExtraPackageList();
      $remaining= $class->privateLessonRemainingLimit($_SESSION['id']);
- if ($remaining == 0) {
-    header("Location: ek-paket-satin-al.php");
-    exit();
-}
+if ($remaining == 0) {
+        // JS ile uyarı + 5 saniye sonra otomatik yönlendirme
+        echo <<<HTML
+<!doctype html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <title>Ek Paket Gerekli</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    Swal.fire({
+        title: 'Ek Paket Gerekli',
+        html: 'Kalan özel ders hakkınız kalmadı.<br>5 saniye sonra yönlendirileceksiniz.',
+        icon: 'warning',
+        showConfirmButton: true,
+        confirmButtonText: 'Hemen Git',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+            // 5 saniye sonra otomatik yönlendirme
+            setTimeout(() => {
+                window.location.href = 'ek-paket-satin-al.php';
+            }, 5000);
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = 'ek-paket-satin-al.php';
+        }
+    });
+});
+</script>
+<noscript>
+    <div style="margin:2rem; padding:1rem; border:1px solid #f0ad4e; background:#fff3cd; color:#856404; border-radius:4px;">
+        Kalan özel ders hakkınız kalmadı. <a href="ek-paket-satin-al.php">Ek paket satın almak için tıklayın</a>.
+    </div>
+    <meta http-equiv="refresh" content="5;url=ek-paket-satin-al.php">
+</noscript>
+</body>
+</html>
+HTML;
+        exit();
+    }
 ?>
 <style>
         /* Minimal custom style for colors not in Bootstrap's palette, 
