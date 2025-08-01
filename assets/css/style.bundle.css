@@ -60265,7 +60265,7 @@ router-outlet {
 
 body,
 .app-default {
- /* background-color: var(--bs-app-bg-color);*/
+  /* background-color: var(--bs-app-bg-color);*/
   background-color: #fff;
 }
 
@@ -60325,6 +60325,7 @@ body,
     padding-left: 20px !important;
     padding-right: 20px !important;
   }
+
   .app-container2 {
     max-width: none;
     padding-left: 15px !important;
@@ -62094,7 +62095,7 @@ body,
 
   [data-kt-app-aside-fixed=true] .app-wrapper {
     /* margin-right: calc(var(--bs-app-aside-width) + var(--bs-app-aside-gap-start, 0px) + var(--bs-app-aside-gap-end, 0px)); */
-     margin-right: 0px;
+    margin-right: 0px;
   }
 
   [data-kt-app-footer-fixed=true] .app-wrapper {
@@ -62978,55 +62979,91 @@ body,
 }
 
 @media (max-width: 1366px) {
-  .symbol-40px>img, .symbol.symbol-40px .symbol-label{
+
+  .symbol-40px>img,
+  .symbol.symbol-40px .symbol-label {
     width: 30px !important;
     height: 30px !important;
   }
 
-  .student-dashboard .fs-6{
+  .student-dashboard .fs-6 {
     font-size: 0.8rem !important;
   }
 
-  .student-dashboard .fs-4{
+  .student-dashboard .fs-4 {
     font-size: 0.8rem !important;
   }
 
-  .student-dashboard .card-label{
+  .student-dashboard .card-label {
     font-size: 1rem !important;
   }
 
-  .student-dashboard .fs-1{
+  .student-dashboard .fs-1 {
     font-size: 1rem !important;
   }
 
-  .kalangun, .kalangun i{
+  .kalangun,
+  .kalangun i {
     font-size: 0.8rem !important;
   }
 }
 
 @media (max-width: 768px) {
-  .hosgeldin{
+  .hosgeldin {
     font-size: 11px !important;
     padding-left: 10px;
   }
 
-  .maskotheader img, .mobilekaldir{
+  .maskotheader img,
+  .mobilekaldir {
     display: none !important;
   }
 
-  .app-sidebar-logo img{
+  .app-sidebar-logo img {
     height: 30px !important;
   }
 }
 
-#kt_app_aside{
+#kt_app_aside {
   display: none !important;
 }
 
-.dashLand #kt_app_toolbar{
+.dashLand #kt_app_toolbar {
   display: none !important;
 }
 
+<<<<<<< HEAD
+.bg-custom-light {
+  background-color: #e6e6fa;
+  /* Light purple */
+}
+
+.border-custom-red {
+  border-color: #d22b2b !important;
+}
+
+.text-custom-cart {
+  color: #6a5acd;
+  /* Slate blue for the cart */
+}
+
+/* For the circular icon, we'll use a larger padding or fixed size */
+.icon-circle-lg {
+  width: 60px;
+  /* fixed width */
+  height: 60px;
+  /* fixed height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-circle-lg img {
+  max-width: 100%;
+  /* Ensure image scales within the circle */
+  max-height: 100%;
+=======
 #embededGame{
   max-width: 100% !important;
+>>>>>>> 21c49d2b9221ec1492874cb685d928ecb0b5b782
 }

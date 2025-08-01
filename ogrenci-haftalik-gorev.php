@@ -179,72 +179,81 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] ==
                                     $column = ($_SESSION['role'] == 1) ? 'col-lg-10' : 'col-lg-5';
                                     ?>
 
-                                   <div class="row" > <div class="col-12 col-lg-2 order-1 order-lg-1 mb-4 mb-lg-0">
-        <div class="card h-100 dersler-card-min-height"> <div class="card-body py-4">
-                <div class="row g-2 g-lg-10 justify-content-center">
-                    <?php foreach ($lessons as $l): ?>
-                        <?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
-                            <div class="col-6 col-sm-4 col-lg-12 text-center mb-sm-2 mb-lg-1">
-                                <a href="ders/<?= urlencode($l['slug']) ?>" class="d-block text-decoration-none text-dark">
-                                    <img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 65px; height: 65px; object-fit: contain;" />
-                                    <div class="mt-1 fw-bold"><?= htmlspecialchars($l['name']) ?></div>
-                                </a>
-                            </div>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </div>
-    </div>
+                                    <div class="row">
+                                        <div class="col-12 col-lg-2 order-1 order-lg-1 mb-4 mb-lg-0">
+                                            <div class="card h-100 dersler-card-min-height">
+                                                <div class="card-body py-4">
+                                                    <div class="row g-2 g-lg-10 justify-content-center">
+                                                        <?php foreach ($lessons as $l): ?>
+                                                            <?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
+                                                                <div class="col-6 col-sm-4 col-lg-12 text-center mb-sm-2 mb-lg-1">
+                                                                    <a href="ders/<?= urlencode($l['slug']) ?>" class="d-block text-decoration-none text-dark">
+                                                                        <img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 65px; height: 65px; object-fit: contain;" />
+                                                                        <div class="mt-1 fw-bold"><?= htmlspecialchars($l['name']) ?></div>
+                                                                    </a>
+                                                                </div>
+                                                            <?php endif; ?>
+                                                        <?php endforeach; ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
 
-    <div class="col-12 col-lg-10 order-2 order-lg-2">
-        <div class="card mb-4"> <div class="card-body pt-0">
-                <div id="eventResults" class="mt-4">
-                    </div>
-            </div>
-        </div>
+                                        <div class="col-12 col-lg-10 order-2 order-lg-2">
+                                            <div class="card mb-4">
+                                                <div class="card-body pt-0">
+                                                    <div id="eventResults" class="mt-4">
+                                                    </div>
+                                                </div>
+                                            </div>
 
-        <div class="card mb-4"> <div class="card-body pt-0">
-                <div id="odev" class="mt-4">
-                    </div>
-            </div>
-        </div>
+                                            <div class="card mb-4">
+                                                <div class="card-body pt-0">
+                                                    <div id="odev" class="mt-4">
+                                                    </div>
+                                                </div>
+                                            </div>
 
-        <?php if ($_SESSION['role'] != 1) { ?>
-            <div class="card"> <div class="card-body pt-0">
-                    <div id="eventResultsTest" class="mt-4">
-                        </div>
-                </div>
-            </div>
-        <?php } ?>
-    </div>
+                                            <?php if ($_SESSION['role'] != 1) { ?>
+                                                <div class="card">
+                                                    <div class="card-body pt-0">
+                                                        <div id="eventResultsTest" class="mt-4">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <?php } ?>
+                                        </div>
 
-    <?php
-    if ($_SESSION['role'] == 1) {
-   
-        include_once "views/weekly/add_weekly.php";
-    } else {
-        // include_once "views/weekly/add_unit_teacher.php";
-    }
-    ?>
-</div>
-<style>
-    /* footer'ın bozulmasını engellemek için sol sütuna minimum yükseklik verme */
-    .dersler-card-min-height {
-        min-height: 400px; /* Bu değeri, sağdaki içeriklerin toplam yüksekliğine göre ayarlayın */
-        /* Örneğin, sağdaki 3 kartın toplam yüksekliği + aralarındaki boşluklar kadar olabilir */
-        /* Bu değeri tarayıcıda incele (inspect) yaparak veya deneyerek bulabilirsiniz */
-    }
+                                        <?php
+                                        if ($_SESSION['role'] == 1) {
 
-    /* Sağdaki kartların da gerektiğinde kendi içlerinde esnemesini sağlamak için */
-    .col-lg-10 > .card {
-        display: flex; /* Kartların içindeki body'yi esnetmek için */
-        flex-direction: column;
-    }
-    .col-lg-10 > .card .card-body {
-        flex-grow: 1; /* card-body'nin tüm boşluğu doldurmasını sağlar */
-    }
-</style>
+                                            include_once "views/weekly/add_weekly.php";
+                                        } else {
+                                            // include_once "views/weekly/add_unit_teacher.php";
+                                        }
+                                        ?>
+                                    </div>
+                                    <style>
+                                        /* footer'ın bozulmasını engellemek için sol sütuna minimum yükseklik verme */
+                                        .dersler-card-min-height {
+                                            min-height: 400px;
+                                            /* Bu değeri, sağdaki içeriklerin toplam yüksekliğine göre ayarlayın */
+                                            /* Örneğin, sağdaki 3 kartın toplam yüksekliği + aralarındaki boşluklar kadar olabilir */
+                                            /* Bu değeri tarayıcıda incele (inspect) yaparak veya deneyerek bulabilirsiniz */
+                                        }
+
+                                        /* Sağdaki kartların da gerektiğinde kendi içlerinde esnemesini sağlamak için */
+                                        .col-lg-10>.card {
+                                            display: flex;
+                                            /* Kartların içindeki body'yi esnetmek için */
+                                            flex-direction: column;
+                                        }
+
+                                        .col-lg-10>.card .card-body {
+                                            flex-grow: 1;
+                                            /* card-body'nin tüm boşluğu doldurmasını sağlar */
+                                        }
+                                    </style>
                                 </div>
                             </div>
 
@@ -377,95 +386,95 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] ==
                 };
 
                 // Send AJAX POST request
-               $.ajax({
-    url: 'includes/getweeklylistforsudent.inc.php',
-    type: 'POST',
-    data: postData,
-    dataType: 'json', // Expecting JSON response from the PHP script
-    success: function(response) {
-        // Handle success response from PHP
-        console.log(response);
-        if (response.status === 'success') {
-            var eventList = response.data;
-            console.log('Events:', eventList);
+                $.ajax({
+                    url: 'includes/getweeklylistforsudent.inc.php',
+                    type: 'POST',
+                    data: postData,
+                    dataType: 'json', // Expecting JSON response from the PHP script
+                    success: function(response) {
+                        // Handle success response from PHP
+                        console.log(response);
+                        if (response.status === 'success') {
+                            var eventList = response.data;
+                            console.log('Events:', eventList);
 
-            function getMonthYear(dateString) {
-                const date = new Date(dateString);
-                const options = {
-                    year: 'numeric',
-                    month: 'long'
-                };
-                const str = date.toLocaleDateString('tr-TR', options);
-                return str.normalize('NFKD').replace(/\s+/g, ' ').trim().toLowerCase();
-            }
+                            function getMonthYear(dateString) {
+                                const date = new Date(dateString);
+                                const options = {
+                                    year: 'numeric',
+                                    month: 'long'
+                                };
+                                const str = date.toLocaleDateString('tr-TR', options);
+                                return str.normalize('NFKD').replace(/\s+/g, ' ').trim().toLowerCase();
+                            }
 
-            function formatDate(dateStr) {
-                const date = new Date(dateStr);
-                return date.toLocaleDateString('tr-TR', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric'
-                });
-            }
+                            function formatDate(dateStr) {
+                                const date = new Date(dateStr);
+                                return date.toLocaleDateString('tr-TR', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric'
+                                });
+                            }
 
-            function calculateRemaining(endDateStr) {
-                const now = new Date();
-                const endDate = new Date(endDateStr);
-                const diff = endDate - now;
+                            function calculateRemaining(endDateStr) {
+                                const now = new Date();
+                                const endDate = new Date(endDateStr);
+                                const diff = endDate - now;
 
-                if (diff <= 0) return '0 gün';
+                                if (diff <= 0) return '0 gün';
 
-                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                return `${days} gün`;
-            }
+                                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                                return `${days} gün`;
+                            }
 
-            function formatDateShort(dateString) {
-                const date = new Date(dateString);
-                const options = {
-                    month: 'long',
-                    day: 'numeric'
-                };
-                return date.toLocaleDateString('tr-TR', options);
-            }
+                            function formatDateShort(dateString) {
+                                const date = new Date(dateString);
+                                const options = {
+                                    month: 'long',
+                                    day: 'numeric'
+                                };
+                                return date.toLocaleDateString('tr-TR', options);
+                            }
 
-            function capitalize(str) {
-                return str.charAt(0).toUpperCase() + str.slice(1);
-            }
+                            function capitalize(str) {
+                                return str.charAt(0).toUpperCase() + str.slice(1);
+                            }
 
-            // type'a göre path eşlemesi
-            function buildEventHref(event) {
-                const map = {
-                    unit: 'unite',
-                    topic: 'konu',
-                    subtopic: 'alt-konu',
-                    homework: 'ogrenci-odev-detay'
-                };
-                const base = map[event.type] || 'unite';
-                return `${base}/${encodeURIComponent(event.slug)}`;
-            }
+                            // type'a göre path eşlemesi
+                            function buildEventHref(event) {
+                                const map = {
+                                    unit: 'unite',
+                                    topic: 'konu',
+                                    subtopic: 'alt-konu',
+                                    homework: 'ogrenci-odev-detay'
+                                };
+                                const base = map[event.type] || 'unite';
+                                return `${base}/${encodeURIComponent(event.slug)}`;
+                            }
 
-            // Separate events by type
-            const generalEvents = eventList.filter(event => event.type !== 'homework');
-            const homeworkEvents = eventList.filter(event => event.type === 'homework');
+                            // Separate events by type
+                            const generalEvents = eventList.filter(event => event.type !== 'homework');
+                            const homeworkEvents = eventList.filter(event => event.type === 'homework');
 
-            // --- Render General Events ---
-            generalEvents.sort((a, b) => new Date(a.start) - new Date(b.start));
+                            // --- Render General Events ---
+                            generalEvents.sort((a, b) => new Date(a.start) - new Date(b.start));
 
-            const groupedGeneral = {};
-            let generalHtml = '';
+                            const groupedGeneral = {};
+                            let generalHtml = '';
 
-            generalEvents.forEach(event => {
-                const key = getMonthYear(event.start);
-                if (!groupedGeneral[key]) groupedGeneral[key] = [];
-                groupedGeneral[key].push(event);
-            });
+                            generalEvents.forEach(event => {
+                                const key = getMonthYear(event.start);
+                                if (!groupedGeneral[key]) groupedGeneral[key] = [];
+                                groupedGeneral[key].push(event);
+                            });
 
-            for (const key in groupedGeneral) {
-                generalHtml += `<h2 class="text-center event-month mt-4 mb-4">${capitalize(key)}</h2>`;
+                            for (const key in groupedGeneral) {
+                                generalHtml += `<h2 class="text-center event-month mt-4 mb-4">${capitalize(key)}</h2>`;
 
-                groupedGeneral[key].forEach(event => {
-                    const href = buildEventHref(event);
-                    generalHtml += `
+                                groupedGeneral[key].forEach(event => {
+                                    const href = buildEventHref(event);
+                                    generalHtml += `
         <div class="card mb-2 shadow-sm event-card" style="padding: 0;">
             <div class="card-body py-2 px-3">
                 <div class="row align-items-center">
@@ -494,18 +503,18 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] ==
             </div>
         </div>
     `;
-                });
-            }
+                                });
+                            }
 
-            $('#eventResults').html(generalHtml);
+                            $('#eventResults').html(generalHtml);
 
-            // --- Render Homework Events ---
-            let homeworkHtml = '';
-            if (homeworkEvents.length > 0) {
-                homeworkHtml += '<h2 class="text-center event-month mt-4 mb-4">Ödevler</h2>';
-                homeworkEvents.forEach(event => {
-                    const href = buildEventHref(event);
-                    homeworkHtml += `
+                            // --- Render Homework Events ---
+                            let homeworkHtml = '';
+                            if (homeworkEvents.length > 0) {
+                                homeworkHtml += '<h2 class="text-center event-month mt-4 mb-4">Ödevler</h2>';
+                                homeworkEvents.forEach(event => {
+                                    const href = buildEventHref(event);
+                                    homeworkHtml += `
         <div class="card mb-2 shadow-sm event-card" style="padding: 0;">
             <div class="card-body py-2 px-3">
                 <div class="row align-items-center">
@@ -534,18 +543,18 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] ==
             </div>
         </div>
     `;
-                });
-                $('#odev').html(homeworkHtml); // Display homework in the #odev div
-            } else {
-                $('#odev').html(`<div class="alert alert-info">Henüz tanımlanmış ödev bulunmamaktadır.</div>`);
-            }
+                                });
+                                $('#odev').html(homeworkHtml); // Display homework in the #odev div
+                            } else {
+                                $('#odev').html(`<div class="alert alert-info">Henüz tanımlanmış ödev bulunmamaktadır.</div>`);
+                            }
 
 
-            if (Array.isArray(response.testData) && response.testData.length > 0) {
-                let testHtml = '<h2 class="text-center event-month mt-4 mb-4">Testler</h2>';
+                            if (Array.isArray(response.testData) && response.testData.length > 0) {
+                                let testHtml = '<h2 class="text-center event-month mt-4 mb-4">Testler</h2>';
 
-                response.testData.forEach(test => {
-                    testHtml += `
+                                response.testData.forEach(test => {
+                                    testHtml += `
         <div class="card mb-3 shadow-sm border-start border-3 border-primary">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-2">
@@ -565,23 +574,23 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] ==
             </div>
         </div>
     `;
+                                });
+
+                                $('#eventResultsTest').html(testHtml);
+                            } else {
+                                $('#eventResultsTest').html(`<div class="alert alert-warning">Henüz sınav tanımlanmamış.</div>`);
+                            }
+
+                        } else {
+                            alert('Filtreleme başarısız: ' + response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle error
+                        console.error('AJAX Error:', status, error);
+                        alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+                    }
                 });
-
-                $('#eventResultsTest').html(testHtml);
-            } else {
-                $('#eventResultsTest').html(`<div class="alert alert-warning">Henüz sınav tanımlanmamış.</div>`);
-            }
-
-        } else {
-            alert('Filtreleme başarısız: ' + response.message);
-        }
-    },
-    error: function(xhr, status, error) {
-        // Handle error
-        console.error('AJAX Error:', status, error);
-        alert('Bir hata oluştu. Lütfen tekrar deneyin.');
-    }
-});
 
             }
 

@@ -89,7 +89,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 
                                                 </div>
                                             </div>
-                                            <div class="row d-flex flex-column flex-lg-row mb-17" style="margin-left:-10px;">
+                                            <div class="row " >
                                                 <!--begin::Sidebar-->
 
                                                 <div class="col-3 col-lg-2">
