@@ -440,29 +440,55 @@ switch ($service) {
             echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası: ' . $e->getMessage()]);
         }
         break;
-    case 'deleteMainSchoolContent':
-        // Gelen ID kontrolü
-        $id = $_POST['id'] ?? null;
+   case 'deleteMainSchoolContent': // aslında status toggle işlemi yapıyor
+    $id = $_POST['id'] ?? null;
 
-        if (!$id || !is_numeric($id)) {
-            echo json_encode(['status' => 'error', 'message' => 'Geçersiz ID']);
+    if (!$id || !ctype_digit($id)) {
+        echo json_encode(['status' => 'error', 'message' => 'Geçersiz ID']);
+        exit;
+    }
+
+    try {
+        // Transaction, tutarlılık için
+        $pdo->beginTransaction();
+
+        // Mevcut status'u kilitleyerek al
+        $stmt = $pdo->prepare("SELECT status FROM main_school_content_lnp WHERE id = ? FOR UPDATE");
+        $stmt->execute([$id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$row) {
+            $pdo->rollBack();
+            echo json_encode(['status' => 'error', 'message' => 'Kayıt bulunamadı.']);
             exit;
         }
 
-        try {
-            // Silme işlemi
-            $stmt = $pdo->prepare("DELETE FROM main_school_content_lnp WHERE id = ?");
-            $stmt->execute([$id]);
+        $currentStatus = (int)$row['status'];
+        $newStatus = $currentStatus === 1 ? 0 : 1;
 
-            if ($stmt->rowCount()) {
-                echo json_encode(['status' => 'success', 'message' => 'Kayıt başarıyla silindi.']);
-            } else {
-                echo json_encode(['status' => 'error', 'message' => 'Kayıt bulunamadı veya silinemedi.']);
-            }
-        } catch (PDOException $e) {
-            echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası: ' . $e->getMessage()]);
+        // Güncelle
+        $upd = $pdo->prepare("UPDATE main_school_content_lnp SET status = ? WHERE id = ?");
+        $upd->execute([$newStatus, $id]);
+
+        $pdo->commit();
+
+        $actionText = $newStatus === 1 ? 'Pasif Yap' : 'Aktif Yap'; // bir sonraki yapılacak işlem
+        $message = $newStatus === 1 ? 'İçerik aktif hale getirildi.' : 'İçerik pasif yapıldı.';
+
+        echo json_encode([
+            'status' => 'success',
+            'message' => $message,
+            'new_status' => $newStatus,
+            'actionText' => $actionText,
+        ]);
+    } catch (PDOException $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
         }
-        break;
+        echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası: ' . $e->getMessage()]);
+    }
+    break;
+
     case 'deleteCategoryTitle':
         $id = $_POST['id'] ?? null;
 

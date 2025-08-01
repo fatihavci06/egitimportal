@@ -58,45 +58,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1  or $_SESSION['role'] ==
                         <!--begin::Content wrapper-->
                         <div class="d-flex flex-column flex-column-fluid">
                             <!--begin::Toolbar-->
-                            <div id="kt_app_toolbar" class="app-toolbar pt-5">
-                                <!--begin::Toolbar container-->
-                                <div id="kt_app_toolbar_container"
-                                    class="app-container container-fluid d-flex align-items-stretch">
-                                    <!--begin::Toolbar wrapper-->
-                                    <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
-                                        <!--begin::Page title-->
-                                        <div class="page-title d-flex flex-column gap-1 me-3 mb-2">
-                                            <!--begin::Breadcrumb-->
-                                            <ul class="breadcrumb breadcrumb-separatorless fw-semibold mb-6">
-                                                <!--begin::Item-->
-                                                <li class="breadcrumb-item text-gray-700 fw-bold lh-1">
-                                                    <a href="index.html" class="text-gray-500 text-hover-primary">
-                                                        <i class="ki-duotone ki-home fs-3 text-gray-500 me-n1"></i>
-                                                    </a>
-                                                </li>
-                                                <!--end::Item-->
-                                                <!--begin::Item-->
-                                                <li class="breadcrumb-item">
-                                                    <i class="ki-duotone ki-right fs-4 text-gray-700 mx-n1"></i>
-                                                </li>
-                                                <!--end::Item-->
-                                                <!--begin::Item-->
-                                                <li class="breadcrumb-item text-gray-700 fw-bold lh-1">Ödev Detay</li>
-                                                <!--end::Item-->
-                                            </ul>
-                                            <!--end::Breadcrumb-->
-                                            <!--begin::Title-->
-                                            <h1
-                                                class="page-heading d-flex flex-column justify-content-center text-gray-900 fw-bolder fs-1 lh-0">
-                                                Ödev Detay</h1>
-                                            <!--end::Title-->
-                                        </div>
-                                        <!--end::Page title-->
-                                    </div>
-                                    <!--end::Toolbar wrapper-->
-                                </div>
-                                <!--end::Toolbar container-->
-                            </div>
+
                             <!--end::Toolbar-->
                             <!--begin::Content-->
                             <div id="kt_app_content" class="app-content flex-column-fluid">
@@ -111,7 +73,20 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1  or $_SESSION['role'] ==
                                                 <!--begin:::Tab pane-->
                                                 <div class="tab-pane fade show active" id="konular" role="tabpanel">
                                                     <!--begin::Card-->
-                                                    <div class="card pt-4 mb-6 mb-xl-9">
+                                                    <div class="card pt-4 mb-6 mb-xl-9" style="margin-top:-30px;">
+                                                        <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
+                                             border-top border-bottom border-custom-red" style="border-width: 5px !important;">
+
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="rounded-circle bg-danger me-3 shadow icon-circle-lg d-flex justify-content-center align-items-center"
+                                                                    style="width: 80px; height: 80px;">
+                                                                    <i class="fas fa-calendar-check fa-2x text-white"></i>
+                                                                </div>
+
+                                                                <h1 class="fs-3 fw-bold text-dark mb-0">Ödev Detayı</h1>
+                                                            </div>
+
+                                                        </header>
                                                         <?php $contents->showHomeworkDetailForStudent($slug); ?>
                                                     </div>
                                                     <!--end::Card-->

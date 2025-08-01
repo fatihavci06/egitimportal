@@ -13,11 +13,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     include_once "classes/units-view.classes.php";
     include_once "classes/topics.classes.php";
     include_once "classes/topics-view.classes.php";
+    include "classes/classes.classes.php";
     $contents = new ShowHomeworkContents();
     $units = new ShowUnit();
     $topics = new ShowTopic();
     $lessons = new ShowLesson();
     include_once "views/pages-head.php";
+    $lessonData = new Classes();
+    $lessonList = $lessonData->getLessonsList($_SESSION['class_id']);
 ?>
     <!--end::Head-->
     <!--begin::Body-->
@@ -68,7 +71,20 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <!--begin::Card-->
-                                    <div class="card">
+                                    <div class="card" style="margin-top: -20px;">
+                                        <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
+                                             border-top border-bottom border-custom-red" style="border-width: 5px !important;">
+
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle bg-danger me-3 shadow icon-circle-lg d-flex justify-content-center align-items-center"
+                                                    style="width: 80px; height: 80px;">
+                                                    <i class="fas fa-calendar-check fa-2x text-white"></i>
+                                                </div>
+
+                                                <h1 class="fs-3 fw-bold text-dark mb-0">Ödev Listesi</h1>
+                                            </div>
+
+                                        </header>
                                         <!--begin::Card header-->
                                         <div class="card-header border-0 pt-6">
                                             <!--begin::Card title-->
@@ -114,7 +130,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                 <label class="form-label fs-5 fw-semibold mb-3">Ders:</label>
                                                                 <!--end::Label-->
                                                                 <!--begin::Input-->
-                                                                <select class="form-select form-select-solid fw-bold"  id="lessons" data-kt-select2="true" data-placeholder="Ders Seçin" data-allow-clear="true" data-kt-customer-table-filter="lesson" data-dropdown-parent="#kt-toolbar-filter">
+                                                                <select class="form-select form-select-solid fw-bold" id="lessons" data-kt-select2="true" data-placeholder="Ders Seçin" data-allow-clear="true" data-kt-customer-table-filter="lesson" data-dropdown-parent="#kt-toolbar-filter">
                                                                     <option value=""></option>
                                                                     <?php $lessons->getLessonSelectList() ?>
                                                                 </select>
@@ -152,14 +168,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                 <label class="form-label fs-5 fw-semibold mb-3">Alt Konu:</label>
                                                                 <!--end::Label-->
                                                                 <!--begin::Input-->
-                                                                <select class="form-select form-select-solid fw-bold"  id="sub_topics" data-kt-select2="true" data-placeholder="Ünite Seçin" data-allow-clear="true" data-kt-customer-table-filter="school" data-dropdown-parent="#kt-toolbar-filter">
+                                                                <select class="form-select form-select-solid fw-bold" id="sub_topics" data-kt-select2="true" data-placeholder="Ünite Seçin" data-allow-clear="true" data-kt-customer-table-filter="school" data-dropdown-parent="#kt-toolbar-filter">
                                                                     <option></option>
                                                                     <?php $topics->getTopicListForFilter() ?>
                                                                 </select>
                                                                 <!--end::Input-->
                                                             </div>
                                                             <!--end::Input group-->
-                                                            
+
                                                             <!--begin::Actions-->
                                                             <div class="d-flex justify-content-end">
                                                                 <button type="reset" class="btn btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true" data-kt-customer-table-filter="reset">Temizle</button>
@@ -188,23 +204,44 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         <!--begin::Card body-->
                                         <div class="card-body pt-0 table-responsive">
                                             <!--begin::Table-->
-                                            <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_customers_table">
-                                                <thead>
-                                                    <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                        <th class="min-w-125px">Ödev</th>
-                                                        <th class="min-w-125px">Alt Konu</th>
-                                                        <th class="min-w-125px">Konu</th>
-                                                        <th class="min-w-125px">Ünite</th>
-                                                        <th class="min-w-125px">Ders</th>
-                                                        <th class="min-w-125px">Sınıf</th>
-                                                        <th class="min-w-125px">Bitiş Tarihi</th>
-                                                        <th class="text-end min-w-70px">İşlemler</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="fw-semibold text-gray-600">
-                                                    <?php $contents->getHomeworkListForStudent(); ?>
-                                                </tbody>
-                                            </table>
+                                            <div class="row">
+                                                <div class="col-3 col-lg-2">
+                                                    <div class="row g-10 ">
+                                                        <?php foreach ($lessonList as $l): ?>
+                                                            <?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
+                                                                <div class="col-12 mb-1 text-center">
+                                                                    <a href="ders/<?= urlencode($l['slug']) ?>">
+                                                                        <img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 65px; height: 65px; object-fit: contain;" />
+
+                                                                        <div class="mt-1"><?= htmlspecialchars($l['name']) ?></div>
+                                                                    </a>
+                                                                </div>
+                                                            <?php endif; ?>
+                                                        <?php endforeach; ?>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-9 col-lg-10">
+                                                    <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_customers_table">
+                                                        <thead>
+                                                            <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
+                                                                <th class="min-w-125px">Ödev</th>
+                                                                <th class="min-w-125px">Alt Konu</th>
+                                                                <th class="min-w-125px">Konu</th>
+                                                                <th class="min-w-125px">Ünite</th>
+                                                                <th class="min-w-125px">Ders</th>
+                                                                <th class="min-w-125px">Sınıf</th>
+                                                                <th class="min-w-125px">Bitiş Tarihi</th>
+
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="fw-semibold text-gray-600">
+                                                            <?php $contents->getHomeworkListForStudent(); ?>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
                                             <!--end::Table-->
                                         </div>
                                         <!--end::Card body-->
@@ -269,264 +306,274 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <!--end::Custom Javascript-->
         <!--end::Javascript-->
         <script>
-            
-		$(querySelector('[class="classes"]')).on('change', function () {
-			// Revalidate the field when an option is chosen
-			validator.revalidateField('classes');
+            $(querySelector('[class="classes"]')).on('change', function() {
+                // Revalidate the field when an option is chosen
+                validator.revalidateField('classes');
 
-			var classChoose = $("#classes").val();
-
-
-			// AJAX isteği gönder
-			$.ajax({
-				allowClear: true,
-				type: "POST",
-				url: "includes/select_for_lesson.inc.php",
-				data: {
-					class: classChoose
-				},
-				dataType: "json",
-				success: function (data) {
-					// İkinci Select2'nin içeriğini güncelle
-
-					if (data.length > 0) {
-						$('#lessons').select2('destroy');
-						$('#lessons').html('<option value="">Ders Yok</option>');
-						$('#lessons').select2({ data: data });
-						$('#units').select2('destroy');
-						$('#units').html('<option value="">Ünite Yok</option>');
-						$('#topics').select2('destroy');
-						$('#topics').html('<option value="">Konu Yok</option>');
-						$('#sub_topics').select2('destroy');
-						$('#sub_topics').html('<option value="">Alt Konu Yok</option>');
-					} else {
-						$('#classes').select2('destroy');
-						$('#lessons').select2('destroy');
-						$('#lessons').html('<option value="">Ders Yok</option>');
-						$('#units').select2('destroy');
-						$('#units').html('<option value="">Ünite Yok</option>');
-						$('#topics').select2('destroy');
-						$('#topics').html('<option value="">Konu Yok</option>');
-						$('#sub_topics').select2('destroy');
-						$('#sub_topics').html('<option value="">Alt Konu Yok</option>');
-					}
-
-				}, error: function (xhr, status, error, response) {
-					Swal.fire({
-						text: error.responseText + ' ' + xhr.responseText,
-						icon: "error",
-						buttonsStyling: false,
-						confirmButtonText: "Tamam, anladım!",
-						customClass: {
-							confirmButton: "btn btn-primary"
-						}
-					}).then(function (result) {
-						if (result.isConfirmed) {
-
-							// Enable submit button after loading
-							submitButton.disabled = false;
-						}
-					});
-					//alert(status + "0");
-
-				}
-			});
-		});
+                var classChoose = $("#classes").val();
 
 
-		// Revalidate country field. For more info, plase visit the official plugin site: https://select2.org/
-		$(querySelector('[name="lessons"]')).on('change', function () {
-			// Revalidate the field when an option is chosen
-			validator.revalidateField('classes');
-			validator.revalidateField('lessons');
+                // AJAX isteği gönder
+                $.ajax({
+                    allowClear: true,
+                    type: "POST",
+                    url: "includes/select_for_lesson.inc.php",
+                    data: {
+                        class: classChoose
+                    },
+                    dataType: "json",
+                    success: function(data) {
+                        // İkinci Select2'nin içeriğini güncelle
 
-			var classChoose = $("#classes").val();
+                        if (data.length > 0) {
+                            $('#lessons').select2('destroy');
+                            $('#lessons').html('<option value="">Ders Yok</option>');
+                            $('#lessons').select2({
+                                data: data
+                            });
+                            $('#units').select2('destroy');
+                            $('#units').html('<option value="">Ünite Yok</option>');
+                            $('#topics').select2('destroy');
+                            $('#topics').html('<option value="">Konu Yok</option>');
+                            $('#sub_topics').select2('destroy');
+                            $('#sub_topics').html('<option value="">Alt Konu Yok</option>');
+                        } else {
+                            $('#classes').select2('destroy');
+                            $('#lessons').select2('destroy');
+                            $('#lessons').html('<option value="">Ders Yok</option>');
+                            $('#units').select2('destroy');
+                            $('#units').html('<option value="">Ünite Yok</option>');
+                            $('#topics').select2('destroy');
+                            $('#topics').html('<option value="">Konu Yok</option>');
+                            $('#sub_topics').select2('destroy');
+                            $('#sub_topics').html('<option value="">Alt Konu Yok</option>');
+                        }
 
-			var lessonsChoose = $("#lessons").val();
+                    },
+                    error: function(xhr, status, error, response) {
+                        Swal.fire({
+                            text: error.responseText + ' ' + xhr.responseText,
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Tamam, anladım!",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        }).then(function(result) {
+                            if (result.isConfirmed) {
 
+                                // Enable submit button after loading
+                                submitButton.disabled = false;
+                            }
+                        });
+                        //alert(status + "0");
 
-			// AJAX isteği gönder
-			$.ajax({
-				allowClear: true,
-				type: "POST",
-				url: "includes/select_for_unit.inc.php",
-				data: {
-					class: classChoose,
-					lesson: lessonsChoose
-				},
-				dataType: "json",
-				success: function (data) {
-					// İkinci Select2'nin içeriğini güncelle
-
-					if (data.length > 0) {
-						if ($('#units').data('select2')) { // Select2'nin başlatılıp başlatılmadığını kontrol edin
-							$('#units').select2('destroy');
-						}
-						$('#units').html('<option value="">Ünite Seçiniz...</option>'); // Varsayılan yer tutucuya sıfırla
-						$('#units').select2({ data: data }); // Yeni veriyle başlat/yeniden başlat
-						$('#topics').select2('destroy');
-						$('#topics').html('<option value="">Konu Yok</option>');
-						$('#sub_topics').select2('destroy');
-						$('#sub_topics').html('<option value="">Alt Konu Yok</option>');
-					} else {
-						$('#lessons').select2('destroy');
-						$('#units').select2('destroy');
-						$('#units').html('<option value="">Ünite Yok</option>');
-						$('#topics').select2('destroy');
-						$('#topics').html('<option value="">Konu Yok</option>');
-						$('#sub_topics').select2('destroy');
-						$('#sub_topics').html('<option value="">Alt Konu Yok</option>');
-					}
-
-				}, error: function (xhr, status, error, response) {
-					Swal.fire({
-						text: error,
-						icon: "error",
-						buttonsStyling: false,
-						confirmButtonText: "Tamam, anladım!",
-						customClass: {
-							confirmButton: "btn btn-primary"
-						}
-					}).then(function (result) {
-						if (result.isConfirmed) {
-
-							// Enable submit button after loading
-							submitButton.disabled = false;
-						}
-					});
-					//alert(status + "0");
-
-				}
-			});
-		});
+                    }
+                });
+            });
 
 
-		// Revalidate country field. For more info, plase visit the official plugin site: https://select2.org/
-		$(querySelector('[name="units"]')).on('change', function () {
-			// Revalidate the field when an option is chosen
-			validator.revalidateField('classes');
-			validator.revalidateField('lessons');
-			validator.revalidateField('units');
+            // Revalidate country field. For more info, plase visit the official plugin site: https://select2.org/
+            $(querySelector('[name="lessons"]')).on('change', function() {
+                // Revalidate the field when an option is chosen
+                validator.revalidateField('classes');
+                validator.revalidateField('lessons');
 
-			var classChoose = $("#classes").val();
+                var classChoose = $("#classes").val();
 
-			var lessonsChoose = $("#lessons").val();
-
-			var unitsChoose = $("#units").val();
+                var lessonsChoose = $("#lessons").val();
 
 
-			// AJAX isteği gönder
-			$.ajax({
-				allowClear: true,
-				type: "POST",
-				url: "includes/select_for_topic.inc.php",
-				data: {
-					class: classChoose,
-					lesson: lessonsChoose,
-					unit: unitsChoose
-				},
-				dataType: "json",
-				success: function (data) {
-					// İkinci Select2'nin içeriğini güncelle
+                // AJAX isteği gönder
+                $.ajax({
+                    allowClear: true,
+                    type: "POST",
+                    url: "includes/select_for_unit.inc.php",
+                    data: {
+                        class: classChoose,
+                        lesson: lessonsChoose
+                    },
+                    dataType: "json",
+                    success: function(data) {
+                        // İkinci Select2'nin içeriğini güncelle
 
-					if (data.length > 0) {
-						if ($('#topics').data('select2')) { // Select2'nin başlatılıp başlatılmadığını kontrol edin
-							$('#topics').select2('destroy');
-						}
-						$('#topics').html('<option value="">Konu Seçiniz...</option>'); // Varsayılan yer tutucuya sıfırla
-						$('#topics').select2({ data: data });
-						$('#sub_topics').select2('destroy');
-						$('#sub_topics').html('<option value="">Alt Konu Yok</option>');
-					} else {
-						$('#topics').select2('destroy');
-						$('#topics').html('<option value="">Konu Yok</option>');
-						$('#sub_topics').select2('destroy');
-						$('#sub_topics').html('<option value="">Alt Konu Yok</option>');
-					}
+                        if (data.length > 0) {
+                            if ($('#units').data('select2')) { // Select2'nin başlatılıp başlatılmadığını kontrol edin
+                                $('#units').select2('destroy');
+                            }
+                            $('#units').html('<option value="">Ünite Seçiniz...</option>'); // Varsayılan yer tutucuya sıfırla
+                            $('#units').select2({
+                                data: data
+                            }); // Yeni veriyle başlat/yeniden başlat
+                            $('#topics').select2('destroy');
+                            $('#topics').html('<option value="">Konu Yok</option>');
+                            $('#sub_topics').select2('destroy');
+                            $('#sub_topics').html('<option value="">Alt Konu Yok</option>');
+                        } else {
+                            $('#lessons').select2('destroy');
+                            $('#units').select2('destroy');
+                            $('#units').html('<option value="">Ünite Yok</option>');
+                            $('#topics').select2('destroy');
+                            $('#topics').html('<option value="">Konu Yok</option>');
+                            $('#sub_topics').select2('destroy');
+                            $('#sub_topics').html('<option value="">Alt Konu Yok</option>');
+                        }
 
-				}, error: function (xhr, status, error, response) {
-					Swal.fire({
-						text: error,
-						icon: "error",
-						buttonsStyling: false,
-						confirmButtonText: "Tamam, anladım!",
-						customClass: {
-							confirmButton: "btn btn-primary"
-						}
-					}).then(function (result) {
-						if (result.isConfirmed) {
+                    },
+                    error: function(xhr, status, error, response) {
+                        Swal.fire({
+                            text: error,
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Tamam, anladım!",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        }).then(function(result) {
+                            if (result.isConfirmed) {
 
-							// Enable submit button after loading
-							submitButton.disabled = false;
-						}
-					});
-					//alert(status + "0");
+                                // Enable submit button after loading
+                                submitButton.disabled = false;
+                            }
+                        });
+                        //alert(status + "0");
 
-				}
-			});
-		});
+                    }
+                });
+            });
 
 
-		// Revalidate country field. For more info, plase visit the official plugin site: https://select2.org/
-		$(querySelector('[name="topics"]')).on('change', function () {
-			// Revalidate the field when an option is chosen
-			validator.revalidateField('classes');
-			validator.revalidateField('lessons');
-			validator.revalidateField('units');
-			validator.revalidateField('topics');
+            // Revalidate country field. For more info, plase visit the official plugin site: https://select2.org/
+            $(querySelector('[name="units"]')).on('change', function() {
+                // Revalidate the field when an option is chosen
+                validator.revalidateField('classes');
+                validator.revalidateField('lessons');
+                validator.revalidateField('units');
 
-			var classChoose = $("#classes").val();
+                var classChoose = $("#classes").val();
 
-			var lessonsChoose = $("#lessons").val();
+                var lessonsChoose = $("#lessons").val();
 
-			var unitsChoose = $("#units").val();
+                var unitsChoose = $("#units").val();
 
-			var topicsChoose = $("#topics").val();
 
-			// AJAX isteği gönder
-			$.ajax({
-				allowClear: true,
-				type: "POST",
-				url: "includes/select_for_subtopic.inc.php",
-				data: {
-					class: classChoose,
-					lesson: lessonsChoose,
-					unit: unitsChoose,
-					topics: topicsChoose
-				},
-				dataType: "json",
-				success: function (data) {
-					// İkinci Select2'nin içeriğini güncelle
+                // AJAX isteği gönder
+                $.ajax({
+                    allowClear: true,
+                    type: "POST",
+                    url: "includes/select_for_topic.inc.php",
+                    data: {
+                        class: classChoose,
+                        lesson: lessonsChoose,
+                        unit: unitsChoose
+                    },
+                    dataType: "json",
+                    success: function(data) {
+                        // İkinci Select2'nin içeriğini güncelle
 
-					if (data.length > 0) {
-						$('#sub_topics').select2({ data: data });
-					} else {
-						$('#sub_topics').select2('destroy');
-						$('#sub_topics').html('<option value="">Alt Konu Yok</option>');
-					}
+                        if (data.length > 0) {
+                            if ($('#topics').data('select2')) { // Select2'nin başlatılıp başlatılmadığını kontrol edin
+                                $('#topics').select2('destroy');
+                            }
+                            $('#topics').html('<option value="">Konu Seçiniz...</option>'); // Varsayılan yer tutucuya sıfırla
+                            $('#topics').select2({
+                                data: data
+                            });
+                            $('#sub_topics').select2('destroy');
+                            $('#sub_topics').html('<option value="">Alt Konu Yok</option>');
+                        } else {
+                            $('#topics').select2('destroy');
+                            $('#topics').html('<option value="">Konu Yok</option>');
+                            $('#sub_topics').select2('destroy');
+                            $('#sub_topics').html('<option value="">Alt Konu Yok</option>');
+                        }
 
-				}, error: function (xhr, status, error, response) {
-					Swal.fire({
-						text: error,
-						icon: "error",
-						buttonsStyling: false,
-						confirmButtonText: "Tamam, anladım!",
-						customClass: {
-							confirmButton: "btn btn-primary"
-						}
-					}).then(function (result) {
-						if (result.isConfirmed) {
+                    },
+                    error: function(xhr, status, error, response) {
+                        Swal.fire({
+                            text: error,
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Tamam, anladım!",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        }).then(function(result) {
+                            if (result.isConfirmed) {
 
-							// Enable submit button after loading
-							submitButton.disabled = false;
-						}
-					});
-					//alert(status + "0");
+                                // Enable submit button after loading
+                                submitButton.disabled = false;
+                            }
+                        });
+                        //alert(status + "0");
 
-				}
-			});
-		});
+                    }
+                });
+            });
 
+
+            // Revalidate country field. For more info, plase visit the official plugin site: https://select2.org/
+            $(querySelector('[name="topics"]')).on('change', function() {
+                // Revalidate the field when an option is chosen
+                validator.revalidateField('classes');
+                validator.revalidateField('lessons');
+                validator.revalidateField('units');
+                validator.revalidateField('topics');
+
+                var classChoose = $("#classes").val();
+
+                var lessonsChoose = $("#lessons").val();
+
+                var unitsChoose = $("#units").val();
+
+                var topicsChoose = $("#topics").val();
+
+                // AJAX isteği gönder
+                $.ajax({
+                    allowClear: true,
+                    type: "POST",
+                    url: "includes/select_for_subtopic.inc.php",
+                    data: {
+                        class: classChoose,
+                        lesson: lessonsChoose,
+                        unit: unitsChoose,
+                        topics: topicsChoose
+                    },
+                    dataType: "json",
+                    success: function(data) {
+                        // İkinci Select2'nin içeriğini güncelle
+
+                        if (data.length > 0) {
+                            $('#sub_topics').select2({
+                                data: data
+                            });
+                        } else {
+                            $('#sub_topics').select2('destroy');
+                            $('#sub_topics').html('<option value="">Alt Konu Yok</option>');
+                        }
+
+                    },
+                    error: function(xhr, status, error, response) {
+                        Swal.fire({
+                            text: error,
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Tamam, anladım!",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        }).then(function(result) {
+                            if (result.isConfirmed) {
+
+                                // Enable submit button after loading
+                                submitButton.disabled = false;
+                            }
+                        });
+                        //alert(status + "0");
+
+                    }
+                });
+            });
         </script>
     </body>
     <!--end::Body-->

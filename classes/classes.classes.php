@@ -748,13 +748,13 @@ class Classes extends Dbh
 		if ($role == 1 or $role == 3) {
 
 			// Öğretmen veya yönetici için tüm sınıflar
-			$stmt = $this->connect()->prepare('SELECT id,test_title,end_date FROM tests_lnp ORDER BY id DESC');
+			$stmt = $this->connect()->prepare('SELECT id,test_title,end_date,start_date FROM tests_lnp ORDER BY id DESC');
 			if (!$stmt->execute()) {
 				$stmt = null;
 				exit();
 			}
 		} elseif ($role == 4) {
-			$stmt = $this->connect()->prepare('SELECT id,test_title,end_date FROM tests_lnp WHERE teacher_id = ? ORDER BY id DESC');
+			$stmt = $this->connect()->prepare('SELECT id,test_title,end_date,start_date FROM tests_lnp WHERE teacher_id = ? ORDER BY id DESC');
 			if (!$stmt->execute([$_SESSION['id']])) {
 				$stmt = null;
 				exit();
@@ -767,6 +767,7 @@ class Classes extends Dbh
 				SELECT 
 					t.id, 
 					t.test_title, 
+					t.start_date, 
 					t.end_date, 
 					ug.user_id, 
 					ug.score, 

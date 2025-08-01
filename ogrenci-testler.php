@@ -8,9 +8,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     include "classes/classes.classes.php";
 
     include_once "views/pages-head.php";
-    $dataTest = new Classes();
+    $classes = new Classes();
 
-    $dataTest = $dataTest->getTestListByStudent($_SESSION['class_id']);
+    $dataTest = $classes->getTestListByStudent($_SESSION['class_id']);
+    $lessonList = $classes->getLessonsList($_SESSION['class_id']);
 
 ?>
 
@@ -44,7 +45,20 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             <?php include_once "views/toolbar.php"; ?>
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <div id="kt_app_content_container" class="app-container container-fluid">
-                                    <div class="card">
+                                    <div class="card" style="margin-top: -20px;">
+                                        <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
+                                             border-top border-bottom border-custom-red" style="border-width: 5px !important;">
+
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle bg-danger me-3 shadow icon-circle-lg d-flex justify-content-center align-items-center"
+                                                    style="width: 80px; height: 80px;">
+                                                    <i class="fas fa-check-square fa-2x text-white"></i>
+                                                </div>
+
+                                                <h1 class="fs-3 fw-bold text-dark mb-0">Test Listesi</h1>
+                                            </div>
+
+                                        </header>
                                         <!--begin::Card header-->
                                         <div class="card-header border-0 pt-6">
                                             <!--begin::Card title-->
@@ -68,36 +82,102 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         </div>
                                         <!--end::Card header-->
                                         <!--begin::Card body-->
-                                        <div class="card-body pt-0">
-                                            <table id="example" class="table align-middle table-row-dashed fs-6 gy-5">
-                                                <thead>
-                                                    <tr>
-                                                        <th>ID</th>
-                                                        <th>Test Başlığı</th>
-                                                        <th>Bitiş Tarihi</th>
-                                                        <th>İşlem</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?php foreach ($dataTest as $row): ?>
-                                                        <tr>
-                                                            <td><?= htmlspecialchars($row['id']) ?></td>
-                                                            <td><?= htmlspecialchars($row['test_title']) ?></td>
-                                                            <td><?= htmlspecialchars($row['end_date']) ?></td>
-                                                            <td>
-                                                                <?php if (isset($row['fail_count']) && $row['fail_count'] >= 3): ?>
+                                        <div class="card-body pt-0" style="margin-top:-20px;">
+                                            <div class="row">
+                                                <div class="col-3 col-lg-2">
+                                                    <div class="row g-10 ">
+                                                        <?php foreach ($lessonList as $l): ?>
+                                                            <?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
+                                                                <div class="col-12 mb-1 text-center">
+                                                                    <a href="ders/<?= urlencode($l['slug']) ?>">
+                                                                        <img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 65px; height: 65px; object-fit: contain;" />
 
-                                                                    <span class="badge badge-danger">Sonuç: <?= htmlspecialchars($row['score']) ?> Puan</span>
-                                                                <?php elseif (isset($row['score']) && $row['score'] >= 80): ?>
-                                                                    <span class="badge badge-success">Sonuç: <?= htmlspecialchars($row['score']) ?> Puan</span>
-                                                                <?php else: ?>
-                                                                    <button class="btn btn-primary start-exam-btn btn-sm" data-id="<?= $row['id'] ?>">Sınava Gir</button>
-                                                                <?php endif; ?>
-                                                            </td>
-                                                        </tr>
-                                                    <?php endforeach; ?>
-                                                </tbody>
-                                            </table>
+                                                                        <div class="mt-1"><?= htmlspecialchars($l['name']) ?></div>
+                                                                    </a>
+                                                                </div>
+                                                            <?php endif; ?>
+                                                        <?php endforeach; ?>
+                                                    </div>
+                                                </div>
+                                                <div class="col-9 col-lg-10">
+                                                <?php
+// Türkçe ay isimleri
+$turkishMonths = [
+    1 => 'Ocak', 2 => 'Şubat', 3 => 'Mart', 4 => 'Nisan',
+    5 => 'Mayıs', 6 => 'Haziran', 7 => 'Temmuz', 8 => 'Ağustos',
+    9 => 'Eylül', 10 => 'Ekim', 11 => 'Kasım', 12 => 'Aralık'
+];
+function formatDate($dateStr) {
+    global $turkishMonths;
+    if (!$dateStr) return '-';
+    try {
+        $dt = new DateTime($dateStr);
+        return $dt->format('j') . ' ' . $turkishMonths[(int)$dt->format('n')];
+    } catch (\Exception $e) {
+        return '-';
+    }
+}
+$today = new DateTime('now');
+?>
+<!-- DataTable için container -->
+<table id="singleColumnTable" class="table table-borderless w-100">
+    <thead class="d-none"><!-- başlık gizli, sadece arka planda lazım -->
+        <tr><th>Testler</th></tr>
+    </thead>
+    <tbody>
+        <?php foreach ($dataTest as $test):
+            $start = !empty($test['start_date']) ? new DateTime($test['start_date']) : null;
+            $end = !empty($test['end_date']) ? new DateTime($test['end_date']) : null;
+            $range = ( $start ? formatDate($start->format('Y-m-d')) : '-' )
+                   . ' - '
+                   . ( $end ? formatDate($end->format('Y-m-d')) : '-' );
+            if ($end) {
+                $remaining = $today <= $end ? $today->diff($end)->days : 0;
+            } else {
+                $remaining = null;
+            }
+        ?>
+        <tr>
+            <td class="p-0">
+                <div class="mb-3 p-3 border rounded shadow-sm w-100" style="border:2px solid #333;">
+                    <div class="row align-items-center">
+                        <div class="col-4 d-flex align-items-center">
+                            <a href="ogrenci-test-coz.php?id=<?=$test['id']?>" class="text-decoration-none text-dark start-exam d-flex align-items-center" data-id="<?= htmlspecialchars($test['id']) ?>">
+                                <button type="button" class="btn btn-light btn-sm me-2">
+                                    <i style="font-size:16px;" class="bi bi-play-fill"></i>
+                                </button>
+                                <h5 class="card-title mb-0 fw-semibold" style="font-size:1.2rem;">
+                                    <?= htmlspecialchars($test['test_title']) ?>
+                                </h5>
+                            </a>
+                        </div>
+
+                        <div class="col-4 d-flex align-items-center">
+                            <i class="fas fa-calendar-alt text-primary me-2"></i>
+                            <small class="text-muted" style="font-size:1.1rem;">
+                                <?= $range ?>
+                            </small>
+                        </div>
+
+                        <div class="col-4 text-end">
+                            <?php if ($remaining === null): ?>
+                                <span class="badge bg-secondary">Tarih yok</span>
+                            <?php elseif ($remaining > 0): ?>
+                                <span class="badge bg-success">Kalan: <?= $remaining ?> gün</span>
+                            <?php else: ?>
+                                <span class="badge bg-danger">Süre doldu</span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+
+                                                </div>
+                                            </div>
                                         </div>
 
 
@@ -154,6 +234,38 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 });
             });
         </script>
+        <script>
+    $(function(){
+        $('#singleColumnTable').DataTable({
+            // sadece tek sütun var; varsayılan sıralamayı kapatabiliriz
+            ordering: false,
+            info: true,
+            paging: true,
+            lengthChange: false,
+            pageLength: 5, // isteğe göre değiştir
+            searching: true,
+            language: {
+                search: "Ara:",
+                paginate: {
+                    previous: "Önceki",
+                    next: "Sonraki"
+                },
+                info: "_TOTAL_ içerikten _PAGE_ sayfası gösteriliyor",
+                infoEmpty: "Gösterilecek içerik yok",
+                zeroRecords: "Eşleşen sonuç yok"
+            },
+            // görünümü daha "kart" odaklı göstermek için satır içinde padding zaten var
+            drawCallback: function() {
+                // ek davranış gerekiyorsa burada koy
+            }
+        });
+
+        // Örnek: tıklayınca seçili görünümü verme
+        $('#singleColumnTable tbody').on('click', 'tr', function(){
+            $(this).toggleClass('selected');
+        });
+    });
+</script>
     </body>
 
 </html>
