@@ -99,7 +99,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
 
 
             .btn-custom {
-                background-color: #1b84ff;
+                /* background-color: #1b84ff; */
                 color: white;
                 border: none;
                 padding: 10px 25px;
@@ -111,7 +111,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
             }
 
             .btn-custom:hover {
-                background-color: #1a9c7b;
+                /* background-color: #1a9c7b; */
             }
 
             .left-align {

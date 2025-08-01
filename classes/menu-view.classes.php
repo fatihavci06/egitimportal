@@ -449,6 +449,194 @@ class ShowMenu extends Menus
         echo $menuList;
     }
 
+    // Get Student Menu List
+
+    public function showMenuStudentsList()
+    {
+
+        $link = $_SERVER['REQUEST_URI'];
+        $active_slug = htmlspecialchars(basename($link, ".php"));
+
+        $activeControl = $this->getIsActive($active_slug);
+
+        $activeId = @$activeControl['parent'];
+
+        $menuList = "";
+
+        //$numberofMenus = $this->getTopMenuNumber();
+
+        //for ($i = 1; $i <= $numberofMenus['accordion']; $i++) {
+            $show = "";
+            $here = "";
+
+            $menuInfo = $this->getTopMenuPreschoolList();
+
+            foreach ($menuInfo as $key => $value) {
+
+                $i = $value['accordion'];
+
+                $roles = $value['role'];
+
+                $pieces = explode(",", $roles);
+
+                if (in_array($_SESSION['role'], $pieces)) {
+
+                    if ($value['slug'] == 'kocluk-sohbet' and $_SESSION['role'] == 2) {
+                        $controlKocluk = $this->controlKoclukPack();
+                        if (empty($controlKocluk)) {
+                            continue;
+                        }
+                    }
+
+                    if ($activeId == $i) {
+                        /* $show = " show";
+                        $here = " here"; */
+                    }
+                    $role = $_SESSION['role'] ?? null;
+
+                    // Eğer role 10001 veya 10002 ise gösterilsin
+                    if ($role == 10001 || $role == 10002) {
+                        /* $show2 = ' show'; */
+                        $show2 = '';
+                        $style = 'style="display: block"';
+                    } else {
+                        $show2 = '';
+                        $style = '';
+                    }
+
+                    if ($value['has_child'] == 1) {
+                        $trigger = 'data-kt-menu-trigger="click"';
+                        $arrow = '<span class="menu-arrow"></span>';
+                    } else {
+                        $trigger = '';
+                        $arrow = '';
+                    }
+
+                    // Eğer slug 'gecmis-hareketler' ise, hareket değişkenini ayarla
+                    $hareket = '';
+
+                    if($value['slug'] == 'gecmis-hareketler') {
+                        $hareket = '/' . $_SESSION['id'];
+                    }
+
+                    $menuList .= '<div ' . $trigger . ' class="mb-3 menu-item' . $show . '' . $here . ' menu-accordion">
+                                <!--begin:Menu link-->
+                                <span class="menu-link" style="padding-left: 0px;">
+                                <a class="menu-link" href="' . $value['slug'] . $hareket . '" style="padding-left: 0px;">
+                                    <span class="menu-icon">
+                                        <i class="' . $value['classes'] . ' fs"></i>
+                                    </span>
+                                    <span class="menu-title">' . $value['name'] . '</span>
+                                    ' . $arrow . '
+                                </a>
+                                </span>
+                                <!--end:Menu link-->';
+
+
+                    if ($value['has_child'] == 1) {
+
+                        $menuList .= '
+                                <!--begin:Menu sub-->
+                                <div class="menu-sub menu-sub-accordion ' . $show2 . '" style="' . $style . '">
+                    ';
+
+                        $subMenuInfo = $this->getSubMenuList($i);
+
+                        foreach ($subMenuInfo as $key => $subValue) {
+
+                            $url = "";
+                            $isLesson = "";
+                            if ($i == 1) {
+                                $url = "ders/";
+                                $lessonClass = $this->getLessonsListForSubMenu($subValue['slug']);
+                                if (is_array($lessonClass) && isset($lessonClass['class_id']) && $lessonClass['class_id'] !== null) {
+                                    $piecesLesson = explode(";", $lessonClass['class_id']);
+                                } else {
+                                    $piecesLesson = []; // boş array döner, veya default bir değer ver
+                                }
+                                if (in_array($_SESSION['class_id'], $piecesLesson)) {
+                                    $isLesson = 1;
+                                }
+                            }
+
+                            $subRoles = $subValue['role'];
+
+                            $piecesRoles = explode(",", $subRoles);
+
+                            if ($i == 1 and !empty($isLesson)) {
+
+                                if (in_array($_SESSION['role'], $piecesRoles)) {
+
+                                    $active = "";
+
+                                    if ($active_slug == $subValue['slug']) {
+                                        $active = " active";
+                                    }
+
+                                    if ($lessonClass['package_type'] == 1) {
+                                        $controlPayment = $this->controlDevelopmentPack();
+                                        if (empty($controlPayment)) {
+                                            continue;
+                                        }
+                                    }
+
+                                    $menuList .= '
+                                    <!--begin:Menu item-->
+                                    <div class="menu-item">
+                                        <!--begin:Menu link-->
+                                        <a class="menu-link' . $active . '" href="' . $url . $subValue['slug'] . '">
+                                            <span class="menu-bullet">
+                                                <span class="bullet bullet-dot"></span>
+                                            </span>
+                                            <span class="menu-title">' . $subValue['name'] . '</span>
+                                        </a>
+                                        <!--end:Menu link-->
+                                    </div>
+                                    <!--end:Menu item-->
+                                    ';
+                                }
+                            } elseif ($i != 1) {
+                                if (in_array($_SESSION['role'], $piecesRoles)) {
+
+                                    $active = "";
+
+                                    if ($active_slug == $subValue['slug']) {
+                                        $active = " active";
+                                    }
+
+                                    $menuList .= '
+                                    <!--begin:Menu item-->
+                                    <div class="menu-item">
+                                        <!--begin:Menu link-->
+                                        <a class="menu-link' . $active . '" href="' . $url . $subValue['slug'] . '">
+                                            <span class="menu-bullet">
+                                                <span class="bullet bullet-dot"></span>
+                                            </span>
+                                            <span class="menu-title">' . $subValue['name'] . '</span>
+                                        </a>
+                                        <!--end:Menu link-->
+                                    </div>
+                                    <!--end:Menu item-->
+                                    ';
+                                }
+                            }
+                        }
+                    }
+
+                    if ($value['has_child'] == 1) {
+                        $menuList .= "</div>
+                                <!--end:Menu sub-->
+                              </div>";
+                    } else {
+                        $menuList .= "</div>";
+                    }
+                }
+            }
+        // }
+
+        echo $menuList;
+    }
+
     // Get School Admin Menu List
 
     public function showMenuSchoolAdminList()

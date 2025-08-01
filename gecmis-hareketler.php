@@ -54,6 +54,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         header("Location: 404.php");
         exit();
     }
+    
+    if ($query_student_id != $_SESSION['id']) {
+        header("HTTP/1.0 404 Not Found");
+        header("Location: ../404.php");
+        exit();
+    }
 
     // if ($query_student_id != $_SESSION['id']){
     //     header("HTTP/1.0 404 Not Found");

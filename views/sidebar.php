@@ -107,7 +107,8 @@ $menu1 = new ShowMenu();
             if ($_SESSION['role'] == 1) {
                 $menu1->showMenuSuperAdminList();
             } elseif ($_SESSION['role'] == 2) {
-                $menu1->showMenuSuperAdminList();
+                //$menu1->showMenuSuperAdminList();
+                $menu1->showMenuStudentsList();
                 /* echo '<div id="#kt_app_sidebar_menu" data-kt-menu="true" data-kt-menu-expand="false" class="flex-column-fluid menu menu-sub-indention menu-column menu-rounded menu-active-bg mb-7">
             <!--begin:Menu item-->
             <div data-kt-menu-trigger="click" class="mb-3 menu-item menu-accordion">
