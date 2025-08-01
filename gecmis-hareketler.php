@@ -95,33 +95,21 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
                         <!--begin::Content wrapper-->
                         <div class="d-flex flex-column flex-column-fluid">
-                            <!--begin::Toolbar-->
-                            <div id="kt_app_toolbar" class="app-toolbar pt-5">
-                                <div id="kt_app_toolbar_container"
-                                    class="app-container container-fluid d-flex align-items-stretch">
-                                    <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
-                                        <div class="page-title d-flex flex-column gap-1 me-3 mb-2">
-                                            <h1
-                                                class="page-heading d-flex flex-column justify-content-center text-gray-900 fw-bolder fs-1 lh-0">
-                                                <?php echo $studentModel['name'] . ' ' . $studentModel['surname']; ?>
-                                            </h1>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!--end::Toolbar-->
+
                             <!--begin::Content-->
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <!--begin::Card-->
 
-                                    <div class="card h-100 bg-gray-200">
-                                        <div class="card-body h-100 d-flex flex-column bg-gray-200">
+                                    <div class="card h-100 "  style="margin-left: -15px; border:0px !important;box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.00);">
+                                        <div class="card-body h-100 d-flex flex-column " style="padding: 2rem 1.25rem; padding-right: 0.5rem;">
+                                            <?php $student->getHeaderImageStu(); ?>
+
                                             <div class="flex-grow-1">
 
-                                                <?php $student->getStudentActivitiesRow($studentModel['id'], $studentModel['class_id']);?>
-                                               
+                                                <?php $student->getStudentActivitiesRow($studentModel['id'], $studentModel['class_id']); ?>
+
                                             </div>
                                         </div>
                                     </div>

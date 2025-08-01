@@ -471,24 +471,57 @@ class ShowStudent extends Student
                             <div class="text-gray-800  fs-6">
                                 ' . $lesson_name . ' dersine ait 
                                 <strong>
-                                    <a href="./icerik-detay/' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">
+                                    <a  class="text-gray-800 text-hover-primary mb-1">
                                     ' . $value['title'] . ' (' . $topic_name . ' ' . $subtopic_name . ')
                                     </a>
                                 </strong>
                                 içeriğinde   ' . $type . '.
                             </div>
-                            <div class="text-muted fs-7 mt-1">15 
+                            <div class="text-muted fs-7 mt-1">
                             ' . $readibleTime . ' - ' . $value['event_time'] . '
                             </div>
                         </div>
                     </div>
                 </div>
-            '; 
+            ';
 
 
-    
+
         }
         echo $studentList;
+    }
+
+    public function getHeaderImageStu()
+    {
+
+
+        $view = '
+                <header class="container-fluid py-3 d-flex justify-content-between align-items-center"
+                    style="
+                        background-color: #e6e6fa !important;
+                        margin-bottom: 40px !important;
+                        margin-top: -45px !important;
+                        border-top: 5px solid #d22b2b !important;
+                        border-bottom: 5px solid #d22b2b !important;
+                        height:85px;
+                    ">
+                    <div class="d-flex align-items-center">
+                        <div class="symbol symbol-100px">
+                            <i class="ki-duotone ki-brifecase-timer fs-3x">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                            </i>
+                        </div>
+                        <div>
+                            <h1 class="fs-3 fw-bold text-dark mb-0 ml-2" style="margin-left: 20px;"> Görev Geçmişi  </h1>
+                        </div>
+                    </div>
+                </header>
+                ';
+
+        echo $view;
+
     }
     public function getStudentProgress($userId, $classId)
     {
