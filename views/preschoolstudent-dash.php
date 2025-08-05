@@ -208,9 +208,13 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
                                         foreach ($getBooksContent as $value) {
 
                                             echo '<div class="position-relative" style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; min-width: 180px; ">';
-                                            echo '<p class="mb-0"><a style="font-family: Comic Relief, system-ui; color: #2b8c01 !important;" href="yazili-kitap-oku/' . $value['slug'] . '"><img class="img-fluid" src="assets/media/sesli-kitap/' . $value['cover_img'] . '"></a></p>';
+                                            echo '<p class="mb-0"><a style="font-family: Comic Relief, system-ui; color: #2b8c01 !important;" href="yazili-kitap-oku/' . $value['slug'] . '"><img style="max-height: 205px;width: 100%;object-fit: cover;" class="img-fluid" src="assets/media/sesli-kitap/' . $value['cover_img'] . '"></a></p>';
                                             echo '<div class="mt-3"><span class="text-gray-600 fw-bold fs-6"><a style="font-family: Comic Relief, system-ui; color: #2b8c01 !important;" href="yazili-kitap-oku/' . $value['slug'] . '">' . $value['name'] . '</a></span></div>';
                                             echo '</div>';
+
+                                            /* echo '<div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-175px w-100" style=" flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; background-image:url(\'assets/media/sesli-kitap/' . $value['cover_img'] . '\')">';
+                                            echo '<span class="mt-3"><span class="text-gray-600 fw-bold fs-6"><a style="font-family: Comic Relief, system-ui; color: #2b8c01 !important;" href="yazili-kitap-oku/' . $value['slug'] . '">' . $value['name'] . '</a></span></span>';
+                                            echo '</div>'; */
                                         } ?>
                                     </div>
                                     <!--end::Table-->
