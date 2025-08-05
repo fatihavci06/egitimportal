@@ -47,7 +47,7 @@ $current_uri = $_SERVER['REQUEST_URI'];
                 <b>Hoş geldin <?php echo $_SESSION['name']; ?>!</b>
             </div>
             <div class="app-navbar-item d-flex justify-content align-items-center flex-lg-grow-1 me-2 me-lg-0 maskotheader">
-                <img src="assets/media/mascots/header-mascots.png" alt="Lineup Campus Maskotlar" class="h-50px theme-light-show" />
+                <img src="assets/media/mascots/header-mascots.png" alt="Lineup Campus Maskotlar" class="h-75px theme-light-show" />
             </div>
             <?php } ?>
             <!--begin::Notifications-->
