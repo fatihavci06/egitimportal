@@ -207,7 +207,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                                         <input type="text" id="name" class="form-control form-control-solid"
                                                             value="<?php echo $currentGame['game_name']; ?>"
-                                                            placeholder="Sesli Kitap Adı" name="name" />
+                                                            placeholder="Oyun Adı" name="name" />
                                                     </div>
 
                                                     <div class="fv-row mb-7">
@@ -430,7 +430,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     }
 
                     Swal.fire({
-                        text: customerName + " isimli sesli kitabı " + activeStatus + " yapmak istediğinizden emin misiniz?",
+                        text: customerName + " isimli oyunu " + activeStatus + " yapmak istediğinizden emin misiniz?",
                         icon: "warning",
                         showCancelButton: true,
                         buttonsStyling: false,
