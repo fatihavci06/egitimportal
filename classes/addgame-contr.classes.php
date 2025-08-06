@@ -58,7 +58,7 @@ class AddGameContr extends AddGame
 			$img = $imageSent->gameImage($this->photoName, $this->photoSize, $this->fileTmpName, $slug);
 			$imgName = $img['image'];
 		} else {
-			$imgName = 'gameDefault.jpg';
+			$imgName = 'oyun-default.jpg';
 		}
 
 		$this->setGame($imgName, $slug, $this->name, $this->iframe, $this->classAdd, $this->lesson, $this->unit, $this->topic, $this->subtopic);
