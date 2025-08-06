@@ -161,7 +161,7 @@ class ShowGame extends Games
     public function getHeaderImageStu()
     {
 
-       
+
         $view = '
                 <header class="container-fluid py-3 d-flex justify-content-between align-items-center"
                     style="
@@ -185,7 +185,7 @@ class ShowGame extends Games
                 </header>';
 
         echo $view;
-        
+
     }
 
     public function getHeaderImageInGameStu()
@@ -340,6 +340,10 @@ class ShowGame extends Games
 
 
         $gameUrl = $gameInfo['game_url'];
+
+        if (preg_match('/width="[^"]*"/', $gameUrl)) {
+            $gameUrl = preg_replace('/width="[^"]*"/', 'width="100%"', $gameUrl);
+        }
         // $isIframe = (strpos($gameUrl, '<iframe') !== false);
 
         // if (!$isIframe) {
@@ -391,9 +395,11 @@ class ShowGame extends Games
                 <tr>
                     <td colspan="8">
                         <div class="card mt-2">
-                            <div class="card-body">'
-            . $gameUrl .
-            '</div>
+                            <div class="card-body">
+                                <div style="width: 100%; height: 100%; position: relative;">'
+                                    . $gameUrl .
+                                '</div>
+                            </div>
                         </div>
                     </td>
                 </tr>
@@ -413,11 +419,12 @@ class ShowGame extends Games
 
         //$youtubeID = $this->getYouTubeVideoId($value['video_url']);
 
+        if (preg_match('/width="[^"]*"/',  $unitInfo['game_url'])) {
+            $unitInfo['game_url'] = preg_replace('/width="[^"]*"/', 'width="100%"', $unitInfo['game_url']);
+        }
         $lessonList = '
-                    <!--begin::Description-->
-                    <div class="m-0">
-                        <!--begin::Text-->
-                        <p class="fw-semibold fs-4 text-gray-600 mb-2">' . $unitInfo['game_url'] . '</p>
+                    <div style="width: 100%; height: 100%; position: relative;">
+                        ' . $unitInfo['game_url'] . '
                         <!--end::Text-->
                     </div>
                 ';
