@@ -67,7 +67,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2 or $_SESSION['role'] == 
                                         <div class="card-body row p-lg-7" style="padding: 2rem 1.25rem;    padding-right: 0.5rem;">
                                             <?php $games->getHeaderImageStuForOne(); ?>
                                             <!--begin::Layout-->
-                                            <div class="d-flex flex-column flex-lg-row mb-17">
+                                            <div class="d-flex flex-column mb-17">
                                                 <!--begin::Content-->
                                                 <?php $games->showGameStudent(); ?>
                                                 <!--end::Content-->

@@ -16,7 +16,7 @@ class ShowGame extends Games
                 <header class="container-fluid py-3 d-flex justify-content-between align-items-center"
                     style="
                         background-color: #e6e6fa !important;
-                        margin-bottom: 40px !important;
+                        margin-bottom: 15px !important;
                         margin-top: -45px !important;
                         border-top: 5px solid #d22b2b !important;
                         border-bottom: 5px solid #d22b2b !important;
@@ -423,6 +423,7 @@ class ShowGame extends Games
             $unitInfo['game_url'] = preg_replace('/width="[^"]*"/', 'width="100%"', $unitInfo['game_url']);
         }
         $lessonList = '
+                        <div class="fw-bold fs-6 mb-5">' . $unitInfo['description'] . '</div>
                     <div style="width: 100%; height: 100%; position: relative;">
                         ' . $unitInfo['game_url'] . '
                         <!--end::Text-->
