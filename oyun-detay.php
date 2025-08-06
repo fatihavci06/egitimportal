@@ -211,6 +211,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     </div>
 
                                                     <div class="fv-row mb-7">
+                                                        <label class="required fs-6 fw-semibold mb-2">Açıklama</label>
+
+                                                        <input type="text" id="description" class="form-control form-control-solid"
+                                                            value="<?php echo $currentGame['description']; ?>"
+                                                            placeholder="Açıklama" name="description" />
+                                                    </div>
+
+                                                    <div class="fv-row mb-7">
 
                                                         <label class="required fs-6 fw-semibold mb-2">iframe Kodu</label>
 

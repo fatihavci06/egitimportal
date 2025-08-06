@@ -8,19 +8,21 @@ class AddGameContr extends AddGame
 	private $fileTmpName;
 	private $name;
 	private $iframe;
+	private $description;
 	private $classAdd;
 	private $lesson;
 	private $unit;
 	private $topic;
 	private $subtopic;
 
-	public function __construct($name, $iframe, $photoSize, $photoName, $fileTmpName, $classAdd, $lesson, $unit, $topic, $subtopic)
+	public function __construct($name, $iframe, $description, $photoSize, $photoName, $fileTmpName, $classAdd, $lesson, $unit, $topic, $subtopic)
 	{
 		$this->photoSize = $photoSize;
 		$this->photoName = $photoName;
 		$this->fileTmpName = $fileTmpName;
 		$this->name = $name;
 		$this->iframe = $iframe;
+		$this->description = $description;
 		$this->classAdd = $classAdd;
 		$this->lesson = $lesson;
 		$this->unit = $unit;
@@ -61,7 +63,7 @@ class AddGameContr extends AddGame
 			$imgName = 'oyun-default.jpg';
 		}
 
-		$this->setGame($imgName, $slug, $this->name, $this->iframe, $this->classAdd, $this->lesson, $this->unit, $this->topic, $this->subtopic);
+		$this->setGame($imgName, $slug, $this->name, $this->iframe, $this->description, $this->classAdd, $this->lesson, $this->unit, $this->topic, $this->subtopic);
 	}
 
 
@@ -106,7 +108,7 @@ class AddGameContr extends AddGame
 		}
 
 
-		$this->updateGame($oldGame['id'], $imgName, $slug, $this->name, $this->iframe, $this->classAdd, $this->lesson, $this->unit, $this->topic, $this->subtopic);
+		$this->updateGame($oldGame['id'], $imgName, $slug, $this->name, $this->iframe, $this->description, $this->classAdd, $this->lesson, $this->unit, $this->topic, $this->subtopic);
 	}
 
 }

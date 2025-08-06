@@ -4,6 +4,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 	// Grabbing the data
 	$name = $_POST["name"];
 	$iframe = $_POST["iframe"];
+	$description = $_POST["description"];
 	$photoSize = $_FILES['photo']['size'];
 	$photoName = $_FILES['photo']['name'];
 	$fileTmpName = $_FILES['photo']['tmp_name'];
@@ -21,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 	include_once "../classes/addimage.classes.php";
 
 
-	$addGame = new AddGameContr($name, $iframe, $photoSize, $photoName, $fileTmpName, $classes, $lessons, $units, $topics, $subtopics);
+	$addGame = new AddGameContr($name, $iframe, $description, $photoSize, $photoName, $fileTmpName, $classes, $lessons, $units, $topics, $subtopics);
 
 	// Running error handlers and school addGame
 	$addGame->addGameDb();

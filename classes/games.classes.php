@@ -131,6 +131,7 @@ class Games extends Dbh
 			g.name AS game_name,
 			g.cover_img,
 			g.game_url,
+			g.description,
 			g.class_id,
 			g.lesson_id,
 			g.unit_id,

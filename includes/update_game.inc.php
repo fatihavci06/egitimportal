@@ -19,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     // Grabbing the data
     $name = $_POST["name"] ?? $oldGame['game_name'];
     $iframe = $_POST["iframe"] ?? $oldGame['game_url'];
+    $description = $_POST["description"] ?? $oldGame['description'];
     $photoSize = $_FILES['photo']['size'];
     $photoName = $_FILES['photo']['name'];
     $fileTmpName = $_FILES['photo']['tmp_name'];
@@ -30,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
 
 
-    $addAudioBook = new AddGameContr($name, $iframe, $photoSize, $photoName, $fileTmpName, $classes, $lessons, $units, $topics, $subtopics);
+    $addAudioBook = new AddGameContr($name, $iframe, $description, $photoSize, $photoName, $fileTmpName, $classes, $lessons, $units, $topics, $subtopics);
 
 
     // echo json_encode([$name, $iframe, $classes, $lessons, $units, $topics, $subtopics]);

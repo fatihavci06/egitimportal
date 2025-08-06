@@ -4,10 +4,10 @@ session_start();
 
 class AddGame extends Dbh {
 
-	protected function setGame($imgName, $slug, $name, $iframe, $classAdd, $lesson, $unit, $topic, $subtopic)
+	protected function setGame($imgName, $slug, $name, $iframe, $description, $classAdd, $lesson, $unit, $topic, $subtopic)
 	{
-		$stmt = $this->connect()->prepare('INSERT INTO games_lnp SET slug = ?, name = ?, cover_img = ?, game_url=?, class_id=?, lesson_id=?,  unit_id=?, topic_id=?, subtopic_id=?');
-		if (!$stmt->execute([$slug, $name, $imgName, $iframe, $classAdd,$lesson,$unit,$topic, $subtopic])) {
+		$stmt = $this->connect()->prepare('INSERT INTO games_lnp SET slug = ?, name = ?, cover_img = ?, game_url=?, description=?, class_id=?, lesson_id=?,  unit_id=?, topic_id=?, subtopic_id=?');
+		if (!$stmt->execute([$slug, $name, $imgName, $iframe, $description, $classAdd, $lesson, $unit, $topic, $subtopic])) {
 			$stmt = null;
 			//header("location: ../admin.php?error=stmtfailed");
 			exit();
@@ -15,23 +15,24 @@ class AddGame extends Dbh {
 		echo json_encode(["status" => "success", "message" => $name]);
 		$stmt = null;
 	}
-	protected function updateGame($id, $imgName, $slug, $name, $iframe, $classAdd, $lesson, $unit, $topic, $subtopic)
+
+	protected function updateGame($id, $imgName, $slug, $name, $iframe, $description, $classAdd, $lesson, $unit, $topic, $subtopic)
 	{
 		$stmt = $this->connect()->prepare('
         UPDATE games_lnp 
-        SET slug = ?, name = ?, cover_img = ?, game_url = ?, class_id = ?, lesson_id = ?, unit_id = ?, topic_id = ?, subtopic_id = ?
+        SET slug = ?, name = ?, cover_img = ?, game_url = ?, description = ?, class_id = ?, lesson_id = ?, unit_id = ?, topic_id = ?, subtopic_id = ?
         WHERE id = ?
     ');
 
-		if (!$stmt->execute([$slug, $name, $imgName, $iframe, $classAdd, $lesson, $unit, $topic, $subtopic, $id])) {
+		if (!$stmt->execute([$slug, $name, $imgName, $iframe, $description, $classAdd, $lesson, $unit, $topic, $subtopic, $id])) {
 			$stmt = null;
 			// header("location: ../admin.php?error=stmtfailed");
-			echo json_encode(["status" => "fail", "message" => "Updated: " . $name]);
+			echo json_encode(["status" => "fail", "message" => "Güncellendi: " . $name]);
 
 			exit();
 		}
 
-		echo json_encode(["status" => "success", "message" => "Updated: " . $name]);
+		echo json_encode(["status" => "success", "message" => "Güncellendi: " . $name]);
 
 		$stmt = null;
 	}
