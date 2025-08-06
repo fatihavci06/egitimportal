@@ -340,11 +340,11 @@ class ShowGame extends Games
 
 
         $gameUrl = $gameInfo['game_url'];
-        $isIframe = (strpos($gameUrl, '<iframe') !== false);
+        // $isIframe = (strpos($gameUrl, '<iframe') !== false);
 
-        if (!$isIframe) {
-            $gameUrl = '<p>Geçersiz yerleştirme kodu. Bir iframe bekleniyordu.</p>';
-        }
+        // if (!$isIframe) {
+        //     $gameUrl = '<p>Geçersiz yerleştirme kodu. Bir iframe bekleniyordu.</p>';
+        // }
         $active_status = '<span class="badge badge-light-success">Aktif</span>';
         if (!$gameInfo['is_active']) {
             $active_status = '<span class="badge badge-light-danger">Pasif</span>';
