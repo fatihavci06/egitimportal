@@ -11,7 +11,7 @@ class ShowGame extends Games
         $active_slug = htmlspecialchars(basename($link, ".php"));
 
         $unitInfo = $this->getOneGame($active_slug);
-            $title = $this->capitalizeFirstLetter($unitInfo['game_name']);
+        $title = $this->capitalizeFirstLetter($unitInfo['game_name']);
 
         $view = '
                 <header class="container-fluid py-3 d-flex justify-content-between align-items-center"
@@ -112,18 +112,30 @@ class ShowGame extends Games
 
         return $lessonIdInfo;
     }
-    function capitalizeFirstLetter($str)
+    
+    function capitalizeFirstLetter($text)
     {
-        if (is_string($str) && !empty($str)) {
-            $lowercaseStr = strtolower($str);
+        $lowercase_words = ['ve', 'veya'];
 
-            $capitalizedStr = ucfirst($lowercaseStr);
+        $words = explode(' ', $text);
+        $result_words = [];
 
-            return $capitalizedStr;
-        } else {
-            return "";
+        foreach ($words as $word) {
+            $word = trim($word);
+
+            $lowercase_word = mb_strtolower($word, 'UTF-8');
+
+            if (in_array($lowercase_word, $lowercase_words)) {
+                $result_words[] = $lowercase_word;
+            } else {
+                $capitalized_word = mb_strtoupper(mb_substr($word, 0, 1, 'UTF-8'), 'UTF-8') . mb_strtolower(mb_substr($word, 1, null, 'UTF-8'), 'UTF-8');
+                $result_words[] = $capitalized_word;
+            }
         }
+
+        return implode(' ', $result_words);
     }
+
     public function getGamesListStudent($class_id)
     {
 
