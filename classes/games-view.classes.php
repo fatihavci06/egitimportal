@@ -112,28 +112,39 @@ class ShowGame extends Games
 
         return $lessonIdInfo;
     }
-    
+
     function capitalizeFirstLetter($text)
     {
-        $lowercase_words = ['ve', 'veya'];
+        // $lowercase_words = ['ve', 'veya'];
 
-        $words = explode(' ', $text);
-        $result_words = [];
+        // $words = explode(' ', $text);
+        // $result_words = [];
 
-        foreach ($words as $word) {
-            $word = trim($word);
+        // foreach ($words as $word) {
+        //     $word = trim($word);
 
-            $lowercase_word = mb_strtolower($word, 'UTF-8');
+        //     $lowercase_word = mb_strtolower($word, 'UTF-8');
+        //     if (in_array($lowercase_word, $lowercase_words)) {
+        //         $result_words[] = $lowercase_word;
+        //     } else {
+        //         $first_char = mb_substr($word, 0, 1, 'UTF-8');
+        //         $rest_of_word = mb_substr($word, 1, null, 'UTF-8');
 
-            if (in_array($lowercase_word, $lowercase_words)) {
-                $result_words[] = $lowercase_word;
-            } else {
-                $capitalized_word = mb_strtoupper(mb_substr($word, 0, 1, 'UTF-8'), 'UTF-8') . mb_strtolower(mb_substr($word, 1, null, 'UTF-8'), 'UTF-8');
-                $result_words[] = $capitalized_word;
-            }
-        }
+        //         if ($first_char === 'i') {
+        //             $first_char = 'İ';
+        //         } elseif ($first_char === 'ı') {
+        //             $first_char = 'I';
+        //         } else {
+        //             $first_char = mb_strtoupper($first_char, 'UTF-8');
+        //         }
 
-        return implode(' ', $result_words);
+        //         $rest_of_word = mb_strtolower($rest_of_word, 'UTF-8');
+        //         $result_words[] = $first_char . $rest_of_word;
+        //     }
+        // }
+
+        // return implode(' ', $result_words);
+        return $text;
     }
 
     public function getGamesListStudent($class_id)
