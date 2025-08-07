@@ -11,6 +11,7 @@ class ShowGame extends Games
         $active_slug = htmlspecialchars(basename($link, ".php"));
 
         $unitInfo = $this->getOneGame($active_slug);
+            $title = $this->capitalizeFirstLetter($unitInfo['game_name']);
 
         $view = '
                 <header class="container-fluid py-3 d-flex justify-content-between align-items-center"
@@ -24,12 +25,12 @@ class ShowGame extends Games
                     ">
                     <div class="d-flex align-items-center">
                         <div class="">
-                            <img src="assets/media/games/' . $unitInfo['cover_img'] . '" alt="' . $unitInfo['game_name'] . ' Icon"
+                            <img src="assets/media/games/' . $unitInfo['cover_img'] . '" alt="' . $title . ' Icon"
                                 class="img-fluid"
                                 style="width: 90px; height: 90px; object-fit: contain;">
                         </div>
                         <div>
-                            <h1 class="fs-3 fw-bold text-dark mb-0 ml-2" style="margin-left: 20px;">' . $unitInfo['game_name'] . '</h1>
+                            <h1 class="fs-3 fw-bold text-dark mb-0 ml-2" style="margin-left: 20px;">' . $title . '</h1>
                         </div>
                     </div>
                 </header>';
@@ -50,7 +51,7 @@ class ShowGame extends Games
             if (!$value['is_active']) {
                 $active_status = '<span class="badge badge-light-danger">Pasif</span>';
             }
-
+            $title = $this->capitalizeFirstLetter($value['game_name']);
             $alter_button = $value['is_active'] ? "Pasif Yap" : "Aktif Yap";
             $lessonList = '
                     <tr id="' . $value['id'] . '">
@@ -63,7 +64,7 @@ class ShowGame extends Games
                             <a href="./oyun-detay/' . $value['slug'] . '" class="cursor-pointer symbol symbol-90px symbol-lg-90px"><img src="assets/media/games/' . $value['cover_img'] . '"></a>
                         </td>
                         <td>
-                            <a href="./oyun-detay/' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['game_name'] . '</a>
+                            <a href="./oyun-detay/' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $title . '</a>
                         </td>
                         <td>
                             <span class="symbol symbol-10px me-2">
@@ -111,9 +112,21 @@ class ShowGame extends Games
 
         return $lessonIdInfo;
     }
+    function capitalizeFirstLetter($str)
+    {
+        if (is_string($str) && !empty($str)) {
+            $lowercaseStr = strtolower($str);
 
+            $capitalizedStr = ucfirst($lowercaseStr);
+
+            return $capitalizedStr;
+        } else {
+            return "";
+        }
+    }
     public function getGamesListStudent($class_id)
     {
+
 
         $unitInfo = $this->getGamesListStudentShow($class_id);
 
@@ -136,7 +149,7 @@ class ShowGame extends Games
         } else {
 
             foreach ($unitInfo as $key => $value) {
-
+                $title = $this->capitalizeFirstLetter($value['name']);
                 $lessonList = '
                             <div class="col-md-4">
                                 <div class="card-xl-stretch me-md-6">
@@ -147,7 +160,7 @@ class ShowGame extends Games
                                         </div>
                                     </a>
                                     <div class="m-0">
-                                        <a href="oyun-oyna/' . $value['slug'] . '" class="fs-4 text-gray-900 fw-bold text-hover-primary text-gray-900 lh-base">' . $value['name'] . '</a>
+                                        <a href="oyun-oyna/' . $value['slug'] . '" class="fs-4 text-gray-900 fw-bold text-hover-primary text-gray-900 lh-base">' . $title . '</a>
                                         <div class="fw-semibold fs-5 text-gray-600 text-gray-900 mt-3 mb-5"></div>
                                     </div>
                                 </div>
@@ -355,17 +368,17 @@ class ShowGame extends Games
         }
 
         $alter_button = $gameInfo['is_active'] ? "Pasif Yap" : "Aktif Yap";
-
+        $title = $this->capitalizeFirstLetter($gameInfo['game_name']);
 
         $gameHtml = '
                 <tr id="' . $gameInfo['id'] . '">
                     <td>
                         <a  class="cursor-pointer symbol symbol-90px symbol-lg-90px">
-                            <img src="assets/media/games/' . $gameInfo['cover_img'] . '" alt="' . $gameInfo['game_name'] . '">
+                            <img src="assets/media/games/' . $gameInfo['cover_img'] . '" alt="' . $title . '">
                         </a>
                     </td>
                     <td>
-                        <a class="text-gray-800 text-hover-primary mb-1 fw-bold">' . $gameInfo['game_name'] . '</a>
+                        <a class="text-gray-800 text-hover-primary mb-1 fw-bold">' . $title . '</a>
                     </td>
                     <td>
                         <span class="symbol symbol-10px me-2">
@@ -397,8 +410,8 @@ class ShowGame extends Games
                         <div class="card mt-2">
                             <div class="card-body">
                                 <div style="width: 100%; height: 100%; position: relative;">'
-                                    . $gameUrl .
-                                '</div>
+            . $gameUrl .
+            '</div>
                             </div>
                         </div>
                     </td>
@@ -419,7 +432,7 @@ class ShowGame extends Games
 
         //$youtubeID = $this->getYouTubeVideoId($value['video_url']);
 
-        if (preg_match('/width="[^"]*"/',  $unitInfo['game_url'])) {
+        if (preg_match('/width="[^"]*"/', $unitInfo['game_url'])) {
             $unitInfo['game_url'] = preg_replace('/width="[^"]*"/', 'width="100%"', $unitInfo['game_url']);
         }
         $lessonList = '
