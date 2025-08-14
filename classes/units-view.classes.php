@@ -222,14 +222,16 @@ class ShowUnit extends Units
                 $getClassId = $value['class_id'];
                 $getOrderNo = $value['order_no'];
 
-                if ($getOrderNo == 1) {
-                    $testQuery = 80 >= 80;
-                } else {
-                    $getPreviousUnitId = $this->getPrevUnitId($getOrderNo - 1, $getClassId, $getLessonId, $_SESSION['school_id']);
+                $getPreviousUnitId = $this->getPrevUnitId($getOrderNo - 1, $getClassId, $getLessonId, $_SESSION['school_id']);
+
+                if ($getPreviousUnitId && is_array($getPreviousUnitId)) {
                     $prevUnitId = $getPreviousUnitId['id'];
                     $getTestResult = $testResults->getUnitTestResults($prevUnitId, $getClassId, $_SESSION['id']);
                     $result = $getTestResult['score'] ?? 0;
-                    $testQuery = $result >= 80; // If the previous unit's test is not passed, the current unit cannot be accessed.
+                    $testQuery = $result >= 80;
+                } else {
+                    // Önceki ünite yoksa veya bulunamadıysa
+                    $testQuery = false; // veya istediğin varsayılan davranış
                 }
 
                 if ($today >= $value['start_date'] or $testQuery) {
@@ -276,7 +278,7 @@ class ShowUnit extends Units
 
         foreach ($unitInfo as $key => $value) {
 
-         $lessonList = '
+            $lessonList = '
 <header class="container-fluid py-3 d-flex justify-content-between align-items-center"
     style="
         background-color: #e6e6fa !important;
@@ -300,7 +302,7 @@ class ShowUnit extends Units
 </header>';
 
 
-echo $lessonList;
+            echo $lessonList;
         }
     }
 
