@@ -4156,129 +4156,122 @@ ORDER BY msu.unit_order asc
         }
         break;
     case 'updateContent':
-        try {
+    try {
+        $pdo->beginTransaction();
 
-            $pdo->beginTransaction();
+        $content_id     = $_POST['content_id'] ?? null;
+        $photo          = $_FILES['photo'] ?? null;
+        $avatar_remove  = $_POST['avatar_remove'] ?? null;
+        $name           = $_POST['name'] ?? null;
+        $short_desc     = $_POST['short_desc'] ?? null;
+        $classes        = $_POST['classes'] ?? null;
+        $lessons        = $_POST['lessons'] ?? null;
+        $units          = $_POST['units'] ?? null;
+        $topics         = $_POST['topics'] ?? null;
+        $sub_topics     = $_POST['sub_topics'] ?? null;
+        $mcontent       = $_POST['mcontent'] ?? null;
 
-            $content_id     = $_POST['content_id'] ?? null;
-            $photo          = $_FILES['photo'] ?? null;
-            $avatar_remove  = $_POST['avatar_remove'] ?? null;
-            $name           = $_POST['name'] ?? null;
-            $short_desc     = $_POST['short_desc'] ?? null;
-            $classes        = $_POST['classes'] ?? null;
-            $lessons        = $_POST['lessons'] ?? null;
-            $units          = $_POST['units'] ?? null;
-            $topics         = $_POST['topics'] ?? null;
-            $sub_topics     = $_POST['sub_topics'] ?? null;
-            $mcontent       = $_POST['mcontent'] ?? null;
-            $video_url       = $_POST['video_url'] ?? null;
+        // Tekli veya çoklu gönderimler için array'e çevir
+        $video_urls     = $_POST['video_url'] ?? [];
+        if (!is_array($video_urls)) $video_urls = [$video_urls];
 
+        $wordWallUrls   = $_POST['wordWallUrls'] ?? [];
+        $wordWallTitles = $_POST['wordWallTitles'] ?? [];
+        if (!is_array($wordWallUrls)) $wordWallUrls = [$wordWallUrls];
+        if (!is_array($wordWallTitles)) $wordWallTitles = [$wordWallTitles];
 
-            $file_paths     = $_FILES['file_path'] ?? [];
-            $fileDescriptions = $_POST['file_descriptions'] ?? [];
-            $wordWallTitles = $_POST['wordWallTitles'] ?? [];
-            $wordWallUrls   = $_POST['wordWallUrls'] ?? [];
+        $file_paths         = $_FILES['file_path'] ?? [];
+        $fileDescriptions   = $_POST['file_descriptions'] ?? [];
+        if (!is_array($fileDescriptions)) $fileDescriptions = [$fileDescriptions];
 
-
-            // Fotoğraf işlemi (örnek)
-            $cover_img_path = null;
-            if ($photo && $photo['error'] === 0) {
-                $uploadDir = '../uploads/contents/';
-                $filename = uniqid() . '_' . basename($photo['name']);
-                $uploadPath = $uploadDir . $filename;
-
-                if (move_uploaded_file($photo['tmp_name'], $uploadPath)) {
-                    $cover_img_path = $uploadPath;
-                }
-            } elseif ($avatar_remove === '1') {
-                $cover_img_path = null; // avatar silinmiş
-            }
-
-            // content_lnp güncelleme
-            $updateStmt = $pdo->prepare("UPDATE school_content_lnp SET 
-        title = ?, 
-        summary = ?, 
-        class_id = ?, 
-        lesson_id = ?, 
-        unit_id = ?, 
-        topic_id = ?, 
-        subtopic_id = ?, 
-        cover_img = ?, 
-        text_content = ? 
-        WHERE id = ?");
-
-            $updateStmt->execute([
-                $name,
-                $short_desc,
-                $classes,
-                $lessons,
-                $units,
-                $topics,
-                $sub_topics,
-                $cover_img_path,
-                $mcontent,
-                $content_id
-            ]);
-
-            $deleteVideoStmt = $pdo->prepare("DELETE FROM school_content_videos_url WHERE school_content_id = ?");
-            $deleteVideoStmt->execute([$content_id]);
-
-            // Sonra yeni kayıt ekle
-            $insertVideoStmt  = $pdo->prepare("INSERT INTO school_content_videos_url (video_url, school_content_id) VALUES (?, ?)");
-            $insertVideoStmt->execute([
-                $video_url,
-                $content_id
-            ]);
-
-            // Diğer tabloya ekleme (örnek tablo adı: content_meta)
-
-            $deleteWordWallStmt = $pdo->prepare("DELETE FROM school_content_wordwall_lnp WHERE school_content_id = ?");
-            $deleteWordWallStmt->execute([$content_id]);
-
-            // // Yeni verileri ekle
-            $insertWordWallStmt = $pdo->prepare("INSERT INTO school_content_wordwall_lnp (school_content_id, wordwall_url, wordwall_title) VALUES (?, ?, ?)");
-
-            foreach ($wordWallUrls as $index => $url) {
-                $title = $wordWallTitles[$index] ?? ''; // eşleşen başlık varsa al
-                if (!empty($url)) {
-
-                    $insertWordWallStmt->execute([$content_id, $url, $title]);
-                }
-            }
-
-            // // Dosyaları da saklamak istersen
+        // Fotoğraf işlemi
+        $cover_img_path = null;
+        if ($photo && $photo['error'] === 0) {
             $uploadDir = '../uploads/contents/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true); // klasör yoksa oluştur
+            $filename = uniqid() . '_' . basename($photo['name']);
+            $uploadPath = $uploadDir . $filename;
+            if (move_uploaded_file($photo['tmp_name'], $uploadPath)) {
+                $cover_img_path = $uploadPath;
             }
+        } elseif ($avatar_remove === '1') {
+            $cover_img_path = null;
+        } else {
+            // Mevcut fotoğrafı koru
+            $stmt = $pdo->prepare("SELECT cover_img FROM school_content_lnp WHERE id = ?");
+            $stmt->execute([$content_id]);
+            $cover_img_path = $stmt->fetchColumn();
+        }
 
-            // Açıklamaları formdan al
+        // content_lnp güncelleme
+        $updateStmt = $pdo->prepare("UPDATE school_content_lnp SET 
+            title = ?, 
+            summary = ?, 
+            class_id = ?, 
+            lesson_id = ?, 
+            unit_id = ?, 
+            topic_id = ?, 
+            subtopic_id = ?, 
+            cover_img = ?, 
+            text_content = ? 
+            WHERE id = ?");
+        $updateStmt->execute([
+            $name,
+            $short_desc,
+            $classes,
+            $lessons,
+            $units,
+            $topics,
+            $sub_topics,
+            $cover_img_path,
+            $mcontent,
+            $content_id
+        ]);
 
-            
-            // Veritabanına hazırlık
-            $insertFileStmt = $pdo->prepare("INSERT INTO school_content_files_lnp (school_content_id, file_path, description) VALUES (?, ?, ?)");
+        // Video URL'leri ekleme (eski veriler siliniyor, yeni ekleniyor)
+        $pdo->prepare("DELETE FROM school_content_videos_url WHERE school_content_id = ?")->execute([$content_id]);
+        $insertVideoStmt = $pdo->prepare("INSERT INTO school_content_videos_url (video_url, school_content_id) VALUES (?, ?)");
+        foreach ($video_urls as $url) {
+            if (!empty($url)) {
+                $insertVideoStmt->execute([$url, $content_id]);
+            }
+        }
 
-            foreach ($file_paths['name'] ?? [] as $index => $name) {
-                if ($file_paths['error'][$index] === 0) {
-                    $tmpPath = $file_paths['tmp_name'][$index];
-                    $filename = uniqid() . '_' . basename($name);
-                    $uploadPath = $uploadDir . $filename;
+        // WordWall ekleme
+        $pdo->prepare("DELETE FROM school_content_wordwall_lnp WHERE school_content_id = ?")->execute([$content_id]);
+        $insertWordWallStmt = $pdo->prepare("INSERT INTO school_content_wordwall_lnp (school_content_id, wordwall_url, wordwall_title) VALUES (?, ?, ?)");
+        foreach ($wordWallUrls as $index => $url) {
+            $title = $wordWallTitles[$index] ?? '';
+            if (!empty($url)) {
+                $insertWordWallStmt->execute([$content_id, $url, $title]);
+            }
+        }
 
-                    if (move_uploaded_file($tmpPath, $uploadPath)) {
-                        // İlgili açıklamayı al (index'e göre)
-                        $description = $fileDescriptions[$index] ?? '';
-                        $insertFileStmt->execute([$content_id, $uploadPath, $description]);
-                    }
+        // Dosya yükleme ve ekleme
+        $uploadDir = '../uploads/contents/';
+        if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+
+        $insertFileStmt = $pdo->prepare("INSERT INTO school_content_files_lnp (school_content_id, file_path, description) VALUES (?, ?, ?)");
+        foreach ($file_paths['name'] ?? [] as $index => $name) {
+            if ($file_paths['error'][$index] === 0) {
+                $tmpPath = $file_paths['tmp_name'][$index];
+                $filename = uniqid() . '_' . basename($name);
+                $uploadPath = $uploadDir . $filename;
+                if (move_uploaded_file($tmpPath, $uploadPath)) {
+                    $description = $fileDescriptions[$index] ?? '';
+                    $insertFileStmt->execute([$content_id, $uploadPath, $description]);
                 }
             }
-
-            $pdo->commit();
-            echo json_encode(['status' => 'success', 'message' => 'İçerik başarıyla güncellendi.']);
-        } catch (Exception $e) {
-            $pdo->rollBack();
-            echo json_encode(['status' => 'error', 'message' => 'Geçersiz servis']);
         }
-        break;
+
+        $pdo->commit();
+        echo json_encode(['status' => 'success', 'message' => 'İçerik başarıyla güncellendi.']);
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+    break;
+
+
     case 'deleteContentFile':
         $id = $_POST['id'] ?? null;
         try {

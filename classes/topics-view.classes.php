@@ -1197,7 +1197,7 @@ class ShowSubTopic extends SubTopics
                     <div class="card h-100 shadow-sm border-0">
                         <!-- Kapak Görseli -->
                         <div class="d-flex justify-content-center align-items-center"
-                            style="height: 180px; background-image: url(\'assets/media/topics/' . htmlspecialchars($value['cover_img']) . '\');
+                            style="height: 180px; background-image: url(\'uploads/contents/' . htmlspecialchars($value['cover_img']) . '\');
                                    background-size: cover; background-position: center; border-top-left-radius: .375rem; border-top-right-radius: .375rem;">
                         </div>
                         <!-- Kart İçeriği -->

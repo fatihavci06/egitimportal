@@ -59,6 +59,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <!--begin::Card-->
+                                   
                                     <?php include_once "views/contents/add_content.php"; ?>
                                     <!--end::Card-->
                                 </div>
