@@ -86,9 +86,13 @@ class ShowContents extends GetContent
 
     // Cover image en üstte
     $coverImage = '';
-    if (!empty($contentInfo['cover_img'])) {
-        $coverImage = '<div class="mb-4 text-center"><img src="uploads/contents/' . $contentInfo['cover_img'] . '" class="img-fluid" alt="Cover Image"></div>';
-    }
+  if (!empty($contentInfo['cover_img'])) {
+    $coverImage = '<div class="mb-4 text-start">
+                       <img src="uploads/contents/' . $contentInfo['cover_img'] . '" 
+                            style="height:200px; width:auto; object-fit:cover;" 
+                            alt="Cover Image">
+                   </div>';
+}
 
     // Başlık ve açıklama hemen altında
     $titleAndDesc = '<h2 class="fw-bold mb-2">' . htmlspecialchars($contentInfo['title']) . '</h2>';
