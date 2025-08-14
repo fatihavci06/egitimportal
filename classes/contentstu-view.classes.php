@@ -71,194 +71,88 @@ class ShowContents extends GetContent
 
     // Show Content Details
 
-    public function showOneContent()
-    {
+  public function showOneContent() 
+{
+    $link = "$_SERVER[REQUEST_URI]";
+    $active_slug = htmlspecialchars(basename($link, ".php"));
+    $contentId = $this->getContentIdBySlug($active_slug);
+    $contentInfo = $this->getAllContentDetailsById($contentId['id']);
+    $dateFormat = new DateFormat();
 
-        $link = "$_SERVER[REQUEST_URI]";
-
-        $active_slug = htmlspecialchars(basename($link, ".php"));
-
-        $contentId = $this->getContentIdBySlug($active_slug);
-
-        $contentInfo = $this->getAllContentDetailsById($contentId['id']);
-
-        $dateFormat = new DateFormat();
-
-        if (count($contentInfo) == 0) {
-            $contentList = header("Location: http://localhost/lineup_campus/404.php"); // 404 sayfasına yönlendir
-            echo $contentList;
-            return;
-        }
-
-        /*  $topicList = '
-                <div class="mb-3">
-                    <h1 class="h3 d-inline align-middle">Böyle bir alt konu mevcut değil.</h1>
-                </div>
-        '; */
-
-        if ($contentInfo['text_content'] != NULL) {
-            $content = $contentInfo['text_content'];
-        } else {
-            $contentFiles = $this->getContentFilesById($contentId['id']);
-            $wordwallFiles = $this->getContentWordwallsById($contentId['id']);
-            $videoFiles = $this->getContentVideosById($contentId['id']);
-
-            $content = '';
-
-            // Check if there are any files
-            if (count($contentFiles) > 0) {
-                $content = '';
-                foreach ($contentFiles as $file) {
-                    $dosyaUzantisi = pathinfo($file['file_path'], PATHINFO_EXTENSION);
-                    $dosyaUzantisi = strtolower($dosyaUzantisi);
-                    $izinVerilenUzantilar = ['pdf', 'pptx', 'xlsx', 'xls', 'csv'];
-                    if (in_array($dosyaUzantisi, $izinVerilenUzantilar)) {
-                        $content .= '<div class="mb-3"><h3>' . $file['description'] . '</h3></div>';
-                        $content .= '<div class="mb-10"><a data-file-id="' . $file["id"] . '"  href="' . $file['file_path'] . '" download class="btn btn-primary btn-sm" target="_blank"> <i class="bi bi-download"></i> Dosyayı İndir </a></div>';
-                    } else {
-                        $content .= '<div class="mb-3"><h3>' . $file['description'] . '</h3></div>';
-                        $content .= '<div class="mb-10"><img data-image-id="' . $file["id"] . '" src="' . $file['file_path'] . '""></div>';
-                    }
-                }
-            }
-
-            // Check if there are any wordwall files
-            if (count($wordwallFiles) > 0) {
-                foreach ($wordwallFiles as $wordwall) {
-                    $content .= '<div class="mb-3"><h3>' . $wordwall['wordwall_title'] . '</h3></div>';
-                    $content .= '
-                    <div class="mb-3" style="position: relative; width: 100%; height: 100%;">
-                        <iframe  src="' . $wordwall['wordwall_url'] . '" width="100%" height="500px"></iframe>
-                        <div data-wordwall-id="' . $wordwall["id"] . '"  style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;"></div>
-                    </div>';
-                }
-            }
-            require_once 'video-tracker.classes.php';
-
-            $tracker = new VideoTracker();
-            // Check if there are any videos
-            if (count($videoFiles) > 0) {
-                foreach ($videoFiles as $video) {
-                    $videoUrl = $video['video_url'];
-                    $videoId = $video['id'];
-                    $video_timestamp = $tracker->getWatchProgress($_SESSION['id'], $videoId);
-                    $vimeoEmbedCode = $this->generateVimeoIframe($videoUrl, $videoId, $video_timestamp);
-                    $content .= '<div class="mb-3">' . $vimeoEmbedCode . '</div>';
-                }
-            }
-        }
-
-        $contentList = '
-                        <!--begin::Card body-->
-                        <div class="card-body pt-0 pb-5">
-
-                            ' . $content . '
-
-                        </div>
-                    <!--end::Card body-->
-            ';
-
-
-        /*  $subTopicId = $value['id'];
-
-            $getContents = new GetContent();
-
-            $content = $getContents->getContentInfoByIdsUnderSubTopic($subTopicId, $value['topic_id'], $value['unit_id'], $value['lesson_id'], $value['class_id']);
-
-            $statNumber = count($content);
-
-            $statText = "İçerik";
-
-            $subTopicList = '
-                <div class="flex-column flex-lg-row-auto w-100 w-xl-350px mb-10">
-                    <!--begin::Card-->
-                    <div class="card mb-5 mb-xl-8">
-                        <!--begin::Card body-->
-                        <div class="card-body pt-15">
-                            <!--begin::Summary-->
-                            <div class="d-flex flex-center flex-column mb-5">
-                                <!--begin::Avatar-->
-                                <div class="mb-7">
-                                    <img class="mw-100" src="assets/media/topics/' . $value['image'] . '" alt="image" />
-                                </div>
-                                <!--end::Avatar-->
-                                <!--begin::Name-->
-                                <p class="fs-3 text-gray-800  fw-bold mb-1">' . $value['name'] . '</p>
-                                <!--end::Name-->
-                                <!--begin::Position-->
-                                <div class="fs-5 fw-semibold text-muted mb-6">' . $value['topicName'] . '</div>
-                                <!--end::Position-->
-                                <!--begin::Position-->
-                                <div class="fs-5 fw-semibold text-muted mb-6">' . $value['unitName'] . '</div>
-                                <!--end::Position-->
-                                <!--begin::Position-->
-                                <div class="fs-5 fw-semibold text-muted mb-6">' . $value['lessonName'] . '</div>
-                                <!--end::Position-->
-                                <!--begin::Position-->
-                                <div class="fs-5 fw-semibold text-muted mb-6">' . $value['className'] . '</div>
-                                <!--end::Position-->
-                                <!--begin::Info-->
-                                <div class="d-flex flex-wrap flex-center">
-                                    <!--begin::Stats-->
-                                    <div class="border border-gray-300 border-dashed rounded py-3 px-3 mx-4 mb-3">
-                                        <div class="fs-4 fw-bold text-gray-700">
-                                            <span class="w-75px">' . $statNumber . '</span>
-                                            <i class="fa-solid fa-book-open fs-3 text-success"></i>
-                                        </div>
-                                        <div class="fw-semibold text-muted">' . $statText . '</div>
-                                    </div>
-                                    <!--end::Stats-->
-                                </div>
-                                <!--end::Info-->
-                            </div>
-                            <!--end::Summary-->
-                            <!--begin::Details toggle-->
-                            <div class="d-flex flex-stack fs-4 py-3">
-                                <div class="fw-bold rotate collapsible" data-bs-toggle="collapse" href="#kt_customer_view_details" role="button" aria-expanded="false" aria-controls="kt_customer_view_details">Detaylar
-                                    <span class="ms-2 rotate-180">
-                                        <i class="ki-duotone ki-down fs-3"></i>
-                                    </span>
-                                </div>
-                                <span data-bs-toggle="tooltip" data-bs-trigger="hover" title="Konu bilgilerini düzenle">
-                                    <a href="#" class="btn btn-sm btn-light-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_update_customer">Düzenle</a>
-                                </span>
-                            </div>
-                            <!--end::Details toggle-->
-                            <div class="separator separator-dashed my-3"></div>
-                            <!--begin::Details content-->
-                            <div id="kt_customer_view_details" class="collapse show">
-                                <div class="py-5 fs-6">
-                                    <!--begin::Badge-->
-                                    <!--<div class="badge badge-light-info d-inline">Premium user</div>-->
-                                    <!--end::Badge-->
-                                    <!--begin::Details item-->
-                                    <div class="fw-bold mt-5">Kısa Açıklama</div>
-                                    <div class="text-gray-600">' . $value['short_desc'] . '</div>
-                                    <!--end::Details item-->
-                                    <!--begin::Details item-->
-                                    <div class="fw-bold mt-5">Konu Başlama Tarihi</div>
-                                    <div class="text-gray-600">' . $dateFormat->changeDate($value['start_date']) . '</div>
-                                    <!--end::Details item-->
-                                    <!--begin::Details item-->
-                                    <div class="fw-bold mt-5">Konu Bitiş Tarihi</div>
-                                    <div class="text-gray-600">' . $dateFormat->changeDate($value['end_date']) . '</div>
-                                    <!--end::Details item-->
-                                    <!--begin::Details item-->
-                                    <div class="fw-bold mt-5">Konu Sırası</div>
-                                    <div class="text-gray-600">' . $value['order_no'] . '</div>
-                                    <!--end::Details item-->
-                                </div>
-                            </div>
-                            <!--end::Details content-->
-                        </div>
-                        <!--end::Card body-->
-                    </div>
-                    <!--end::Card-->
-                </div>
-                '; */
-
-        echo $contentList;
+    if (!$contentInfo) {
+        header("Location: http://localhost/lineup_campus/404.php");
+        exit;
     }
+
+    // Cover image en üstte
+    $coverImage = '';
+    if (!empty($contentInfo['cover_img'])) {
+        $coverImage = '<div class="mb-4 text-center"><img src="uploads/contents/' . $contentInfo['cover_img'] . '" class="img-fluid" alt="Cover Image"></div>';
+    }
+
+    // Başlık ve açıklama hemen altında
+    $titleAndDesc = '<h2 class="fw-bold mb-2">' . htmlspecialchars($contentInfo['title']) . '</h2>';
+   if (!empty($contentInfo['summary'])) {
+    $titleAndDesc .= '<div class="mb-4" >' 
+                     . $contentInfo['summary']
+                     . '</div>';
+}
+
+    // Mevcut içerik (butonlar, dosyalar, video, WordWall)
+    if ($contentInfo['text_content'] != NULL) {
+        $content = $contentInfo['text_content'];
+    } else {
+        $contentFiles = $this->getContentFilesById($contentId['id']);
+        $wordwallFiles = $this->getContentWordwallsById($contentId['id']);
+        $videoFiles = $this->getContentVideosById($contentId['id']);
+
+        $content = '';
+
+        // Dosya içerikleri
+        foreach ($contentFiles as $file) {
+            $dosyaUzantisi = strtolower(pathinfo($file['file_path'], PATHINFO_EXTENSION));
+            $content .= '<div class="mb-3"><h3>' . htmlspecialchars($file['description']) . '</h3></div>';
+
+            if (in_array($dosyaUzantisi, ['pdf','pptx','xlsx','xls','csv'])) {
+                $content .= '<div class="mb-10"><a data-file-id="' . $file["id"] . '" href="' . $file['file_path'] . '" download class="btn btn-primary btn-sm" target="_blank"> <i class="bi bi-download"></i> Dosyayı İndir </a></div>';
+            } else {
+                $content .= '<div class="mb-10"><img data-image-id="' . $file["id"] . '" src="' . $file['file_path'] . '" class="img-fluid"></div>';
+            }
+        }
+
+        // WordWall içerikleri
+        foreach ($wordwallFiles as $wordwall) {
+            $content .= '<div class="mb-3"><h3>' . htmlspecialchars($wordwall['wordwall_title']) . '</h3></div>';
+            $content .= '
+                <div class="mb-3" style="position: relative; width: 100%; height: 100%;">
+                    <iframe src="' . $wordwall['wordwall_url'] . '" width="100%" height="500px"></iframe>
+                    <div data-wordwall-id="' . $wordwall["id"] . '" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;"></div>
+                </div>';
+        }
+
+        // Video içerikleri
+        require_once 'video-tracker.classes.php';
+        $tracker = new VideoTracker();
+        foreach ($videoFiles as $video) {
+            $videoId = $video['id'];
+            $video_timestamp = $tracker->getWatchProgress($_SESSION['id'], $videoId);
+            $vimeoEmbedCode = $this->generateVimeoIframe($video['video_url'], $videoId, $video_timestamp);
+            $content .= '<div class="mb-3">' . $vimeoEmbedCode . '</div>';
+        }
+    }
+
+    // Tüm parçaları birleştir
+    $contentList = '
+        <div class="card-body pt-0 pb-5">
+            ' . $coverImage . '
+            ' . $titleAndDesc . '
+            ' . $content . '
+        </div>
+    ';
+
+    echo $contentList;
+}
+
 
     // Update SubTopic
 
