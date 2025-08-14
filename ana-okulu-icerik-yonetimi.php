@@ -3,7 +3,7 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001  )) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001)) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
 
@@ -112,73 +112,73 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                             <!--begin::Table-->
                                             <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_customers_table">
-    <thead>
-        <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-            <th class="min-w-125px">Ay</th>
-            <th class="min-w-125px">Konu</th>
-            <th class="min-w-125px">Durum</th>
-            <th class="text-end min-w-70px">İşlemler</th>
-        </tr>
-    </thead>
-    <tbody class="fw-semibold text-gray-600">
-        <?php
-        $class = new Classes();
-        $weekList = $class->getMainSchoolContentList();
-        foreach ($weekList as $key => $value): ?>
-            <tr>
-                <td>
-                    <a href="#" class="text-gray-800 text-hover-primary mb-1">
-                        <?= htmlspecialchars($value['month']) ?>
-                    </a>
-                </td>
-                <td>
-                    <a href="#" class="text-gray-800 text-hover-primary mb-1">
-                        <?= htmlspecialchars($value['subject']) ?>
-                    </a>
-                </td>
-                <td>
-                    <?php if ((int)$value['status'] === 1): ?>
-                        <span class="badge bg-danger">Pasif</span>
-                    <?php else: ?>
-                        <span class="badge bg-success">Aktif</span>
-                    <?php endif; ?>
-                </td>
-                <td class="text-end">
-                    <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
-                        data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                        İşlemler
-                        <i class="ki-duotone ki-down fs-5 ms-1"></i>
-                    </a>
+                                                <thead>
+                                                    <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
+                                                        <th class="min-w-125px">Ay</th>
+                                                        <th class="min-w-125px">Konu</th>
+                                                        <th class="min-w-125px">Durum</th>
+                                                        <th class="text-end min-w-70px">İşlemler</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="fw-semibold text-gray-600">
+                                                    <?php
+                                                    $class = new Classes();
+                                                    $weekList = $class->getMainSchoolContentList();
+                                                    foreach ($weekList as $key => $value): ?>
+                                                        <tr>
+                                                            <td>
+                                                                <a href="#" class="text-gray-800 text-hover-primary mb-1">
+                                                                    <?= htmlspecialchars($value['month']) ?>
+                                                                </a>
+                                                            </td>
+                                                            <td>
+                                                                <a href="#" class="text-gray-800 text-hover-primary mb-1">
+                                                                    <?= htmlspecialchars($value['subject']) ?>
+                                                                </a>
+                                                            </td>
+                                                            <td>
+                                                                <?php if ((int)$value['status'] === 0): ?>
+                                                                    <span class="badge bg-danger">Pasif</span>
+                                                                <?php else: ?>
+                                                                    <span class="badge bg-success">Aktif</span>
+                                                                <?php endif; ?>
+                                                            </td>
+                                                            <td class="text-end">
+                                                                <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
+                                                                    data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                                                    İşlemler
+                                                                    <i class="ki-duotone ki-down fs-5 ms-1"></i>
+                                                                </a>
 
-                    <!--begin::Menu-->
-                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
-                         data-kt-menu="true">
+                                                                <!--begin::Menu-->
+                                                                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
+                                                                    data-kt-menu="true">
 
-                        <div class="menu-item px-3">
-                            <a href="./ana-okul-detay/<?= htmlspecialchars($value['id']) ?>" class="menu-link px-3">Görüntüle</a>
-                        </div>
+                                                                    <div class="menu-item px-3">
+                                                                        <a href="./ana-okul-detay/<?= htmlspecialchars($value['id']) ?>" class="menu-link px-3">Görüntüle</a>
+                                                                    </div>
 
-                        <div class="menu-item px-3">
-                            <a class="menu-link px-3" href="ana-okulu-icerik-guncelle?id=<?= htmlspecialchars($value['id']) ?>">
-                                Güncelle
-                            </a>
-                        </div>
+                                                                    <div class="menu-item px-3">
+                                                                        <a class="menu-link px-3" href="ana-okulu-icerik-guncelle?id=<?= htmlspecialchars($value['id']) ?>">
+                                                                            Güncelle
+                                                                        </a>
+                                                                    </div>
 
-                        <div class="menu-item px-3">
-                            <a href="javascript:void(0);"
-                               class="menu-link px-3"
-                               data-kt-customer-table-filter="delete_row"
-                               onclick="handleDelete({ id: '<?= htmlspecialchars($value['id']) ?>', url: 'includes/ajax.php?service=deleteMainSchoolContent' })">
-                                <?= ((int)$value['status'] === 1) ? 'Pasif Yap' : 'Aktif Yap'; ?>
-                            </a>
-                        </div>
-                    </div>
-                    <!--end::Menu-->
-                </td>
-            </tr>
-        <?php endforeach; ?>
-    </tbody>
-</table>
+                                                                    <div class="menu-item px-3">
+                                                                        <a href="javascript:void(0);"
+                                                                            class="menu-link px-3"
+                                                                            data-kt-customer-table-filter="delete_row"
+                                                                            onclick="handleDelete({ id: '<?= htmlspecialchars($value['id']) ?>', url: 'includes/ajax.php?service=deleteMainSchoolContent' })">
+                                                                            <?= ((int)$value['status'] === 1) ? 'Pasif Yap' : 'Aktif Yap'; ?>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                                <!--end::Menu-->
+                                                            </td>
+                                                        </tr>
+                                                    <?php endforeach; ?>
+                                                </tbody>
+                                            </table>
 
                                             <!--end::Table-->
                                         </div>
