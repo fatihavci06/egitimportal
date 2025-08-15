@@ -50,8 +50,8 @@ var KTCustomersList = function () {
 
                 const customerName = parent.querySelectorAll('td')[1].innerText;
                 const bookId = parent.getAttribute('id');
-                var activeStatus = parent.querySelectorAll('td')[2].innerText;
-
+                var activeStatus = parent.querySelectorAll('td')[3].innerText;
+                console.log(activeStatus);
                 if (activeStatus === "Aktif") {
                     activeStatus = "pasif";
                 } else {
@@ -188,7 +188,7 @@ var KTCustomersList = function () {
     function sendAlterRequest(payload, successMsg, onSuccess) {
         $.ajax({
             type: "POST",
-            url: "includes/alter_active_audiobook.inc.php",
+            url: "includes/alter_active_writtenbook.inc.php",
             data: payload,
             traditional: true,
             dataType: "json",

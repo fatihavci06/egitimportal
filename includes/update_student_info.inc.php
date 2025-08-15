@@ -56,7 +56,7 @@ function updateStudent($userInfo, $phone, $city, $district, $address, $postcode,
         $slugName = new Slug($userInfo['surname']);
         $slug = $slugName->slugify($userInfo['surname']);
 
-        $img = $imageSent->profileImage($photoName, $photoSize, $fileTmpName, $userInfo['slug']);
+        $img = $imageSent->profileImage($photoName, $photoSize, $fileTmpName, $slug);
         $imgName = $img['image'];
     }
 

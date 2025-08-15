@@ -71,7 +71,7 @@ class ShowContents extends GetContent
 
     // Show Content Details
 
-  public function showOneContent() 
+    public function showOneContent()
 {
     $link = "$_SERVER[REQUEST_URI]";
     $active_slug = htmlspecialchars(basename($link, ".php"));
@@ -84,29 +84,29 @@ class ShowContents extends GetContent
         exit;
     }
 
-    // Cover image en üstte
+    // Önce contentFiles alalım (cover_img gösterebilmek için)
+    $contentFiles = $this->getContentFilesById($contentId['id']);
+
+    // Cover image sadece contentFiles varsa gösterilsin
     $coverImage = '';
-  if (!empty($contentInfo['cover_img'])) {
-    $coverImage = '<div class="mb-4 text-start">
-                       <img src="uploads/contents/' . $contentInfo['cover_img'] . '" 
-                            style="height:200px; width:auto; object-fit:cover;" 
-                            alt="Cover Image">
-                   </div>';
-}
+    if (!empty($contentFiles) && !empty($contentInfo['cover_img'])) {
+        $coverImage = '<div class="mb-4 text-start">
+                   <img src="uploads/contents/' . $contentInfo['cover_img'] . '" 
+                        style="height:200px; width:auto; object-fit:cover;" 
+                        alt="Cover Image">
+               </div>';
+    }
 
-    // Başlık ve açıklama hemen altında
+    // Başlık ve açıklama
     $titleAndDesc = '<h2 class="fw-bold mb-2">' . htmlspecialchars($contentInfo['title']) . '</h2>';
-   if (!empty($contentInfo['summary'])) {
-    $titleAndDesc .= '<div class="mb-4" >' 
-                     . $contentInfo['summary']
-                     . '</div>';
-}
+    if (!empty($contentInfo['summary'])) {
+        $titleAndDesc .= '<div class="mb-4">' . $contentInfo['summary'] . '</div>';
+    }
 
-    // Mevcut içerik (butonlar, dosyalar, video, WordWall)
+    // Mevcut içerik
     if ($contentInfo['text_content'] != NULL) {
         $content = $contentInfo['text_content'];
     } else {
-        $contentFiles = $this->getContentFilesById($contentId['id']);
         $wordwallFiles = $this->getContentWordwallsById($contentId['id']);
         $videoFiles = $this->getContentVideosById($contentId['id']);
 
@@ -117,7 +117,7 @@ class ShowContents extends GetContent
             $dosyaUzantisi = strtolower(pathinfo($file['file_path'], PATHINFO_EXTENSION));
             $content .= '<div class="mb-3"><h3>' . htmlspecialchars($file['description']) . '</h3></div>';
 
-            if (in_array($dosyaUzantisi, ['pdf','pptx','xlsx','xls','csv'])) {
+            if (in_array($dosyaUzantisi, ['pdf', 'pptx', 'xlsx', 'xls', 'csv'])) {
                 $content .= '<div class="mb-10"><a data-file-id="' . $file["id"] . '" href="' . $file['file_path'] . '" download class="btn btn-primary btn-sm" target="_blank"> <i class="bi bi-download"></i> Dosyayı İndir </a></div>';
             } else {
                 $content .= '<div class="mb-10"><img data-image-id="' . $file["id"] . '" src="' . $file['file_path'] . '" class="img-fluid"></div>';
@@ -128,10 +128,10 @@ class ShowContents extends GetContent
         foreach ($wordwallFiles as $wordwall) {
             $content .= '<div class="mb-3"><h3>' . htmlspecialchars($wordwall['wordwall_title']) . '</h3></div>';
             $content .= '
-                <div class="mb-3" style="position: relative; width: 100%; height: 100%;">
-                    <iframe src="' . $wordwall['wordwall_url'] . '" width="100%" height="500px"></iframe>
-                    <div data-wordwall-id="' . $wordwall["id"] . '" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;"></div>
-                </div>';
+            <div class="mb-3" style="position: relative; width: 100%; height: 100%;">
+                <iframe src="' . $wordwall['wordwall_url'] . '" width="100%" height="500px"></iframe>
+                <div data-wordwall-id="' . $wordwall["id"] . '" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;"></div>
+            </div>';
         }
 
         // Video içerikleri
@@ -147,15 +147,16 @@ class ShowContents extends GetContent
 
     // Tüm parçaları birleştir
     $contentList = '
-        <div class="card-body pt-0 pb-5">
-            ' . $coverImage . '
-            ' . $titleAndDesc . '
-            ' . $content . '
-        </div>
+    <div class="card-body pt-0 pb-5">
+        ' . $coverImage . '
+        ' . $titleAndDesc . '
+        ' . $content . '
+    </div>
     ';
 
     echo $contentList;
 }
+
 
 
     // Update SubTopic
@@ -411,7 +412,7 @@ class ShowContents extends GetContent
                 $slug = htmlspecialchars($value['slug']);
                 $coverImg = !empty($value['cover_img']) ? "uploads/contents/" . htmlspecialchars($value['cover_img']) : "assets/media/topics/konuDefault.jpg";
 
-               echo '
+                echo '
     <!--begin::Col-->
     <div class="col-12 col-md-6 col-lg-4 mb-4">
         <div class="card h-100 shadow-sm border-0">
@@ -439,7 +440,6 @@ class ShowContents extends GetContent
     </div>
     <!--end::Col-->
 ';
-
             }
         }
     }
