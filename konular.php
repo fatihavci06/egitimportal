@@ -12,7 +12,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     $students = new ShowStudent();
     $topics = new ShowTopic();
     include_once "views/pages-head.php";
-    ?>
+?>
     <!--end::Head-->
     <!--begin::Body-->
 
@@ -239,69 +239,39 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         <!--begin::Card body-->
                                         <div class="card-body pt-0">
                                             <!--begin::Table-->
-                                            <table class="table align-middle table-row-dashed fs-6 gy-5"
-                                                id="kt_customers_table">
-
-
-                                                <?php if ($_SESSION['role'] == 1) { ?>
-                                                    <thead>
-                                                        <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                            <th class="w-10px pe-2">
-                                                                <div
-                                                                    class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                                                    <input class="form-check-input" type="checkbox"
-                                                                        data-kt-check="true"
-                                                                        data-kt-check-target="#kt_customers_table .form-check-input"
-                                                                        value="1" />
-                                                                </div>
-                                                            </th>
-                                                            <th class="min-w-125px">Konu</th>
-                                                            <th class="min-w-125px">Ünite</th>
-                                                            <th class="min-w-125px">Ders</th>
-                                                            <th class="min-w-125px">Sınıf</th>
-                                                            <th class="min-w-125px">Konu Başlama Tarihi</th>
-                                                            <th class="min-w-125px">Konu Bitiş Tarihi</th>
-                                                            <th class="min-w-125px">Sıra</th>
-                                                            <th class="min-w-125px">Durum</th>
-                                                             
-
-                                                            <th class="text-end min-w-70px">İşlemler</th>
-
-                                                            <th class="text-end min-w-70px">İşlemler</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody class="fw-semibold text-gray-600"></tbody>
-                                                    <?php $topics->getTopicList(); ?>
-
-                                                <?php } else { ?>
-                                                    <thead>
-                                                        <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                            <th class="w-10px pe-2">
-                                                                <div
-                                                                    class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                                                    <input class="form-check-input" type="checkbox"
-                                                                        data-kt-check="true"
-                                                                        data-kt-check-target="#kt_customers_table .form-check-input"
-                                                                        value="1" />
-                                                                </div>
-                                                            </th>
-                                                            <th class="min-w-125px">Konu</th>
-                                                            <th class="min-w-125px">Ünite</th>
-                                                            <th class="min-w-125px">Ders</th>
-                                                            <th class="min-w-125px">Sınıf</th>
-                                                            <th class="min-w-125px">Konu Başlama Tarihi</th>
-                                                            <th class="min-w-125px">Konu Bitiş Tarihi</th>
-                                                            <th class="min-w-125px">Sıra</th>
-                                                            <th class="min-w-125px">Durum</th>
-                                                             
-                                                            <th class="text-end min-w-70px">İşlemler</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody class="fw-semibold text-gray-600">
-                                                        <?php $topics->getTopicList();
-                                                } ?>
+                                            <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_customers_table">
+                                                <thead>
+                                                    <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
+                                                        <th class="w-10px pe-2">
+                                                            <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    data-kt-check="true"
+                                                                    data-kt-check-target="#kt_customers_table .form-check-input"
+                                                                    value="1" />
+                                                            </div>
+                                                        </th>
+                                                        <th class="min-w-125px">Konu</th>
+                                                        <th class="min-w-125px">Ünite</th>
+                                                        <th class="min-w-125px">Ders</th>
+                                                        <th class="min-w-125px">Sınıf</th>
+                                                        <th class="min-w-125px">Konu Başlama Tarihi</th>
+                                                        <th class="min-w-125px">Konu Bitiş Tarihi</th>
+                                                        <th class="min-w-125px">Sıra</th>
+                                                        <th class="min-w-125px">Durum</th>
+                                                        <th class="text-end min-w-70px">İşlemler</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="fw-semibold text-gray-600">
+                                                    <?php
+                                                    if ($_SESSION['role'] == 1) {
+                                                        $topics->getTopicList();
+                                                    } else {
+                                                        $topics->getTopicList();
+                                                    }
+                                                    ?>
                                                 </tbody>
                                             </table>
+
                                             <!--end::Table-->
                                         </div>
                                         <!--end::Card body-->
@@ -310,7 +280,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                     <!--begin::Modals-->
                                     <!--begin::Modal - Customers - Add-->
                                     <?php // include_once "views/topics/add_topic.php" 
-                                        ?>
+                                    ?>
                                     <!--end::Modal - Customers - Add-->
                                     <!--end::Modals-->
                                 </div>
@@ -368,7 +338,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     </body>
     <!--end::Body-->
 
-    </html>
+</html>
 <?php } else {
     header("location: index");
 }
