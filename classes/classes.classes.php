@@ -1248,6 +1248,7 @@ WHERE t.id = :id";
 	}
 	public function permissionControl($contentId, $userId)
 	{
+		
 		$stmt = $this->connect()->prepare('
         SELECT 1
         FROM users_lnp u
