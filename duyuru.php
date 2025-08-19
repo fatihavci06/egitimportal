@@ -17,7 +17,7 @@ if (isset($_SESSION['role'])) {
 
 	$announce_manager = new AnnouncementManager();
 
-	$slug_announcement = isset($_GET['q']) ? filter_var($_GET['q'], FILTER_SANITIZE_STRING) : '';
+	$slug_announcement = isset($_GET['q']) ? filter_var($_GET['q'], FILTER_SANITIZE_SPECIAL_CHARS) : '';
 	$announce_data = $announce->getAnnouncementBySlug($slug_announcement);
 	$announce_manager->markAsViewed($announce_data['id'], $_SESSION['id']);
 	?>
