@@ -17,7 +17,7 @@ if (isset($_SESSION['role'])) {
 
 	$notify_manager = new NotificationManager();
 
-	$slug_notification = isset($_GET['q']) ? filter_var($_GET['q'], FILTER_SANITIZE_STRING) : '';
+	$slug_notification = isset($_GET['q']) ? filter_var($_GET['q'], FILTER_SANITIZE_SPECIAL_CHARS) : '';
 	$notify_data = $notify->getNotificationBySlug($slug_notification);
 	$notify_manager->markAsViewed($notify_data['id'], $_SESSION['id']);
 	?>

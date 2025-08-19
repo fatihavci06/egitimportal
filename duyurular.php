@@ -140,7 +140,6 @@ if (isset($_SESSION['role'])) {
                                                             ?>
                                                             <th class="min-w-125px">Başlık</th>
                                                             <th class="min-w-125px">İçerik</th>
-                                                            <th class="min-w-125px">Kime</th>
                                                             <th class="min-w-125px">Duyuru Tarihi</th>
                                                             <th class="min-w-40px">Durum</th>
                                                             <?php
@@ -214,10 +213,10 @@ if (isset($_SESSION['role'])) {
         <!--end::Vendors Javascript-->
         <!--begin::Custom Javascript(used for this page only)-->
         <script src="assets/js/custom/apps/announcements/list/export.js"></script>
-        <?php if ($_SESSION['role'] == 1) {
+        <?php if ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 ) {
             echo '<script src="assets/js/custom/apps/announcements/list/list.js"></script>';
     
-        } elseif ($_SESSION['role'] == 2) {
+        } else  {
             echo '<script src="assets/js/custom/apps/announcements/list/studentlist.js"></script>';
         } ?>
         

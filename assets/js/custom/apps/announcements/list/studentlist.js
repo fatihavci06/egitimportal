@@ -23,7 +23,7 @@ var KTCustomersList = function () {
             ],
             'columnDefs': [
                 { orderable: false, targets: 0 },
-                { orderable: false, targets: 4 },
+                { orderable: false, targets: 3 },
             ]
         });
 
