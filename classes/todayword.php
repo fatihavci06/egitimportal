@@ -2,18 +2,19 @@
 class TodayWord extends Dbh
 {
 
-    function createTodaysWord(string $word, string $body, int $school_id, ?int $class_id = null, ?string $show_date = null, int $is_active = 1): int
+    function createTodaysWord(string $word, string $body, int $school_id, ?int $class_id = null, ?int $group_type = null, ?string $show_date = null, int $is_active = 1): int
     {
         $db = $this->connect();
         $stmt = $db->prepare("
-        INSERT INTO todays_word (word, body, school_id, class_id, show_date, is_active)
-        VALUES (:word, :body, :school_id, :class_id, :show_date, :is_active)
+        INSERT INTO todays_word (word, body, school_id, class_id, group_type, show_date, is_active)
+        VALUES (:word, :body, :school_id, :class_id, :group_type, :show_date, :is_active)
     ");
         $stmt->execute([
             ':word' => $word,
             ':body' => $body,
             ':school_id' => $school_id,
             ':class_id' => $class_id,
+            ':group_type' => $group_type,
             ':show_date' => $show_date,
             ':is_active' => $is_active
         ]);
@@ -208,13 +209,16 @@ class TodayWord extends Dbh
         $db = $this->connect();
 
         $queryToday = "
-        SELECT * FROM todays_word
-        WHERE is_active = 1
-          AND school_id = :school_id
-          AND (class_id = :class_id OR class_id IS NULL)
-          AND show_date = CURDATE()
-        LIMIT 1
-    ";
+        SELECT *
+        FROM todays_word d
+        LEFT JOIN classes_lnp c ON c.id = :class_id
+        WHERE d.is_active = 1
+            AND d.school_id = :school_id
+            AND (d.class_id = :class_id OR d.class_id IS NULL)
+            AND d.show_date = CURDATE()
+            AND (d.group_type = c.class_type OR d.group_type IS NULL)
+        LIMIT 1;
+        ";
 
         $stmt = $db->prepare($queryToday);
         $stmt->execute([
@@ -228,13 +232,15 @@ class TodayWord extends Dbh
         }
 
         $queryRandom = "
-        SELECT * FROM todays_word
+        SELECT * FROM todays_word d
+        LEFT JOIN classes_lnp c ON c.id = :class_id
         WHERE is_active = 1
-          AND school_id = :school_id
-          AND (class_id = :class_id OR class_id IS NULL)
+            AND d.school_id = :school_id
+            AND (d.class_id = :class_id OR d.class_id IS NULL)
+            AND (d.group_type = c.class_type OR d.group_type IS NULL)
         ORDER BY RAND()
         LIMIT 1
-    ";
+        ";
 
         $stmt = $db->prepare($queryRandom);
         $stmt->execute([

@@ -35,12 +35,27 @@ $classShow = new ShowClass();
                         </div>
 
                         <div class="fv-row mb-7">
+                            <label class="form-label fw-bold text-gray-900 fs-6">Sınıf
+                            </label>
                             <select name="classes" aria-label="Sınıf Seçiniz" data-control="select2"
                                 data-placeholder="Sınıf Seçiniz..." class="form-select form-select-solid fw-bold">
                                 <option value="">Sınıf Seçin</option>
                                 <?php echo $classShow->getClassSelectListByschool(); ?>
                             </select>
                         </div>
+
+                        <div class="fv-row mb-7">
+                            <label class="form-label fw-bold text-gray-900 fs-6">Grup
+                            </label>
+                            <select name="groups" aria-label="Grup Seçiniz" data-control="select2"
+                                data-placeholder="Grup Seçiniz..." class="form-select form-select-solid fw-bold">
+                                <option value="">Grup Seçin</option>
+                                <option value="-1">Herkes</option>
+                                <option value="0">İlk Okul ve Orta Okul</option>
+                                <option value="1">Okul Öncesi </option>
+                            </select>
+                        </div>
+
 
                         <div class="fv-row mb-7">
                             <label class="form-label fw-bold text-gray-900 fs-6">Görüntüleme

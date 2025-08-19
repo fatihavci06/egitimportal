@@ -14,6 +14,8 @@ include_once "../classes/todayword.php";
 
 $todayWordObj = new TodayWord();
 
+
+
 try {
 	$input = $_POST;
 
@@ -40,6 +42,7 @@ try {
 	$body = trim($input['body']);
 	$show_date = isset($input['show_date']) && trim($input['show_date']) !== '' ? trim($input['show_date']) : null;
 	$class_id = isset($input['classes']) && trim($input['classes']) !== '' ? (int) $input['classes'] : null;
+	$group_type = isset($input['groups']) && trim($input['groups']) !== '' ? (int) $input['groups'] : null;
 	$school_id = isset($_SESSION['school_id']) ? (int) $_SESSION['school_id'] : 0;
 
 	// Validations
@@ -64,7 +67,7 @@ try {
 	}
 
 	// Save to database
-	$insertedId = $todayWordObj->createTodaysWord($word, $body, $school_id, $class_id, $show_date);
+	$insertedId = $todayWordObj->createTodaysWord($word, $body, $school_id, $class_id, $group_type, $show_date);
 
 	echo json_encode([
 		'status' => 'success',
