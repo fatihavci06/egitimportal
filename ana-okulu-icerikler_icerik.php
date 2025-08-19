@@ -189,7 +189,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
                         <div class="d-flex flex-column flex-column-fluid">
                             <?php include_once "views/toolbar.php"; ?>
-
+                           
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <div class="card-body pt-5 ">
@@ -321,7 +321,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <label class=" fs-6 fw-semibold mb-2" for="concept_title">Kavram Başlığı</label>
                                                 <select class="form-select form-control" id="concept_title" aria-label="Default select example">
                                                     <option value="">Seçiniz</option>
+                                                   
                                                     <?php
+                                                    
                                                     $titlesContent = $class->getTitleList(2);
                                                     foreach ($titlesContent as $title) {
                                                     ?>
