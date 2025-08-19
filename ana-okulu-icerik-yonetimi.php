@@ -111,7 +111,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 
                                             <!--begin::Table-->
-                                            <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_customers_table">
+                                            <table class="table align-middle table-row-dashed fs-6 gy-5" id="anaOkuluIcerikleri">
                                                 <thead>
                                                     <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                                                         <th class="min-w-125px">Ay</th>
@@ -132,7 +132,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                 </a>
                                                             </td>
                                                             <td>
-                                                                <a href="ana-okulu-icerikler-detay.php?id=<?=$value['id']?>" class="text-gray-800 text-hover-primary mb-1">
+                                                                <a href="ana-okulu-icerikler-detay.php?id=<?= $value['id'] ?>" class="text-gray-800 text-hover-primary mb-1">
                                                                     <?= htmlspecialchars($value['subject']) ?>
                                                                 </a>
                                                             </td>
@@ -149,21 +149,16 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                     İşlemler
                                                                     <i class="ki-duotone ki-down fs-5 ms-1"></i>
                                                                 </a>
-
-                                                                <!--begin::Menu-->
                                                                 <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
                                                                     data-kt-menu="true">
-
                                                                     <div class="menu-item px-3">
                                                                         <a href="./ana-okul-detay/<?= htmlspecialchars($value['id']) ?>" class="menu-link px-3">Görüntüle</a>
                                                                     </div>
-
                                                                     <div class="menu-item px-3">
                                                                         <a class="menu-link px-3" href="ana-okulu-icerik-guncelle?id=<?= htmlspecialchars($value['id']) ?>">
                                                                             Güncelle
                                                                         </a>
                                                                     </div>
-
                                                                     <div class="menu-item px-3">
                                                                         <a href="javascript:void(0);"
                                                                             class="menu-link px-3"
@@ -173,7 +168,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                         </a>
                                                                     </div>
                                                                 </div>
-                                                                <!--end::Menu-->
                                                             </td>
                                                         </tr>
                                                     <?php endforeach; ?>
@@ -349,6 +343,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/js/custom/utilities/modals/create-app.js"></script>
         <script src="assets/js/custom/utilities/modals/users-search.js"></script>
         <script src="assets/js/fatih.js"></script>
+        <script>
+            $(document).ready(function() {
+                $('#anaOkuluIcerikleri').DataTable({
+                    // DataTables'ın varsayılan ayarlarını burada özelleştirebilirsiniz
+                   
+                });
+            });
+        </script>
 
         <!--end::Custom Javascript-->
         <!--end::Javascript-->
