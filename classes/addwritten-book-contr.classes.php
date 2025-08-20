@@ -13,8 +13,9 @@ class AddWrittenBookContr extends AddWrittenBook
 	private $unit;
 	private $topic;
 	private $subtopic;
+	private $description;
 
-	public function __construct($name, $iframe, $photoSize, $photoName, $fileTmpName, $classAdd, $lesson, $unit, $topic, $subtopic)
+	public function __construct($name, $iframe, $photoSize, $photoName, $fileTmpName, $classAdd, $lesson, $unit, $topic, $subtopic, $description)
 	{
 		$this->photoSize = $photoSize;
 		$this->photoName = $photoName;
@@ -26,6 +27,7 @@ class AddWrittenBookContr extends AddWrittenBook
 		$this->unit = $unit;
 		$this->topic = $topic;
 		$this->subtopic = $subtopic;
+		$this->description = $description;
 	}
 
 	public function addWrittenBookDb()
@@ -64,7 +66,7 @@ class AddWrittenBookContr extends AddWrittenBook
 			$imgName = 'sesli-kitap.jpg';
 		}
 
-		$this->setWrittenBook($imgName, $slug, $this->name, $this->iframe, $this->classAdd, $this->lesson, $this->unit, $this->topic, $this->subtopic);
+		$this->setWrittenBook($imgName, $slug, $this->name, $this->iframe, $this->classAdd, $this->lesson, $this->unit, $this->topic, $this->subtopic, $this->description);
 	}
 	public function updateWrittenBookDb($oldWrittenBook)
 	{
@@ -105,7 +107,7 @@ class AddWrittenBookContr extends AddWrittenBook
 			$imgName = $img['image'];
 		}
 
-		$this->updateWrittenBook($oldWrittenBook['id'], $imgName, $slug, $this->name, $this->iframe, $this->classAdd, $this->lesson, $this->unit, $this->topic, $this->subtopic);
+		$this->updateWrittenBook($oldWrittenBook['id'], $imgName, $slug, $this->name, $this->iframe, $this->classAdd, $this->lesson, $this->unit, $this->topic, $this->subtopic, $this->description);
 	}
 
 }

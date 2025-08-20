@@ -79,7 +79,7 @@ class ShowWrittenBook extends WrittenBook
                 <header class="container-fluid py-3 d-flex justify-content-between align-items-center"
                     style="
                         background-color: #e6e6fa !important;
-                        margin-bottom: 40px !important;
+                        margin-bottom: 15px !important;
                         margin-top: -45px !important;
                         border-top: 5px solid #d22b2b !important;
                         border-bottom: 5px solid #d22b2b !important;
@@ -115,7 +115,7 @@ class ShowWrittenBook extends WrittenBook
                 <header class="  d-flex justify-content-between align-items-center"
                     style="
                         background-color: #e6e6fa !important;
-                        margin-bottom: 40px !important;
+                        margin-bottom: 15px !important;
                         margin-top: -45px !important;
                         border-top: 5px solid #d22b2b !important;
                         border-bottom: 5px solid #d22b2b !important;
@@ -357,9 +357,9 @@ class ShowWrittenBook extends WrittenBook
         $bookUrl = $audioBookInfo['book_url'];
         $isIframe = (strpos($bookUrl, 'https://online.flippingbook.com') !== false);
 
-        if (!$isIframe) {
+       /*  if (!$isIframe) {
             $bookUrl = '<p>Geçersiz yerleştirme kodu. Bir iframe bekleniyordu.</p>';
-        }
+        } */
         $active_status = '<span class="badge badge-light-success">Aktif</span>';
         if (!$audioBookInfo['is_active']) {
             $active_status = '<span class="badge badge-light-danger">Pasif</span>';
@@ -467,9 +467,9 @@ class ShowWrittenBook extends WrittenBook
         $bookUrl = $audioBookInfo['book_url'];
         $isIframe = (strpos($bookUrl, 'https://online.flippingbook.com') !== false);
 
-        if (!$isIframe) {
+        /* if (!$isIframe) {
             $bookUrl = '<p>Geçersiz yerleştirme kodu. Bir iframe bekleniyordu.</p>';
-        }
+        } */
 
         /* foreach ($audioBookInfo as $key => $value) { */
 
@@ -477,6 +477,7 @@ class ShowWrittenBook extends WrittenBook
 
 
         $audioBookList = '
+                        <div class="fw-bold fs-6 mb-5">' . $audioBookInfo['description'] . '</div>
             <div class="card " style="margin-left:-13px;">
             '
             . $bookUrl .

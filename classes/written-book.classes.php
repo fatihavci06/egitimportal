@@ -113,6 +113,7 @@ class WrittenBook extends Dbh
 			g.name AS book_name,
 			g.cover_img,
 			g.book_url,
+			g.description,
 			g.class_id,
 			g.lesson_id,
 			g.unit_id,

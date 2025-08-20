@@ -31,11 +31,6 @@ var KTModalCustomersAdd = function () {
 						}
 					},
 					'description': {
-						validators: {
-							notEmpty: {
-								message: 'Açıklama zorunlu'
-							}
-						}
 					},
 					'classes': {
 						validators: {

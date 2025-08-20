@@ -388,10 +388,12 @@ class ShowTopic extends Topics
                     $link = "konu/{$value['topicSlug']}";
                     $class = "";
                     $notification = '';
+                    $buttonDisabled = false;
                 } else {
                     $link = "#";
                     $class = "pe-none";
-                    $notification = '<div class="fw-semibold fs-5 text-danger mt-3 mb-5">Bu konunun tarihi gelmemiş veya bir önceki konunun sınavı başarı ile tamamlanmamıştır.</div>';
+                    $notification = '<span class="fw-semibold fs-5 text-danger mt-3 mb-5" style="font-size:12px!important"> (Bu konunun tarihi gelmemiş veya bir önceki konunun sınavı başarı ile tamamlanmamıştır.)</span>';
+                    $buttonDisabled = true;
                 }
 
                 $testText = "";
@@ -399,17 +401,22 @@ class ShowTopic extends Topics
                 if ($value['is_test'] == 1) {
                     $testSolved = $this->isSolved($value['topicID']);
                     if (!empty($testSolved)) {
-                        $testText = '<span class="fw-semibold fs-5 text-success mb-5">Bu testi ' . $dateFormat->changeDate($testSolved['created_at']) . ' tarihinde çözdünüz!</span>';
+                        $testText = '<span class="fw-semibold fs-5 text-success mb-5" style="font-size:12px!important"> (Bu testi ' . $dateFormat->changeDate($testSolved['created_at']) . ' tarihinde çözdünüz!)</span>';
                         $unclickable = "pe-none";
                     }
                 }
                 if ($value['is_question'] == 1) {
                     $testSolved = $this->isSolvedQuestion($value['topicID']);
                     if (!empty($testSolved)) {
-                        $testText = '<span class="fw-semibold fs-5 text-success mb-5">Bu testi ' . $dateFormat->changeDate($testSolved['created_at']) . ' tarihinde çözdünüz!</span>';
+                        $testText = '<span class="fw-semibold fs-5 text-success mb-5" style="font-size:12px!important"> (Bu testi ' . $dateFormat->changeDate($testSolved['created_at']) . ' tarihinde çözdünüz!)</span>';
                         $unclickable = "pe-none";
                     }
                 }
+
+                    // Link tıklanabilirliği ve görünümü
+                    $anchorHref = $buttonDisabled ? '#' : $link;
+                    $ariaDisabled = $buttonDisabled ? 'aria-disabled="true"' : '';
+                    $opacityStyle = $buttonDisabled ? 'opacity:0.5; pointer-events:none;' : '';
 
                 $testList = '
     <div class="card mb-3 border border-2 rounded-3 shadow-sm" style="margin-bottom: -32px!important;">
@@ -423,10 +430,9 @@ class ShowTopic extends Topics
             <!-- Metin alanı -->
             <div class="flex-grow-1 ms-3 d-flex align-items-center">
                 <a href="' . $link . '" class="text-decoration-none text-dark fw-bold stretched-link ' . $class . '"
-                   style=" line-height: 1.2;font-size:12px!important">
-                    ' . $value['topicName'] . '
+                   style=" line-height: 1.2; font-size:12px !important; ' . $opacityStyle . ' " ' . $ariaDisabled . '>
+                    ' . $value['topicName'] . $notification . '
                 </a>
-                ' . $notification . '
             </div>
         </div>
     </div>';
@@ -1118,7 +1124,7 @@ class ShowSubTopic extends SubTopics
                     } else {
                         $link = "#";
                         $class = "pe-none";
-                        $notification = '<div class="fw-semibold fs-5 text-danger mt-2 mb-1" style="font-size:11px;">Bu alt konunun tarihi gelmemiş veya bir önceki alt konunun sınavı başarı ile tamamlanmamıştır.</div>';
+                        $notification = '<span class="fw-semibold fs-5 text-danger mt-2 mb-1" style="font-size:12px !important;"> (Bu alt konunun tarihi gelmemiş veya bir önceki alt konunun sınavı başarı ile tamamlanmamıştır.)</span>';
                         $buttonDisabled = true;
                     }
 
@@ -1154,10 +1160,9 @@ class ShowSubTopic extends SubTopics
                         </span>
                         <div class="flex-grow-1 ms-3 d-flex flex-column">
                             <div class="d-flex align-items-start">
-                                <a href="' . $anchorHref . '" class="text-decoration-none text-dark fw-bold stretched-link ' . $class . '" style="line-height:1.2; font-size:12px; ' . $opacityStyle . '" ' . $ariaDisabled . '>' . ($getOrderNo) . '. ' . $displayTitle . '</a>
+                                <a href="' . $anchorHref . '" class="text-decoration-none text-dark fw-bold stretched-link ' . $class . '" style="line-height:1.2; font-size:12px; ' . $opacityStyle . '" ' . $ariaDisabled . '>' . ($getOrderNo) . '. ' . $displayTitle . $notification .'</a>
                             </div>
                             ' . $testText . '
-                            ' . $notification . '
                         </div>
                        
                     </div>

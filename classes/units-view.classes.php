@@ -238,23 +238,30 @@ class ShowUnit extends Units
                     $link = "unite/{$value['slug']}";
                     $class = "";
                     $notification = '';
+                    $buttonDisabled = false;
                 } else {
                     $link = "#";
                     $class = "pe-none";
-                    $notification = '<div class="fw-semibold fs-5 text-danger mt-3 mb-5">Bu ünitenin tarihi gelmemiş veya bir önceki ünitenin sınavı başarı ile tamamlanmamıştır.</div>';
+                    $notification = '<span class="fw-semibold fs-5 text-danger mt-3 mb-5" style="font-size:12px!important"> (Bu ünitenin tarihi gelmemiş veya bir önceki ünitenin sınavı başarı ile tamamlanmamıştır.)</span>';
+                    $buttonDisabled = true;
                 }
+
+                    // Link tıklanabilirliği ve görünümü
+                    $anchorHref = $buttonDisabled ? '#' : $link;
+                    $ariaDisabled = $buttonDisabled ? 'aria-disabled="true"' : '';
+                    $opacityStyle = $buttonDisabled ? 'opacity:0.5; pointer-events:none;' : '';
+                    //$displayTitle = htmlspecialchars($value['topicName'], ENT_QUOTES, 'UTF-8');
 
                 $lessonList = '
                     <!--begin::Col-->
                     <div class="col-12" style="margin-bottom: -20px;font-size:12px!important">
-                        <a href="' . $link . '" class="text-decoration-none">
+                        <a href="' . $link . '" class="text-decoration-none" ' . $ariaDisabled . ' style="' . $opacityStyle . '">
                            <div class="border rounded d-flex align-items-center p-2 ' . $class . '" style="border: 2px solid #333; box-shadow: 0 2px 6px rgba(0,0,0,0.15); justify-content: flex-start;">
                                 <button type="button" class="btn btn-light btn-sm me-3">
                                     <i style="font-size:20px!important" class="bi bi-play-fill"></i>
                                 </button>
                                 <div>
-                                    <div class="fw-semibold fs-5" style=" font-size:12px!important;   color: #000;">' . htmlspecialchars($value['name']) . '</div>
-                                    ' . $notification . '
+                                    <div class="fw-semibold fs-5" style=" font-size:12px!important; color: #000; ' . $opacityStyle . ' " ' . $ariaDisabled . '>' . htmlspecialchars($value['name']) . $notification . '</div>
                                 </div>
                             </div>
                         </a>

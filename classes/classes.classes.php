@@ -807,6 +807,36 @@ class Classes extends Dbh
 
 		return $classData;
 	}
+
+	public function getTestResult($testId, $userId){
+		$stmt = $this->connect()->prepare('
+			SELECT 
+				t.id AS test_id,
+				t.test_title,
+				t.start_date,
+				t.end_date,
+				ug.user_id,
+				ug.score,
+				ug.fail_count,
+				CASE 
+					WHEN ug.score >= 80 THEN 1 
+					ELSE 0 
+				END AS user_test_status 
+			FROM tests_lnp t 
+			LEFT JOIN user_grades_lnp ug ON ug.test_id = t.id AND ug.user_id = :user_id
+			WHERE t.id = :test_id
+		');
+
+		if (!$stmt->execute(['test_id' => $testId, 'user_id' => $userId])) {
+			$stmt = null;
+			exit();
+		}
+
+		$testData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return $testData;
+	}
+
 	public function getClassesList()
 	{
 

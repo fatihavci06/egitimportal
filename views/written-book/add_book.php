@@ -132,6 +132,16 @@ $chooseLesson = new ShowLesson();
                             <!--end::Input-->
                         </div>
                         <!--end::Input group-->
+                        <div class="fv-row mb-7">
+                            <!--begin::Label-->
+                            <label class="required fs-6 fw-semibold mb-2">Açıklama</label>
+                            <!--end::Label-->
+                            <!--begin::Input-->
+                            <input type="text" id="description" class="form-control form-control-solid"
+                                placeholder="Açıklama Yazın" name="description" />
+                            <!--end::Input-->
+                        </div>
+                        <!--end::Input group-->
                         <!--begin::Input group-->
                         <div class="fv-row mb-7">
                             <!--begin::Label-->

@@ -6,6 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 	// Grabbing the data
 	$name = $_POST["name"];
 	$iframe = $_POST["iframe"];
+	$description = $_POST["description"];
 	$photoSize = $_FILES['photo']['size'];
 	$photoName = $_FILES['photo']['name'];
 	$fileTmpName = $_FILES['photo']['tmp_name'];
@@ -25,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 	
 
 
-	$addBook = new AddWrittenBookContr($name, $iframe, $photoSize, $photoName, $fileTmpName, $classes, $lessons, $units, $topics, $subtopics);
+	$addBook = new AddWrittenBookContr($name, $iframe, $photoSize, $photoName, $fileTmpName, $classes, $lessons, $units, $topics, $subtopics, $description);
 
 	// $addBook = new AddAudioBookContr($name, $iframe, $photoSize, $photoName, $fileTmpName, 3, 1, 1, 1, 3);
 

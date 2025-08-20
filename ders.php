@@ -114,7 +114,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 										<!--begin::Body-->
 										<div class="card-body p-lg-7">
 											<!--begin::Section-->
-											<div class="mb-19" >
+											<div class="mb-19">
 												<div class="row align-items-center mb-12">
 													<header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
                            border-top border-bottom border-custom-red" style="border-width: 5px !important; height: 85px; ">
@@ -152,7 +152,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 																	<div class="col-12 mb-4 text-center">
 																		<a href="ders/<?= urlencode($l['slug']) ?>">
 																			<img src="assets/media/icons/dersler/<?= htmlspecialchars($l['icons']) ?>" alt="Icon" class="img-fluid" style="width: 65px; height: 65px; object-fit: contain;" />
-																			<div class="mt-2 fw-semibold" ><?= htmlspecialchars($l['name']) ?></div>
+																			<div class="mt-2 fw-semibold"><?= htmlspecialchars($l['name']) ?></div>
 																		</a>
 																	</div>
 																<?php endif; ?>
@@ -168,12 +168,30 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 
 															if (!empty($testData)) {
 																foreach ($testData as $test) {
+																	$testResult = $lesson->getTestResult($test['id'], $_SESSION['id']);
+
+																	if ($testResult['fail_count'] >= 3 AND $testResult['user_test_status'] == 0) {
+																		$buttonDisabled = true;
+																		$testText = " (3 kez başarısız oldunuz)";
+																	}elseif($testResult['user_test_status'] == 1){
+																		$buttonDisabled = true;
+																		$testText = " (Testi başarıyla tamamladınız. Puanınız " . $testResult['score'] . ")";
+																	}else {
+																		$buttonDisabled = false;
+																		$testText = "";
+																	}
+
 																	// Örnek: test detayına yönlendirme için slug veya id kullanılabilir
 																	$testLink = 'ogrenci-test-coz.php?id=' . urlencode($test['id']);
+
+																	// Link tıklanabilirliği ve görünümü
+																	$anchorHref = $buttonDisabled ? '#' : $testLink;
+																	$ariaDisabled = $buttonDisabled ? 'aria-disabled="true"' : '';
+																	$opacityStyle = $buttonDisabled ? 'opacity:0.5; pointer-events:none;' : '';
 															?>
 
 																	<div class="col-12 mb-4">
-																		<a href="<?= $testLink ?>" class="text-decoration-none">
+																		<a href="<?= $anchorHref ?>" class="text-decoration-none" <?= $ariaDisabled ?> style="<?= $opacityStyle ?>">
 																			<div class="card border-2 shadow-sm p-3 d-flex flex-row align-items-center">
 
 																				<!-- Görsel -->
@@ -182,7 +200,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 																				<!-- İçerik -->
 																				<div class="flex-grow-1">
 																					<div class="fw-bold fs-5 text-dark mb-1" style=" margin-left:21px;font-size:12px!important	">
-																						<?= htmlspecialchars($test['test_title']) ?>
+																						<?= htmlspecialchars($test['test_title']) . ' ' . $testText ?>
 																					</div>
 																				</div>
 

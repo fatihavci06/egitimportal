@@ -70,13 +70,13 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 							<?php include_once "views/toolbar.php"; ?>
 							<!--end::Toolbar-->
 							<!--begin::Content-->
-							<div id="kt_app_content" class="app-content flex-column-fluid" >
+							<div id="kt_app_content" class="app-content flex-column-fluid">
 								<!--begin::Content container-->
 								<div id="kt_app_content_container" class="app-container container-fluid">
 									<!--begin::Careers - List-->
 									<div class="card" style="margin-left: -15px;">
 										<!--begin::Body-->
-										<div class="card-body p-lg-7" >
+										<div class="card-body p-lg-7">
 											<!--begin::Hero-->
 											<?php $units->getHeaderImageStu(); ?>
 											<!--end::-->
@@ -118,8 +118,25 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 
 														if (!empty($testData)) {
 															foreach ($testData as $test) {
+																$testResult = $lesson->getTestResult($test['id'], $_SESSION['id']);
+
+																if ($testResult['fail_count'] >= 3 and $testResult['user_test_status'] == 0) {
+																	$buttonDisabled = true;
+																	$testText = " (3 kez başarısız oldunuz)";
+																} elseif ($testResult['user_test_status'] == 1) {
+																	$buttonDisabled = true;
+																	$testText = " (Testi başarıyla tamamladınız. Puanınız " . $testResult['score'] . ")";
+																} else {
+																	$buttonDisabled = false;
+																	$testText = "";
+																}
 																// Örnek: test detayına yönlendirme için slug veya id kullanılabilir
 																$testLink = 'ogrenci-test-coz.php?id=' . urlencode($test['id']);
+
+																// Link tıklanabilirliği ve görünümü
+																$anchorHref = $buttonDisabled ? '#' : $testLink;
+																$ariaDisabled = $buttonDisabled ? 'aria-disabled="true"' : '';
+																$opacityStyle = $buttonDisabled ? 'opacity:0.5; pointer-events:none;' : '';
 														?>
 
 																<div class="card mb-3 border border-2 rounded-3 shadow-sm">
@@ -130,9 +147,9 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 
 																		<!-- Metin alanı -->
 																		<div class="flex-grow-1 ms-3 d-flex align-items-center">
-																			<a href="<?= $testLink ?>" class="text-decoration-none text-dark fw-bold stretched-link"
-																				style="line-height: 1.2;font-size:12px!important">
-																				<?= htmlspecialchars($test['test_title']) ?>
+																			<a href="<?= $anchorHref ?>" class="text-decoration-none text-dark fw-bold stretched-link"
+																				style="line-height: 1.2;font-size:12px!important; <?= $opacityStyle ?>" <?= $ariaDisabled ?>>
+																				<?= htmlspecialchars($test['test_title']) . ' ' . $testText ?>
 																			</a>
 																		</div>
 

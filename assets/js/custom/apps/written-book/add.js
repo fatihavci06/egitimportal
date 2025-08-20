@@ -30,6 +30,13 @@ var KTModalCustomersAdd = function () {
 							}
 						}
 					},
+					'description': {
+						validators: {
+							notEmpty: {
+								message: 'Açıklama zorunlu'
+							}
+						}
+					},
 					'classes': {
 						validators: {
 						}
@@ -105,7 +112,7 @@ var KTModalCustomersAdd = function () {
 									if (response.status === "success") {
 
 										Swal.fire({
-											text: response.message + " adlı  kitap eklenmiştir!",
+											text: response.message + " adlı kitap eklenmiştir!",
 											icon: "success",
 											buttonsStyling: false,
 											confirmButtonText: "Tamam, anladım!",

@@ -19,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     // Grabbing the data
     $name = $_POST["name"] ?? $oldwrittenBook['book_name'];
     $iframe = $_POST["iframe"] ?? $oldwrittenBook['book_url'];
+    $description = $_POST["description"] ?? $oldwrittenBook['description'];
     $photoSize = $_FILES['photo']['size'];
     $photoName = $_FILES['photo']['name'];
     $fileTmpName = $_FILES['photo']['tmp_name'];
@@ -30,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
 
 
-    $addwrittenBook = new AddwrittenBookContr($name, $iframe, $photoSize, $photoName, $fileTmpName, $classes, $lessons, $units, $topics, $subtopics);
+    $addwrittenBook = new AddwrittenBookContr($name, $iframe, $photoSize, $photoName, $fileTmpName, $classes, $lessons, $units, $topics, $subtopics, $description);
 
 
     // echo json_encode([$name, $iframe, $classes, $lessons, $units, $topics, $subtopics]);

@@ -1,15 +1,15 @@
 <?php
 
-if (!isset($_SESSION)) {
-    header("location: ../index");
-}
-
 /* ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL); */
 
 session_start();
 define('GUARD', true);
+
+if (!isset($_SESSION['firstName'])) {
+    header("location: ../index");
+}
 
 /* if (!isset($_SESSION['parentFirstName'])) {
     header("location: index");

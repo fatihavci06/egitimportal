@@ -112,7 +112,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 <div class="modal-dialog modal-dialog-centered mw-650px">
                                     <div class="modal-content">
                                         <form class="form" action="#" id="kt_modal_update_customer_form"
-                                            data-kt-redirect="sesli-kitaplar">
+                                            data-kt-redirect="yazili-kitaplar">
 
                                             <input type="hidden" name="old_slug" value="<?php echo $writtenBook_slug; ?>">
 
@@ -209,6 +209,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <input type="text" id="name" class="form-control form-control-solid"
                                                             value="<?php echo $currentBook['book_name']; ?>"
                                                             placeholder="Sesli Kitap Adı" name="name" />
+                                                    </div>
+
+                                                    <div class="fv-row mb-7">
+                                                        <label class="required fs-6 fw-semibold mb-2">Açıklama</label>
+
+                                                        <input type="text" id="description" class="form-control form-control-solid"
+                                                            value="<?php echo $currentBook['description']; ?>"
+                                                            placeholder="Açıklama Yazın" name="description" />
                                                     </div>
 
                                                     <div class="fv-row mb-7">

@@ -31,6 +31,13 @@ var KTModalUpdateCustomer = function () {
                             }
                         }
                     },
+                    'description': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Açıklama zorunlu'
+                            }
+                        }
+                    },
                     'classes': {
                         validators: {
                         }
@@ -97,7 +104,7 @@ var KTModalUpdateCustomer = function () {
                                     if (response.status == "success") {
 
                                         Swal.fire({
-                                            text: response.message + " adlı duyuru eklenmiştir!",
+                                            text: response.message + " adlı kitap güncellenmiştir!",
                                             icon: "success",
                                             buttonsStyling: false,
                                             confirmButtonText: "Tamam, anladım!",
