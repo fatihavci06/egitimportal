@@ -325,7 +325,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
                     <div class="card-header pt-5" style="padding: 10px;">
                         <!--begin::Title-->
                         <h3 class="card-title d-flex align-items-center">
-                            <i class="fa-regular fa-comment me-2 fs-1" style="transform: scaleX(-1)"></i> <span class="card-label fw-bold text-gray-900">Günün Kelimesi
+                            <i class="fa-regular fa-comment me-2 fs-1" style="transform: scaleX(-1)"></i> <span class="card-label fw-bold text-gray-900">Haftanın Kelimesi
                                 "<?php echo $todaysWord['word'] ?>"</span>
                         </h3>
                     </div>

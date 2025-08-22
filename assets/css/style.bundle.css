@@ -40946,7 +40946,8 @@ h6,
 }
 
 .card .card-body {
-  padding: 2rem 2.25rem;
+  /* padding: 2rem 2.25rem; */
+  padding: 5rem 2.25rem;
   color: var(--bs-card-color);
 }
 

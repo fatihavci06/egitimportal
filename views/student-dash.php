@@ -498,7 +498,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                         <!--begin::Title-->
                         <h3 class="card-title d-flex align-items-center">
                             <i class="fa-regular fa-comment me-2 fs-1" style="transform: scaleX(-1)"></i> <span
-                                class="card-label fw-bold text-gray-900">Günün Kelimesi
+                                class="card-label fw-bold text-gray-900">Haftanın Kelimesi
                                 "<?php echo $todaysWord['word'] ?>"</span>
                         </h3>
                     </div>
@@ -528,42 +528,6 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                 <!--end::Chart widget 8-->
             </div>
             <!--end::Col-->
-
-            <?php
-            $percentage = $resultProfileW;
-
-            if ($percentage <= 20) {
-                $image = "image-1.jpg";
-            } elseif ($percentage <= 40) {
-                $image = "image-2.jpg";
-            } elseif ($percentage <= 60) {
-                $image = "image-3.jpg";
-            } elseif ($percentage <= 80) {
-                $image = "image-4.jpg";
-            } else {
-                $image = "image-5.jpg";
-            }
-            ?>
-            <div class="col-xxl-12 mb-1">
-
-
-                <div class="text-center">
-                    <img src="assets/media/dash/<?php echo $image; ?>" alt="Progress Image" class="img-fluid" />
-
-                    <div class="d-flex align-items-center w-200px w-sm-300px flex-column mt-3">
-                        <div class="d-flex justify-content-between w-100 mt-auto mb-2">
-                            <span class="fw-semibold fs-6 text-gray-500">Tamamlama Oranı</span>
-                            <span class="fw-bold fs-6"><?= $resultProfileT ?>%</span>
-                        </div>
-                        <div class="h-5px mx-3 w-100 bg-light mb-3">
-                            <div class="bg-success rounded h-5px" role="progressbar"
-                                style="width: <?= $resultProfileW ?>%;" aria-valuenow="50" aria-valuemin="0"
-                                aria-valuemax="100"></div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
 
             <!--begin::Col-->
             <div class="col-xxl-12 mb-5 mb-xl-10">
@@ -604,6 +568,43 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                 <!--end::Chart widget 8-->
             </div>
             <!--end::Col-->
+            
+
+            <?php
+            $percentage = $resultProfileW;
+
+            if ($percentage <= 20) {
+                $image = "image-1.jpg";
+            } elseif ($percentage <= 40) {
+                $image = "image-2.jpg";
+            } elseif ($percentage <= 60) {
+                $image = "image-3.jpg";
+            } elseif ($percentage <= 80) {
+                $image = "image-4.jpg";
+            } else {
+                $image = "image-5.jpg";
+            }
+            ?>
+            <div class="col-xxl-12 mb-1">
+
+
+                <div class="text-center">
+                    <img src="assets/media/dash/<?php echo $image; ?>" alt="Progress Image" class="img-fluid" />
+
+                    <div class="d-flex align-items-center w-200px w-sm-300px flex-column mt-3">
+                        <div class="d-flex justify-content-between w-100 mt-auto mb-2">
+                            <span class="fw-semibold fs-6 text-gray-500">Tamamlama Oranı</span>
+                            <span class="fw-bold fs-6"><?= $resultProfileT ?>%</span>
+                        </div>
+                        <div class="h-5px mx-3 w-100 bg-light mb-3">
+                            <div class="bg-success rounded h-5px" role="progressbar"
+                                style="width: <?= $resultProfileW ?>%;" aria-valuenow="50" aria-valuemin="0"
+                                aria-valuemax="100"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
         </div>
     </div>
     <!--end::Row-->
