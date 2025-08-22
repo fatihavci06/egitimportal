@@ -1,6 +1,7 @@
 <?php
 
-class ImageUpload {
+class ImageUpload
+{
 
     public function profileImage($name, $fileSize, $fileTmpName, $slug)
     {
@@ -15,7 +16,7 @@ class ImageUpload {
         $fileTypes = array("jpg", "jpeg", "png", "JPG", "JPEG", "PNG");
         $uploadFolder = "../assets/media/profile/";
 
-        if($fileSize > $maxFileSize) {
+        if ($fileSize > $maxFileSize) {
             $message = "Dosya boyutu 2mb'dan fazla.<br>";
             $uploadOk = 0;
         }
@@ -24,21 +25,21 @@ class ImageUpload {
         $fileNameOnly = $fileName_Arr[0];
         $fileType = $fileName_Arr[1];
 
-        if(!in_array($fileType, $fileTypes)) {
-            $message .= "Kabul edilen dosya uzantıları : ".implode(", ", $fileTypes)."<br>";
+        if (!in_array($fileType, $fileTypes)) {
+            $message .= "Kabul edilen dosya uzantıları : " . implode(", ", $fileTypes) . "<br>";
             $uploadOk = 0;
         }
 
         $newFileName = $slug . "-" . $randNum . "." . $fileType;
-        $photoPath = $uploadFolder.$newFileName;
+        $photoPath = $uploadFolder . $newFileName;
 
-        if($uploadOk == 0) {
+        if ($uploadOk == 0) {
             $message .= "Dosya yüklenemedi.<br>";
             echo json_encode(["status" => "error", "message" => $name]);
             exit();
         } else {
-            if(move_uploaded_file($fileTempPath, $photoPath)) {
-                $message .="dosya yüklendi.<br>";
+            if (move_uploaded_file($fileTempPath, $photoPath)) {
+                $message .= "dosya yüklendi.<br>";
             }
         }
 
@@ -63,7 +64,7 @@ class ImageUpload {
         $fileTypes = array("jpg", "jpeg", "png", "JPG", "JPEG", "PNG");
         $uploadFolder = "../assets/media/units/";
 
-        if($fileSize > $maxFileSize) {
+        if ($fileSize > $maxFileSize) {
             $message = "Dosya boyutu 2mb'dan fazla.<br>";
             $uploadOk = 0;
         }
@@ -72,21 +73,21 @@ class ImageUpload {
         $fileNameOnly = $fileName_Arr[0];
         $fileType = $fileName_Arr[1];
 
-        if(!in_array($fileType, $fileTypes)) {
-            $message .= "Kabul edilen dosya uzantıları : ".implode(", ", $fileTypes)."<br>";
+        if (!in_array($fileType, $fileTypes)) {
+            $message .= "Kabul edilen dosya uzantıları : " . implode(", ", $fileTypes) . "<br>";
             $uploadOk = 0;
         }
 
         $newFileName = $slug . "-" . $randNum . "." . $fileType;
-        $photoPath = $uploadFolder.$newFileName;
+        $photoPath = $uploadFolder . $newFileName;
 
-        if($uploadOk == 0) {
+        if ($uploadOk == 0) {
             $message .= "Dosya yüklenemedi.<br>";
             echo json_encode(["status" => "error", "message" => $name]);
             exit();
         } else {
-            if(move_uploaded_file($fileTempPath, $photoPath)) {
-                $message .="dosya yüklendi.<br>";
+            if (move_uploaded_file($fileTempPath, $photoPath)) {
+                $message .= "dosya yüklendi.<br>";
             }
         }
 
@@ -111,7 +112,7 @@ class ImageUpload {
         $fileTypes = array("jpg", "jpeg", "png", "JPG", "JPEG", "PNG");
         $uploadFolder = "../assets/media/topics/";
 
-        if($fileSize > $maxFileSize) {
+        if ($fileSize > $maxFileSize) {
             $message = "Dosya boyutu 2mb'dan fazla.<br>";
             $uploadOk = 0;
         }
@@ -120,21 +121,21 @@ class ImageUpload {
         $fileNameOnly = $fileName_Arr[0];
         $fileType = $fileName_Arr[1];
 
-        if(!in_array($fileType, $fileTypes)) {
-            $message .= "Kabul edilen dosya uzantıları : ".implode(", ", $fileTypes)."<br>";
+        if (!in_array($fileType, $fileTypes)) {
+            $message .= "Kabul edilen dosya uzantıları : " . implode(", ", $fileTypes) . "<br>";
             $uploadOk = 0;
         }
 
         $newFileName = $slug . "-" . $randNum . "." . $fileType;
-        $photoPath = $uploadFolder.$newFileName;
+        $photoPath = $uploadFolder . $newFileName;
 
-        if($uploadOk == 0) {
+        if ($uploadOk == 0) {
             $message .= "Dosya yüklenemedi.<br>";
             echo json_encode(["status" => "error", "message" => $name]);
             exit();
         } else {
-            if(move_uploaded_file($fileTempPath, $photoPath)) {
-                $message .="dosya yüklendi.<br>";
+            if (move_uploaded_file($fileTempPath, $photoPath)) {
+                $message .= "dosya yüklendi.<br>";
             }
         }
 
@@ -159,7 +160,7 @@ class ImageUpload {
         $fileTypes = array("jpg", "jpeg", "png", "JPG", "JPEG", "PNG");
         $uploadFolder = "../assets/media/games/";
 
-        if($fileSize > $maxFileSize) {
+        if ($fileSize > $maxFileSize) {
             $message = "Dosya boyutu 2mb'dan fazla.<br>";
             $uploadOk = 0;
         }
@@ -168,21 +169,21 @@ class ImageUpload {
         $fileNameOnly = $fileName_Arr[0];
         $fileType = $fileName_Arr[1];
 
-        if(!in_array($fileType, $fileTypes)) {
-            $message .= "Kabul edilen dosya uzantıları : ".implode(", ", $fileTypes)."<br>";
+        if (!in_array($fileType, $fileTypes)) {
+            $message .= "Kabul edilen dosya uzantıları : " . implode(", ", $fileTypes) . "<br>";
             $uploadOk = 0;
         }
 
         $newFileName = $slug . "-" . $randNum . "." . $fileType;
-        $photoPath = $uploadFolder.$newFileName;
+        $photoPath = $uploadFolder . $newFileName;
 
-        if($uploadOk == 0) {
+        if ($uploadOk == 0) {
             $message .= "Dosya yüklenemedi.<br>";
             echo json_encode(["status" => "error", "message" => $name]);
             exit();
         } else {
-            if(move_uploaded_file($fileTempPath, $photoPath)) {
-                $message .="dosya yüklendi.<br>";
+            if (move_uploaded_file($fileTempPath, $photoPath)) {
+                $message .= "dosya yüklendi.<br>";
             }
         }
 
@@ -207,7 +208,7 @@ class ImageUpload {
         $fileTypes = array("jpg", "jpeg", "png", "JPG", "JPEG", "PNG");
         $uploadFolder = "../assets/media/sesli-kitap/";
 
-        if($fileSize > $maxFileSize) {
+        if ($fileSize > $maxFileSize) {
             $message = "Dosya boyutu 2mb'dan fazla.<br>";
             $uploadOk = 0;
         }
@@ -216,21 +217,21 @@ class ImageUpload {
         $fileNameOnly = $fileName_Arr[0];
         $fileType = $fileName_Arr[1];
 
-        if(!in_array($fileType, $fileTypes)) {
-            $message .= "Kabul edilen dosya uzantıları : ".implode(", ", $fileTypes)."<br>";
+        if (!in_array($fileType, $fileTypes)) {
+            $message .= "Kabul edilen dosya uzantıları : " . implode(", ", $fileTypes) . "<br>";
             $uploadOk = 0;
         }
 
         $newFileName = $slug . "-" . $randNum . "." . $fileType;
-        $photoPath = $uploadFolder.$newFileName;
+        $photoPath = $uploadFolder . $newFileName;
 
-        if($uploadOk == 0) {
+        if ($uploadOk == 0) {
             $message .= "Dosya yüklenemedi.<br>";
             echo json_encode(["status" => "error", "message" => $name]);
             exit();
         } else {
-            if(move_uploaded_file($fileTempPath, $photoPath)) {
-                $message .="dosya yüklendi.<br>";
+            if (move_uploaded_file($fileTempPath, $photoPath)) {
+                $message .= "dosya yüklendi.<br>";
             }
         }
 
@@ -241,7 +242,100 @@ class ImageUpload {
         );
 
     }
-    
+    public function doYouKnowImage($name, $fileSize, $fileTmpName, $time)
+    {
+        $message = "";
+        $uploadOk = 1;
+
+        $fileSize = $fileSize;
+        $randNum = rand(0, 99999);
+        $fileTempPath = $fileTmpName;
+        $fileName = $name;
+        $maxFileSize = 1024 * 1024 * 2;
+        $fileTypes = array("jpg", "jpeg", "png", "JPG", "JPEG", "PNG");
+        $uploadFolder = "../assets/media/do-you-know/";
+
+        if ($fileSize > $maxFileSize) {
+            $message = "Dosya boyutu 2mb'dan fazla.<br>";
+            $uploadOk = 0;
+        }
+
+        $fileName_Arr = explode(".", $fileName);
+        $fileNameOnly = $fileName_Arr[0];
+        $fileType = $fileName_Arr[1];
+
+        if (!in_array($fileType, $fileTypes)) {
+            $message .= "Kabul edilen dosya uzantıları : " . implode(", ", $fileTypes) . "<br>";
+            $uploadOk = 0;
+        }
+
+        $newFileName = $time . "-" . $randNum . "." . $fileType;
+        $photoPath = $uploadFolder . $newFileName;
+
+        if ($uploadOk == 0) {
+            $message .= "Dosya yüklenemedi.<br>";
+            echo json_encode(["status" => "error", "message" => $name]);
+            exit();
+        } else {
+            if (move_uploaded_file($fileTempPath, $photoPath)) {
+                $message .= "dosya yüklendi.<br>";
+            }
+        }
+
+        return array(
+            "isSuccess" => $uploadOk,
+            "message" => $message,
+            "image" => $newFileName
+        );
+
+    }
+    public function todayWordImage($name, $fileSize, $fileTmpName, $time)
+    {
+        $message = "";
+        $uploadOk = 1;
+
+        $fileSize = $fileSize;
+        $randNum = rand(0, 99999);
+        $fileTempPath = $fileTmpName;
+        $fileName = $name;
+        $maxFileSize = 1024 * 1024 * 2;
+        $fileTypes = array("jpg", "jpeg", "png", "JPG", "JPEG", "PNG");
+        $uploadFolder = "../assets/media/today-word/";
+
+        if ($fileSize > $maxFileSize) {
+            $message = "Dosya boyutu 2mb'dan fazla.<br>";
+            $uploadOk = 0;
+        }
+
+        $fileName_Arr = explode(".", $fileName);
+        $fileNameOnly = $fileName_Arr[0];
+        $fileType = $fileName_Arr[1];
+
+        if (!in_array($fileType, $fileTypes)) {
+            $message .= "Kabul edilen dosya uzantıları : " . implode(", ", $fileTypes) . "<br>";
+            $uploadOk = 0;
+        }
+
+        $newFileName = $time . "-" . $randNum . "." . $fileType;
+        $photoPath = $uploadFolder . $newFileName;
+
+        if ($uploadOk == 0) {
+            $message .= "Dosya yüklenemedi.<br>";
+            echo json_encode(["status" => "error", "message" => $name]);
+            exit();
+        } else {
+            if (move_uploaded_file($fileTempPath, $photoPath)) {
+                $message .= "dosya yüklendi.<br>";
+            }
+        }
+
+        return array(
+            "isSuccess" => $uploadOk,
+            "message" => $message,
+            "image" => $newFileName
+        );
+
+    }
     public function weeklyImage($name, $fileSize, $fileTmpName, $slug)
     {
         $message = "";
@@ -255,7 +349,7 @@ class ImageUpload {
         $fileTypes = array("jpg", "jpeg", "png", "JPG", "JPEG", "PNG");
         $uploadFolder = "../assets/media/haftalik-gorev/";
 
-        if($fileSize > $maxFileSize) {
+        if ($fileSize > $maxFileSize) {
             $message = "Dosya boyutu 2mb'dan fazla.<br>";
             $uploadOk = 0;
         }
@@ -264,21 +358,21 @@ class ImageUpload {
         $fileNameOnly = $fileName_Arr[0];
         $fileType = $fileName_Arr[1];
 
-        if(!in_array($fileType, $fileTypes)) {
-            $message .= "Kabul edilen dosya uzantıları : ".implode(", ", $fileTypes)."<br>";
+        if (!in_array($fileType, $fileTypes)) {
+            $message .= "Kabul edilen dosya uzantıları : " . implode(", ", $fileTypes) . "<br>";
             $uploadOk = 0;
         }
 
         $newFileName = $slug . "-" . $randNum . "." . $fileType;
-        $photoPath = $uploadFolder.$newFileName;
+        $photoPath = $uploadFolder . $newFileName;
 
-        if($uploadOk == 0) {
+        if ($uploadOk == 0) {
             $message .= "Dosya yüklenemedi.<br>";
             echo json_encode(["status" => "error", "message" => $name]);
             exit();
         } else {
-            if(move_uploaded_file($fileTempPath, $photoPath)) {
-                $message .="dosya yüklendi.<br>";
+            if (move_uploaded_file($fileTempPath, $photoPath)) {
+                $message .= "dosya yüklendi.<br>";
             }
         }
 
@@ -302,7 +396,7 @@ class ImageUpload {
         $fileTypes = array("jpg", "jpeg", "png", "JPG", "JPEG", "PNG");
         $uploadFolder = "../assets/media/destek/";
 
-        if($fileSize > $maxFileSize) {
+        if ($fileSize > $maxFileSize) {
             $message = "Dosya boyutu 2mb'dan fazla.<br>";
             $uploadOk = 0;
         }
@@ -311,21 +405,21 @@ class ImageUpload {
         $fileNameOnly = $fileName_Arr[0];
         $fileType = $fileName_Arr[1];
 
-        if(!in_array($fileType, $fileTypes)) {
-            $message .= "Kabul edilen dosya uzantıları : ".implode(", ", $fileTypes)."<br>";
+        if (!in_array($fileType, $fileTypes)) {
+            $message .= "Kabul edilen dosya uzantıları : " . implode(", ", $fileTypes) . "<br>";
             $uploadOk = 0;
         }
 
         $newFileName = $slug . "-" . $randNum . "." . $fileType;
-        $photoPath = $uploadFolder.$newFileName;
+        $photoPath = $uploadFolder . $newFileName;
 
-        if($uploadOk == 0) {
+        if ($uploadOk == 0) {
             $message .= "Dosya yüklenemedi.<br>";
             echo json_encode(["status" => "error", "message" => $name]);
             exit();
         } else {
-            if(move_uploaded_file($fileTempPath, $photoPath)) {
-                $message .="dosya yüklendi.<br>";
+            if (move_uploaded_file($fileTempPath, $photoPath)) {
+                $message .= "dosya yüklendi.<br>";
             }
         }
 
@@ -350,7 +444,7 @@ class ImageUpload {
         $fileTypes = array("jpg", "jpeg", "png", "JPG", "JPEG", "PNG");
         $uploadFolder = "../uploads/contents/";
 
-        if($fileSize > $maxFileSize) {
+        if ($fileSize > $maxFileSize) {
             $message = "Dosya boyutu 2mb'dan fazla.<br>";
             $uploadOk = 0;
         }
@@ -359,21 +453,21 @@ class ImageUpload {
         $fileNameOnly = $fileName_Arr[0];
         $fileType = $fileName_Arr[1];
 
-        if(!in_array($fileType, $fileTypes)) {
-            $message .= "Kabul edilen dosya uzantıları : ".implode(", ", $fileTypes)."<br>";
+        if (!in_array($fileType, $fileTypes)) {
+            $message .= "Kabul edilen dosya uzantıları : " . implode(", ", $fileTypes) . "<br>";
             $uploadOk = 0;
         }
 
         $newFileName = $slug . "-" . $randNum . "." . $fileType;
-        $photoPath = $uploadFolder.$newFileName;
+        $photoPath = $uploadFolder . $newFileName;
 
-        if($uploadOk == 0) {
+        if ($uploadOk == 0) {
             $message .= "Dosya yüklenemedi.<br>";
             echo json_encode(["status" => "error", "message" => $name]);
             exit();
         } else {
-            if(move_uploaded_file($fileTempPath, $photoPath)) {
-                $message .="dosya yüklendi.<br>";
+            if (move_uploaded_file($fileTempPath, $photoPath)) {
+                $message .= "dosya yüklendi.<br>";
             }
         }
 
@@ -398,7 +492,7 @@ class ImageUpload {
         $fileTypes = array("jpg", "jpeg", "png", "JPG", "JPEG", "PNG");
         $uploadFolder = "../uploads/3dvideos/";
 
-        if($fileSize > $maxFileSize) {
+        if ($fileSize > $maxFileSize) {
             $message = "Dosya boyutu 2mb'dan fazla.<br>";
             $uploadOk = 0;
         }
@@ -407,21 +501,21 @@ class ImageUpload {
         $fileNameOnly = $fileName_Arr[0];
         $fileType = $fileName_Arr[1];
 
-        if(!in_array($fileType, $fileTypes)) {
-            $message .= "Kabul edilen dosya uzantıları : ".implode(", ", $fileTypes)."<br>";
+        if (!in_array($fileType, $fileTypes)) {
+            $message .= "Kabul edilen dosya uzantıları : " . implode(", ", $fileTypes) . "<br>";
             $uploadOk = 0;
         }
 
         $newFileName = $slug . "-" . $randNum . "." . $fileType;
-        $photoPath = $uploadFolder.$newFileName;
+        $photoPath = $uploadFolder . $newFileName;
 
-        if($uploadOk == 0) {
+        if ($uploadOk == 0) {
             $message .= "Dosya yüklenemedi.<br>";
             echo json_encode(["status" => "error", "message" => $name]);
             exit();
         } else {
-            if(move_uploaded_file($fileTempPath, $photoPath)) {
-                $message .="dosya yüklendi.<br>";
+            if (move_uploaded_file($fileTempPath, $photoPath)) {
+                $message .= "dosya yüklendi.<br>";
             }
         }
 
@@ -433,7 +527,7 @@ class ImageUpload {
 
     }
 
-     public function homeworkImage($name, $fileSize, $fileTmpName, $slug)
+    public function homeworkImage($name, $fileSize, $fileTmpName, $slug)
     {
         $message = "";
         $uploadOk = 1;
@@ -446,7 +540,7 @@ class ImageUpload {
         $fileTypes = array("jpg", "jpeg", "png", "JPG", "JPEG", "PNG");
         $uploadFolder = "../uploads/homeworks/";
 
-        if($fileSize > $maxFileSize) {
+        if ($fileSize > $maxFileSize) {
             $message = "Dosya boyutu 2mb'dan fazla.<br>";
             $uploadOk = 0;
         }
@@ -455,21 +549,21 @@ class ImageUpload {
         $fileNameOnly = $fileName_Arr[0];
         $fileType = $fileName_Arr[1];
 
-        if(!in_array($fileType, $fileTypes)) {
-            $message .= "Kabul edilen dosya uzantıları : ".implode(", ", $fileTypes)."<br>";
+        if (!in_array($fileType, $fileTypes)) {
+            $message .= "Kabul edilen dosya uzantıları : " . implode(", ", $fileTypes) . "<br>";
             $uploadOk = 0;
         }
 
         $newFileName = $slug . "-" . $randNum . "." . $fileType;
-        $photoPath = $uploadFolder.$newFileName;
+        $photoPath = $uploadFolder . $newFileName;
 
-        if($uploadOk == 0) {
+        if ($uploadOk == 0) {
             $message .= "Dosya yüklenemedi.<br>";
             echo json_encode(["status" => "error", "message" => $name]);
             exit();
         } else {
-            if(move_uploaded_file($fileTempPath, $photoPath)) {
-                $message .="dosya yüklendi.<br>";
+            if (move_uploaded_file($fileTempPath, $photoPath)) {
+                $message .= "dosya yüklendi.<br>";
             }
         }
 

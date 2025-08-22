@@ -29,6 +29,68 @@ $classShow = new ShowClass();
                         data-kt-scroll-dependencies="#kt_modal_add_customer_header"
                         data-kt-scroll-wrappers="#kt_modal_add_customer_scroll" data-kt-scroll-offset="300px">
 
+                        <div class="mb-7">
+                            <label class="fs-6 fw-semibold mb-3">
+                                <span>Görsel</span>
+                                <span class="ms-1" data-bs-toggle="tooltip"
+                                    title="İzin verilen dosya türleri: png, jpg, jpeg.">
+                                    <i class="ki-duotone ki-information fs-7">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i>
+                                </span>
+                            </label>
+                            <div class="mt-1">
+                                <style>
+                                    .image-input-placeholder {
+                                        background-image: url('assets/media/svg/files/blank-image.svg');
+                                    }
+
+                                    [data-bs-theme="dark"] .image-input-placeholder {
+                                        background-image: url('assets/media/svg/files/blank-image-dark.svg');
+                                    }
+                                </style>
+
+                                <div class="image-input image-input-outline image-input-placeholder image-input-empty image-input-empty"
+                                    data-kt-image-input="true">
+                                    <div class="image-input-wrapper w-100px h-100px" style="background-image: url('')">
+                                    </div>
+
+                                    <label
+                                        class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                        data-kt-image-input-action="change" data-bs-toggle="tooltip"
+                                        title="Görsel Ekle">
+                                        <i class="ki-duotone ki-pencil fs-7">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+                                        <input type="file" name="photo" id="photo"
+                                            accept=".png, .jpg, .jpeg, .PNG, .JPG, .JPEG" />
+                                        <input type="hidden" name="avatar_remove" />
+                                    </label>
+                                    <span
+                                        class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                        data-kt-image-input-action="cancel" data-bs-toggle="tooltip"
+                                        title="Fotoğrafı İptal Et">
+                                        <i class="ki-duotone ki-cross fs-2">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+                                    </span>
+                                    <span
+                                        class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                        data-kt-image-input-action="remove" data-bs-toggle="tooltip"
+                                        title="Remove avatar">
+                                        <i class="ki-duotone ki-cross fs-2">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="d-flex flex-column mb-7 fv-row">
                             <label class="required fs-6 fw-semibold mb-2">Açıklama</label>
                             <textarea class="form-control form-control-solid" name="body" id="body"></textarea>
@@ -49,7 +111,7 @@ $classShow = new ShowClass();
                             <select name="groups" aria-label="Grup Seçiniz" data-control="select2"
                                 data-placeholder="Grup Seçiniz..." class="form-select form-select-solid fw-bold">
                                 <option value="">Grup Seçin</option>
-                                <option value="-1">Herkes</option>
+                                <option value="2">Herkes</option>
                                 <option value="0">İlk Okul ve Orta Okul</option>
                                 <option value="1">Okul Öncesi </option>
                             </select>

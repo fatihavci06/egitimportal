@@ -2,12 +2,12 @@
 class TodayWord extends Dbh
 {
 
-    function createTodaysWord(string $word, string $body, int $school_id, ?int $class_id = null, ?int $group_type = null, ?string $show_date = null, int $is_active = 1): int
+    function createTodaysWord(string $word, string $body, int $school_id, ?int $class_id = null, ?int $group_type = null, ?string $show_date = null, int $is_active = 1, ?string $imgName = null): int
     {
         $db = $this->connect();
         $stmt = $db->prepare("
-        INSERT INTO todays_word (word, body, school_id, class_id, group_type, show_date, is_active)
-        VALUES (:word, :body, :school_id, :class_id, :group_type, :show_date, :is_active)
+        INSERT INTO todays_word (word, body, school_id, class_id, group_type, show_date, is_active, image)
+        VALUES (:word, :body, :school_id, :class_id, :group_type, :show_date, :is_active, :image)
     ");
         $stmt->execute([
             ':word' => $word,
@@ -16,7 +16,8 @@ class TodayWord extends Dbh
             ':class_id' => $class_id,
             ':group_type' => $group_type,
             ':show_date' => $show_date,
-            ':is_active' => $is_active
+            ':is_active' => $is_active,
+            ':image' => $imgName
         ]);
 
         return (int) $db->lastInsertId();
@@ -122,6 +123,9 @@ class TodayWord extends Dbh
                             <div class="form-check form-check-sm form-check-custom form-check-solid">
                                 <input class="form-check-input" type="checkbox" value="1" />
                             </div>
+                        </td>
+                        <td>
+                            <a class="cursor-pointer symbol symbol-90px symbol-lg-90px"><img src="assets/media/today-word/' . $value['image'] . '"></a>
                         </td>
                         <td>
                             <a class="text-gray-800 text-hover-primary mb-1">' . $value['word'] . '</a>

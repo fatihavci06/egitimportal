@@ -2,12 +2,12 @@
 class DoYouKnow extends Dbh
 {
 
-    function createDoYouKnow(string $body, int $school_id, ?int $class_id = null, ?int $group_type = null, ?string $show_date = null, int $is_active = 1): int
+    function createDoYouKnow(string $body, int $school_id, ?int $class_id = null, ?int $group_type = null, ?string $show_date = null, ?int $is_active = 1, ?string $imgName = null): int
     {
         $db = $this->connect();
         $stmt = $db->prepare("
-        INSERT INTO doyouknow (body, school_id, class_id, group_type, show_date, is_active)
-        VALUES (:body, :school_id, :class_id, :group_type, :show_date, :is_active)
+        INSERT INTO doyouknow (body, school_id, class_id, group_type, show_date, is_active, image)
+        VALUES (:body, :school_id, :class_id, :group_type, :show_date, :is_active, :image)
     ");
         $stmt->execute([
             ':body' => $body,
@@ -15,7 +15,9 @@ class DoYouKnow extends Dbh
             ':class_id' => $class_id,
             ':group_type' => $group_type,
             ':show_date' => $show_date,
-            ':is_active' => $is_active
+            ':is_active' => $is_active,
+            ':image' => $imgName
+
         ]);
 
         return (int) $db->lastInsertId();
@@ -122,6 +124,9 @@ class DoYouKnow extends Dbh
                             <div class="form-check form-check-sm form-check-custom form-check-solid">
                                 <input class="form-check-input" type="checkbox" value="1" />
                             </div>
+                        </td>
+                        <td>
+                            <a  class="cursor-pointer symbol symbol-90px symbol-lg-90px"><img src="assets/media/do-you-know/' . $value['image'] . '"></a>
                         </td>
                         <td>
                         ' . (strlen($value['body']) > 40 ? substr($value['body'], 0, 40) . '...' : $value['body']) . '

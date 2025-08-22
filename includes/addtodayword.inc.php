@@ -11,6 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 include_once "../classes/dbh.classes.php";
 include_once "../classes/todayword.php";
+include_once "../classes/addimage.classes.php";
 
 $todayWordObj = new TodayWord();
 
@@ -45,6 +46,20 @@ try {
 	$group_type = isset($input['groups']) && trim($input['groups']) !== '' ? (int) $input['groups'] : null;
 	$school_id = isset($_SESSION['school_id']) ? (int) $_SESSION['school_id'] : 0;
 
+	$photoSize = $_FILES['photo']['size'];
+	$photoName = $_FILES['photo']['name'];
+	$fileTmpName = $_FILES['photo']['tmp_name'];
+
+	$imgName = 'sesli-kitap.jpg';
+
+	if ($fileTmpName != NULL) {
+		$imageSent = new ImageUpload();
+		$img = $imageSent->todayWordImage($photoName, $photoSize, $fileTmpName,  time());
+		$imgName = $img['image'];
+	}
+
+
+
 	// Validations
 	if (strlen(string: $word) > 1000) {
 		http_response_code(400);
@@ -67,7 +82,7 @@ try {
 	}
 
 	// Save to database
-	$insertedId = $todayWordObj->createTodaysWord($word, $body, $school_id, $class_id, $group_type, $show_date);
+	$insertedId = $todayWordObj->createTodaysWord($word, $body, $school_id, $class_id, $group_type, $show_date, 1, $imgName);
 
 	echo json_encode([
 		'status' => 'success',

@@ -127,6 +127,7 @@ if (isset($_SESSION['role'])) {
                                                                     value="1" />
                                                             </div>
                                                         </th>
+                                                        <th class="min-w-40px">Görsel</th>
                                                         <th class="min-w-125px">Kelime</th>
                                                         <th class="min-w-125px">İçerik</th>
                                                         <th class="min-w-125px">Sınıf</th>

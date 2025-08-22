@@ -90,8 +90,8 @@ if (isset($_SESSION['role'])) {
                                                         data-kt-customer-table-toolbar="base">
                                                         <!--begin::Add school-->
                                                         <button type="button" class="btn btn-primary btn-sm"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#kt_modal_add_customer">Bilgi Ekle</button>
+                                                            data-bs-toggle="modal" data-bs-target="#kt_modal_add_customer">Bilgi
+                                                            Ekle</button>
                                                         <!--end::Add school-->
                                                     </div>
                                                     <!--end::Toolbar-->
@@ -127,6 +127,7 @@ if (isset($_SESSION['role'])) {
                                                                     value="1" />
                                                             </div>
                                                         </th>
+                                                        <th class="min-w-40px">Görsel</th>
                                                         <th class="min-w-125px">İçerik</th>
                                                         <th class="min-w-125px">Sınıf</th>
                                                         <th class="min-w-125px">Okul</th>
