@@ -64,7 +64,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
     <!--begin::Row-->
     <div class="row col-lg-12" style="align-items: baseline;">
         <div class="row gx-5 gx-xl-9 col-lg-9" style="align-items: baseline;padding-right: 0px;">
-            
+
             <!--begin::Col-->
             <div class="col-xxl-12 mb-1 mb-xl-1" style="padding-right: 0px;">
                 <!--begin::Chart widget 8-->
@@ -108,7 +108,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                                 echo '<div class="position-relative" style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; min-width: 180px; ">';
 
                                                 //echo '<div class="mt-5"><span class="text-gray-800 fw-bold fs-4"> ' . $value['name'] . '</span></div>';
-
+                                        
                                                 $getUnits = $dash->getUnitsDash($value['id']);
 
                                                 if (empty($getUnits)) {
@@ -430,10 +430,16 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                         <div class="card h-100 shadow-sm">
                                             <?= $imgTag ?>
                                             <div class="card-body d-flex flex-column">
-                                                <h5 class="card-title"><?= htmlspecialchars($lesson['title'], ENT_QUOTES, 'UTF-8') ?></h5>
-                                                <p class="card-text mb-1"><strong>Öğretmen:</strong> <?= htmlspecialchars($lesson['extendedProps']['organizerName'], ENT_QUOTES, 'UTF-8') ?></p>
-                                                <p class="card-text mb-1"><strong>Tarih:</strong> <?= date('d-m-Y H:i', strtotime($lesson['start'])) ?></p>
-                                                <a href="<?= htmlspecialchars($lesson['zoom_join_url'], ENT_QUOTES, 'UTF-8') ?>" class="btn btn-primary mt-auto btn-sm" target="_blank">Derse Katıl</a>
+                                                <h5 class="card-title">
+                                                    <?= htmlspecialchars($lesson['title'], ENT_QUOTES, 'UTF-8') ?>
+                                                </h5>
+                                                <p class="card-text mb-1"><strong>Öğretmen:</strong>
+                                                    <?= htmlspecialchars($lesson['extendedProps']['organizerName'], ENT_QUOTES, 'UTF-8') ?>
+                                                </p>
+                                                <p class="card-text mb-1"><strong>Tarih:</strong>
+                                                    <?= date('d-m-Y H:i', strtotime($lesson['start'])) ?></p>
+                                                <a href="<?= htmlspecialchars($lesson['zoom_join_url'], ENT_QUOTES, 'UTF-8') ?>"
+                                                    class="btn btn-primary mt-auto btn-sm" target="_blank">Derse Katıl</a>
                                             </div>
                                         </div>
                                     </div>
@@ -507,9 +513,17 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                     <div class="card-body pt-0" style="padding: 10px;">
                         <!--begin::Tab content-->
                         <div class="tab-content">
+                            <?php
+                            $imagePath = "assets/media/today-word/" . $todaysWord['image'];
+                            if (!empty($todaysWord['image']) && file_exists($imagePath)): ?>
+                                <img src="<?php echo $imagePath; ?>" class="w-50 h-50 m-2"
+                                    style="width:50px !important; height:50px !important; border:none !important;">
+                            <?php endif; ?>
+
                             <!--begin::Tab pane-->
                             <div class="tab-pane fade active show" id="kt_chart_widget_8_month_tab" role="tabpanel">
                                 <!--begin::Table container-->
+
                                 <div class="table-responsive">
                                     <!--begin::Table-->
                                     <p class="kalangun">
@@ -545,11 +559,18 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                     <!--end::Header-->
                     <!--begin::Body-->
                     <div class="card-body pt-0" style="padding: 10px;">
+                        <?php
+                        $imagePath = "assets/media/tdo-you-know/" . $todaysKnow['image'];
+                        if (!empty($todaysKnow['image']) && file_exists($imagePath)): ?>
+                            <img src="<?php echo $imagePath; ?>" class="w-50 h-50 m-2"
+                                style="width:50px !important; height:50px !important; border:none !important;">
+                        <?php endif; ?>
                         <!--begin::Tab content-->
                         <div class="tab-content">
                             <!--begin::Tab pane-->
                             <div class="tab-pane fade active show" id="kt_chart_widget_8_month_tab" role="tabpanel">
                                 <!--begin::Table container-->
+
                                 <div class="table-responsive">
                                     <!--begin::Table-->
                                     <p class="kalangun">
@@ -568,7 +589,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                 <!--end::Chart widget 8-->
             </div>
             <!--end::Col-->
-            
+
 
             <?php
             $percentage = $resultProfileW;
