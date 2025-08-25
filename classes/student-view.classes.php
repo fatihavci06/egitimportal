@@ -26,6 +26,28 @@ class ShowStudent extends Student
         }
         echo $classList;
     }
+    // Get Class List For Search Other Schools
+
+    public function getClassListWithOutPre()
+    {
+
+        $schoolInfo = $this->getAllClassesWOPre();
+
+        $classList = '';
+
+        foreach ($schoolInfo as $key => $value) {
+
+            $classList .= '
+                    <!--begin::Option-->
+                    <label class="form-check form-check-sm form-check-custom form-check-solid  mb-3 me-5">
+                        <input class="form-check-input" type="radio" name="student_class" value="' . $value['slug'] . '" />
+                        <span class="form-check-label text-gray-600">' . $value['name'] . '</span>
+                    </label>
+                    <!--end::Option-->
+                ';
+        }
+        echo $classList;
+    }
 
     // Get Class Dropdown List For Search
 
