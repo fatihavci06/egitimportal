@@ -3,7 +3,7 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 8)) {
     include_once "classes/dbh.classes.php";
     include_once "classes/audio-book.classes.php";
     include_once "classes/audio-book-view.classes.php";
@@ -134,7 +134,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     </tr>
                                                 </thead>
                                                 <tbody class="fw-semibold text-gray-600">
-                                                    <?php $audioBooks->getAudioBookList(); ?>
+                                                    <?php $audioBooks->getAudioBookList($_SESSION['school_id']); ?>
                                                 </tbody>
                                             </table>
                                             <!--end::Table-->
@@ -146,34 +146,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                     <!--begin::Modal - Customers - Add-->
                                     <?php include_once "views/audio-book/add_audio-book.php" ?>
                                     <!--end::Modal - Customers - Add-->
-                                    <!--begin::Modal - Adjust Balance-->
-                                    <div class="modal fade" id="kt_customers_export_modal" tabindex="-1" aria-hidden="true">
-                                        <!--begin::Modal dialog-->
-                                        <div class="modal-dialog modal-dialog-centered mw-650px">
-                                            <!--begin::Modal content-->
-                                            <div class="modal-content">
-                                                <!--begin::Modal header-->
-                                                <div class="modal-header">
-                                                    <!--begin::Modal title-->
-                                                    <h2 class="fw-bold">Export Customers</h2>
-                                                    <!--end::Modal title-->
-                                                    <!--begin::Close-->
-                                                    <div id="kt_customers_export_close"
-                                                        class="btn btn-icon btn-sm btn-active-icon-primary">
-                                                        <i class="ki-duotone ki-cross fs-1">
-                                                            <span class="path1"></span>
-                                                            <span class="path2"></span>
-                                                        </i>
-                                                    </div>
-                                                    <!--end::Close-->
-                                                </div>
-                                                <!--end::Modal header-->
-                                            </div>
-                                            <!--end::Modal content-->
-                                        </div>
-                                        <!--end::Modal dialog-->
-                                    </div>
-                                    <!--end::Modal - New Card-->
                                     <!--end::Modals-->
                                 </div>
                                 <!--end::Content container-->

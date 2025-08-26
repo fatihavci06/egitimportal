@@ -83,7 +83,7 @@ if (isset($_SESSION['role'])) {
                                                 <!--end::Search-->
                                             </div>
                                             <!--begin::Card title-->
-                                            <?php if ($_SESSION['role'] == 1 or $_SESSION['id'] == 3) { ?>
+                                            <?php if ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 8) { ?>
                                                 <!--begin::Card toolbar-->
                                                 <div class="card-toolbar">
                                                     <!--begin::Toolbar-->

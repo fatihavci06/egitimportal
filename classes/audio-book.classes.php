@@ -39,6 +39,42 @@ class AudioBooks extends Dbh
 		$stmt = null;
 	}
 
+	protected function getAudioBooksListOtherSchools($school_id)
+	{
+		$stmt = $this->connect()->prepare('
+		SELECT 
+		g.id, 
+		g.name AS book_name,
+		g.cover_img,
+		g.book_url,
+		g.slug,
+		g.is_active,
+		g.created_at,
+		g.updated_at,
+		c.name AS class_name,
+		l.name AS lesson_name,
+		u.name AS unit_name,
+		t.name AS topic_name,
+		st.name AS subtopic_name
+		FROM 
+			audio_book_lnp g
+		LEFT JOIN classes_lnp c ON g.class_id = c.id
+		LEFT JOIN lessons_lnp l ON g.lesson_id = l.id
+		LEFT JOIN units_lnp u ON g.unit_id = u.id
+		LEFT JOIN topics_lnp t ON g.topic_id = t.id
+		LEFT JOIN subtopics_lnp st ON g.subtopic_id = st.id WHERE g.school_id = ?;');
+		if (!$stmt->execute(array($school_id))) {
+			$stmt = null;
+			exit();
+		}
+
+		$unitData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $unitData;
+
+		$stmt = null;
+	}
+
 	protected function getAudioBooksListImage()
 	{
 		$stmt = $this->connect()->prepare('SELECT * FROM audio_book_lnp LIMIT 1');

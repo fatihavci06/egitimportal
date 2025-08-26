@@ -39,10 +39,15 @@ class ShowGame extends Games
 
     }
 
-    public function getGameList()
+    public function getGameList($school_id)
     {
 
-        $unitInfo = $this->getGamesList();
+        if($school_id != 1){
+            /* $unitInfo = $this->getGamesListforOtherSchools($school_id); */
+            $unitInfo = $this->getGamesList();
+        }else{
+            $unitInfo = $this->getGamesList();
+        }
 
         $dateFormat = new DateFormat();
 
