@@ -174,9 +174,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                                 <div class="col-4 text-end">
                                                                                     <?php if ($remaining === null): ?>
                                                                                         <span class="badge bg-secondary">Tarih yok</span>
-                                                                                    <?php elseif ($remaining > 0 AND $test['user_test_status'] == 0): ?>
+                                                                                    <?php elseif ($_SESSION['role'] == 2 && ($remaining > 0 AND $test['user_test_status'] == 0)): ?>
                                                                                         <span class="badge bg-success">Kalan: <?= $remaining ?> gün</span>
-                                                                                    <?php elseif ($remaining > 0 AND $test['user_test_status'] == 1): ?>
+                                                                                    <?php elseif (($_SESSION['role'] == 1 OR $_SESSION['role'] == 4) && $remaining > 0): ?>
+                                                                                        <span class="badge bg-success">Kalan: <?= $remaining ?> gün</span>
+                                                                                    <?php elseif ($_SESSION['role'] == 1 && ($remaining > 0 AND $test['user_test_status'] == 1)): ?>
                                                                                         <span class="badge bg-success">%<?= $test['score'] ?> başarı ile testi tamamladınız </span>
                                                                                     <?php else: ?>
                                                                                         <span class="badge bg-danger">Süre doldu</span>

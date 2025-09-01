@@ -4,10 +4,15 @@ include_once "dateformat.classes.php";
 class ShowAudioBook extends AudioBooks
 {
 
-    public function getAudioBookList()
+    public function getAudioBookList($school_id)
     {
 
-        $audioBookInfo = $this->getAudioBooksList();
+        if($school_id != 1){
+            //$audioBookInfo = $this->getAudioBooksListOtherSchools($school_id);
+            $audioBookInfo = $this->getAudioBooksList();
+        }else{
+            $audioBookInfo = $this->getAudioBooksList();
+        }
 
         $dateFormat = new DateFormat();
 

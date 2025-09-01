@@ -39,6 +39,27 @@ function monitorVimeoPlayer() {
         let lastLoggedSecond = -1;
         console.log('Video ID:', videoId);
 
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) {
+                player.pause();
+            }
+        });
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) {
+                        player.pause();
+                    } 
+                });
+            },
+            { threshold: 0.25 } 
+        );
+        observer.observe(vimeoPlayer);
+
+
+
         const logCurrentTime = async () => {
             try {
                 const currentTime = await player.getCurrentTime();
@@ -82,7 +103,6 @@ function monitorVimeoPlayer() {
 
             console.log('Video paused - stopped monitoring');
         });
-
 
         window.addEventListener('beforeunload', async () => {
             if (intervalId && videoId) {

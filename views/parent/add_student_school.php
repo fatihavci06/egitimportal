@@ -219,15 +219,6 @@ $chooseSchool = new ShowSchool();
                                 </select>
                                 <!--end::Input-->
                             </div>
-                            <!--end::Input group--><!--begin::Input group-->
-                            <div class="d-flex flex-column mb-7 fv-row">
-                                <!--begin::Label-->
-                                <label class="required fs-6 fw-semibold mb-2">Parola</label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <input class="form-control form-control-solid" name="password" id="password" placeholder="Parola" />
-                                <!--end::Input-->
-                            </div>
                             <!--end::Input group-->
                         </div>
                         <!--end::Scroll-->

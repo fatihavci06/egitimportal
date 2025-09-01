@@ -41,6 +41,44 @@ class Games extends Dbh
 		$stmt = null;
 	}
 
+	protected function getGamesListforOtherSchools($school_id)
+	{
+		$stmt = $this->connect()->prepare('
+		SELECT 
+		g.id,
+		g.name AS game_name,
+		g.cover_img,
+		g.game_url,
+		g.slug,
+		g.created_at,
+		g.updated_at,
+		g.is_active,
+		c.name AS class_name,
+		l.name AS lesson_name,
+		u.name AS unit_name,
+		t.name AS topic_name,
+		st.name AS subtopic_name
+		FROM 
+			games_lnp g
+		LEFT JOIN classes_lnp c ON g.class_id = c.id
+		LEFT JOIN lessons_lnp l ON g.lesson_id = l.id
+		LEFT JOIN units_lnp u ON g.unit_id = u.id
+		LEFT JOIN topics_lnp t ON g.topic_id = t.id
+		LEFT JOIN subtopics_lnp st ON g.subtopic_id = st.id WHERE g.school_id = ?;');
+
+		if (!$stmt->execute(array($school_id))) {
+			$stmt = null;
+			exit();
+		}
+
+		$unitData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+		return $unitData;
+
+		$stmt = null;
+	}
+
 	protected function getGamesListStudentShow($class_id)
 	{
 		$stmt = $this->connect()->prepare('SELECT * FROM games_lnp WHERE class_id = ?');

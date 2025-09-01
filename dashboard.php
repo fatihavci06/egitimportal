@@ -99,6 +99,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 									include_once "views/preschoolstudent-dash.php";
 								}elseif($_SESSION['role'] == 4){
 									include_once "views/teacher-dash.php";
+								}elseif($_SESSION['role'] == 8){
+									//include_once "views/admin-dash.php";
 								}else{ ?>
 								<div id="kt_app_content_container" class="app-container container-fluid">
 									<!--begin::Row-->

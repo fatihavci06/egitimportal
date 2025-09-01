@@ -3,7 +3,7 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 8)) {
     include_once "classes/dbh.classes.php";
     include_once "classes/games.classes.php";
     include_once "classes/games-view.classes.php";
@@ -134,7 +134,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     </tr>
                                                 </thead>
                                                 <tbody class="fw-semibold text-gray-600">
-                                                    <?php $games->getGameList(); ?>
+                                                    <?php $games->getGameList($_SESSION['school_id']); ?>
                                                 </tbody>
                                             </table>
                                             <!--end::Table-->

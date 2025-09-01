@@ -118,6 +118,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                 </select>
                                                                 <!--end::Input-->
                                                             </div>
+                                                            <?php if($_SESSION['role'] != 8){ ?>
                                                             <!--end::Input group-->
                                                             <div class="mb-10">
                                                                 <!--begin::Label-->
@@ -131,6 +132,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                 <!--end::Input-->
                                                             </div>
                                                             <!--end::Input group-->
+                                                            <?php } ?>
                                                             <!--begin::Input group-->
                                                             <div class="mb-10">
                                                                 <!--begin::Label-->
@@ -144,7 +146,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                         <span class="form-check-label text-gray-600">Tüm Sınıflar</span>
                                                                     </label>
                                                                     <!--end::Option-->
-                                                                    <?php $students->getClassList(); ?>
+                                                                    <?php
+                                                                        if($_SESSION['role'] == 8){ 
+                                                                            $students->getClassListWithOutPre();
+                                                                        } else {
+                                                                            $students->getClassList();
+                                                                        }
+                                                                    ?>
                                                                 </div>
                                                                 <!--end::Options-->
                                                             </div>

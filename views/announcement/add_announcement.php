@@ -44,10 +44,12 @@ $classShow = new ShowClass();
                             <label>
                                 <input class="form-check-input" type="radio" name="target" value="all"> Herkese
                             </label>
+                            <?php if($_SESSION['role'] != 8) { ?>
                             <label>
                                 <input class="form-check-input ms-10" type="radio" name="target" value="roles"> Belirli
                                 Kullanıcı Grubuna
                             </label>
+                            <?php } ?>
                             <label>
                                 <input class="form-check-input ms-10" type="radio" name="target" value="classes">
                                 Belirli

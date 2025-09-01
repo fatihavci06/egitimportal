@@ -228,7 +228,10 @@ $chooseLesson = new ShowLesson();
                         <button type="reset" id="kt_modal_add_customer_cancel" class="btn btn-light btn-sm me-3">İptal</button>
                         <!--end::Button-->
                         <!--begin::Button-->
-                        <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary btn-sm">
+                        <?php $i = ""; if($_SESSION['role'] == 8){ 
+                            $i = "disabled";
+                         } ?>
+                        <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary btn-sm" <?php echo $i; ?>>
                             <span class="indicator-label">Gönder</span>
                             <span class="indicator-progress">Lütfen Bekleyin...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
