@@ -31,7 +31,43 @@ class Classes extends Dbh
 
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
-	
+
+	public function getLiveVideo($classId = null)
+{
+    $role = $_SESSION['role'] ?? null; // Sessiondaki role alıyoruz
+
+    if ($role == 1 || $role == 10001) {
+        // class_id dolu olan tüm kayıtları çek
+        $sql = "SELECT meetings_lnp.*, classes_lnp.name AS class_name
+                FROM meetings_lnp
+                LEFT JOIN classes_lnp ON meetings_lnp.class_id = classes_lnp.id
+                WHERE meetings_lnp.class_id IS NOT NULL
+                ORDER BY meetings_lnp.id DESC";
+        $stmt = $this->connect()->prepare($sql);
+        $executeResult = $stmt->execute();
+    } elseif ($role == 10002 || $role == 10005) {
+        // Sadece sessiondaki class_id ile eşleşenleri çek
+        $sql = "SELECT meetings_lnp.*, classes_lnp.name AS class_name
+                FROM meetings_lnp
+                LEFT JOIN classes_lnp ON meetings_lnp.class_id = classes_lnp.id
+                WHERE meetings_lnp.class_id = ?
+                ORDER BY meetings_lnp.id DESC";
+        $stmt = $this->connect()->prepare($sql);
+        $executeResult = $stmt->execute([$classId]);
+    } else {
+        // Diğer roller için varsayılan boş liste
+        return [];
+    }
+
+    if (!$executeResult) {
+        $stmt = null;
+        exit();
+    }
+
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $data;
+}
+
 
 	public function getLessonsList($search_class_id)
 	{
@@ -808,7 +844,8 @@ class Classes extends Dbh
 		return $classData;
 	}
 
-	public function getTestResult($testId, $userId){
+	public function getTestResult($testId, $userId)
+	{
 		$stmt = $this->connect()->prepare('
 			SELECT 
 				t.id AS test_id,
@@ -1057,7 +1094,7 @@ WHERE t.id = :id";
 
 		return $classData;
 	}
-	
+
 	public function getMainSchoolContentListDashboard($class_id)
 	{
 
@@ -1072,7 +1109,7 @@ WHERE t.id = :id";
 
 		return $classData;
 	}
-	
+
 	public function getMainSchoolGamesListDashboard($class_id)
 	{
 
@@ -1087,7 +1124,7 @@ WHERE t.id = :id";
 
 		return $classData;
 	}
-	
+
 	public function getMainSchoolBooksListDashboard($class_id)
 	{
 
@@ -1181,24 +1218,24 @@ WHERE t.id = :id";
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
 	public function getMainSchoolContentByUnitAndTopicId($unit_id, $topic_id)
-{
-    $stmt = $this->connect()->prepare('
+	{
+		$stmt = $this->connect()->prepare('
         SELECT * 
         FROM main_school_content_lnp 
         WHERE unit_id = :unit_id AND topic_id = :topic_id 
         ORDER BY id ASC
     ');
 
-    if (!$stmt->execute([
-        'unit_id' => $unit_id,
-        'topic_id' => $topic_id
-    ])) {
-        $stmt = null;
-        exit();
-    }
+		if (!$stmt->execute([
+			'unit_id' => $unit_id,
+			'topic_id' => $topic_id
+		])) {
+			$stmt = null;
+			exit();
+		}
 
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
 
 
 	public function getClassId($userId)
@@ -1278,7 +1315,7 @@ WHERE t.id = :id";
 	}
 	public function permissionControl($contentId, $userId)
 	{
-		
+
 		$stmt = $this->connect()->prepare('
         SELECT 1
         FROM users_lnp u

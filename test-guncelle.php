@@ -328,7 +328,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
         // Soru bloğu oluşturan fonksiyon
         function createQuestionBlock(index, questionNumber, questionData = {}) {
-            const optionCount = parseInt($('#option_count').val()) || 3;
+
+            var classId = $('#class_id').val();
+            if (classId == 3 || classId == 4 || classId == 5) {
+                var optionCounts = 3;
+            } else {
+                var optionCounts = 4;
+            }
+            const optionCount = parseInt(optionCounts) || 3;
             const optionInputsHTML = createOptionInputs(index, optionCount, questionData.options);
             const optionLabels = getOptionLabels(optionCount);
 
@@ -835,30 +842,29 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     formData.append('end_date', endDate);
                 }
 
-
                 const coverImgInput = document.getElementById('cover_img');
                 if (coverImgInput && coverImgInput.files && coverImgInput.files[0]) {
                     formData.append('cover_img', coverImgInput.files[0]);
                 } else {
-                    // Eğer yeni bir resim yüklenmediyse, mevcut resmi koru (hidden input'tan al)
                     const existingCoverImg = $('input[name="existing_cover_img"]').val();
                     if (existingCoverImg) {
                         formData.append('existing_cover_img', existingCoverImg);
                     }
                 }
-                // Mevcut kapak görselini kaldırma butonu ile kaldırılırsa
                 if ($('.remove-existing-cover-img').data('removed')) {
                     formData.append('remove_cover_img', 'true');
                 }
 
-
                 let questionsValid = true;
                 document.querySelectorAll('.question-block').forEach((questionBlock, qIdx) => {
+                    // Soru metni
                     const questionTextarea = questionBlock.querySelector('.question-textarea');
-                    if (questionTextarea && tinymce.get(questionTextarea.id)) {
-                        formData.append(`questions[${qIdx}][text]`, tinymce.get(questionTextarea.id).getContent());
+                    if (questionTextarea) {
+                        const questionContent = tinymce.get(questionTextarea.id) ? tinymce.get(questionTextarea.id).getContent() : '';
+                        formData.append(`questions[${qIdx}][text]`, questionContent);
                     }
 
+                    // Doğru cevap
                     const correctAnswerSelect = questionBlock.querySelector('.correct-answer-select');
                     if (correctAnswerSelect) {
                         if (correctAnswerSelect.value === "") {
@@ -880,7 +886,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     // Resimler
                     questionBlock.querySelectorAll('.image-upload-group').forEach((imgGroup, iIdx) => {
                         const fileInput = imgGroup.querySelector('input[type="file"]');
-
                         const existingInput = imgGroup.querySelector('input[name^="questions"][name*="existing_images"]');
 
                         if (fileInput && fileInput.files && fileInput.files[0]) {
@@ -898,9 +903,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         if (optionLabelMatch && optionLabelMatch[1]) {
                             const optionLabel = optionLabelMatch[1];
 
-                            if (tinymce.get(optionTextarea.id)) {
-                                formData.append(`questions[${qIdx}][options][${optionLabel}][text]`, tinymce.get(optionTextarea.id).getContent());
-                            }
+                            const optionContent = tinymce.get(optionTextarea.id) ? tinymce.get(optionTextarea.id).getContent() : '';
+                            formData.append(`questions[${qIdx}][options][${optionLabel}][text]`, optionContent);
 
                             optionBlock.querySelectorAll('.option-image-upload-group').forEach((optImgGroup, optImgIdx) => {
                                 const fileInput = optImgGroup.querySelector('input[type="file"]');
@@ -930,9 +934,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     return;
                 }
 
-                // Gönderim için AJAX isteği
                 $.ajax({
-                    url: 'includes/ajax.php?service=testUpdate', // Güncelleme için yeni bir servis noktası
+                    url: 'includes/ajax-ayd.php?service=testUpdate',
                     type: 'POST',
                     dataType: 'json',
                     data: formData,
@@ -946,7 +949,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 text: 'Test başarıyla güncellendi!',
                                 confirmButtonText: 'Tamam'
                             }).then(() => {
-                                // Yönlendirme veya sayfayı yenileme
                                 location.reload();
                             });
                         } else {
@@ -965,40 +967,49 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
             });
 
             // Soru Ekleme
-            document.getElementById('addQuestion').addEventListener('click', function() {
-                const classId = document.getElementById('class_id').value;
+            // Soru Ekleme
+document.getElementById('addQuestion').addEventListener('click', function() {
+    const classId = document.getElementById('class_id').value;
 
-                if (classId === "") {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Sınıf Seçimi Gerekli',
-                        text: 'Lütfen yeni soru eklemek için önce bir sınıf seçiniz.',
-                        confirmButtonText: 'Tamam'
-                    });
-                    $('#class_id').focus().addClass('is-invalid');
-                    return;
-                }
-                $('#class_id').removeClass('is-invalid');
+    if (classId === "") {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Sınıf Seçimi Gerekli',
+            text: 'Lütfen yeni soru eklemek için önce bir sınıf seçiniz.',
+            confirmButtonText: 'Tamam'
+        });
+        $('#class_id').focus().addClass('is-invalid');
+        return;
+    }
+    $('#class_id').removeClass('is-invalid');
 
-                const newIndex = currentMaxQuestionIndex + 1; // Yeni soru için indeks
-                const newQuestionNumber = document.querySelectorAll('.question-block').length + 1; // Görüntülenen soru numarası
+    const newIndex = currentMaxQuestionIndex + 1;
+    const newQuestionNumber = document.querySelectorAll('.question-block').length + 1;
 
-                const newQuestionHTML = createQuestionBlock(newIndex, newQuestionNumber);
-                const questionsContainer = document.getElementById('questions_container');
+    const newQuestionHTML = createQuestionBlock(newIndex, newQuestionNumber);
+    const questionsContainer = document.getElementById('questions_container');
 
-                questionsContainer.insertAdjacentHTML('beforeend', newQuestionHTML); // En başa ekle
+    questionsContainer.insertAdjacentHTML('beforeend', newQuestionHTML);
+    currentMaxQuestionIndex = newIndex;
 
-                currentMaxQuestionIndex = newIndex; // Max indeksi güncelle
-
-                const newlyAddedQuestionBlock = questionsContainer.firstElementChild;
-                const questionTextarea = newlyAddedQuestionBlock.querySelector('.question-textarea');
-                if (questionTextarea) {
-                    initTinyMCE(`#${questionTextarea.id}`);
-                }
-                newlyAddedQuestionBlock.querySelectorAll('.option-textarea').forEach(textarea => {
-                    initTinyMCE(`#${textarea.id}`);
-                });
-            });
+    // Yeni eklenen soru bloğunu seç
+    const newQuestionBlock = questionsContainer.querySelector('.question-block:last-child');
+    
+    // Soru metni için TinyMCE başlat
+    const questionTextarea = newQuestionBlock.querySelector('.question-textarea');
+    if (questionTextarea) {
+        initTinyMCE(`#${questionTextarea.id}`);
+    }
+    
+    // Seçenekler için TinyMCE başlat
+    newQuestionBlock.querySelectorAll('.option-textarea').forEach(textarea => {
+        initTinyMCE(`#${textarea.id}`);
+    });
+    
+    // Yeniden numaralandırma yap
+    renumberQuestionsOnDelete();
+    updateMaxQuestionIndex();
+});
 
             // Dinamik İçerik Olay Dinleyicileri (soru ekleme/silme, video/resim ekleme/silme)
             document.getElementById('questions_container').addEventListener('click', function(event) {

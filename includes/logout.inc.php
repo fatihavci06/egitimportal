@@ -13,6 +13,9 @@ session_unset();
 
 session_destroy();
 
+if (isset($_COOKIE['remember_me'])) {
+    setcookie("remember_me", "", time() - 3600, "/", "", false, true);
+}
 
 // Going to back to front page
 header("location: ../index");

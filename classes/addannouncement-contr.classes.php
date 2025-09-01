@@ -19,21 +19,7 @@ class AddAnnouncementContr extends AddAnnouncement
 
 		$slugRes = $this->checkSlug($this->data['slug'] );
 
-		if (count($slugRes) > 0) {
-			$ech = end($slugRes);
-
-			$output = substr($ech['slug'], -1, strrpos($ech['slug'], '-'));
-
-			if (!is_numeric($output)) {
-				$output = 1;
-			} else {
-				$output = $output + 1;
-			}
-
-			$this->data['slug']  = $this->data['slug']  . "-" . $output;
-		} else {
-			$this->slug = $this->data['slug'] ;
-		}
+		$this->data['slug'] = $slugName->makeUniqueSlug($this->data['slug'], $slugRes);
 
 		$this->setAnnouncement($this->data, $this->targets) ;
 	}

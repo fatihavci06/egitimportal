@@ -440,54 +440,54 @@ switch ($service) {
             echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası: ' . $e->getMessage()]);
         }
         break;
-   case 'deleteMainSchoolContent': // aslında status toggle işlemi yapıyor
-    $id = $_POST['id'] ?? null;
+    case 'deleteMainSchoolContent': // aslında status toggle işlemi yapıyor
+        $id = $_POST['id'] ?? null;
 
-    if (!$id || !ctype_digit($id)) {
-        echo json_encode(['status' => 'error', 'message' => 'Geçersiz ID']);
-        exit;
-    }
-
-    try {
-        // Transaction, tutarlılık için
-        $pdo->beginTransaction();
-
-        // Mevcut status'u kilitleyerek al
-        $stmt = $pdo->prepare("SELECT status FROM main_school_content_lnp WHERE id = ? FOR UPDATE");
-        $stmt->execute([$id]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$row) {
-            $pdo->rollBack();
-            echo json_encode(['status' => 'error', 'message' => 'Kayıt bulunamadı.']);
+        if (!$id || !ctype_digit($id)) {
+            echo json_encode(['status' => 'error', 'message' => 'Geçersiz ID']);
             exit;
         }
 
-        $currentStatus = (int)$row['status'];
-        $newStatus = $currentStatus === 1 ? 0 : 1;
+        try {
+            // Transaction, tutarlılık için
+            $pdo->beginTransaction();
 
-        // Güncelle
-        $upd = $pdo->prepare("UPDATE main_school_content_lnp SET status = ? WHERE id = ?");
-        $upd->execute([$newStatus, $id]);
+            // Mevcut status'u kilitleyerek al
+            $stmt = $pdo->prepare("SELECT status FROM main_school_content_lnp WHERE id = ? FOR UPDATE");
+            $stmt->execute([$id]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        $pdo->commit();
+            if (!$row) {
+                $pdo->rollBack();
+                echo json_encode(['status' => 'error', 'message' => 'Kayıt bulunamadı.']);
+                exit;
+            }
 
-        $actionText = $newStatus === 1 ? 'Pasif Yap' : 'Aktif Yap'; // bir sonraki yapılacak işlem
-        $message = $newStatus === 1 ? 'İçerik aktif hale getirildi.' : 'İçerik pasif yapıldı.';
+            $currentStatus = (int)$row['status'];
+            $newStatus = $currentStatus === 1 ? 0 : 1;
 
-        echo json_encode([
-            'status' => 'success',
-            'message' => $message,
-            'new_status' => $newStatus,
-            'actionText' => $actionText,
-        ]);
-    } catch (PDOException $e) {
-        if ($pdo->inTransaction()) {
-            $pdo->rollBack();
+            // Güncelle
+            $upd = $pdo->prepare("UPDATE main_school_content_lnp SET status = ? WHERE id = ?");
+            $upd->execute([$newStatus, $id]);
+
+            $pdo->commit();
+
+            $actionText = $newStatus === 1 ? 'Pasif Yap' : 'Aktif Yap'; // bir sonraki yapılacak işlem
+            $message = $newStatus === 1 ? 'İçerik aktif hale getirildi.' : 'İçerik pasif yapıldı.';
+
+            echo json_encode([
+                'status' => 'success',
+                'message' => $message,
+                'new_status' => $newStatus,
+                'actionText' => $actionText,
+            ]);
+        } catch (PDOException $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası: ' . $e->getMessage()]);
         }
-        echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası: ' . $e->getMessage()]);
-    }
-    break;
+        break;
 
     case 'deleteCategoryTitle':
         $id = $_POST['id'] ?? null;
@@ -1399,7 +1399,7 @@ switch ($service) {
             ]);
             $optionCount = $stmt2->fetch(PDO::FETCH_ASSOC);
             $data['optionCount'] = $optionCount['option_count'] ?? 3;
-           
+
             if ($data) {
                 echo json_encode(['status' => 'success', 'data' => $data]);
             } else {
@@ -2993,7 +2993,7 @@ WHERE t.id = :id";
         $developmentPackageIds = $_POST['development_package_ids'] ?? []; // Yeni: development_package_ids eklendi
 
         // Temel doğrulama
-        if (!$unitId || !$unitName || !$lessonId || !$classId ) {
+        if (!$unitId || !$unitName || !$lessonId || !$classId) {
             echo json_encode(['status' => 'error', 'message' => 'Ünite ,  ders  sınıf zorunludur .']);
             exit;
         }
@@ -4156,54 +4156,54 @@ ORDER BY msu.unit_order asc
         }
         break;
     case 'updateContent':
-    try {
-        $pdo->beginTransaction();
+        try {
+            $pdo->beginTransaction();
 
-        $content_id     = $_POST['content_id'] ?? null;
-        $photo          = $_FILES['photo'] ?? null;
-        $avatar_remove  = $_POST['avatar_remove'] ?? null;
-        $name           = $_POST['name'] ?? null;
-        $short_desc     = $_POST['short_desc'] ?? null;
-        $classes        = $_POST['classes'] ?? null;
-        $lessons        = $_POST['lessons'] ?? null;
-        $units          = $_POST['units'] ?? null;
-        $topics         = $_POST['topics'] ?? null;
-        $sub_topics     = $_POST['sub_topics'] ?? null;
-        $mcontent       = $_POST['mcontent'] ?? null;
+            $content_id     = $_POST['content_id'] ?? null;
+            $photo          = $_FILES['photo'] ?? null;
+            $avatar_remove  = $_POST['avatar_remove'] ?? null;
+            $name           = $_POST['name'] ?? null;
+            $short_desc     = $_POST['short_desc'] ?? null;
+            $classes        = $_POST['classes'] ?? null;
+            $lessons        = $_POST['lessons'] ?? null;
+            $units          = $_POST['units'] ?? null;
+            $topics         = $_POST['topics'] ?? null;
+            $sub_topics     = $_POST['sub_topics'] ?? null;
+            $mcontent       = $_POST['mcontent'] ?? null;
 
-        // Tekli veya çoklu gönderimler için array'e çevir
-        $video_urls     = $_POST['video_url'] ?? [];
-        if (!is_array($video_urls)) $video_urls = [$video_urls];
+            // Tekli veya çoklu gönderimler için array'e çevir
+            $video_urls     = $_POST['video_url'] ?? [];
+            if (!is_array($video_urls)) $video_urls = [$video_urls];
 
-        $wordWallUrls   = $_POST['wordWallUrls'] ?? [];
-        $wordWallTitles = $_POST['wordWallTitles'] ?? [];
-        if (!is_array($wordWallUrls)) $wordWallUrls = [$wordWallUrls];
-        if (!is_array($wordWallTitles)) $wordWallTitles = [$wordWallTitles];
+            $wordWallUrls   = $_POST['wordWallUrls'] ?? [];
+            $wordWallTitles = $_POST['wordWallTitles'] ?? [];
+            if (!is_array($wordWallUrls)) $wordWallUrls = [$wordWallUrls];
+            if (!is_array($wordWallTitles)) $wordWallTitles = [$wordWallTitles];
 
-        $file_paths         = $_FILES['file_path'] ?? [];
-        $fileDescriptions   = $_POST['file_descriptions'] ?? [];
-        if (!is_array($fileDescriptions)) $fileDescriptions = [$fileDescriptions];
+            $file_paths         = $_FILES['file_path'] ?? [];
+            $fileDescriptions   = $_POST['file_descriptions'] ?? [];
+            if (!is_array($fileDescriptions)) $fileDescriptions = [$fileDescriptions];
 
-        // Fotoğraf işlemi
-        $cover_img_path = null;
-        if ($photo && $photo['error'] === 0) {
-            $uploadDir = '../uploads/contents/';
-            $filename = uniqid() . '_' . basename($photo['name']);
-            $uploadPath = $uploadDir . $filename;
-            if (move_uploaded_file($photo['tmp_name'], $uploadPath)) {
-                $cover_img_path = $uploadPath;
-            }
-        } elseif ($avatar_remove === '1') {
+            // Fotoğraf işlemi
             $cover_img_path = null;
-        } else {
-            // Mevcut fotoğrafı koru
-            $stmt = $pdo->prepare("SELECT cover_img FROM school_content_lnp WHERE id = ?");
-            $stmt->execute([$content_id]);
-            $cover_img_path = $stmt->fetchColumn();
-        }
+            if ($photo && $photo['error'] === 0) {
+                $uploadDir = '../uploads/contents/';
+                $filename = uniqid() . '_' . basename($photo['name']);
+                $uploadPath = $uploadDir . $filename;
+                if (move_uploaded_file($photo['tmp_name'], $uploadPath)) {
+                    $cover_img_path = $uploadPath;
+                }
+            } elseif ($avatar_remove === '1') {
+                $cover_img_path = null;
+            } else {
+                // Mevcut fotoğrafı koru
+                $stmt = $pdo->prepare("SELECT cover_img FROM school_content_lnp WHERE id = ?");
+                $stmt->execute([$content_id]);
+                $cover_img_path = $stmt->fetchColumn();
+            }
 
-        // content_lnp güncelleme
-        $updateStmt = $pdo->prepare("UPDATE school_content_lnp SET 
+            // content_lnp güncelleme
+            $updateStmt = $pdo->prepare("UPDATE school_content_lnp SET 
             title = ?, 
             summary = ?, 
             class_id = ?, 
@@ -4214,62 +4214,62 @@ ORDER BY msu.unit_order asc
             cover_img = ?, 
             text_content = ? 
             WHERE id = ?");
-        $updateStmt->execute([
-            $name,
-            $short_desc,
-            $classes,
-            $lessons,
-            $units,
-            $topics,
-            $sub_topics,
-            $cover_img_path,
-            $mcontent,
-            $content_id
-        ]);
+            $updateStmt->execute([
+                $name,
+                $short_desc,
+                $classes,
+                $lessons,
+                $units,
+                $topics,
+                $sub_topics,
+                $cover_img_path,
+                $mcontent,
+                $content_id
+            ]);
 
-        // Video URL'leri ekleme (eski veriler siliniyor, yeni ekleniyor)
-        $pdo->prepare("DELETE FROM school_content_videos_url WHERE school_content_id = ?")->execute([$content_id]);
-        $insertVideoStmt = $pdo->prepare("INSERT INTO school_content_videos_url (video_url, school_content_id) VALUES (?, ?)");
-        foreach ($video_urls as $url) {
-            if (!empty($url)) {
-                $insertVideoStmt->execute([$url, $content_id]);
-            }
-        }
-
-        // WordWall ekleme
-        $pdo->prepare("DELETE FROM school_content_wordwall_lnp WHERE school_content_id = ?")->execute([$content_id]);
-        $insertWordWallStmt = $pdo->prepare("INSERT INTO school_content_wordwall_lnp (school_content_id, wordwall_url, wordwall_title) VALUES (?, ?, ?)");
-        foreach ($wordWallUrls as $index => $url) {
-            $title = $wordWallTitles[$index] ?? '';
-            if (!empty($url)) {
-                $insertWordWallStmt->execute([$content_id, $url, $title]);
-            }
-        }
-
-        // Dosya yükleme ve ekleme
-        $uploadDir = '../uploads/contents/';
-        if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
-
-        $insertFileStmt = $pdo->prepare("INSERT INTO school_content_files_lnp (school_content_id, file_path, description) VALUES (?, ?, ?)");
-        foreach ($file_paths['name'] ?? [] as $index => $name) {
-            if ($file_paths['error'][$index] === 0) {
-                $tmpPath = $file_paths['tmp_name'][$index];
-                $filename = uniqid() . '_' . basename($name);
-                $uploadPath = $uploadDir . $filename;
-                if (move_uploaded_file($tmpPath, $uploadPath)) {
-                    $description = $fileDescriptions[$index] ?? '';
-                    $insertFileStmt->execute([$content_id, $uploadPath, $description]);
+            // Video URL'leri ekleme (eski veriler siliniyor, yeni ekleniyor)
+            $pdo->prepare("DELETE FROM school_content_videos_url WHERE school_content_id = ?")->execute([$content_id]);
+            $insertVideoStmt = $pdo->prepare("INSERT INTO school_content_videos_url (video_url, school_content_id) VALUES (?, ?)");
+            foreach ($video_urls as $url) {
+                if (!empty($url)) {
+                    $insertVideoStmt->execute([$url, $content_id]);
                 }
             }
-        }
 
-        $pdo->commit();
-        echo json_encode(['status' => 'success', 'message' => 'İçerik başarıyla güncellendi.']);
-    } catch (Exception $e) {
-        $pdo->rollBack();
-        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
-    }
-    break;
+            // WordWall ekleme
+            $pdo->prepare("DELETE FROM school_content_wordwall_lnp WHERE school_content_id = ?")->execute([$content_id]);
+            $insertWordWallStmt = $pdo->prepare("INSERT INTO school_content_wordwall_lnp (school_content_id, wordwall_url, wordwall_title) VALUES (?, ?, ?)");
+            foreach ($wordWallUrls as $index => $url) {
+                $title = $wordWallTitles[$index] ?? '';
+                if (!empty($url)) {
+                    $insertWordWallStmt->execute([$content_id, $url, $title]);
+                }
+            }
+
+            // Dosya yükleme ve ekleme
+            $uploadDir = '../uploads/contents/';
+            if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+
+            $insertFileStmt = $pdo->prepare("INSERT INTO school_content_files_lnp (school_content_id, file_path, description) VALUES (?, ?, ?)");
+            foreach ($file_paths['name'] ?? [] as $index => $name) {
+                if ($file_paths['error'][$index] === 0) {
+                    $tmpPath = $file_paths['tmp_name'][$index];
+                    $filename = uniqid() . '_' . basename($name);
+                    $uploadPath = $uploadDir . $filename;
+                    if (move_uploaded_file($tmpPath, $uploadPath)) {
+                        $description = $fileDescriptions[$index] ?? '';
+                        $insertFileStmt->execute([$content_id, $uploadPath, $description]);
+                    }
+                }
+            }
+
+            $pdo->commit();
+            echo json_encode(['status' => 'success', 'message' => 'İçerik başarıyla güncellendi.']);
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        break;
 
 
     case 'deleteContentFile':
@@ -4305,6 +4305,145 @@ ORDER BY msu.unit_order asc
             echo json_encode(['status' => 'error', 'message' => 'Güncelleme başarısız.']);
         }
         exit;
+        break;
+    case 'canli-video':
+
+
+    case 'canli-video':
+        $title   = $_POST['title'] ?? null;
+        $date    = $_POST['date_time'] ?? null; // frontend'den gelen tarih
+        $userId  = $_SESSION['id'] ?? null;     // oturum açan kullanıcı
+        $classId = $_POST['class_id'] ?? null;  // Sınıf ID'si
+
+
+        if (!$title || !$date || !$userId) {
+            echo json_encode(['success' => false, 'message' => 'Eksik bilgi gönderildi.']);
+            exit();
+        }
+
+        try {
+            // Zoom meeting oluşturma için hazırlık
+            require_once '../zoom/ZoomTokenManager.php';
+            $zoom = new ZoomTokenManager();
+            $access_token = $zoom->getAccessToken();
+            $start_time = date('Y-m-d\TH:i:s', strtotime($date));
+            $zoomUserId = 'me';
+
+            $meeting_details = [
+                'topic' => $title,
+                'type' => 2,
+                'start_time' => $start_time,
+                'duration' => 60,
+                'timezone' => 'Europe/Istanbul',
+                'settings' => [
+                    'host_video' => true,
+                    'participant_video' => true,
+                    'auto_recording' => 'cloud',
+                ],
+            ];
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, "https://api.zoom.us/v2/users/{$zoomUserId}/meetings");
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                "Authorization: Bearer $access_token",
+                "Content-Type: application/json",
+            ]);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($meeting_details));
+
+            $response = curl_exec($ch);
+            $err = curl_error($ch);
+            curl_close($ch);
+
+            if ($err) {
+                error_log("Zoom API Hatası: " . $err);
+                echo json_encode(['success' => false, 'message' => 'Zoom bağlantısı kurulamadı.', 'zoom_error' => $err]);
+                exit();
+            }
+
+            $zoomResponse = json_decode($response, true);
+            if (!isset($zoomResponse['join_url'], $zoomResponse['start_url'])) {
+                error_log("Zoom Yanıtı Geçersiz: " . $response);
+                echo json_encode(['success' => false, 'message' => 'Zoom toplantısı oluşturulamadı.', 'zoom_error' => $response]);
+                exit();
+            }
+
+            $joinUrl = $zoomResponse['join_url'];
+            $startUrl = $zoomResponse['start_url'];
+
+            // meetings_lnp tablosuna kaydet
+            $stmt = $pdo->prepare("
+            INSERT INTO meetings_lnp 
+            (organizer_id, description, meeting_date, zoom_join_url, zoom_start_url,class_id,role) 
+            VALUES (?, ?, ?, ?, ?,?,?)
+        ");
+            $result = $stmt->execute([
+                $userId,
+                $title,
+                $date,
+                $joinUrl,
+                $startUrl,
+                $classId,
+                $_SESSION['role']
+            ]);
+
+            if ($result) {
+                echo json_encode(['status' => 'success', 'message' => 'Canlı ders başarıyla oluşturuldu.']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Veritabanına kayıt yapılamadı.']);
+            }
+        } catch (Exception $e) {
+            error_log("Canlı Video Hatası: " . $e->getMessage());
+            echo json_encode(['success' => false, 'message' => 'Bir hata oluştu.', 'error' => $e->getMessage()]);
+        }
+
+        break;
+
+    case 'canli-video-delete':
+        $id = $_POST['meeting_id'] ?? null;
+
+        if (!$id) {
+            echo json_encode(['status' => 'error', 'message' => 'Geçersiz ID.']);
+            exit();
+        }
+
+        try {
+            $stmt = $pdo->prepare("DELETE FROM meetings_lnp WHERE id = ?");
+            $result = $stmt->execute([$id]);
+
+            if ($result) {
+                echo json_encode(['status' => 'success', 'message' => 'Canlı ders silindi.']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Silme işlemi başarısız.']);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Bir hata oluştu: ' . $e->getMessage()]);
+        }
+        break;
+    case 'canli-video-update':
+        $id = $_POST['meeting_id'] ?? null;
+        $title = $_POST['title'] ?? null;
+        $date = $_POST['date_time'] ?? null;
+        $classId = $_POST['class_id'] ?? null;
+
+        if (!$id || !$title || !$date) {
+            echo json_encode(['status' => 'error', 'message' => 'Eksik bilgi gönderildi.']);
+            exit();
+        }
+
+        try {
+            $stmt = $pdo->prepare("UPDATE meetings_lnp SET description = ?, meeting_date = ?, class_id = ? WHERE id = ?");
+            $result = $stmt->execute([$title, $date, $classId, $id]);
+
+            if ($result) {
+                echo json_encode(['status' => 'success', 'message' => 'Canlı ders güncellendi.']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Güncelleme işlemi başarısız.']);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Bir hata oluştu: ' . $e->getMessage()]);
+        }
         break;
 
     default:

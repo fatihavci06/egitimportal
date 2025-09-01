@@ -108,7 +108,9 @@ class Login extends Dbh
 
 	protected function getUser($email, $password)
 	{
-		session_start();
+		if (session_status() == PHP_SESSION_NONE) {
+			session_start();
+		}
 
 		$atemptData = $this->attemptNumber();
 		$total_count = $atemptData['total_count'];
