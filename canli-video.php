@@ -15,7 +15,7 @@ if (isset($_SESSION['role'])) {
         $list = $liveVideoList->getLiveVideo();
     }
 
-    $classList = $liveVideoList->getClassesList();
+    
 
     if ($_SESSION['role'] == 1) {
         $classList = $liveVideoList->getClasses();

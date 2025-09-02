@@ -234,33 +234,65 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </div>
 
                                             <!--begin::Table-->
+                                            <div class=" ">
+                                                <div class="">
+                                                    <div class="">
+                                                        
+                                                        <div class="row ">
+                                                            <div class="col-md-6 col-lg-5">
+                                                                <select class="form-select form-select-solid" id="class-filter">
+                                                                    <option value="">Tüm Yaş Grupları</option>
+                                                                    <?php
+                                                                    $list = $class->getMainSchoolTopicList();
+
+                                                                    $classes = [];
+                                                                    foreach ($list as $value) {
+                                                                        if (!in_array($value['class_name'], $classes)) {
+                                                                            $classes[] = $value['class_name'];
+                                                                            echo '<option value="' . htmlspecialchars($value['class_name']) . '">' . htmlspecialchars($value['class_name']) . '</option>';
+                                                                        }
+                                                                    }
+                                                                    ?>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-6 col-lg-5">
+                                                                <select class="form-select form-select-solid" id="lesson-filter">
+                                                                    <option value="">Tüm Dersler</option>
+                                                                    <?php
+                                                                    $lessons = [];
+                                                                    foreach ($list as $value) {
+                                                                        if (!in_array($value['lesson_name'], $lessons)) {
+                                                                            $lessons[] = $value['lesson_name'];
+                                                                            echo '<option value="' . htmlspecialchars($value['lesson_name']) . '">' . htmlspecialchars($value['lesson_name']) . '</option>';
+                                                                        }
+                                                                    }
+                                                                    ?>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-12 col-lg-2">
+                                                                <button type="button" class="btn btn-primary w-100" id="apply-filters-btn">
+                                                                    Filtrele
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                             <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_customers_table">
                                                 <thead>
                                                     <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                        <th class="w-10px pe-2">
-                                                            <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                                                <input class="form-check-input" type="checkbox" data-kt-check="true" data-kt-check-target="#kt_customers_table .form-check-input" value="1" />
-                                                            </div>
-                                                        </th>
+                                                        <th class="min-w-125px">Yaş Grubu</th>
                                                         <th class="min-w-125px">Ders</th>
                                                         <th class="min-w-125px">Ünite</th>
                                                         <th class="min-w-125px">Konu</th>
-
                                                         <th class="text-end min-w-70px">İşlemler</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="fw-semibold text-gray-600">
-                                                    <?php
-                                                    $list = $class->getMainSchoolTopicList();
-
-
-                                                    foreach ($list as $key => $value): ?>
-                                                        <tr>
-                                                            <td>
-                                                                <div class="form-check form-check-sm form-check-custom form-check-solid">
-                                                                    <input class="form-check-input" type="checkbox" value="1" />
-                                                                </div>
-                                                            </td>
+                                                    <?php foreach ($list as $value): ?>
+                                                        <tr data-class="<?= htmlspecialchars($value['class_name']) ?>" data-lesson="<?= htmlspecialchars($value['lesson_name']) ?>">
+                                                            <td><?= htmlspecialchars($value['class_name']) ?></td>
                                                             <td>
                                                                 <a href="#" class="text-gray-800 text-hover-primary mb-1">
                                                                     <?= htmlspecialchars($value['lesson_name']) ?>
@@ -276,42 +308,26 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                     <?= htmlspecialchars($value['topic_name']) ?>
                                                                 </a>
                                                             </td>
-
                                                             <td class="text-end">
-                                                                <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
-                                                                    data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
+                                                                <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                                                    İşlemler
                                                                     <i class="ki-duotone ki-down fs-5 ms-1"></i>
                                                                 </a>
-
-                                                                <!--begin::Menu-->
-                                                                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
-                                                                    data-kt-menu="true">
-
-
-                                                                    <!--begin::Menu item-->
+                                                                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true">
                                                                     <div class="menu-item px-3">
                                                                         <a href="#" class="menu-link px-3" data-bs-toggle="modal" data-bs-target="#updateTopicModal" data-id="<?= htmlspecialchars($value['id']) ?>">
                                                                             Güncelle
                                                                         </a>
                                                                     </div>
-
-                                                                    <!--begin::Menu item-->
                                                                     <div class="menu-item px-3">
-                                                                        <a href="javascript:void(0);"
-                                                                            class="menu-link px-3"
-                                                                            data-kt-customer-table-filter="delete_row"
-                                                                            onclick="handleDelete({ id: '<?= htmlspecialchars($value['id']) ?>', url: 'includes/ajax.php?service=deleteMainSchoolTopic' })">
+                                                                        <a href="javascript:void(0);" class="menu-link px-3" data-kt-customer-table-filter="delete_row" onclick="handleDelete({ id: '<?= htmlspecialchars($value['id']) ?>', url: 'includes/ajax.php?service=deleteMainSchoolTopic' })">
                                                                             Sil
                                                                         </a>
                                                                     </div>
-                                                                    <!--end::Menu item-->
                                                                 </div>
-                                                                <!--end::Menu-->
                                                             </td>
                                                         </tr>
-                                                    <?php endforeach;
-
-                                                    ?>
+                                                    <?php endforeach; ?>
                                                 </tbody>
                                             </table>
                                             <!--end::Table-->
@@ -366,137 +382,184 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/js/fatih.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-               
+                const customerTable = $('#kt_customers_table').DataTable({
+                    "pageLength": 10, // Sayfa başına 10 satır göster
+                    "lengthMenu": [
+                        [10, 25, 50, -1],
+                        [10, 25, 50, "Tümü"]
+                    ],
+                    language: {
+                            decimal: ",",
+                            thousands: ".",
+                            emptyTable: "Tabloda herhangi bir veri mevcut değil",
+                            info: "_TOTAL_ kayıttan _START_ - _END_ arası gösteriliyor",
+                            infoEmpty: "Kayıt yok",
+                            infoFiltered: "(_MAX_ kayıt içerisinden filtrelendi)",
+                            lengthMenu: "Sayfada _MENU_ kayıt göster",
+                            loadingRecords: "Yükleniyor...",
+                            processing: "İşleniyor...",
+                            search: "Ara:",
+                            zeroRecords: "Eşleşen kayıt bulunamadı",
+                            paginate: {
+                                first: "İlk",
+                                last: "Son",
+                                next: "Sonraki",
+                                previous: "Önceki"
+                            }
+                        },
+                });
+
+                const classFilter = $('#class-filter');
+                const lessonFilter = $('#lesson-filter');
+                const applyFiltersBtn = $('#apply-filters-btn');
+
+                function applyFilters() {
+                    const selectedClass = classFilter.val();
+                    const selectedLesson = lessonFilter.val();
+
+                    // Sadece seçili olan filtreleri uygula
+                    // 0. sütun 'Yaş Grubu'
+                    customerTable.column(0).search(selectedClass).draw();
+
+                    // 1. sütun 'Ders'
+                    customerTable.column(1).search(selectedLesson).draw();
+                }
+
+                // Butona tıklandığında filtreleme fonksiyonunu çağır
+                applyFiltersBtn.on('click', applyFilters);
+
+                // İlk yüklemede tüm verileri göster
+                applyFilters();
                 var updateTopicModal = document.getElementById('updateTopicModal');
 
                 updateTopicModal.addEventListener('show.bs.modal', function(event) {
-    var button = event.relatedTarget;
-    var topicId = button.getAttribute('data-id');
+                    var button = event.relatedTarget;
+                    var topicId = button.getAttribute('data-id');
 
-    // Form alanlarını temizle ve varsayılan yükleniyor mesajlarını göster
-    // class_id'yi bu noktada temizlemek yerine, ilk fetch'ten gelen değerle dolduracağız.
-    // Ancak boş bir durumdan başlamak istiyorsak, burada temizleyebiliriz.
-    // updateTopicModal.querySelector('#class_id').value = ''; // Bu satırı şimdilik kaldırıyorum veya ilk topicData'dan sonra dolduracağım
-    updateTopicModal.querySelector('#lesson_id').innerHTML = '<option>Dersler Yükleniyor...</option>';
-    updateTopicModal.querySelector('#unit_id').innerHTML = '<option>Üniteler Yükleniyor...</option>';
-    updateTopicModal.querySelector('#topic_name').value = '';
+                    // Form alanlarını temizle ve varsayılan yükleniyor mesajlarını göster
+                    // class_id'yi bu noktada temizlemek yerine, ilk fetch'ten gelen değerle dolduracağız.
+                    // Ancak boş bir durumdan başlamak istiyorsak, burada temizleyebiliriz.
+                    // updateTopicModal.querySelector('#class_id').value = ''; // Bu satırı şimdilik kaldırıyorum veya ilk topicData'dan sonra dolduracağım
+                    updateTopicModal.querySelector('#lesson_id').innerHTML = '<option>Dersler Yükleniyor...</option>';
+                    updateTopicModal.querySelector('#unit_id').innerHTML = '<option>Üniteler Yükleniyor...</option>';
+                    updateTopicModal.querySelector('#topic_name').value = '';
 
-    // 1) Önce konu (topic) verisini çek
-    fetch('includes/ajax.php?service=mainSchoolGetTopic&id=' + topicId)
-        .then(response => response.json())
-        .then(topicData => {
-            if (topicData.status === 'success') {
-                var classId = topicData.data.class_id;
-                var selectedLessonId = topicData.data.lesson_id;
-                var selectedUnitId = topicData.data.unit_id;
+                    // 1) Önce konu (topic) verisini çek
+                    fetch('includes/ajax.php?service=mainSchoolGetTopic&id=' + topicId)
+                        .then(response => response.json())
+                        .then(topicData => {
+                            if (topicData.status === 'success') {
+                                var classId = topicData.data.class_id;
+                                var selectedLessonId = topicData.data.lesson_id;
+                                var selectedUnitId = topicData.data.unit_id;
 
-                // Form alanlarını doldur
-                // class_id'yi burada set ediyoruz
-                updateTopicModal.querySelector('#class_id').value = classId;
-                updateTopicModal.querySelector('#topic_name').value = topicData.data.topic_name;
-                updateTopicModal.querySelector('#topic_id').value = topicData.data.id;
+                                // Form alanlarını doldur
+                                // class_id'yi burada set ediyoruz
+                                updateTopicModal.querySelector('#class_id').value = classId;
+                                updateTopicModal.querySelector('#topic_name').value = topicData.data.topic_name;
+                                updateTopicModal.querySelector('#topic_id').value = topicData.data.id;
 
-                // 2) Şimdi class_id'ye bağlı lessonları çek (select elemanlarını doldur)
-                fetch('includes/ajax.php?service=mainSchoolGetLessons', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: 'class_id=' + encodeURIComponent(classId) // Buradaki classId, topicData'dan gelen doğru değerdir.
-                    })
-                    .then(response => response.json())
-                    .then(lessonData => {
-                        var lessonSelect = updateTopicModal.querySelector('#lesson_id');
-                        lessonSelect.innerHTML = ''; // Temizle
+                                // 2) Şimdi class_id'ye bağlı lessonları çek (select elemanlarını doldur)
+                                fetch('includes/ajax.php?service=mainSchoolGetLessons', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/x-www-form-urlencoded',
+                                        },
+                                        body: 'class_id=' + encodeURIComponent(classId) // Buradaki classId, topicData'dan gelen doğru değerdir.
+                                    })
+                                    .then(response => response.json())
+                                    .then(lessonData => {
+                                        var lessonSelect = updateTopicModal.querySelector('#lesson_id');
+                                        lessonSelect.innerHTML = ''; // Temizle
 
-                        if (lessonData.status === 'success' && lessonData.data.length > 0) {
-                            lessonData.data.forEach(function(lesson) {
-                                var option = document.createElement('option');
-                                option.value = lesson.id;
-                                option.textContent = lesson.name;
+                                        if (lessonData.status === 'success' && lessonData.data.length > 0) {
+                                            lessonData.data.forEach(function(lesson) {
+                                                var option = document.createElement('option');
+                                                option.value = lesson.id;
+                                                option.textContent = lesson.name;
 
-                                if (lesson.id == selectedLessonId) {
-                                    option.selected = true;
-                                }
-                                lessonSelect.appendChild(option);
-                            });
-                        } else {
-                            lessonSelect.innerHTML = '<option disabled>Ders bulunamadı</option>';
-                        }
+                                                if (lesson.id == selectedLessonId) {
+                                                    option.selected = true;
+                                                }
+                                                lessonSelect.appendChild(option);
+                                            });
+                                        } else {
+                                            lessonSelect.innerHTML = '<option disabled>Ders bulunamadı</option>';
+                                        }
 
-                        // 3) lesson_id'ye ve **class_id**'ye bağlı unit'leri çek
-                        // Bu adım, lessonSelect'in doğru selectedLessonId ile doldurulmasından sonra çalışmalı.
-                        // currentSelectedLessonId artık lessonSelect'in value'su veya topicData'dan gelen selectedLessonId olabilir.
-                        const currentSelectedLessonId = lessonSelect.value;
+                                        // 3) lesson_id'ye ve **class_id**'ye bağlı unit'leri çek
+                                        // Bu adım, lessonSelect'in doğru selectedLessonId ile doldurulmasından sonra çalışmalı.
+                                        // currentSelectedLessonId artık lessonSelect'in value'su veya topicData'dan gelen selectedLessonId olabilir.
+                                        const currentSelectedLessonId = lessonSelect.value;
 
-                        // classId değişkeni zaten yukarıda topicData'dan alınmıştı.
-                        // Bu değeri doğrudan kullanabiliriz, tekrar DOM'dan çekmeye gerek yok.
-                        const currentSelectedClassId = classId; // topicData'dan gelen classId'yi kullan
+                                        // classId değişkeni zaten yukarıda topicData'dan alınmıştı.
+                                        // Bu değeri doğrudan kullanabiliriz, tekrar DOM'dan çekmeye gerek yok.
+                                        const currentSelectedClassId = classId; // topicData'dan gelen classId'yi kullan
 
-                        if (currentSelectedLessonId && currentSelectedClassId) { // Hem ders hem de sınıf ID'si varsa devam et
-                            const bodyData = new URLSearchParams();
-                            bodyData.append('lesson_id', currentSelectedLessonId);
-                            bodyData.append('class_id', currentSelectedClassId); // Doğru classId'yi gönderiyoruz
-                            console.log('Fetching units with class_id:', currentSelectedClassId, 'and lesson_id:', currentSelectedLessonId); // Debug için
+                                        if (currentSelectedLessonId && currentSelectedClassId) { // Hem ders hem de sınıf ID'si varsa devam et
+                                            const bodyData = new URLSearchParams();
+                                            bodyData.append('lesson_id', currentSelectedLessonId);
+                                            bodyData.append('class_id', currentSelectedClassId); // Doğru classId'yi gönderiyoruz
+                                            console.log('Fetching units with class_id:', currentSelectedClassId, 'and lesson_id:', currentSelectedLessonId); // Debug için
 
-                            fetch('includes/ajax.php?service=mainSchoolGetUnits', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/x-www-form-urlencoded',
-                                    },
-                                    body: bodyData.toString()
-                                })
-                                .then(response => response.json())
-                                .then(unitData => {
-                                    const unitSelect = updateTopicModal.querySelector('#unit_id');
-                                    unitSelect.innerHTML = ''; // Temizle
+                                            fetch('includes/ajax.php?service=mainSchoolGetUnits', {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/x-www-form-urlencoded',
+                                                    },
+                                                    body: bodyData.toString()
+                                                })
+                                                .then(response => response.json())
+                                                .then(unitData => {
+                                                    const unitSelect = updateTopicModal.querySelector('#unit_id');
+                                                    unitSelect.innerHTML = ''; // Temizle
 
-                                    if (unitData.status === 'success' && unitData.data.length > 0) {
-                                        unitData.data.forEach(function(unit) {
-                                            const option = document.createElement('option');
-                                            option.value = unit.id;
-                                            option.textContent = unit.name;
+                                                    if (unitData.status === 'success' && unitData.data.length > 0) {
+                                                        unitData.data.forEach(function(unit) {
+                                                            const option = document.createElement('option');
+                                                            option.value = unit.id;
+                                                            option.textContent = unit.name;
 
-                                            if (unit.id == selectedUnitId) {
-                                                option.selected = true;
-                                            }
-                                            unitSelect.appendChild(option);
-                                        });
-                                    } else {
-                                        unitSelect.innerHTML = '<option disabled>Ünite bulunamadı</option>';
-                                    }
-                                })
-                                .catch(err => {
-                                    console.error('Üniteler alınamadı', err);
-                                    updateTopicModal.querySelector('#unit_id').innerHTML = '<option disabled>Hata oluştu</option>';
-                                });
-                        } else {
-                            updateTopicModal.querySelector('#unit_id').innerHTML = '<option disabled>Ders veya Sınıf ID eksik</option>';
-                        }
+                                                            if (unit.id == selectedUnitId) {
+                                                                option.selected = true;
+                                                            }
+                                                            unitSelect.appendChild(option);
+                                                        });
+                                                    } else {
+                                                        unitSelect.innerHTML = '<option disabled>Ünite bulunamadı</option>';
+                                                    }
+                                                })
+                                                .catch(err => {
+                                                    console.error('Üniteler alınamadı', err);
+                                                    updateTopicModal.querySelector('#unit_id').innerHTML = '<option disabled>Hata oluştu</option>';
+                                                });
+                                        } else {
+                                            updateTopicModal.querySelector('#unit_id').innerHTML = '<option disabled>Ders veya Sınıf ID eksik</option>';
+                                        }
 
-                    })
-                    .catch(err => {
-                        console.error('Dersler alınamadı', err);
-                        updateTopicModal.querySelector('#lesson_id').innerHTML = '<option disabled>Hata oluştu</option>';
-                        updateTopicModal.querySelector('#unit_id').innerHTML = '<option disabled>Ders seçilmedi</option>';
-                    });
+                                    })
+                                    .catch(err => {
+                                        console.error('Dersler alınamadı', err);
+                                        updateTopicModal.querySelector('#lesson_id').innerHTML = '<option disabled>Hata oluştu</option>';
+                                        updateTopicModal.querySelector('#unit_id').innerHTML = '<option disabled>Ders seçilmedi</option>';
+                                    });
 
-            } else {
-                alert('Konu verisi alınamadı.');
-            }
-        })
-        .catch(error => {
-            console.error('Sunucu hatası:', error);
-            alert('Konu verisi çekilirken sunucu hatası.');
-        });
-});
+                            } else {
+                                alert('Konu verisi alınamadı.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Sunucu hatası:', error);
+                            alert('Konu verisi çekilirken sunucu hatası.');
+                        });
+                });
 
                 // Class seçimi değiştiğinde lesson ve unit dropdown'larını güncelle
                 // Bu kısım, modal açıldıktan sonra kullanıcının class değiştirmesi durumunda gereklidir.
                 // Eğer sadece başlangıçta doldurulacaksa bu listener'a gerek yok.
                 // Ama dinamik olarak değişmesini istiyorsanız bu bloğu ekleyin.
                 updateTopicModal.querySelector('#class_id').addEventListener('change', function() {
-                     
+
                     var classId = this.value;
                     var lessonSelect = updateTopicModal.querySelector('#lesson_id');
                     var unitSelect = updateTopicModal.querySelector('#unit_id');
@@ -525,7 +588,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                     // Dersler yüklendikten sonra ilk dersin id'sini alarak unitleri yükle
                                     // veya eğer dersin de değişmesi bekleniyorsa, ayrı bir listener ekle
                                     if (lessonSelect.value) {
-                                       
+
                                         loadUnitsForUpdateTopicModal(lessonSelect.value); // Yardımcı fonksiyon çağır
                                     } else {
                                         unitSelect.innerHTML = '<option disabled>Ders seçin</option>';
@@ -554,48 +617,48 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                 // Helper function to load units
                 function loadUnitsForUpdateTopicModal(lessonId) {
-    const unitSelect = updateTopicModal.querySelector('#unit_id');
-    unitSelect.innerHTML = '<option>Üniteler Yükleniyor...</option>';
+                    const unitSelect = updateTopicModal.querySelector('#unit_id');
+                    unitSelect.innerHTML = '<option>Üniteler Yükleniyor...</option>';
 
-    // updateTopicModal içinden class_id’yi al
-    const classId = updateTopicModal.querySelector('#class_id')?.value;
+                    // updateTopicModal içinden class_id’yi al
+                    const classId = updateTopicModal.querySelector('#class_id')?.value;
 
-    if (!lessonId || !classId) {
-        unitSelect.innerHTML = '<option disabled>Ders ve sınıf seçilmeli</option>';
-        return;
-    }
+                    if (!lessonId || !classId) {
+                        unitSelect.innerHTML = '<option disabled>Ders ve sınıf seçilmeli</option>';
+                        return;
+                    }
 
-    const bodyData = new URLSearchParams();
-    bodyData.append('lesson_id', lessonId);
-    bodyData.append('class_id', classId);
+                    const bodyData = new URLSearchParams();
+                    bodyData.append('lesson_id', lessonId);
+                    bodyData.append('class_id', classId);
 
-    fetch('includes/ajax.php?service=mainSchoolGetUnits', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: bodyData.toString()
-    })
-    .then(response => response.json())
-    .then(unitData => {
-        unitSelect.innerHTML = '';
+                    fetch('includes/ajax.php?service=mainSchoolGetUnits', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: bodyData.toString()
+                        })
+                        .then(response => response.json())
+                        .then(unitData => {
+                            unitSelect.innerHTML = '';
 
-        if (unitData.status === 'success' && Array.isArray(unitData.data) && unitData.data.length > 0) {
-            unitData.data.forEach(unit => {
-                const option = document.createElement('option');
-                option.value = unit.id;
-                option.textContent = unit.name;
-                unitSelect.appendChild(option);
-            });
-        } else {
-            unitSelect.innerHTML = '<option disabled>Ünite bulunamadı</option>';
-        }
-    })
-    .catch(err => {
-        console.error('Üniteler alınamadı:', err);
-        unitSelect.innerHTML = '<option disabled>Sunucu hatası</option>';
-    });
-}
+                            if (unitData.status === 'success' && Array.isArray(unitData.data) && unitData.data.length > 0) {
+                                unitData.data.forEach(unit => {
+                                    const option = document.createElement('option');
+                                    option.value = unit.id;
+                                    option.textContent = unit.name;
+                                    unitSelect.appendChild(option);
+                                });
+                            } else {
+                                unitSelect.innerHTML = '<option disabled>Ünite bulunamadı</option>';
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Üniteler alınamadı:', err);
+                            unitSelect.innerHTML = '<option disabled>Sunucu hatası</option>';
+                        });
+                }
 
             });
 
@@ -642,7 +705,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 });
                 $('#lesson_id').on('change', function() {
                     var selectedLessonId = $(this).val();
-                    console.log('ss'+$('#class_id').val());
+                    console.log('ss' + $('#class_id').val());
 
                     $.ajax({
                         url: 'includes/ajax.php?service=mainSchoolGetUnits', // Backend dosyanın yolu

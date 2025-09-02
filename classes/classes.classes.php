@@ -1155,8 +1155,9 @@ WHERE t.id = :id";
 	public function getMainSchoolTopicList()
 	{
 
-		$stmt = $this->connect()->prepare('SELECT t.id id, u.name unit_name,l.name lesson_name,t.name topic_name FROM main_school_topics_lnp t
+		$stmt = $this->connect()->prepare('SELECT c.name as class_name,t.id id, u.name unit_name,l.name lesson_name,t.name topic_name FROM main_school_topics_lnp t
 		inner JOIN main_school_units_lnp u on t.unit_id=u.id
+		inner JOIN classes_lnp c on u.class_id=c.id
 		inner JOIN main_school_lessons_lnp l on u.lesson_id=l.id;  ');
 
 		if (!$stmt->execute(array())) {

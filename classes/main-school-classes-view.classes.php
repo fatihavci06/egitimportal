@@ -17,13 +17,9 @@ class ShowClass extends Classes
 
             $classList = '
                 <tr>
+                   
                     <td>
-                        <div class="form-check form-check-sm form-check-custom form-check-solid">
-                            <input class="form-check-input" type="checkbox" value="1" />
-                        </div>
-                    </td>
-                    <td>
-                        <a href="#" class="text-gray-800 text-hover-primary mb-1">' . htmlspecialchars($value['name']) . '</a>
+                       ' . htmlspecialchars($value['name']) . '
                     </td>
                     <td class="text-end">
                         <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
@@ -45,14 +41,7 @@ class ShowClass extends Classes
                             </div>
         
                             <!--begin::Menu item-->
-                            <div class="menu-item px-3">
-                                <a href="javascript:void(0);" 
-                                   class="menu-link px-3" 
-                                   data-kt-customer-table-filter="delete_row"
-                                   onclick="handleDelete({ id: ' . $value['id'] . ', url: \'includes/ajax.php?service=deleteMainGroup\' })">
-                                   Pasif Yap
-                                </a>
-                            </div>
+                           
                             <!--end::Menu item-->
                         </div>
                         <!--end::Menu-->

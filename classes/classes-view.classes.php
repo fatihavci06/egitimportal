@@ -8,7 +8,7 @@ class ShowClass extends Classes
 
     public function getMainSchoolClassList()
     {
-
+        
         $classInfo = $this->getMainSchoolClassesList();
 
         $dateFormat = new DateFormat();
@@ -17,11 +17,7 @@ class ShowClass extends Classes
 
             $classList = '
                     <tr>
-                        <td>
-                            <div class="form-check form-check-sm form-check-custom form-check-solid">
-                                <input class="form-check-input" type="checkbox" value="1" />
-                            </div>
-                        </td>
+                       
                         <td>
                             <a href="#" class="text-gray-800 text-hover-primary mb-1">' . $value['name'] . '</a>
                         </td>
@@ -39,8 +35,8 @@ class ShowClass extends Classes
                                 <!--end::Menu item-->
                                 <!--begin::Menu item-->
                                 <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
-                                </div>
+                                   <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">Pasif Yap</a>
+                                 </div>
                                 
                                 <!--end::Menu item-->
                             </div>
