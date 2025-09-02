@@ -211,7 +211,80 @@ class Units extends Dbh
 				$stmt = null;
 				exit();
 			}
-		} elseif (($_SESSION['role'] == 3) or ($_SESSION['role'] == 8)) {
+		} elseif ($_SESSION['role'] == 8) {
+
+			$school = "1";
+
+			$filtre_durum = isset($_GET['durum']) ? $_GET['durum'] : '';
+			$filtre_ders = isset($_GET['ders']) ? $_GET['ders'] : '';
+			$filtre_sinif = isset($_GET['sinif']) ? $_GET['sinif'] : '';
+
+			$sql = '
+			SELECT units_lnp.id AS unitID, 
+			units_lnp.name AS unitName, 
+			units_lnp.slug AS unitSlug, 
+			
+			units_lnp.start_date AS unitStartDate, 
+			units_lnp.end_date AS unitEndDate, 
+			units_lnp.order_no AS unitOrder, 
+			units_lnp.active AS unitActive, 
+			classes_lnp.name AS className, 
+			classes_lnp.slug AS classSlug, 
+			lessons_lnp.name AS lessonName 
+			FROM units_lnp 
+			INNER JOIN classes_lnp ON units_lnp.class_id = classes_lnp.id 
+			INNER JOIN lessons_lnp ON units_lnp.lesson_id = lessons_lnp.id';
+
+			$whereClauses = [];
+			$parameters = [];
+
+			$whereClauses[] = "units_lnp.school_id = ?";
+			$parameters[] = $school;
+
+			// Durum filtresi varsa ekle
+			if (!empty($filtre_durum)) {
+				if ($filtre_durum == 'aktif') {
+					$filtre_durum = 1;
+				} elseif ($filtre_durum == 'pasif') {
+					$filtre_durum = 0;
+				}
+				$whereClauses[] = "units_lnp.active = ?";
+				$parameters[] = $filtre_durum;
+			}
+
+			// Ders filtresi varsa ekle
+			if (!empty($filtre_ders)) {
+				$whereClauses[] = "units_lnp.lesson_id = ?";
+				$parameters[] = $filtre_ders;
+			}
+
+			// Sınıf filtresi varsa ekle
+			if (!empty($filtre_sinif)) {
+				$whereClauses[] = "units_lnp.class_id = ?";
+				$parameters[] = $filtre_sinif;
+			}
+
+			// WHERE koşulları varsa sorguya ekle
+			if (!empty($whereClauses)) {
+				$sql .= " WHERE " . implode(" AND ", $whereClauses);
+			}
+
+			$stmt = $this->connect()->prepare($sql);
+
+			if (!$stmt->execute($parameters)) {
+				$stmt = null;
+				exit();
+			}
+
+			/* 
+			$school = $_SESSION['school_id'];
+			$stmt = $this->connect()->prepare('SELECT units_lnp.id AS unitID, units_lnp.name AS unitName, units_lnp.slug AS unitSlug, units_lnp.start_date AS unitStartDate, units_lnp.end_date AS unitEndDate, units_lnp.order_no AS unitOrder, units_lnp.active AS unitActive, classes_lnp.name AS className, classes_lnp.slug AS classSlug, lessons_lnp.name AS lessonName FROM units_lnp INNER JOIN classes_lnp ON units_lnp.class_id = classes_lnp.id INNER JOIN lessons_lnp ON units_lnp.lesson_id = lessons_lnp.id WHERE units_lnp.school_id = ?');
+
+			if (!$stmt->execute(array($school))) {
+				$stmt = null;
+				exit();
+			} */
+		} elseif (($_SESSION['role'] == 3) /*or ($_SESSION['role'] == 8)*/) {
 
 			$school = $_SESSION['school_id'];
 

@@ -143,7 +143,10 @@ if (isset($_SESSION['role'])) {
                                                                 <?php endforeach; ?>
                                                             <?php else: ?>
                                                                 <tr>
-                                                                    <td colspan="4" class="text-center">Henüz toplantı yok</td>
+                                                                    <td class="text-center">Henüz toplantı yok</td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td></td>
                                                                 </tr>
                                                             <?php endif; ?>
                                                         </tbody>

@@ -213,9 +213,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <!--end::Filter-->
                                                     <?php } ?>
                                                     <!--begin::Add school-->
+                                                    <?php $diss = ""; if($_SESSION['role'] == 8){
+                                                        $diss = "disabled";
+                                                    } ?>
                                                     <a
                                                         href="konu-ekle?return_url=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>"><button
-                                                            type="button" class="btn btn-primary btn-sm h-100">Konu
+                                                            type="button" class="btn btn-primary btn-sm h-100" <?php echo $diss; ?>>Konu
                                                             Ekle</button></a>
                                                     <!--end::Add school-->
                                                 </div>

@@ -78,8 +78,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <div class="d-flex justify-content-end"
                                                     data-kt-customer-table-toolbar="base">
                                                     <!--begin::Add school-->
+                                                    <?php $diss = ""; if($_SESSION['role'] == 8){
+                                                        $diss = "disabled";
+                                                    } ?>
                                                     <button type="button" class="btn btn-primary btn-sm"
-                                                        data-bs-toggle="modal" data-bs-target="#kt_modal_add_customer">Ders
+                                                        data-bs-toggle="modal" data-bs-target="#kt_modal_add_customer" <?php echo $diss; ?>>Ders
                                                         Ekle</button>
                                                     <!--end::Add school-->
                                                 </div>
