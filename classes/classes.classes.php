@@ -45,7 +45,7 @@ class Classes extends Dbh
                 ORDER BY meetings_lnp.id DESC";
         $stmt = $this->connect()->prepare($sql);
         $executeResult = $stmt->execute();
-    } elseif ($role == 10002 || $role == 10005) {
+    } else {
         // Sadece sessiondaki class_id ile eşleşenleri çek
         $sql = "SELECT meetings_lnp.*, classes_lnp.name AS class_name
                 FROM meetings_lnp
@@ -54,10 +54,7 @@ class Classes extends Dbh
                 ORDER BY meetings_lnp.id DESC";
         $stmt = $this->connect()->prepare($sql);
         $executeResult = $stmt->execute([$classId]);
-    } else {
-        // Diğer roller için varsayılan boş liste
-        return [];
-    }
+    } 
 
     if (!$executeResult) {
         $stmt = null;

@@ -9,17 +9,19 @@ if (isset($_SESSION['role'])) {
     $liveVideoList = new Classes();
 
     if ($_SESSION['class_id']) {
+
         $list = $liveVideoList->getLiveVideo($_SESSION['class_id']);
     } else {
         $list = $liveVideoList->getLiveVideo();
     }
-   $classList = $liveVideoList->getClassesList();
-   
+
+    $classList = $liveVideoList->getClassesList();
+
     if ($_SESSION['role'] == 1) {
         $classList = $liveVideoList->getClasses();
-    }  else if ($_SESSION['role'] == 2 || $_SESSION['role'] == 4) {
+    } else if ($_SESSION['role'] == 2 || $_SESSION['role'] == 4) {
         $classList = $liveVideoList->getClassesList();
-    } else if ($_SESSION['role'] == 10001 || $_SESSION['role'] == 10002|| $_SESSION['role'] == 10005) {
+    } else if ($_SESSION['role'] == 10001 || $_SESSION['role'] == 10002 || $_SESSION['role'] == 10005) {
         $classList = $liveVideoList->getAgeGroup();
     }
 
@@ -102,7 +104,7 @@ if (isset($_SESSION['role'])) {
                                             <div class="me-3 icon-circle-lg">
                                                 <img src="assets/media/mascots/lineup-robot-maskot.png" style="width: 80px;" alt="Maskot">
                                             </div>
-                                            <h1 class="fs-3 fw-bold text-dark mb-0">Canlı Video</h1>
+                                            <h1 class="fs-3 fw-bold text-dark mb-0">Canlı Dersler</h1>
                                         </div>
                                     </header>
 
@@ -111,7 +113,7 @@ if (isset($_SESSION['role'])) {
                                             <div class="card shadow-lg border-0 rounded-4 bg-light">
                                                 <div class="card-body px-4 pt-4 pb-3 d-flex flex-column" style="background-color: #f8f9fa;">
                                                     <div class="card-header d-flex justify-content-between align-items-center">
-                                                        <h3 class="card-title mb-0">Canlı Dersler</h3>
+                                                       
                                                         <?php
                                                         $allowedRoles = [1, 3, 4, 7, 8, 10001];
                                                         if (in_array($_SESSION['role'], $allowedRoles)) {
@@ -279,28 +281,30 @@ if (isset($_SESSION['role'])) {
 
         <script>
             $(document).ready(function() {
-                var table = $('#meetingTable').DataTable({
-                    language: {
-                        decimal: ",",
-                        thousands: ".",
-                        emptyTable: "Tabloda herhangi bir veri mevcut değil",
-                        info: "_TOTAL_ kayıttan _START_ - _END_ arası gösteriliyor",
-                        infoEmpty: "Kayıt yok",
-                        infoFiltered: "(_MAX_ kayıt içerisinden filtrelendi)",
-                        lengthMenu: "Sayfada _MENU_ kayıt göster",
-                        loadingRecords: "Yükleniyor...",
-                        processing: "İşleniyor...",
-                        search: "Ara:",
-                        zeroRecords: "Eşleşen kayıt bulunamadı",
-                        paginate: {
-                            first: "İlk",
-                            last: "Son",
-                            next: "Sonraki",
-                            previous: "Önceki"
-                        }
-                    },
-                    searching: true // arama aktif
-                });
+                if ($('#meetingTable tbody tr').length > 0 && $('#meetingTable tbody tr td[colspan]').length === 0) {
+                    var table = $('#meetingTable').DataTable({
+                        language: {
+                            decimal: ",",
+                            thousands: ".",
+                            emptyTable: "Tabloda herhangi bir veri mevcut değil",
+                            info: "_TOTAL_ kayıttan _START_ - _END_ arası gösteriliyor",
+                            infoEmpty: "Kayıt yok",
+                            infoFiltered: "(_MAX_ kayıt içerisinden filtrelendi)",
+                            lengthMenu: "Sayfada _MENU_ kayıt göster",
+                            loadingRecords: "Yükleniyor...",
+                            processing: "İşleniyor...",
+                            search: "Ara:",
+                            zeroRecords: "Eşleşen kayıt bulunamadı",
+                            paginate: {
+                                first: "İlk",
+                                last: "Son",
+                                next: "Sonraki",
+                                previous: "Önceki"
+                            }
+                        },
+                        searching: true
+                    });
+                }
 
                 // Form submit (Create)
                 $('#meetingForm').on('submit', function(e) {
