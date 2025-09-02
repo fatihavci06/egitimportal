@@ -68,7 +68,7 @@ if (isset($_SESSION['role'])) {
                                                         placeholder="Bildirim Ara" />
                                                 </div>
                                             </div>
-                                            <?php if ($_SESSION['role'] == 1 or $_SESSION['id'] == 3) { ?>
+                                            <?php if ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 8) { ?>
                                             <div class="card-toolbar">
                                                 <div class="d-flex justify-content-end"
                                                     data-kt-customer-table-toolbar="base">

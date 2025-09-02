@@ -62,7 +62,8 @@ class ShowLesson extends Lessons
         $classes = new Classes();
 
 
-        $lessonsInfo = $this->getLessonsListBySchool($_SESSION['school_id']);
+        $lessonsInfo = $this->getLessonsListBySchool("1");
+        /* $lessonsInfo = $this->getLessonsListBySchool($_SESSION['school_id']); */
 
         $dateFormat = new DateFormat();
 

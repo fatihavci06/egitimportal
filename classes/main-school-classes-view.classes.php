@@ -37,11 +37,6 @@ class ShowClass extends Classes
         
                             <!--begin::Menu item-->
                             <div class="menu-item px-3">
-                                <a href="./ana-okul-detay/' . htmlspecialchars($value['slug']) . '" class="menu-link px-3">Görüntüle</a>
-                            </div>
-        
-                            <!--begin::Menu item-->
-                            <div class="menu-item px-3">
                                 <a href="javascript:void(0);" 
                                    class="menu-link px-3" 
                                   data-bs-toggle="modal" data-bs-target="#groupModalUpdate"  data-id=' . $value['id'] . '>

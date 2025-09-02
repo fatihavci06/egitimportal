@@ -41,15 +41,17 @@ $classShow = new ShowClass();
 
                         <div class="fv-row mb-7" id="target_type">
                             <div>
-                                <label class="required fs-6 fw-semibold mb-2">Bilidirm Kime Yapılacak?</label>
+                                <label class="required fs-6 fw-semibold mb-2">Bildirim Kime Yapılacak?</label>
                             </div>
                             <label>
                                 <input class="form-check-input" type="radio" name="target" value="all"> Herkese
                             </label>
+                            <?php if($_SESSION['role'] != 8) { ?>
                             <label>
                                 <input class="form-check-input ms-10" type="radio" name="target" value="roles"> Belirli
                                 Kullanıcı Grubuna
                             </label>
+                            <?php } ?>
                             <label>
                                 <input class="form-check-input ms-10" type="radio" name="target" value="classes">
                                 Belirli Sınıfa

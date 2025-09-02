@@ -193,7 +193,7 @@ class Topics extends Dbh
 				$stmt = null;
 				exit();
 			}
-		} elseif (($_SESSION['role'] == 3) or ($_SESSION['role'] == 8)) {
+		} elseif (($_SESSION['role'] == 3) /* or ($_SESSION['role'] == 8) */) {
 			$school = $_SESSION['school_id'];
 			$stmt = $this->connect()->prepare('SELECT 
 			topics_lnp.id AS topicID, 
@@ -217,6 +217,76 @@ class Topics extends Dbh
 				$stmt = null;
 				exit();
 			}
+		} elseif ($_SESSION['role'] == 8) {
+
+			$filtre_durum = isset($_GET['durum']) ? $_GET['durum'] : '';
+			$filtre_ders = isset($_GET['ders']) ? $_GET['ders'] : '';
+			$filtre_sinif = isset($_GET['sinif']) ? $_GET['sinif'] : '';
+			$filtre_unite = isset($_GET['unite']) ? $_GET['unite'] : '';
+
+			$school = "1";
+			$sql = 'SELECT 
+			topics_lnp.id AS topicID, 
+			topics_lnp.name AS topicName, 
+			topics_lnp.slug AS topicSlug, 
+			 
+			topics_lnp.start_date AS topicStartDate, 
+			topics_lnp.end_date AS topicEndDate, 
+			topics_lnp.order_no AS topicOrder, 
+			topics_lnp.active AS topicActive, 
+			classes_lnp.name AS className, 
+			lessons_lnp.name AS lessonName, 
+			units_lnp.name AS unitName 
+			FROM topics_lnp 
+			INNER JOIN classes_lnp ON topics_lnp.class_id = classes_lnp.id 
+			INNER JOIN lessons_lnp ON topics_lnp.lesson_id = lessons_lnp.id 
+			INNER JOIN units_lnp ON topics_lnp.unit_id = units_lnp.id';
+
+			$whereClauses = [];
+			$parameters = [];
+			
+			$whereClauses[] = "units_lnp.school_id = ?";
+			$parameters[] = $school;
+
+			// Durum filtresi varsa ekle
+			if (!empty($filtre_durum)) {
+				if ($filtre_durum == 'aktif') {
+					$filtre_durum = 1;
+				} elseif ($filtre_durum == 'pasif') {
+					$filtre_durum = 0;
+				}
+				$whereClauses[] = "units_lnp.active = ?";
+				$parameters[] = $filtre_durum;
+			}
+
+			// Ders filtresi varsa ekle
+			if (!empty($filtre_ders)) {
+				$whereClauses[] = "units_lnp.lesson_id = ?";
+				$parameters[] = $filtre_ders;
+			}
+
+			// Sınıf filtresi varsa ekle
+			if (!empty($filtre_sinif)) {
+				$whereClauses[] = "units_lnp.class_id = ?";
+				$parameters[] = $filtre_sinif;
+			}
+
+			// WHERE koşulları varsa sorguya ekle
+			if (!empty($whereClauses)) {
+				$sql .= " WHERE " . implode(" AND ", $whereClauses);
+			}
+
+			$stmt = $this->connect()->prepare($sql);
+
+			if (!$stmt->execute($parameters)) {
+				$stmt = null;
+				exit();
+			}/* 
+
+			if (!$stmt->execute(array($school))) {
+				$stmt = null;
+				exit();
+			} */
 		} elseif ($_SESSION['role'] == 4) {
 			$school = $_SESSION['school_id'];
 			$class_id = $_SESSION['class_id'];
