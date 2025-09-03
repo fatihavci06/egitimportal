@@ -75,7 +75,8 @@ $timeDifference = new DateFormat();
         </i>
 
         <span
-            class="badge bg-danger position-absolute top-0 start-100 translate-middle p-1 px-2 rounded-circle text-white ">
+            class="badge bg-danger position-absolute top-0 start-100 translate-middle p-1 px-2 rounded-circle text-white "
+            id='total-na'>
             <?php echo $totalNumber; ?>
         </span>
     </div>
@@ -294,6 +295,7 @@ $timeDifference = new DateFormat();
         constructor() {
             this.n_container = document.getElementById('notifications-container');
             this.a_container = document.getElementById('announcements-container');
+            this.total_na = document.getElementById('total-na');
 
             this.lastNotificationId = this.getLastId('[data-notification-id]');
             this.lastAnnouncementId = this.getLastId('[data-announcement-id]');
@@ -407,6 +409,7 @@ $timeDifference = new DateFormat();
                 const notificationElement = this.createNotificationElement(notification);
                 this.n_container.insertBefore(notificationElement, this.n_container.firstChild);
             });
+            this.total_na.innerHTML = parseInt(this.total_na.innerHTML || "0", 10) + notifications.length;
 
             this.showNewContentIndicator('notification', notifications.length);
         }
@@ -421,6 +424,7 @@ $timeDifference = new DateFormat();
                 const announcementElement = this.createAnnouncementElement(announcement);
                 this.a_container.insertBefore(announcementElement, this.a_container.firstChild);
             });
+            this.total_na.innerHTML = parseInt(this.total_na.innerHTML || "0", 10) + announcements.length;
 
             this.showNewContentIndicator('announcement', announcements.length);
         }
