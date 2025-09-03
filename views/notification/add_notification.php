@@ -12,7 +12,6 @@ include_once "classes/classes-view.classes.php";
 $userRole = new ShowRole();
 $classShow = new ShowClass();
 
-
 ?>
 <div class="modal fade" id="kt_modal_add_customer" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered mw-650px">
@@ -46,11 +45,11 @@ $classShow = new ShowClass();
                             <label>
                                 <input class="form-check-input" type="radio" name="target" value="all"> Herkese
                             </label>
-                            <?php if($_SESSION['role'] != 8) { ?>
-                            <label>
-                                <input class="form-check-input ms-10" type="radio" name="target" value="roles"> Belirli
-                                Kullanıcı Grubuna
-                            </label>
+                            <?php if ($_SESSION['role'] != 8) { ?>
+                                <label>
+                                    <input class="form-check-input ms-10" type="radio" name="target" value="roles"> Belirli
+                                    Kullanıcı Grubuna
+                                </label>
                             <?php } ?>
                             <label>
                                 <input class="form-check-input ms-10" type="radio" name="target" value="classes">
@@ -68,10 +67,11 @@ $classShow = new ShowClass();
                         </div>
 
                         <div id="classes-div" class="none-div mb-7">
+                            <label class=" fs-6 fw-semibold mb-2">Sınıf</label>
                             <select id="classes" name="classes" aria-label="Sınıf Seçiniz" data-control="select2"
                                 data-placeholder="Sınıf Seçiniz..." class="form-select form-select-solid fw-bold">
                                 <option value="">Sınıf Seçin</option>
-                                <?php $classShow->getClassSelectList(); ?>
+                                <?php echo $classShow->getClassSelectListWithPreschool(); ?>
                             </select>
                             <div class="fv-row mb-7">
 
@@ -119,8 +119,7 @@ $classShow = new ShowClass();
 
                         <div class="d-flex flex-column mb-7 fv-row">
                             <label class="required fs-6 fw-semibold mb-2">Bildirim</label>
-                            <textarea class="form-control form-control-solid" name="content"
-                                id="content"></textarea>
+                            <textarea class="form-control form-control-solid" name="content" id="content"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer flex-center">
@@ -135,3 +134,4 @@ $classShow = new ShowClass();
         </div>
     </div>
 </div>
+

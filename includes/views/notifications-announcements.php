@@ -2,10 +2,6 @@
 if (!defined('GUARD')) {
     die('Erişim yasak!');
 }
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 
 include_once "classes/dbh.classes.php";
 include_once "classes/announcement.classes.php";
@@ -22,10 +18,6 @@ $anouncement = new AnnouncementManager();
 $now = new DateTime();
 
 $timeDifference = new DateFormat();
-
-
-// var_dump($totalUnviewedNotifications);
-// die();
 
 ?>
 <div class="app-navbar-item me-lg-1">
@@ -211,6 +203,7 @@ $timeDifference = new DateFormat();
                         </i></a>
                 </div>
             </div>
+
             <?php if ($_SESSION['role'] == 1) { ?>
                 <div class="tab-pane fade" id="kt_topbar_notifications_3" role="tabpanel">
                     <div class="scroll-y mh-325px my-5 px-8">
@@ -260,7 +253,8 @@ $timeDifference = new DateFormat();
                             foreach ($conversations as $conv) { ?>
                                 <div class="d-flex flex-stack py-4">
                                     <div class="d-flex align-items-center me-2">
-                                        <a href="kocluk-sohbet.php?id=<?php echo $conv['id']; ?>" class="text-gray-800 text-hover-primary fw-semibold">
+                                        <a href="kocluk-sohbet.php?id=<?php echo $conv['id']; ?>"
+                                            class="text-gray-800 text-hover-primary fw-semibold">
                                             <?php echo $conv['other_surname'] . ' ' . $conv['other_name']; ?>
                                         </a>
                                     </div>
@@ -293,21 +287,20 @@ $timeDifference = new DateFormat();
             this.lastNotificationId = this.getLastNotificationId();
             this.apiUrl = 'includes/fetch_notifications.inc.php';
             this.intervalId = null;
-            this.refreshInterval = 5 * 60 * 1000;
-
+            this.refreshInterval = 1 * 60 * 1000;
             this.init();
         }
 
         init() {
-            this.startAutoRefresh();
-
             document.addEventListener('visibilitychange', () => {
-                if (document.hidden) {
-                    this.stopAutoRefresh();
-                } else {
+                if (document.visibilityState === 'visible') {
                     this.startAutoRefresh();
+                } else {
+                    this.stopAutoRefresh();
                 }
             });
+
+            this.startAutoRefresh();
         }
 
         getLastNotificationId() {
@@ -363,19 +356,16 @@ $timeDifference = new DateFormat();
         }
 
         addNewNotifications(notifications) {
-            // Remove "no notifications" message if it exists
             const noNotificationsDiv = document.getElementById('no-notifications');
             if (noNotificationsDiv) {
                 noNotificationsDiv.remove();
             }
 
-            // Add new notifications to the top of the list
             notifications.forEach(notification => {
                 const notificationElement = this.createNotificationElement(notification);
                 this.container.insertBefore(notificationElement, this.container.firstChild);
             });
 
-            // Optional: Show a subtle notification indicator
             this.showNewNotificationIndicator(notifications.length);
         }
 
@@ -386,25 +376,24 @@ $timeDifference = new DateFormat();
             div.setAttribute('data-start-date', notification.start_date);
 
             div.innerHTML = `
-                    <div class="d-flex">
-                        <div class="symbol symbol-35px me-4">
-                            <span class="symbol-label bg-light-primary">
-                                <i class="fa-solid fa-bell fs-2 text-primary"></i>
-                            </span>
-                        </div>
-                        <div class="mb-0 me-2">
-                            <a href="./bildirim/${notification.slug}"
-                                class="fs-6 ${notification.is_viewed ? 'text-gray-400' : 'text-gray-700'} text-hover-primary fw-bold">
-                                ${this.escapeHtml(notification.title)}
-                            </a>
-                        </div>
-                    </div>
-                    <span class="badge badge-light fs-8 ${notification.is_viewed ? 'text-gray-500' : 'text-gray-700'}">
-                        ${notification.time_diff}
+            <div class="d-flex">
+                <div class="symbol symbol-35px me-4">
+                    <span class="symbol-label bg-light-primary">
+                        <i class="fa-solid fa-bell fs-2 text-primary"></i>
                     </span>
-                `;
+                </div>
+                <div class="mb-0 me-2">
+                    <a href="./bildirim/${notification.slug}"
+                        class="fs-6 ${notification.is_viewed ? 'text-gray-400' : 'text-gray-700'} text-hover-primary fw-bold">
+                        ${this.escapeHtml(notification.title)}
+                    </a>
+                </div>
+            </div>
+            <span class="badge badge-light fs-8 ${notification.is_viewed ? 'text-gray-500' : 'text-gray-700'}">
+                ${notification.time_diff}
+            </span>
+        `;
 
-            // Remove the "new" styling after a few seconds
             setTimeout(() => {
                 div.classList.remove('notification-new');
             }, 5000);
@@ -419,8 +408,6 @@ $timeDifference = new DateFormat();
         }
 
         showNewNotificationIndicator(count) {
-            // Optional: You can add a toast notification or update document title
-            // For example, update the document title temporarily
             const originalTitle = document.title;
             document.title = `(${count}) ${originalTitle}`;
 
@@ -430,15 +417,13 @@ $timeDifference = new DateFormat();
         }
 
         startAutoRefresh() {
-            // Clear any existing interval
-            this.stopAutoRefresh();
+            if (this.intervalId) return;
 
-            // Set up new interval
             this.intervalId = setInterval(() => {
                 this.fetchNewNotifications();
             }, this.refreshInterval);
 
-            console.log('Notification auto-refresh started ');
+            console.log('Notification auto-refresh started');
         }
 
         stopAutoRefresh() {
@@ -448,7 +433,6 @@ $timeDifference = new DateFormat();
                 console.log('Notification auto-refresh stopped');
             }
         }
-
     }
 
     document.addEventListener('DOMContentLoaded', function () {

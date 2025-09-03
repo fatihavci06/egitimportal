@@ -56,8 +56,14 @@ try {
 		exit;
 	}
 
-	// Validate dates
-	$startDate = DateTime::createFromFormat('Y-m-d', $announcementData['start_date']);
+	$inputDate = new DateTime($input['start_date']);
+	$today = new DateTime(date('Y-m-d'));
+
+	if ($inputDate < $today) {
+		$announcementData['start_date'] = date('Y-m-d H:i:s');
+	} 
+
+	$startDate = DateTime::createFromFormat('Y-m-d H:i:s', $announcementData['start_date']);
 	$expireDate = DateTime::createFromFormat('Y-m-d', $announcementData['expire_date']);
 
 	if (!$startDate) {
@@ -116,61 +122,6 @@ try {
 
 		}
 	}
-
-
-
-	// if (isset($input['targets']) && is_array($input['targets'])) {
-	// 	foreach ($input['targets'] as $target) {
-	// 		if (!isset($target['type']) || !isset($target['values'])) {
-	// 			http_response_code(400);
-
-	// 		}
-
-	// 		if (!in_array($target['type'], ['role', 'class'])) {
-	// 			http_response_code(400);
-	// 			echo json_encode([
-	// 				'success' => false,
-	// 				'message' => 'Invalid target type. Must be "role" or "class"'
-	// 			]);
-	// 			exit;
-	// 		}
-
-	// 		// Ensure values is an array
-	// 		if (!is_array($target['values'])) {
-	// 			$target['values'] = [$target['values']];
-	// 		}
-
-	// 		// Validate role values
-	// 		if ($target['type'] === 'role') {
-	// 			$validRoles = ['student', 'teacher', 'admin'];
-	// 			foreach ($target['values'] as $role) {
-	// 				if (!in_array($role, $validRoles)) {
-	// 					http_response_code(400);
-	// 					echo json_encode([
-	// 						'success' => false,
-	// 						'message' => 'Invalid role: ' . $role . '. Valid roles: ' . implode(', ', $validRoles)
-	// 					]);
-	// 					exit;
-	// 				}
-	// 			}
-	// 		}
-
-	// 		$targets[] = $target;
-	// 	}
-	// }
-
-	// // Handle single target format (backward compatibility)
-	// if (isset($input['target_type']) && isset($input['target_values'])) {
-	// 	$targetValues = is_array($input['target_values']) ? $input['target_values'] : [$input['target_values']];
-	// 	$targets = [
-	// 		[
-	// 			'type' => $input['target_type'],
-	// 			'values' => $targetValues
-	// 		]
-	// 	];
-	// }
-
-
 
 	$announcement = new AddAnnouncementContr($announcementData, $targets);
 

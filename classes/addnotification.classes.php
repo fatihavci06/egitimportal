@@ -18,7 +18,7 @@ class AddNotification extends Dbh
 
 		if ($notificationId) {
 			http_response_code(201);
-			echo json_encode(["status" => "success", "message" => "OK"]);
+			echo json_encode(["status" => "success", "message" => $notificationId]);
 			exit();
 		} else {
 			http_response_code(500);
