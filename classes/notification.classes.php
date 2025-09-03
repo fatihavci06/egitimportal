@@ -9,13 +9,10 @@ class NotificationManager extends Dbh
 		try {
 			$db->beginTransaction();
 
-			// Insert announcement
 			$stmt = $db->prepare("
                 INSERT INTO notifications_lnp (title, content, start_date, expire_date, created_by, slug ,target_type)
                 VALUES (:title, :content, :start_date, :expire_date, :created_by, :slug, :target_type)
             ");
-
-
 
 			$stmt->execute([
 				':title' => $data['title'],
@@ -31,20 +28,21 @@ class NotificationManager extends Dbh
 
 			if (!empty($targets['value'])) {
 				$targetStmt = $db->prepare("
-                    INSERT INTO notification_targets_lnp (notification_id, target_type, target_value)
-                    VALUES (:notification_id, :target_type, :target_value)
+                    INSERT INTO notification_targets_lnp (notification_id, target_type, target_value, school_type)
+                    VALUES (:notification_id, :target_type, :target_value, :school_type)
                 ");
 
 				$targetStmt->execute([
 					':notification_id' => $notificationId,
 					':target_type' => $targets['type'],
-					':target_value' => $targets['value']
+					':target_value' => $targets['value'],
+					':school_type' => $targets['school_type']?? NULL,
 				]);
 			}
 
 			$db->commit();
 
-			return $notificationId;
+			return $data['title'];
 
 
 		} catch (Exception $e) {
@@ -61,6 +59,7 @@ class NotificationManager extends Dbh
 					CONCAT(at.target_type, ':', at.target_value) 
 					SEPARATOR ','
 				) AS targets
+				,at.school_type
 			FROM 
 				notifications_lnp a
 			LEFT JOIN 
@@ -75,7 +74,6 @@ class NotificationManager extends Dbh
 		$stmt->execute();
 		$notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-		// Process the results
 		foreach ($notifications as &$notification) {
 
 			$notification['targets'] = $notification['targets'] ? explode(',', $notification['targets']) : [];
@@ -110,7 +108,7 @@ class NotificationManager extends Dbh
 		$notification = $stmt->fetch(PDO::FETCH_ASSOC);
 
 		if ($notification) {
-			// Get targets
+
 			$targetStmt = $this->connect()->prepare("
                 SELECT target_type, target_value
                 FROM notification_targets_lnp
@@ -125,7 +123,6 @@ class NotificationManager extends Dbh
 	public function updateNotificationStatus($id, $isActive)
 	{
 		$db = $this->connect();
-
 
 		try {
 			$stmt = $db->prepare("
@@ -150,7 +147,6 @@ class NotificationManager extends Dbh
 			return false;
 		}
 
-		// Create placeholders for the IN clause
 		$placeholders = implode(',', array_fill(0, count($ids), '?'));
 
 		try {
@@ -160,19 +156,16 @@ class NotificationManager extends Dbh
             WHERE id IN ($placeholders)
         ");
 
-			// Merge the is_active value with the IDs
 			$params = array_merge([$isActive], $ids);
 
 			return $stmt->execute($params);
 		} catch (Exception $e) {
-			// Optionally log the exception or handle it
 			return false;
 		}
 	}
 	public function getNotificationBySlug($slug)
 	{
 
-		// Query to get the announcement by slug
 		$query = "
 			SELECT 
 				a.*,
@@ -244,74 +237,88 @@ class NotificationManager extends Dbh
 		$currentDate = date('Y-m-d H:i:s');
 
 		$query = "
-        SELECT 
-            n.*,
-            IF(nv.id IS NULL, 0, 1) AS is_viewed,
-            nv.viewed_at
-        FROM notifications_lnp n
-        LEFT JOIN notification_views_lnp nv ON n.id = nv.notification_id AND nv.user_id = :user_id
-        WHERE 
-            n.is_active = 1
-            AND n.start_date <= :current_date
-            AND (n.expire_date IS NULL OR n.expire_date >= :current_date)
-            AND (
-                n.target_type = 'all'
-                
-                OR (n.target_type = 'roles' AND EXISTS (
-                    SELECT 1 FROM notification_targets_lnp nt1
-                    WHERE nt1.notification_id = n.id 
-                    AND nt1.target_type = 'roles' 
-                    AND nt1.target_value = :role_id
-                ))
-                
-                OR (n.target_type = 'classes' AND EXISTS (
-                    SELECT 1 FROM notification_targets_lnp nt2
-                    WHERE nt2.notification_id = n.id 
-                    AND nt2.target_type = 'classes' 
-                    AND nt2.target_value = :class_id
-                ))
-                
-                OR (n.target_type = 'lessons' AND EXISTS (
-                    SELECT 1 FROM notification_targets_lnp nt3
-                    JOIN lessons_lnp l ON nt3.target_value = l.id
-                    WHERE nt3.notification_id = n.id 
-                    AND nt3.target_type = 'lessons'
-                    AND l.class_id = :class_id
-                ))
-                
-                OR (n.target_type = 'units' AND EXISTS (
-                    SELECT 1 FROM notification_targets_lnp nt4
-                    JOIN units_lnp u ON nt4.target_value = u.id
-                    WHERE nt4.notification_id = n.id 
-                    AND nt4.target_type = 'units'
-                    AND u.class_id = :class_id
-                ))
-                
-                OR (n.target_type = 'topics' AND EXISTS (
-                    SELECT 1 FROM notification_targets_lnp nt5
-                    JOIN topics_lnp t ON nt5.target_value = t.id
-                    WHERE nt5.notification_id = n.id 
-                    AND nt5.target_type = 'topics'
-                    AND t.class_id = :class_id
-                ))
-                
-                OR (n.target_type = 'subtopics' AND EXISTS (
-                    SELECT 1 FROM notification_targets_lnp nt6
-                    JOIN subtopics_lnp st ON nt6.target_value = st.id
-                    WHERE nt6.notification_id = n.id 
-                    AND nt6.target_type = 'subtopics'
-                    AND st.class_id = :class_id
-                ))
-                
-                OR (n.target_type = 'assignments' AND EXISTS (
-                    SELECT 1 FROM notification_targets_lnp nt7
-                    -- JOIN assignments_lnp a ON nt7.target_value = a.id
-                    WHERE nt7.notification_id = n.id 
-                    AND nt7.target_type = 'assignments'
-                ))
-            )
-        ORDER BY n.start_date DESC
-    ";
+			SELECT 
+				n.*, 
+				IF(nv.id IS NULL, 0, 1) AS is_viewed, 
+				nv.viewed_at 
+			FROM notifications_lnp n 
+			LEFT JOIN notification_views_lnp nv 
+				ON n.id = nv.notification_id AND nv.user_id = :user_id 
+			WHERE 
+				n.is_active = 1 
+				AND n.start_date <= :current_date 
+				AND (n.expire_date IS NULL OR n.expire_date >= :current_date) 
+				AND ( 
+					n.target_type = 'all' 
+					
+					OR (n.target_type = 'roles' AND EXISTS ( 
+						SELECT 1 FROM notification_targets_lnp nt1 
+						WHERE nt1.notification_id = n.id 
+						AND nt1.target_type = 'roles' 
+						AND nt1.target_value = :role_id 
+					)) 
+					
+					OR (n.target_type = 'classes' AND EXISTS ( 
+						SELECT 1 
+						FROM notification_targets_lnp nt2 
+							WHERE nt2.notification_id = n.id 
+							AND nt2.target_type = 'classes' 
+							AND nt2.target_value = :class_id 
+					)) 
+					
+					OR (n.target_type = 'lessons' AND EXISTS ( 
+						SELECT 1 
+						FROM notification_targets_lnp nt3 
+						LEFT JOIN lessons_lnp l 
+							ON nt3.school_type = 0 AND nt3.target_value = l.id 
+						LEFT JOIN main_school_lessons_lnp ml 
+							ON nt3.school_type = 1 AND nt3.target_value = ml.id 
+						WHERE nt3.notification_id = n.id 
+						AND nt3.target_type = 'lessons' 
+						AND ( 
+								(nt3.school_type = 0 AND l.class_id = :class_id) 
+							OR (nt3.school_type = 1 AND ml.id = :class_id) 
+						) 
+					)) 
+					
+					OR (n.target_type = 'units' AND EXISTS ( 
+						SELECT 1 
+						FROM notification_targets_lnp nt4 
+						LEFT JOIN units_lnp u 
+							ON nt4.school_type = 0 AND nt4.target_value = u.id 
+						LEFT JOIN main_school_units_lnp mu 
+							ON nt4.school_type = 1 AND nt4.target_value = mu.id 
+						WHERE nt4.notification_id = n.id 
+						AND nt4.target_type = 'units' 
+						AND ( 
+								(nt4.school_type = 0 AND u.class_id = :class_id) 
+							OR (nt4.school_type = 1 AND mu.id = :class_id) 
+						) 
+					)) 
+					
+					OR (n.target_type = 'topics' AND EXISTS ( 
+						SELECT 1 
+						FROM notification_targets_lnp nt5 
+						LEFT JOIN topics_lnp t 
+							ON nt5.school_type = 0 AND nt5.target_value = t.id 
+						LEFT JOIN main_school_topics_lnp mt 
+							ON nt5.school_type = 1 AND nt5.target_value = mt.id 
+						WHERE nt5.notification_id = n.id 
+						AND nt5.target_type = 'topics' 
+						AND ( 
+								(nt5.school_type = 0 AND t.class_id = :class_id) 
+							OR (nt5.school_type = 1 AND mt.id = :class_id) 
+						) 
+					)) 
+					
+					OR (n.target_type = 'assignments' AND EXISTS ( 
+						SELECT 1 FROM notification_targets_lnp nt7 
+						WHERE nt7.notification_id = n.id 
+						AND nt7.target_type = 'assignments' 
+					)) 
+				) 
+			ORDER BY n.start_date DESC 
+		";
 
 		$stmt = $this->connect()->prepare($query);
 		$stmt->execute([
@@ -329,63 +336,86 @@ class NotificationManager extends Dbh
 		$currentDate = date('Y-m-d H:i:s');
 
 		$query = "
-        SELECT 
-            n.*,
-            IF(nv.id IS NULL, 0, 1) AS is_viewed,
-            nv.viewed_at
-        FROM notifications_lnp n
-        LEFT JOIN notification_views_lnp nv ON n.id = nv.notification_id AND nv.user_id = :user_id
-        WHERE 
-            n.is_active = 1
-            AND n.start_date <= :current_date
-            AND (n.expire_date IS NULL OR n.expire_date >= :current_date)
-            AND (
-                n.target_type = 'all'
-                
-                OR (n.target_type = 'roles' AND EXISTS (
-                    SELECT 1 FROM notification_targets_lnp nt1
-                    WHERE nt1.notification_id = n.id 
-                    AND nt1.target_type = 'roles' 
-                    AND nt1.target_value = :role_id
+			SELECT 
+				n.*,
+				IF(nv.id IS NULL, 0, 1) AS is_viewed,
+				nv.viewed_at
+			FROM notifications_lnp n
+			LEFT JOIN notification_views_lnp nv ON n.id = nv.notification_id AND nv.user_id = :user_id
+			WHERE 
+				n.is_active = 1
+				AND n.start_date <= :current_date
+				AND (n.expire_date IS NULL OR n.expire_date >= :current_date)
+				AND (
+					n.target_type = 'all'
+					
+					OR (n.target_type = 'roles' AND EXISTS (
+						SELECT 1 FROM notification_targets_lnp nt1
+						WHERE nt1.notification_id = n.id 
+						AND nt1.target_type = 'roles' 
+						AND nt1.target_value = :role_id
+					))
+					
+					OR (n.target_type = 'lessons' AND EXISTS (
+						SELECT 1 
+						FROM notification_targets_lnp nt3
+						LEFT JOIN lessons_lnp l 
+							ON nt3.school_type = 0 AND nt3.target_value = l.id
+						LEFT JOIN main_school_lessons_lnp ml 
+							ON nt3.school_type = 1 AND nt3.target_value = ml.id
+						WHERE nt3.notification_id = n.id 
+						AND nt3.target_type = 'lessons'
+						AND (
+							(nt3.school_type = 0 AND l.class_id = :class_id)
+							OR (nt3.school_type = 1 AND ml.COLUMN_NAME = :class_id)
+						)
+					))
+					
+					OR (n.target_type = 'units' AND EXISTS (
+						SELECT 1 
+						FROM notification_targets_lnp nt4
+						LEFT JOIN units_lnp u 
+							ON nt4.school_type = 0 AND nt4.target_value = u.id
+						LEFT JOIN main_school_units_lnp mu 
+							ON nt4.school_type = 1 AND nt4.target_value = mu.id
+						WHERE nt4.notification_id = n.id 
+						AND nt4.target_type = 'units'
+						AND (
+							(nt4.school_type = 0 AND u.class_id = :class_id)
+							OR (nt4.school_type = 1 AND mu.COLUMN_NAME = :class_id)
+						)
+					))
+					
+					OR (n.target_type = 'topics' AND EXISTS (
+						SELECT 1 
+						FROM notification_targets_lnp nt5
+						LEFT JOIN topics_lnp t 
+							ON nt5.school_type = 0 AND nt5.target_value = t.id
+						LEFT JOIN main_school_topics_lnp mt 
+							ON nt5.school_type = 1 AND nt5.target_value = mt.id
+						WHERE nt5.notification_id = n.id 
+						AND nt5.target_type = 'topics'
+						AND (
+							(nt5.school_type = 0 AND t.class_id = :class_id)
+							OR (nt5.school_type = 1 AND mt.COLUMN_NAME = :class_id)
+						)
+					))
+					
+					OR (n.target_type = 'subtopics' AND EXISTS (
+                    	SELECT 1 FROM notification_targets_lnp nt6
+                    	JOIN subtopics_lnp st ON nt6.target_value = st.id
+                    	WHERE nt6.notification_id = n.id 
+                    	AND nt6.target_type = 'subtopics'
                 ))
-                
-                OR (n.target_type = 'lessons' AND EXISTS (
-                    SELECT 1 FROM notification_targets_lnp nt3
-                    JOIN lessons_lnp l ON nt3.target_value = l.id
-                    WHERE nt3.notification_id = n.id 
-                    AND nt3.target_type = 'lessons'
-                ))
-                
-                OR (n.target_type = 'units' AND EXISTS (
-                    SELECT 1 FROM notification_targets_lnp nt4
-                    JOIN units_lnp u ON nt4.target_value = u.id
-                    WHERE nt4.notification_id = n.id 
-                    AND nt4.target_type = 'units'
-                ))
-                
-                OR (n.target_type = 'topics' AND EXISTS (
-                    SELECT 1 FROM notification_targets_lnp nt5
-                    JOIN topics_lnp t ON nt5.target_value = t.id
-                    WHERE nt5.notification_id = n.id 
-                    AND nt5.target_type = 'topics'
-                ))
-                
-                OR (n.target_type = 'subtopics' AND EXISTS (
-                    SELECT 1 FROM notification_targets_lnp nt6
-                    JOIN subtopics_lnp st ON nt6.target_value = st.id
-                    WHERE nt6.notification_id = n.id 
-                    AND nt6.target_type = 'subtopics'
-                ))
-                
-                OR (n.target_type = 'assignments' AND EXISTS (
-                    SELECT 1 FROM notification_targets_lnp nt7
-                    -- JOIN assignments_lnp a ON nt7.target_value = a.id
-                    WHERE nt7.notification_id = n.id 
-                    AND nt7.target_type = 'assignments'
-                ))
-            )
-        ORDER BY n.start_date DESC
-    ";
+					OR (n.target_type = 'assignments' AND EXISTS (
+						SELECT 1 FROM notification_targets_lnp nt7
+						-- JOIN assignments_lnp a ON nt7.target_value = a.id
+						WHERE nt7.notification_id = n.id 
+						AND nt7.target_type = 'assignments'
+					))
+				)
+			ORDER BY n.start_date DESC
+		";
 
 		$stmt = $this->connect()->prepare($query);
 		$stmt->execute([
@@ -397,62 +427,6 @@ class NotificationManager extends Dbh
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
 
-
-	
-	public function addNotificationTargets($notification_id, $targets)
-	{
-		$sql = "INSERT INTO notification_targets_lnp (notification_id, target_type, target_value) VALUES (?, ?, ?)";
-		$stmt = $this->connect()->prepare($sql);
-
-		foreach ($targets as $target) {
-			$stmt->execute([
-				$notification_id,
-				$target['type'], // 'all', 'role', 'grade', 'course', etc.
-				$target['value'] ?? null
-			]);
-		}
-	}
-	public function getNotificationStats($notification_id)
-	{
-		$sql = "SELECT 
-                    n.*,
-                    COUNT(DISTINCT CASE WHEN this_should_target_user THEN u.id END) as total_eligible_users,
-                    COUNT(DISTINCT nr.user_id) as read_count
-                FROM notifications n
-                LEFT JOIN notification_reads nr ON n.id = nr.notification_id
-                WHERE n.id = ?
-                GROUP BY n.id";
-
-		// Note: You'll need to implement the logic to count eligible users based on targets
-		// This is a simplified version
-
-		$stmt = $this->connect()->prepare($sql);
-		$stmt->execute([$notification_id]);
-
-		return $stmt->fetch(PDO::FETCH_ASSOC);
-	}
-	public function getReadUsers($notification_id)
-	{
-		$sql = "SELECT u.id, u.name, u.email, nr.read_at
-                FROM users u
-                JOIN notification_reads nr ON u.id = nr.user_id
-                WHERE nr.notification_id = ?
-                ORDER BY nr.read_at DESC";
-
-		$stmt = $this->connect()->prepare($sql);
-		$stmt->execute([$notification_id]);
-
-		return $stmt->fetchAll(PDO::FETCH_ASSOC);
-	}
-	public function deactivateNotification($notification_id)
-	{
-		$sql = "UPDATE notifications SET is_active = 0 WHERE id = ?";
-		$stmt = $this->connect()->prepare($sql);
-		return $stmt->execute([$notification_id]);
-	}
-
-
-	//adds
 	public function getNotificationsClass($id)
 	{
 
@@ -463,72 +437,92 @@ class NotificationManager extends Dbh
 			exit();
 		}
 
-		$announcementData = $stmt->fetch(PDO::FETCH_ASSOC);
+		$Data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-		return $announcementData['name'];
+		return $Data['name'];
 
 
 	}
-	public function getNotificationsLesson($id)
+	public function getNotificationsClassType($id)
 	{
 
-		$stmt = $this->connect()->prepare('SELECT name FROM lessons_lnp WHERE id = ?');
+		$stmt = $this->connect()->prepare('SELECT * FROM classes_lnp WHERE id = ?');
 
 		if (!$stmt->execute(array($id))) {
 			$stmt = null;
 			exit();
 		}
 
-		$data = $stmt->fetch(PDO::FETCH_ASSOC);
+		$Data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-		return $data['name'];
+		return $Data['class_type'];
+
+
 	}
-	public function getNotificationsUnit($id)
+	public function getNotificationsLesson($id, $schoolType)
 	{
+		$table = ($schoolType == 1) ? 'main_lessons_lnp' : 'lessons_lnp';
 
-		$stmt = $this->connect()->prepare('SELECT name FROM units_lnp WHERE id = ?');
+		$stmt = $this->connect()->prepare("SELECT name FROM {$table} WHERE id = ?");
 
-		if (!$stmt->execute(array($id))) {
+		if (!$stmt->execute([$id])) {
 			$stmt = null;
 			exit();
 		}
 
 		$data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-		return $data['name'];
-
+		return $data['name'] ?? null;
 	}
-	public function getNotificationsTopic($id)
+
+	public function getNotificationsUnit($id, $schoolType)
 	{
+		$table = ($schoolType == 1) ? 'main_units_lnp' : 'units_lnp';
 
-		$stmt = $this->connect()->prepare('SELECT name FROM topics_lnp WHERE id = ?');
+		$stmt = $this->connect()->prepare("SELECT name FROM {$table} WHERE id = ?");
 
-		if (!$stmt->execute(array($id))) {
+		if (!$stmt->execute([$id])) {
 			$stmt = null;
 			exit();
 		}
 
 		$data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-		return $data['name'];
-
+		return $data['name'] ?? null;
 	}
-	public function getNotificationsSubtopic($id)
+
+	public function getNotificationsTopic($id, $schoolType)
 	{
+		$table = ($schoolType == 1) ? 'main_topics_lnp' : 'topics_lnp';
 
-		$stmt = $this->connect()->prepare('SELECT name FROM subtopics_lnp WHERE id = ?');
+		$stmt = $this->connect()->prepare("SELECT name FROM {$table} WHERE id = ?");
 
-		if (!$stmt->execute(array($id))) {
+		if (!$stmt->execute([$id])) {
 			$stmt = null;
 			exit();
 		}
 
 		$data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-		return $data['name'];
-
+		return $data['name'] ?? null;
 	}
-	
+
+	public function getNotificationsSubtopic($id, $schoolType)
+	{
+		$table = ($schoolType == 1) ? 'main_subtopics_lnp' : 'subtopics_lnp';
+
+		$stmt = $this->connect()->prepare("SELECT name FROM {$table} WHERE id = ?");
+
+		if (!$stmt->execute([$id])) {
+			$stmt = null;
+			exit();
+		}
+
+		$data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return $data['name'] ?? null;
+	}
+
 	public function getNotificationsRole($userRole_id)
 	{
 
@@ -539,9 +533,9 @@ class NotificationManager extends Dbh
 			exit();
 		}
 
-		$announcementData = $stmt->fetch(PDO::FETCH_ASSOC);
+		$Data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-		return $announcementData['name'];
+		return $Data['name'];
 
 	}
 

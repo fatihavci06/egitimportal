@@ -16,7 +16,6 @@ class ShowNotification extends NotificationManager
 
         foreach ($notificationInfo as $key => $value) {
 
-
             if ($value['target_type'] == "all") {
                 $toWhom = "Herkese";
             } elseif ($value['target_type'] == "roles") {
@@ -26,13 +25,13 @@ class ShowNotification extends NotificationManager
             if ($value['target_type'] == "classes") {
                 $toWhom = $this->getnotificationsClass($value['targets'][0]['value']);
             } elseif ($value['target_type'] == "lessons") {
-                $toWhom = "Ders - " . $this->getnotificationsLesson($value['targets'][0]['value']);
+                $toWhom = "Ders - " . $this->getnotificationsLesson($value['targets'][0]['value'], $value['school_type']);
             } elseif ($value['target_type'] == "units") {
-                $toWhom = "Ünite - " . $this->getnotificationsUnit($value['targets'][0]['value']);
+                $toWhom = "Ünite - " . $this->getnotificationsUnit($value['targets'][0]['value'], $value['school_type']);
             } elseif ($value['target_type'] == "topics") {
-                $toWhom = "Konu - " . $this->getnotificationsTopic($value['targets'][0]['value']);
+                $toWhom = "Konu - " . $this->getnotificationsTopic($value['targets'][0]['value'], $value['school_type']);
             } elseif ($value['target_type'] == "subtopics") {
-                @$toWhom = "Altkonu - " . $this->getnotificationsSubtopic($value['targets'][0]['value']);
+                @$toWhom = "Altkonu - " . $this->getnotificationsSubtopic($value['targets'][0]['value'], $value['school_type']);
             }
 
             $active_status = '<span class="badge badge-light-success">Aktif</span>';

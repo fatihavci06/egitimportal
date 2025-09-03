@@ -44,11 +44,11 @@ $classShow = new ShowClass();
                             <label>
                                 <input class="form-check-input" type="radio" name="target" value="all"> Herkese
                             </label>
-                            <?php if($_SESSION['role'] != 8) { ?>
-                            <label>
-                                <input class="form-check-input ms-10" type="radio" name="target" value="roles"> Belirli
-                                Kullanıcı Grubuna
-                            </label>
+                            <?php if ($_SESSION['role'] != 8) { ?>
+                                <label>
+                                    <input class="form-check-input ms-10" type="radio" name="target" value="roles"> Belirli
+                                    Kullanıcı Grubuna
+                                </label>
                             <?php } ?>
                             <label>
                                 <input class="form-check-input ms-10" type="radio" name="target" value="classes">
@@ -71,7 +71,7 @@ $classShow = new ShowClass();
                             <select id="classes" name="classes" aria-label="Sınıf Seçiniz" data-control="select2"
                                 data-placeholder="Sınıf Seçiniz..." class="form-select form-select-solid fw-bold">
                                 <option value="">Sınıf Seçin</option>
-                                <?php $classShow->getClassSelectList(); ?>
+                                <?php echo $classShow->getClassSelectListWithPreschool(); ?>
                             </select>
                         </div>
                         <div class="fv-row mb-7">

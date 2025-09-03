@@ -20,24 +20,23 @@ try {
     }
 
     $user_id = $_SESSION['id'];
-    $role_id = $_SESSION['role_id'];
+    $role_id = $_SESSION['role'];
     $class_id = $_SESSION['class_id'];
 
     $lastNotificationId = isset($_GET['last_id']) ? (int) $_GET['last_id'] : 0;
     $lastTimestamp = isset($_GET['last_timestamp']) ? $_GET['last_timestamp'] : null;
 
-    $notificationManager = new NotificationManager(); 
+    $notificationManager = new NotificationManager();
 
     $allNotifications = $notificationManager->getNotificationsWithViewStatus($user_id, $role_id, $class_id);
 
     $newNotifications = [];
+
     if (!empty($allNotifications)) {
         foreach ($allNotifications as $notification) {
             $isNewer = false;
 
-            if ($lastNotificationId > 0) {
-                $isNewer = $notification['id'] > $lastNotificationId;
-            } elseif ($lastTimestamp) {
+            if ($lastTimestamp) {
                 $isNewer = strtotime($notification['start_date']) > strtotime($lastTimestamp);
             } else {
                 $isNewer = count($newNotifications) < 10;

@@ -5,6 +5,8 @@ class AddNotificationContr extends AddNotification
 
 	private $data = [];
 	private $targets = [];
+	private $slug; 
+
 
 	public function __construct($notitficationtData, $targets)
 	{
@@ -20,9 +22,9 @@ class AddNotificationContr extends AddNotification
 		$this->data['slug'] = $slugName->slugify($this->data['title']);
 
 		$slugRes = $this->checkSlug($this->data['slug']);
-		
 
-		
+
+
 		if (count($slugRes) > 0) {
 			$ech = end($slugRes);
 

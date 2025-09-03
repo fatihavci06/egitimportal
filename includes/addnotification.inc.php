@@ -1,9 +1,6 @@
 <?php
-// addannouncement.inc.php
 
 header('Content-Type: application/json');
-
-
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 	http_response_code(405);
@@ -15,7 +12,8 @@ include_once "../classes/dbh.classes.php";
 include_once "../classes/addnotification.classes.php";
 include_once "../classes/addnotification-contr.classes.php";
 include_once "../classes/slug.classes.php";
-
+require_once "../classes/notification.classes.php";
+$notificationManager = new NotificationManager();
 
 try {
 
@@ -55,9 +53,14 @@ try {
 		]);
 		exit;
 	}
+	$inputDate = new DateTime($input['start_date']);
+	$today = new DateTime(date('Y-m-d'));
 
-	// Validate dates
-	$startDate = DateTime::createFromFormat('Y-m-d', $notificationtData['start_date']);
+	if ($inputDate < $today) {
+		$notificationtData['start_date'] = date('Y-m-d H:i:s');
+	}
+
+	$startDate = DateTime::createFromFormat('Y-m-d H:i:s', $notificationtData['start_date']);
 	$expireDate = DateTime::createFromFormat('Y-m-d', $notificationtData['expire_date']);
 
 	if (!$startDate) {
@@ -99,6 +102,8 @@ try {
 
 	$target = $input['target'];
 
+
+
 	switch ($target) {
 		case 'all':
 			$targets["type"] = 'all';
@@ -106,40 +111,55 @@ try {
 
 		case 'classes':
 
-			if (isset($input['subtopics'])) {
+			if (isset($input['subtopics']) && !empty($input['subtopics'])) {
 				$targets["type"] = 'subtopics';
 				$targets["value"] = (int) $input['subtopics'];
+				$class_type = $notificationManager->getNotificationsClassType($input['classes']);
+
+				$targets['school_type'] = $class_type;
 				break;
 
 			}
 
 
-			if (isset($input['topics'])) {
+			if (isset($input['topics']) && !empty($input['topics'])) {
 				$targets["type"] = 'topics';
 				$targets["value"] = (int) $input['topics'];
+				$class_type = $notificationManager->getNotificationsClassType($input['classes']);
+
+				$targets['school_type'] = $class_type;
 				break;
 
 
 			}
-			if (isset($input['units'])) {
+			if (isset($input['units']) && !empty($input['units'])) {
 				$targets["type"] = 'units';
 				$targets["value"] = (int) $input['units'];
+				$class_type = $notificationManager->getNotificationsClassType($input['classes']);
+
+				$targets['school_type'] = $class_type;
 				break;
 
 
 			}
 
-			if (isset($input['lessons'])) {
+			if (isset($input['lessons'])  && !empty($input['lessons']) ) {
 				$targets["type"] = 'lessons';
 				$targets["value"] = (int) $input['lessons'];
+				$class_type = $notificationManager->getNotificationsClassType($input['classes']);
+
+				$targets['school_type'] = $class_type;
 				break;
 
 
 			}
 
-			if (isset($input['classes'])) {
+			if (isset($input['classes']) && !empty($input['classes']) ) {
 				$targets["type"] = 'classes';
 				$targets["value"] = (int) $input['classes'];
+				$class_type = $notificationManager->getNotificationsClassType($input['classes']);
+
+				$targets['school_type'] = $class_type;
 				break;
 
 
@@ -167,12 +187,7 @@ try {
 
 	}
 
-
-
 	$announcement = new AddNotificationContr($notificationtData, $targets);
-
-
-
 
 	$announcement->addNotificationDb();
 

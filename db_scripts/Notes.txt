@@ -1,9 +1,0 @@
-announcementsstatus_lnp     DELETED
-announcements_lnp           MODIFIED
-announcement_targets_lnp    NEW
-announcement_views_lnp      NEW
-
-notificationsstatus_lnp     DELETED
-notifications_lnp           MODIFIED
-notification_targets_lnp    NEW
-notification_views_lnp      NEW
