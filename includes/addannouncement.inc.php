@@ -14,11 +14,10 @@ include_once "../classes/dbh.classes.php";
 include_once "../classes/addannouncement.classes.php";
 include_once "../classes/addannouncement-contr.classes.php";
 include_once "../classes/slug.classes.php";
-
+require_once "../classes/announcement.classes.php";
+$announcementManager = new AnnouncementManager();
 
 try {
-	// $input = json_decode(file_get_contents('php://input'), true);
-
 	if (!isset($input)) {
 		$input = $_POST;
 	}
@@ -61,8 +60,9 @@ try {
 
 	if ($inputDate < $today) {
 		$announcementData['start_date'] = date('Y-m-d H:i:s');
-	} 
+	}
 
+	// Validate dates
 	$startDate = DateTime::createFromFormat('Y-m-d H:i:s', $announcementData['start_date']);
 	$expireDate = DateTime::createFromFormat('Y-m-d', $announcementData['expire_date']);
 

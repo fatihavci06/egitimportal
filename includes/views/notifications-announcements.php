@@ -43,42 +43,49 @@ $timeDifference = new DateFormat();
             border-left: 3px solid #3f4ed4;
         }
     </style>
-    <div class="btn btn-icon btn-custom btn-color w-35px h-35px w-md-40px h-md-40px"
+    <?php
+
+    $notificationInfo = $notification->getNotificationsWithViewStatus($_SESSION['id'], $_SESSION['role'], $_SESSION['class_id'] ?? '');
+
+    $unviewedNotifications = array_filter($notificationInfo, function ($notif) {
+        return isset($notif['is_viewed']) && $notif['is_viewed'] == 0;
+    });
+
+    $totalNotification = count($unviewedNotifications);
+
+
+    $anouncementInfo = $anouncement->getAnnouncementsWithViewStatus($_SESSION['id'], $_SESSION['role'], $_SESSION['class_id'] ?? '');
+
+    $unviewedAnnouncements = array_filter($anouncementInfo, function ($annonce) {
+        return isset($annonce['is_viewed']) && $annonce['is_viewed'] == 0;
+    });
+
+    $totalAnouncement = count($unviewedAnnouncements);
+
+    $totalNumber = $totalAnouncement + $totalNotification;
+
+    ?>
+    <div class="btn btn-icon btn-custom btn-color w-35px h-35px w-md-40px h-md-40px position-relative"
         data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent"
         data-kt-menu-placement="bottom-end">
+
         <i class="ki-duotone ki-graph-3 fs-1">
             <span class="path1"></span>
             <span class="path2"></span>
         </i>
+
+        <span
+            class="badge bg-danger position-absolute top-0 start-100 translate-middle p-1 px-2 rounded-circle text-white ">
+            <?php echo $totalNumber; ?>
+        </span>
     </div>
     <div class="menu menu-sub menu-sub-dropdown menu-column w-450px w-lg-500px" data-kt-menu="true"
         id="kt_menu_notifications">
         <div class="d-flex flex-column bgi-no-repeat rounded-top"
             style="background-image: url('assets/media/misc/menu-header-bg.jpg'); background-size: cover; background-position: center;">
             <h3 class="text-white fw-semibold px-9 mt-10 mb-6">Bildirim ve Duyurular
-                <?php
 
-                $notificationInfo = $notification->getNotificationsWithViewStatus($_SESSION['id'], $_SESSION['role'], $_SESSION['class_id'] ?? '');
-
-                $unviewedNotifications = array_filter($notificationInfo, function ($notif) {
-                    return isset($notif['is_viewed']) && $notif['is_viewed'] == 0;
-                });
-
-                $totalNotification = count($unviewedNotifications);
-
-
-                $anouncementInfo = $anouncement->getAnnouncementsWithViewStatus($_SESSION['id'], $_SESSION['role'], $_SESSION['class_id'] ?? '');
-
-                $unviewedAnnouncements = array_filter($anouncementInfo, function ($annonce) {
-                    return isset($annonce['viewed_at']) && $annonce['viewed_at'] == 0;
-                });
-
-                $totalAnouncement = count($unviewedAnnouncements);
-
-                $totalNumber = $totalAnouncement + $totalNotification;
-
-                ?>
-                <span class="fs-8 opacity-75 ps-3"><?php //echo $totalNumber; ?> bildirim</span>
+                <span class="fs-8 opacity-75 ps-3"><?php echo $totalNumber; ?> bildirim</span>
             </h3>
             <ul class="nav nav-line-tabs nav-line-tabs-2x nav-stretch fw-semibold px-9">
                 <li class="nav-item">
@@ -154,7 +161,8 @@ $timeDifference = new DateFormat();
                 </div>
             </div>
             <div class="tab-pane fade show active" id="kt_topbar_notifications_2" role="tabpanel">
-                <div class="scroll-y mh-325px my-5 px-8">
+
+                <div class="scroll-y mh-325px my-5 px-8" id="announcements-container">
                     <?php
                     if (empty($anouncementInfo)) { ?>
                         <div class="d-flex flex-column px-9">
@@ -173,7 +181,8 @@ $timeDifference = new DateFormat();
                         </div>
                     <?php } else {
                         foreach ($anouncementInfo as $key => $value) { ?>
-                            <div class="d-flex flex-stack py-4 ">
+                            <div class="d-flex flex-stack py-4 " data-announcement-id="<?php echo $value['id']; ?>"
+                                data-start-date="<?php echo $value['start_date']; ?>">
                                 <div class="d-flex">
                                     <div class="symbol symbol-35px me-4">
                                         <span class="symbol-label bg-light-primary ">
@@ -283,32 +292,38 @@ $timeDifference = new DateFormat();
 <script>
     class NotificationManager {
         constructor() {
-            this.container = document.getElementById('notifications-container');
-            this.lastNotificationId = this.getLastNotificationId();
-            this.apiUrl = 'includes/fetch_notifications.inc.php';
+            this.n_container = document.getElementById('notifications-container');
+            this.a_container = document.getElementById('announcements-container');
+
+            this.lastNotificationId = this.getLastId('[data-notification-id]');
+            this.lastAnnouncementId = this.getLastId('[data-announcement-id]');
+
+            this.n_apiUrl = 'includes/fetch_notifications.inc.php';
+            this.a_apiUrl = 'includes/fetch_announcements.inc.php';
+
             this.intervalId = null;
             this.refreshInterval = 1 * 60 * 1000;
             this.init();
         }
 
         init() {
-            document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'visible') {
-                    this.startAutoRefresh();
-                } else {
-                    this.stopAutoRefresh();
-                }
-            });
-
             this.startAutoRefresh();
+
+            // document.addEventListener('visibilitychange', () => {
+            //     if (document.visibilityState === 'visible') {
+            //     } else {
+            //         this.stopAutoRefresh();
+            //     }
+            // })
+
         }
 
-        getLastNotificationId() {
-            const notifications = document.querySelectorAll('[data-notification-id]');
+        getLastId(selector) {
+            const elements = document.querySelectorAll(selector);
             let maxId = 0;
 
-            notifications.forEach(notification => {
-                const id = parseInt(notification.getAttribute('data-notification-id'));
+            elements.forEach(element => {
+                const id = parseInt(element.getAttribute(selector.replace(/[\[\]']/g, '')));
                 if (id > maxId) {
                     maxId = id;
                 }
@@ -317,19 +332,19 @@ $timeDifference = new DateFormat();
             return maxId;
         }
 
-        getLastTimestamp() {
-            const notifications = document.querySelectorAll('[data-notification-id]');
-            if (notifications.length > 0) {
-                const firstNotification = notifications[0];
-                return firstNotification.getAttribute('data-start-date') || null;
+        getLastTimestamp(selector) {
+            const elements = document.querySelectorAll(selector);
+            if (elements.length > 0) {
+                const firstElement = elements[0];
+                return firstElement.getAttribute('data-start-date') || null;
             }
             return null;
         }
 
         async fetchNewNotifications() {
             try {
-                const lastTimestamp = this.getLastTimestamp();
-                let url = `${this.apiUrl}?last_id=${this.lastNotificationId}`;
+                const lastTimestamp = this.getLastTimestamp('[data-notification-id]');
+                let url = `${this.n_apiUrl}?last_id=${this.lastNotificationId}`;
 
                 if (lastTimestamp) {
                     url += `&last_timestamp=${encodeURIComponent(lastTimestamp)}`;
@@ -346,12 +361,39 @@ $timeDifference = new DateFormat();
                 if (data.success && data.has_new && data.notifications.length > 0) {
                     this.addNewNotifications(data.notifications);
                     this.lastNotificationId = data.last_id;
-
                     console.log(`Found ${data.new_count} new notifications`);
                 }
 
             } catch (error) {
                 console.error('Error fetching notifications:', error);
+            }
+        }
+
+        async fetchNewAnnouncements() {
+            try {
+                const lastTimestamp = this.getLastTimestamp('[data-announcement-id]');
+                let url = `${this.a_apiUrl}?last_id=${this.lastAnnouncementId}`;
+
+                if (lastTimestamp) {
+                    url += `&last_timestamp=${encodeURIComponent(lastTimestamp)}`;
+                }
+
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.success && data.has_new && data.announcements.length > 0) {
+                    this.addNewAnnouncements(data.announcements);
+                    this.lastAnnouncementId = data.last_id;
+                    console.log(`Found ${data.new_count} new announcements`);
+                }
+
+            } catch (error) {
+                console.error('Error fetching announcements:', error);
             }
         }
 
@@ -363,10 +405,24 @@ $timeDifference = new DateFormat();
 
             notifications.forEach(notification => {
                 const notificationElement = this.createNotificationElement(notification);
-                this.container.insertBefore(notificationElement, this.container.firstChild);
+                this.n_container.insertBefore(notificationElement, this.n_container.firstChild);
             });
 
-            this.showNewNotificationIndicator(notifications.length);
+            this.showNewContentIndicator('notification', notifications.length);
+        }
+
+        addNewAnnouncements(announcements) {
+            const noAnnouncementsDiv = document.getElementById('no-announcements');
+            if (noAnnouncementsDiv) {
+                noAnnouncementsDiv.remove();
+            }
+
+            announcements.forEach(announcement => {
+                const announcementElement = this.createAnnouncementElement(announcement);
+                this.a_container.insertBefore(announcementElement, this.a_container.firstChild);
+            });
+
+            this.showNewContentIndicator('announcement', announcements.length);
         }
 
         createNotificationElement(notification) {
@@ -394,11 +450,43 @@ $timeDifference = new DateFormat();
             </span>
         `;
 
-            setTimeout(() => {
-                div.classList.remove('notification-new');
-            }, 5000);
-
+            this.removeNewIndicator(div);
             return div;
+        }
+
+        createAnnouncementElement(announcement) {
+            const div = document.createElement('div');
+            div.className = 'd-flex flex-stack py-4 announcement-fade-in announcement-new';
+            div.setAttribute('data-announcement-id', announcement.id);
+            div.setAttribute('data-start-date', announcement.start_date);
+
+            div.innerHTML = `
+            <div class="d-flex">
+                <div class="symbol symbol-35px me-4">
+                    <span class="symbol-label bg-light-success">
+                        <i class="fa-solid fa-bullhorn fs-2 text-success"></i>
+                    </span>
+                </div>
+                <div class="mb-0 me-2">
+                    <a href="./duyuru/${announcement.slug}"
+                        class="fs-6 ${announcement.is_viewed ? 'text-gray-400' : 'text-gray-700'} text-hover-primary fw-bold">
+                        ${this.escapeHtml(announcement.title)}
+                    </a>
+                </div>
+            </div>
+            <span class="badge badge-light fs-8 ${announcement.is_viewed ? 'text-gray-500' : 'text-gray-700'}">
+                ${announcement.time_diff}
+            </span>
+        `;
+
+            this.removeNewIndicator(div);
+            return div;
+        }
+
+        removeNewIndicator(element) {
+            setTimeout(() => {
+                element.classList.remove('notification-new', 'announcement-new');
+            }, 5000);
         }
 
         escapeHtml(text) {
@@ -407,34 +495,45 @@ $timeDifference = new DateFormat();
             return div.innerHTML;
         }
 
-        showNewNotificationIndicator(count) {
+        showNewContentIndicator(type, count) {
             const originalTitle = document.title;
-            document.title = `(${count}) ${originalTitle}`;
+            const prefix = type === 'notification' ? 'Bildirim' : 'Duyuru';
+            document.title = `(${count} yeni ${prefix.toLowerCase()}) ${originalTitle}`;
 
             setTimeout(() => {
                 document.title = originalTitle;
             }, 3000);
         }
 
+        async refreshContent() {
+            await Promise.all([
+                this.fetchNewNotifications(),
+                this.fetchNewAnnouncements()
+            ]);
+        }
+
         startAutoRefresh() {
             if (this.intervalId) return;
 
             this.intervalId = setInterval(() => {
-                this.fetchNewNotifications();
+                this.refreshContent();
             }, this.refreshInterval);
 
-            console.log('Notification auto-refresh started');
+            console.log('Auto-refresh started for notifications and announcements');
         }
 
         stopAutoRefresh() {
             if (this.intervalId) {
                 clearInterval(this.intervalId);
                 this.intervalId = null;
-                console.log('Notification auto-refresh stopped');
+                console.log('Auto-refresh stopped');
             }
         }
-    }
 
+        destroy() {
+            this.stopAutoRefresh();
+        }
+    }
     document.addEventListener('DOMContentLoaded', function () {
         window.notificationManager = new NotificationManager();
     });

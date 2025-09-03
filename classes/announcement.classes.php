@@ -45,7 +45,7 @@ class AnnouncementManager extends Dbh
 
 			$db->commit();
 
-			return $announcementId;
+			return $data['title'];
 
 
 		} catch (Exception $e) {

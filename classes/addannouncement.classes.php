@@ -16,15 +16,15 @@ class AddAnnouncement extends Dbh
 		$announcementManager = new AnnouncementManager();
 		// Create the announcement
 
-		$announcementId = $announcementManager->createAnnouncement($data, $targets);
+		$announcement = $announcementManager->createAnnouncement($data, $targets);
 
 
-		if ($announcementId) {
+		if ($announcement) {
 
-			// $createdAnnouncement = $announcementManager->getAnnouncement($announcementId);
+			// $createdAnnouncement = $announcementManager->getAnnouncement($announcement);
 
 			http_response_code(201);
-			echo json_encode(["status" => "success", "message" => $announcementId]);
+			echo json_encode(["status" => "success", "message" => $announcement]);
 			exit();
 		} else {
 			http_response_code(500);

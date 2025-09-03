@@ -4,7 +4,7 @@ class AddAnnouncementContr extends AddAnnouncement
 {
 	private $data=[];
 	private $targets=[];
-
+	private $slug; 
 	public function __construct($announcementData, $targets)
 	{
 		$this->data = $announcementData;

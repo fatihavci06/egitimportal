@@ -374,59 +374,58 @@ var KTModalCustomersAdd = function () {
 				}
 			});
 		});
-		$(form.querySelector('[name="topics"]')).on('change', function () {
-			// Revalidate the field when an option is chosen
-			validator.revalidateField('classes');
-			validator.revalidateField('lessons');
+		// $(form.querySelector('[name="topics"]')).on('change', function () {
+		// 	// Revalidate the field when an option is chosen
+		// 	validator.revalidateField('classes');
+		// 	validator.revalidateField('lessons');
 
-			var classChoose = $("#classes").val();
-			var lessonsChoose = $("#lessons").val();
-			var unitsChoose = $("#units").val();
-			var topicsChoose = $("#topics").val();
+		// 	var classChoose = $("#classes").val();
+		// 	var lessonsChoose = $("#lessons").val();
+		// 	var unitsChoose = $("#units").val();
+		// 	var topicsChoose = $("#topics").val();
 
-			// AJAX isteği gönder
-			$.ajax({
-				allowClear: true,
-				type: "POST",
-				url: "includes/select_for_subtopic.inc.php",
-				data: {
-					class: classChoose,
-					lesson: lessonsChoose,
-					unit: unitsChoose,
-					topics: topicsChoose
+		// 	// AJAX isteği gönder
+		// 	$.ajax({
+		// 		allowClear: true,
+		// 		type: "POST",
+		// 		url: "includes/select_for_subtopic.inc.php",
+		// 		data: {
+		// 			class: classChoose,
+		// 			lesson: lessonsChoose,
+		// 			unit: unitsChoose,
+		// 			topics: topicsChoose
 
-				},
-				dataType: "json",
-				success: function (data) {
-					// İkinci Select2'nin içeriğini güncelle
+		// 		},
+		// 		dataType: "json",
+		// 		success: function (data) {
 
-					if (data.length > 0) {
-						$('#subtopics').select2({ data: data });
-					} else {
-						$('#subtopics').html('<option value="">Konu Yok</option>');
-					}
+		// 			if (data.length > 0) {
+		// 				$('#subtopics').select2({ data: data });
+		// 			} else {
+		// 				$('#subtopics').html('<option value="">Konu Yok</option>');
+		// 			}
 
-				}, error: function (xhr, status, error, response) {
-					Swal.fire({
-						text: error,
-						icon: "error",
-						buttonsStyling: false,
-						confirmButtonText: "Tamam, anladım!",
-						customClass: {
-							confirmButton: "btn btn-primary"
-						}
-					}).then(function (result) {
-						if (result.isConfirmed) {
+		// 		}, error: function (xhr, status, error, response) {
+		// 			Swal.fire({
+		// 				text: error,
+		// 				icon: "error",
+		// 				buttonsStyling: false,
+		// 				confirmButtonText: "Tamam, anladım!",
+		// 				customClass: {
+		// 					confirmButton: "btn btn-primary"
+		// 				}
+		// 			}).then(function (result) {
+		// 				if (result.isConfirmed) {
 
-							// Enable submit button after loading
-							submitButton.disabled = false;
-						}
-					});
-					//alert(status + "0");
+		// 					// Enable submit button after loading
+		// 					submitButton.disabled = false;
+		// 				}
+		// 			});
+		// 			//alert(status + "0");
 
-				}
-			});
-		});
+		// 		}
+		// 	});
+		// });
 	}
 	radioOne.addEventListener('change', (event) => {
 		divs.forEach(div => {

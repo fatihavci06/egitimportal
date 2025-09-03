@@ -36,7 +36,7 @@ class NotificationManager extends Dbh
 					':notification_id' => $notificationId,
 					':target_type' => $targets['type'],
 					':target_value' => $targets['value'],
-					':school_type' => $targets['school_type'],
+					':school_type' => $targets['school_type']?? NULL,
 				]);
 			}
 

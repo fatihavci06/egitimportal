@@ -94,13 +94,13 @@ $classShow = new ShowClass();
                                     data-placeholder="Konu Seçiniz..." class="form-select form-select-solid fw-bold">
                                 </select>
                             </div>
-                            <div class="fv-row mb-7">
+                            <!-- <div class="fv-row mb-7">
                                 <label class=" fs-6 fw-semibold mb-2">Altkonu</label>
                                 <select id="subtopics" name="subtopics" aria-label="Altkonu Seçiniz"
                                     data-control="select2" data-placeholder="Altkonu Seçiniz..."
                                     class="form-select form-select-solid fw-bold">
                                 </select>
-                            </div>
+                            </div> -->
 
 
                         </div>
