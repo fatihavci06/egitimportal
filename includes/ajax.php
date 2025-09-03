@@ -2763,7 +2763,7 @@ WHERE t.id = :id";
                 mlc.class_id
             FROM main_school_lessons_lnp ml
             INNER JOIN mainschool_lesson_class_id_lnp mlc ON mlc.lesson_id = ml.id
-            WHERE mlc.class_id = :class_id  
+            WHERE mlc.class_id = :class_id   AND ml.status=1
         ");
             $stmt->execute([':class_id' => $classId]);
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -3055,7 +3055,7 @@ WHERE t.id = :id";
             SELECT *
 FROM mainschool_lesson_class_id_lnp mlc
 INNER JOIN main_school_units_lnp msu ON msu.lesson_id = mlc.lesson_id
-WHERE mlc.lesson_id = :lesson_id AND mlc.class_id = :class_id AND msu.class_id = :class_id
+WHERE mlc.lesson_id = :lesson_id AND mlc.class_id = :class_id AND msu.class_id = :class_id AND msu.status = 1
 ORDER BY msu.unit_order asc
         ");
 
@@ -3187,7 +3187,7 @@ ORDER BY msu.unit_order asc
             $stmt = $pdo->prepare("
         SELECT t.id, t.name
         FROM main_school_topics_lnp t
-        WHERE t.unit_id = :unit_id");
+        WHERE t.unit_id = :unit_id AND t.status = 1");
             $stmt->execute([':unit_id' => $unitId]);
             $topics = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -4438,6 +4438,180 @@ ORDER BY msu.unit_order asc
 
             if ($result) {
                 echo json_encode(['status' => 'success', 'message' => 'Canlı ders güncellendi.']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Güncelleme işlemi başarısız.']);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Bir hata oluştu: ' . $e->getMessage()]);
+        }
+        break;
+    case 'changeStatusMainSchoolTopic':
+        $id = $_POST['id'] ?? null;
+
+        if (!$id) {
+            echo json_encode(['status' => 'error', 'message' => 'Geçersiz parametreler.']);
+            exit();
+        }
+
+        try {
+            // Status'ü tersine çeviriyoruz (1->0, 0->1)
+            $stmt = $pdo->prepare("
+            UPDATE main_school_topics_lnp 
+            SET status = CASE WHEN status = 1 THEN 0 ELSE 1 END 
+            WHERE id = ?
+        ");
+            $result = $stmt->execute([$id]);
+
+            if ($result) {
+                echo json_encode(['status' => 'success', 'message' => 'Durum güncellendi.']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Güncelleme işlemi başarısız.']);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Bir hata oluştu: ' . $e->getMessage()]);
+        }
+        break;
+
+
+    case 'getMainSchoolTopics':
+        try {
+            $stmt = $pdo->prepare("SELECT * FROM main_school_topics_lnp");
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if (count($data)) {
+                echo json_encode(['status' => 'success', 'data' => $data]);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Kayıt bulunamadı.']);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+
+        break;
+    case 'changeStatusImportantWeek':
+        $id = $_POST['id'] ?? null;
+
+        if (!$id) {
+            echo json_encode(['status' => 'error', 'message' => 'Geçersiz parametreler.']);
+            exit();
+        }
+
+        try {
+            // Status'ü tersine çeviriyoruz (1->0, 0->1)
+            $stmt = $pdo->prepare("
+            UPDATE important_weeks_lnp 
+            SET status = CASE WHEN status = 1 THEN 0 ELSE 1 END 
+            WHERE id = ?
+        ");
+            $result = $stmt->execute([$id]);
+
+            if ($result) {
+                echo json_encode(['status' => 'success', 'message' => 'Durum güncellendi.']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Güncelleme işlemi başarısız.']);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Bir hata oluştu: ' . $e->getMessage()]);
+        }
+        break;
+    case 'changeStatusCategoryTitle':
+        $id = $_POST['id'] ?? null;
+
+        if (!$id) {
+            echo json_encode(['status' => 'error', 'message' => 'Geçersiz parametreler.']);
+            exit();
+        }
+
+        try {
+            // Status'ü tersine çeviriyoruz (1->0, 0->1)
+            $stmt = $pdo->prepare("
+            UPDATE category_titles_lnp 
+            SET status = CASE WHEN status = 1 THEN 0 ELSE 1 END 
+            WHERE id = ?
+        ");
+            $result = $stmt->execute([$id]);
+
+            if ($result) {
+                echo json_encode(['status' => 'success', 'message' => 'Durum güncellendi.']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Güncelleme işlemi başarısız.']);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Bir hata oluştu: ' . $e->getMessage()]);
+        }
+        break;
+    case 'changeStatusMainSchoolContent':
+        $id = $_POST['id'] ?? null;
+
+        if (!$id) {
+            echo json_encode(['status' => 'error', 'message' => 'Geçersiz parametreler.']);
+            exit();
+        }
+
+        try {
+            // Status'ü tersine çeviriyoruz (1->0, 0->1)
+            $stmt = $pdo->prepare("
+            UPDATE main_school_content_lnp 
+            SET status = CASE WHEN status = 1 THEN 0 ELSE 1 END 
+            WHERE id = ?
+        ");
+            $result = $stmt->execute([$id]);
+
+            if ($result) {
+                echo json_encode(['status' => 'success', 'message' => 'Durum güncellendi.']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Güncelleme işlemi başarısız.']);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Bir hata oluştu: ' . $e->getMessage()]);
+        }
+        break;
+    case 'changeStatusMainSchoolLesson':
+        $id = $_POST['id'] ?? null;
+
+        if (!$id) {
+            echo json_encode(['status' => 'error', 'message' => 'Geçersiz parametreler.']);
+            exit();
+        }
+
+        try {
+            // Status'ü tersine çeviriyoruz (1->0, 0->1)
+            $stmt = $pdo->prepare("
+            UPDATE main_school_lessons_lnp 
+            SET status = CASE WHEN status = 1 THEN 0 ELSE 1 END 
+            WHERE id = ?
+        ");
+            $result = $stmt->execute([$id]);
+
+            if ($result) {
+                echo json_encode(['status' => 'success', 'message' => 'Durum güncellendi.']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Güncelleme işlemi başarısız.']);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Bir hata oluştu: ' . $e->getMessage()]);
+        }
+        break;
+    case 'changeStatusMainSchoolUnit':
+        $id = $_POST['id'] ?? null;
+
+        if (!$id) {
+            echo json_encode(['status' => 'error', 'message' => 'Geçersiz parametreler.']);
+            exit();
+        }
+
+        try {
+            // Status'ü tersine çeviriyoruz (1->0, 0->1)
+            $stmt = $pdo->prepare("
+            UPDATE main_school_units_lnp 
+            SET status = CASE WHEN status = 1 THEN 0 ELSE 1 END 
+            WHERE id = ?
+        ");
+            $result = $stmt->execute([$id]);
+
+            if ($result) {
+                echo json_encode(['status' => 'success', 'message' => 'Durum güncellendi.']);
             } else {
                 echo json_encode(['status' => 'error', 'message' => 'Güncelleme işlemi başarısız.']);
             }

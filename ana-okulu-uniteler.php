@@ -240,38 +240,45 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <th class="min-w-125px">Ders</th>
                                                         <th class="min-w-125px">Ünite</th>
                                                         <th class="min-w-125px">Sıra No</th>
+                                                        <th class="min-w-125px">Durum</th>
 
                                                         <th class="text-end min-w-70px">İşlemler</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="fw-semibold text-gray-600">
                                                     <?php
-                                                    $list = $class->getMainSchoolUnitList();
+                                                    if(@$_GET['lesson_id']){
+                                                         $list = $class->getMainSchoolUnitList($_GET['lesson_id']);
+                                                    }
+                                                    else{
+                                                         $list = $class->getMainSchoolUnitList();
+                                                    }
+
+                                                   
 
 
                                                     foreach ($list as $key => $value): ?>
                                                         <tr>
 
                                                             <td>
-                                                                <a href="#" class="text-gray-800 text-hover-primary mb-1">
+                                                             
                                                                     <?= htmlspecialchars($value['class_name']) ?>
-                                                                </a>
+                                                              
                                                             </td>
                                                             <td>
-                                                                <a href="#" class="text-gray-800 text-hover-primary mb-1">
+                                                                <a href="ana-okulu-konular.php?unit_id=<?=$value['id']?>" class="text-gray-800 text-hover-primary mb-1">
                                                                     <?= htmlspecialchars($value['unit_name']) ?>
                                                                 </a>
                                                             </td>
                                                             <td>
-                                                                <a href="#" class="text-gray-800 text-hover-primary mb-1">
-                                                                    <?= htmlspecialchars($value['lesson_name']) ?>
-                                                                </a>
+                                                                <?= htmlspecialchars($value['lesson_name']) ?>
                                                             </td>
 
                                                             <td>
-                                                                <a href="#" class="text-gray-800 text-hover-primary mb-1">
-                                                                    <?= htmlspecialchars($value['unit_order']) ?>
-                                                                </a>
+                                                                <?= htmlspecialchars($value['unit_order']) ?>
+                                                            </td>
+                                                            <td>
+                                                                <span class="badge badge-light-<?= ((int)$value['status'] === 1) ? 'success' : 'danger'; ?>"><?= ((int)$value['status'] === 1) ? 'Aktif' : 'Pasif'; ?></span>   
                                                             </td>
 
                                                             <td class="text-end">
@@ -297,8 +304,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                         <a href="javascript:void(0);"
                                                                             class="menu-link px-3"
                                                                             data-kt-customer-table-filter="delete_row"
-                                                                            onclick="handleDelete({ id: '<?= htmlspecialchars($value['id']) ?>', url: 'includes/ajax.php?service=deleteMainSchoolUnit' })">
-                                                                            Sil
+                                                                            onclick="handleDelete({ id: '<?= htmlspecialchars($value['id']) ?>', url: 'includes/ajax.php?service=changeStatusMainSchoolUnit' })">
+                                                                              <?= ((int)$value['status'] === 1) ? 'Pasif Yap' : 'Aktif Yap'; ?>
                                                                         </a>
                                                                     </div>
                                                                     <!--end::Menu item-->

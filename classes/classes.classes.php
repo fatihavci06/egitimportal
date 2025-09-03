@@ -33,37 +33,37 @@ class Classes extends Dbh
 	}
 
 	public function getLiveVideo($classId = null)
-{
-    $role = $_SESSION['role'] ?? null; // Sessiondaki role alıyoruz
+	{
+		$role = $_SESSION['role'] ?? null; // Sessiondaki role alıyoruz
 
-    if ($role == 1 || $role == 10001) {
-        // class_id dolu olan tüm kayıtları çek
-        $sql = "SELECT meetings_lnp.*, classes_lnp.name AS class_name
+		if ($role == 1 || $role == 10001) {
+			// class_id dolu olan tüm kayıtları çek
+			$sql = "SELECT meetings_lnp.*, classes_lnp.name AS class_name
                 FROM meetings_lnp
                 LEFT JOIN classes_lnp ON meetings_lnp.class_id = classes_lnp.id
                 WHERE meetings_lnp.class_id IS NOT NULL
                 ORDER BY meetings_lnp.id DESC";
-        $stmt = $this->connect()->prepare($sql);
-        $executeResult = $stmt->execute();
-    } else {
-        // Sadece sessiondaki class_id ile eşleşenleri çek
-        $sql = "SELECT meetings_lnp.*, classes_lnp.name AS class_name
+			$stmt = $this->connect()->prepare($sql);
+			$executeResult = $stmt->execute();
+		} else {
+			// Sadece sessiondaki class_id ile eşleşenleri çek
+			$sql = "SELECT meetings_lnp.*, classes_lnp.name AS class_name
                 FROM meetings_lnp
                 LEFT JOIN classes_lnp ON meetings_lnp.class_id = classes_lnp.id
                 WHERE meetings_lnp.class_id = ?
                 ORDER BY meetings_lnp.id DESC";
-        $stmt = $this->connect()->prepare($sql);
-        $executeResult = $stmt->execute([$classId]);
-    } 
+			$stmt = $this->connect()->prepare($sql);
+			$executeResult = $stmt->execute([$classId]);
+		}
 
-    if (!$executeResult) {
-        $stmt = null;
-        exit();
-    }
+		if (!$executeResult) {
+			$stmt = null;
+			exit();
+		}
 
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    return $data;
-}
+		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		return $data;
+	}
 
 
 	public function getLessonsList($search_class_id)
@@ -1152,37 +1152,75 @@ WHERE t.id = :id";
 		return $classData;
 	}
 
-	public function getMainSchoolTopicList()
-	{
+	public function getMainSchoolTopicList($unit_id = null)
+{
+    $sql = 'SELECT 
+                c.name as class_name,
+                t.id as id,
+                u.name as unit_name,
+                l.name as lesson_name,
+                t.name as topic_name,
+                t.status
+            FROM main_school_topics_lnp t
+            INNER JOIN main_school_units_lnp u ON t.unit_id = u.id
+            INNER JOIN classes_lnp c ON u.class_id = c.id
+            INNER JOIN main_school_lessons_lnp l ON u.lesson_id = l.id';
 
-		$stmt = $this->connect()->prepare('SELECT c.name as class_name,t.id id, u.name unit_name,l.name lesson_name,t.name topic_name FROM main_school_topics_lnp t
-		inner JOIN main_school_units_lnp u on t.unit_id=u.id
-		inner JOIN classes_lnp c on u.class_id=c.id
-		inner JOIN main_school_lessons_lnp l on u.lesson_id=l.id;  ');
+    $params = [];
 
-		if (!$stmt->execute(array())) {
-			$stmt = null;
-			exit();
-		}
+    if (!empty($unit_id)) {
+        $sql .= ' WHERE t.unit_id = ?';
+        $params[] = $unit_id;
+    }
 
-		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $sql .= ' ORDER BY t.id DESC';
 
-		return $classData;
-	}
-	public function getMainSchoolUnitList()
-	{
+    $stmt = $this->connect()->prepare($sql);
 
-		$stmt = $this->connect()->prepare('SELECT mu.name as unit_name, mu.id as id, ml.name as lesson_name,mu.unit_order, mc.name as class_name FROM `main_school_units_lnp` mu inner JOIN main_school_lessons_lnp ml on ml.id=mu.lesson_id inner JOIN classes_lnp mc on mc.id=mu.class_id ORDER BY mu.unit_order ASC ');
+    if (!$stmt->execute($params)) {
+        $stmt = null;
+        exit();
+    }
 
-		if (!$stmt->execute(array())) {
-			$stmt = null;
-			exit();
-		}
+    $classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $classData;
+}
 
-		return $classData;
-	}
+	public function getMainSchoolUnitList($lesson_id = null)
+{
+    $sql = 'SELECT 
+                mu.name as unit_name, 
+                mu.id as id, 
+                ml.name as lesson_name,
+                mu.unit_order, 
+                mc.name as class_name,
+				mu.status
+            FROM main_school_units_lnp mu
+            INNER JOIN main_school_lessons_lnp ml ON ml.id = mu.lesson_id
+            INNER JOIN classes_lnp mc ON mc.id = mu.class_id';
+
+    $params = [];
+
+    if (!empty($lesson_id)) {
+        $sql .= ' WHERE mu.lesson_id = ?';
+        $params[] = $lesson_id;
+    }
+
+    $sql .= ' ORDER BY mu.unit_order ASC';
+
+    $stmt = $this->connect()->prepare($sql);
+
+    if (!$stmt->execute($params)) {
+        $stmt = null;
+        exit();
+    }
+
+    $classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    return $classData;
+}
+
 	public function getMainSchoolUnitByClassId($class_id)
 	{
 		$stmt = $this->connect()->prepare('
@@ -1191,7 +1229,7 @@ WHERE t.id = :id";
         mu.id AS id, 
         mu.unit_order
     FROM main_school_units_lnp mu 
-    WHERE mu.class_id = :class_id 
+    WHERE mu.class_id = :class_id AND mu.status = 1
     ORDER BY mu.unit_order ASC
 ');
 
@@ -1205,7 +1243,7 @@ WHERE t.id = :id";
 	public function getMainSchoolTopicByUnitId($unit_id)
 	{
 		$stmt = $this->connect()->prepare('
-    SELECT * from main_school_topics_lnp where unit_id = :unit_id ORDER BY id ASC
+    SELECT * from main_school_topics_lnp where unit_id = :unit_id AND status=1 ORDER BY id ASC
 ');
 
 		if (!$stmt->execute(['unit_id' => $unit_id])) {
@@ -1220,7 +1258,7 @@ WHERE t.id = :id";
 		$stmt = $this->connect()->prepare('
         SELECT * 
         FROM main_school_content_lnp 
-        WHERE unit_id = :unit_id AND topic_id = :topic_id 
+        WHERE unit_id = :unit_id AND topic_id = :topic_id  AND status=1
         ORDER BY id ASC
     ');
 
@@ -1338,7 +1376,7 @@ WHERE t.id = :id";
 	public function getWeekList()
 	{
 
-		$stmt = $this->connect()->prepare('SELECT id, name, slug FROM important_weeks_lnp where school_id = 1');
+		$stmt = $this->connect()->prepare('SELECT id, name, slug,status FROM important_weeks_lnp where school_id = 1 and status=1');
 
 		if (!$stmt->execute(array())) {
 			$stmt = null;
@@ -1379,12 +1417,29 @@ WHERE t.id = :id";
 
 		return $classData;
 	}
-	public function getMainSchoolContentList()
+	public function getMainSchoolContentList($week_id = null, $category_id = null)
 	{
+		$sql = 'SELECT mc.id, mc.subject, mc.status,cl.name as class_name, l.name as lesson_name, mc.content_title_id, mc.week_id
+FROM main_school_content_lnp mc
+INNER JOIN classes_lnp cl ON mc.main_school_class_id = cl.id
+INNER JOIN main_school_lessons_lnp l ON mc.lesson_id = l.id
+WHERE mc.school_id = 1
+';
+		$params = [];
 
-		$stmt = $this->connect()->prepare('SELECT * FROM main_school_content_lnp where school_id = 1 ORDER BY id DESC');
+		if (!empty($week_id)) {
+			$sql .= ' AND week_id = ?';
+			$params[] = $week_id;
+		} elseif (!empty($category_id)) {
+			$sql .= ' AND content_title_id = ?';
+			$params[] = $category_id;
+		}
 
-		if (!$stmt->execute(array())) {
+		$sql .= ' ORDER BY id DESC';
+
+		$stmt = $this->connect()->prepare($sql);
+
+		if (!$stmt->execute($params)) {
 			$stmt = null;
 			exit();
 		}
@@ -1393,6 +1448,7 @@ WHERE t.id = :id";
 
 		return $classData;
 	}
+
 	public function getRoles()
 	{
 

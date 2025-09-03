@@ -237,13 +237,20 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             <div class=" ">
                                                 <div class="">
                                                     <div class="">
-                                                        
+
                                                         <div class="row ">
                                                             <div class="col-md-6 col-lg-5">
                                                                 <select class="form-select form-select-solid" id="class-filter">
                                                                     <option value="">Tüm Yaş Grupları</option>
                                                                     <?php
-                                                                    $list = $class->getMainSchoolTopicList();
+                                                                    if(@$_GET['unit_id']){
+                                                                        $list = $class->getMainSchoolTopicList($_GET['unit_id']);
+                                                                    } else
+                                                                    {
+                                                                          $list = $class->getMainSchoolTopicList();
+                                                                    }
+                                                            
+                                                                  
 
                                                                     $classes = [];
                                                                     foreach ($list as $value) {
@@ -286,6 +293,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <th class="min-w-125px">Ders</th>
                                                         <th class="min-w-125px">Ünite</th>
                                                         <th class="min-w-125px">Konu</th>
+                                                        <th class="min-w-125px">Durum</th>
                                                         <th class="text-end min-w-70px">İşlemler</th>
                                                     </tr>
                                                 </thead>
@@ -294,19 +302,18 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <tr data-class="<?= htmlspecialchars($value['class_name']) ?>" data-lesson="<?= htmlspecialchars($value['lesson_name']) ?>">
                                                             <td><?= htmlspecialchars($value['class_name']) ?></td>
                                                             <td>
-                                                                <a href="#" class="text-gray-800 text-hover-primary mb-1">
-                                                                    <?= htmlspecialchars($value['lesson_name']) ?>
-                                                                </a>
+                                                               <?= htmlspecialchars($value['lesson_name']) ?>
                                                             </td>
                                                             <td>
-                                                                <a href="#" class="text-gray-800 text-hover-primary mb-1">
-                                                                    <?= htmlspecialchars($value['unit_name']) ?>
-                                                                </a>
+                                                                  <?= htmlspecialchars($value['unit_name']) ?>
                                                             </td>
                                                             <td>
-                                                                <a href="#" class="text-gray-800 text-hover-primary mb-1">
-                                                                    <?= htmlspecialchars($value['topic_name']) ?>
-                                                                </a>
+                                                                 <?= htmlspecialchars($value['topic_name']) ?>
+                                                            </td>
+                                                            <td>
+                                                                <span class="badge <?= $value['status'] == 1 ? 'bg-success' : 'bg-danger' ?>">
+                                                                    <?= $value['status'] == 1 ? 'Aktif' : 'Pasif' ?>
+                                                                </span>
                                                             </td>
                                                             <td class="text-end">
                                                                 <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
@@ -320,8 +327,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                         </a>
                                                                     </div>
                                                                     <div class="menu-item px-3">
-                                                                        <a href="javascript:void(0);" class="menu-link px-3" data-kt-customer-table-filter="delete_row" onclick="handleDelete({ id: '<?= htmlspecialchars($value['id']) ?>', url: 'includes/ajax.php?service=deleteMainSchoolTopic' })">
-                                                                            Sil
+                                                                        <a href="javascript:void(0);" class="menu-link px-3" data-kt-customer-table-filter="delete_row" onclick="handleDelete({ id: '<?= htmlspecialchars($value['id']) ?>', url: 'includes/ajax.php?service=changeStatusMainSchoolTopic' })">
+                                                                            <?= $value['status'] == 1 ? 'Pasif Yap' : 'Aktif Yap' ?>
+
                                                                         </a>
                                                                     </div>
                                                                 </div>
@@ -389,24 +397,24 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         [10, 25, 50, "Tümü"]
                     ],
                     language: {
-                            decimal: ",",
-                            thousands: ".",
-                            emptyTable: "Tabloda herhangi bir veri mevcut değil",
-                            info: "_TOTAL_ kayıttan _START_ - _END_ arası gösteriliyor",
-                            infoEmpty: "Kayıt yok",
-                            infoFiltered: "(_MAX_ kayıt içerisinden filtrelendi)",
-                            lengthMenu: "Sayfada _MENU_ kayıt göster",
-                            loadingRecords: "Yükleniyor...",
-                            processing: "İşleniyor...",
-                            search: "Ara:",
-                            zeroRecords: "Eşleşen kayıt bulunamadı",
-                            paginate: {
-                                first: "İlk",
-                                last: "Son",
-                                next: "Sonraki",
-                                previous: "Önceki"
-                            }
-                        },
+                        decimal: ",",
+                        thousands: ".",
+                        emptyTable: "Tabloda herhangi bir veri mevcut değil",
+                        info: "_TOTAL_ kayıttan _START_ - _END_ arası gösteriliyor",
+                        infoEmpty: "Kayıt yok",
+                        infoFiltered: "(_MAX_ kayıt içerisinden filtrelendi)",
+                        lengthMenu: "Sayfada _MENU_ kayıt göster",
+                        loadingRecords: "Yükleniyor...",
+                        processing: "İşleniyor...",
+                        search: "Ara:",
+                        zeroRecords: "Eşleşen kayıt bulunamadı",
+                        paginate: {
+                            first: "İlk",
+                            last: "Son",
+                            next: "Sonraki",
+                            previous: "Önceki"
+                        }
+                    },
                 });
 
                 const classFilter = $('#class-filter');

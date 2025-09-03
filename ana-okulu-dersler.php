@@ -219,13 +219,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_customers_table">
                                                 <thead>
                                                     <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                        <th class="w-10px pe-2">
-                                                            <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                                                <input class="form-check-input" type="checkbox" data-kt-check="true" data-kt-check-target="#kt_customers_table .form-check-input" value="1" />
-                                                            </div>
-                                                        </th>
+                                                        
                                                         <th class="min-w-125px">Ders</th>
-
+                                                        <th class="min-w-125px">Durum</th>
                                                         <th class="text-end min-w-70px">İşlemler</th>
                                                     </tr>
                                                 </thead>
@@ -235,16 +231,15 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                                     foreach ($list as $key => $value): ?>
                                                         <tr>
-                                                            <td>
-                                                                <div class="form-check form-check-sm form-check-custom form-check-solid">
-                                                                    <input class="form-check-input" type="checkbox" value="1" />
-                                                                </div>
-                                                            </td>
+                                                          
 
                                                             <td>
-                                                                <a href="#" class="text-gray-800 text-hover-primary mb-1">
+                                                                <a href="ana-okulu-uniteler.php?lesson_id=<?=$value['id']?>" class="text-gray-800 text-hover-primary mb-1">
                                                                     <?= htmlspecialchars($value['name']) ?>
                                                                 </a>
+                                                            </td>
+                                                            <td>
+                                                                <span class="badge badge-light-<?= ((int)$value['status'] === 1) ? 'success' : 'danger'; ?>"><?= ((int)$value['status'] === 1) ? 'Aktif' : 'Pasif'; ?></span>
                                                             </td>
                                                             <td class="text-end">
                                                                 <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
@@ -269,8 +264,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                         <a href="javascript:void(0);"
                                                                             class="menu-link px-3"
                                                                             data-kt-customer-table-filter="delete_row"
-                                                                            onclick="handleDelete({ id: '<?= htmlspecialchars($value['id']) ?>', url: 'includes/ajax.php?service=deleteMainSchoolLesson' })">
-                                                                            Sil
+                                                                            onclick="handleDelete({ id: '<?= htmlspecialchars($value['id']) ?>', url: 'includes/ajax.php?service=changeStatusMainSchoolLesson' })">
+                                                                             <?= ((int)$value['status'] === 1) ? 'Pasif Yap' : 'Aktif Yap'; ?>
                                                                         </a>
                                                                     </div>
                                                                     <!--end::Menu item-->

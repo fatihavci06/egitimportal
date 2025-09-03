@@ -114,7 +114,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             <table class="table align-middle table-row-dashed fs-6 gy-5" id="anaOkuluIcerikleri">
                                                 <thead>
                                                     <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                        <th class="min-w-125px">Ay</th>
+                                                        <th class="min-w-125px">Yaş Grubu</th>
+                                                        <th class="min-w-125px">Ders</th>
                                                         <th class="min-w-125px">Konu</th>
                                                         <th class="min-w-125px">Durum</th>
                                                         <th class="text-end min-w-70px">İşlemler</th>
@@ -123,13 +124,23 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <tbody class="fw-semibold text-gray-600">
                                                     <?php
                                                     $class = new Classes();
-                                                    $weekList = $class->getMainSchoolContentList();
+                                                    if(@$_GET['week_id']){
+                                                       $weekList = $class->getMainSchoolContentList($_GET['week_id']);
+                                                    }else if(@$_GET['category_id']){
+                                                        $weekList = $class->getMainSchoolContentList('',@$_GET['category_id']);
+                                                    }
+                                                    else{
+                                                        $weekList = $class->getMainSchoolContentList();
+                                                    }
+                                            
+                                                    
                                                     foreach ($weekList as $key => $value): ?>
                                                         <tr>
                                                             <td>
-                                                                <a href="#" class="text-gray-800 text-hover-primary mb-1">
-                                                                    <?= htmlspecialchars($value['month']) ?>
-                                                                </a>
+                                                                <?= htmlspecialchars($value['class_name']) ?>
+                                                            </td>
+                                                            <td>
+                                                               <?= htmlspecialchars($value['lesson_name']) ?>
                                                             </td>
                                                             <td>
                                                                 <a href="ana-okulu-icerikler-detay.php?id=<?= $value['id'] ?>" class="text-gray-800 text-hover-primary mb-1">
@@ -151,9 +162,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                 </a>
                                                                 <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
                                                                     data-kt-menu="true">
-                                                                    <div class="menu-item px-3">
-                                                                        <a href="./ana-okul-detay/<?= htmlspecialchars($value['id']) ?>" class="menu-link px-3">Görüntüle</a>
-                                                                    </div>
+                                                                    
                                                                     <div class="menu-item px-3">
                                                                         <a class="menu-link px-3" href="ana-okulu-icerik-guncelle?id=<?= htmlspecialchars($value['id']) ?>">
                                                                             Güncelle
@@ -163,7 +172,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                         <a href="javascript:void(0);"
                                                                             class="menu-link px-3"
                                                                             data-kt-customer-table-filter="delete_row"
-                                                                            onclick="handleDelete({ id: '<?= htmlspecialchars($value['id']) ?>', url: 'includes/ajax.php?service=deleteMainSchoolContent' })">
+                                                                            onclick="handleDelete({ id: '<?= htmlspecialchars($value['id']) ?>', url: 'includes/ajax.php?service=changeStatusMainSchoolContent' })">
                                                                             <?= ((int)$value['status'] === 1) ? 'Pasif Yap' : 'Aktif Yap'; ?>
                                                                         </a>
                                                                     </div>
