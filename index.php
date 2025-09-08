@@ -6,7 +6,7 @@ if (isset($_COOKIE['remember_me'])) {
 	if (isset($_COOKIE['remember_me'])) {
     setcookie("remember_me", "", time() - 3600, "/", "", false, true);
 }
-die;
+
     include_once "classes/dbh.classes.php";
     $dbh = new Dbh();
     $pdo = $dbh->connect();

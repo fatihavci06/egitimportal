@@ -27,18 +27,18 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 	if (isset($_SESSION['role'])) {
 
 		// ✅ Beni Hatırla işlemi
-		// if ($remember) {
-		// 	$token = bin2hex(random_bytes(32));
-		// 	$hashedToken = hash('sha256', $token);
+		if ($remember) {
+			$token = bin2hex(random_bytes(32));
+			$hashedToken = hash('sha256', $token);
 
-		// 	$dbh = new Dbh();
-		// 	$pdo = $dbh->connect();
-		// 	$stmt = $pdo->prepare("UPDATE users_lnp SET remember_token = ? WHERE id = ?");
-		// 	$stmt->execute([$hashedToken, $_SESSION['id']]);
+			$dbh = new Dbh();
+			$pdo = $dbh->connect();
+			$stmt = $pdo->prepare("UPDATE users_lnp SET remember_token = ? WHERE id = ?");
+			$stmt->execute([$hashedToken, $_SESSION['id']]);
 
-		// 	// Cookie’ye **hash’lenmemiş token** koyuyoruz
-		// 	setcookie("remember_me", $token, time() + (86400 * 30), "/", "", false, true);
-		// }
+			// Cookie’ye **hash’lenmemiş token** koyuyoruz
+			setcookie("remember_me", $token, time() + (86400 * 30), "/", "", false, true);
+		}
 
 
 		// Yönlendirme
