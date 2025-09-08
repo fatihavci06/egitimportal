@@ -3,35 +3,35 @@
 session_start();
 define('GUARD', true);
 if (isset($_COOKIE['remember_me'])) {
-// 	if (isset($_COOKIE['remember_me'])) {
-//     setcookie("remember_me", "", time() - 3600, "/", "", false, true);
-// }
-// die;
-    // include_once "classes/dbh.classes.php";
-    // $dbh = new Dbh();
-    // $pdo = $dbh->connect();
+	if (isset($_COOKIE['remember_me'])) {
+    setcookie("remember_me", "", time() - 3600, "/", "", false, true);
+}
+die;
+    include_once "classes/dbh.classes.php";
+    $dbh = new Dbh();
+    $pdo = $dbh->connect();
 
-    // $token = $_COOKIE['remember_me'];
-    // $hashedToken = hash('sha256', $token); // Cookie’yi hash’le DB ile karşılaştır
+    $token = $_COOKIE['remember_me'];
+    $hashedToken = hash('sha256', $token); // Cookie’yi hash’le DB ile karşılaştır
 
-    // $stmt = $pdo->prepare("SELECT * FROM users_lnp WHERE remember_token = ?");
-    // $stmt->execute([$hashedToken]);
-    // $user = $stmt->fetch();
+    $stmt = $pdo->prepare("SELECT * FROM users_lnp WHERE remember_token = ?");
+    $stmt->execute([$hashedToken]);
+    $user = $stmt->fetch();
 
-    // if ($user) {
-    //     $_SESSION['id'] = $user['id'];
-    //     $_SESSION['role'] = $user['role'];
-	// 	$_SESSION['email'] = $user['email'];
-	// 	$_SESSION['photo'] = $user['photo'];
-	// 	$_SESSION['class_id'] = $user['class_id'];
-	// 	$_SESSION['school_id'] = $user['school_id'];
-	// 	$_SESSION['teacher_id'] = $user['teacher_id'];
-	// 	$_SESSION['parent_id'] = $user['parent_id'];
-	// 	$_SESSION['lesson_id'] = $user['lesson_id'];
-	// 	$_SESSION['name'] = $user['name'] . ' ' . $user['surname'];
-    //     header("Location: dashboard");
-    //     exit;
-    // }
+    if ($user) {
+        $_SESSION['id'] = $user['id'];
+        $_SESSION['role'] = $user['role'];
+		$_SESSION['email'] = $user['email'];
+		$_SESSION['photo'] = $user['photo'];
+		$_SESSION['class_id'] = $user['class_id'];
+		$_SESSION['school_id'] = $user['school_id'];
+		$_SESSION['teacher_id'] = $user['teacher_id'];
+		$_SESSION['parent_id'] = $user['parent_id'];
+		$_SESSION['lesson_id'] = $user['lesson_id'];
+		$_SESSION['name'] = $user['name'] . ' ' . $user['surname'];
+        header("Location: dashboard");
+        exit;
+    }
 } else {
 
 
@@ -146,14 +146,14 @@ if (isset($_COOKIE['remember_me'])) {
 									<input type="hidden" name="screen_size" id="screenSizeInput">
 									<!--end::Input group-->
 									<!--begin::Actions-->
-									<!-- <div class="fv-row mb-10">
+									<div class="fv-row mb-10">
 										<div class="form-check">
 											<input class="form-check-input" type="checkbox" name="remember" id="remember" />
 											<label class="form-check-label text-gray-900" for="remember">
 												Beni Hatırla
 											</label>
 										</div>
-									</div> -->
+									</div>
 									<div class="text-center">
 										<!--begin::Submit button-->
 										<button type="submit" id="kt_sign_in_submit" class="tus btn btn-lg btn-primary w-100 mb-5">
