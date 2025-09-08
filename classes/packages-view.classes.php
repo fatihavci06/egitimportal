@@ -23,7 +23,7 @@ class ShowPackage extends Packages
                 $packages .= ' <label class="form-label fw-bold text-gray-900 fs-6">Paketinizi Seçin</label> 
                 <div class="row fv-row mb-7 fv-plugins-icon-container">';
             }
-
+            $taxRate = $this->getVat();
             $packages .= '
                         <div class="col-xl-6 mb-10">
                             <label role="button">
@@ -31,7 +31,7 @@ class ShowPackage extends Packages
                             <div class="card card-flush shadow-sm list-group-item-action">
                                 <div class="card-body text-center">
                                     <h3 class="mb-5">' . $package['name'] . '</h3>
-                                    <div class="text-gray-600 mb-2" id="monthly_fee">Aylık Birim Fiyat: ' . $this->getPackagePrice($package['id'])[0]['monthly_fee'] . '₺ + KDV</div>
+                                    <div class="text-gray-600 mb-2" id="monthly_fee">Aylık Birim Fiyat: ' .  number_format($this->getPackagePrice($package['id'])[0]['monthly_fee'] / 100 * (100 + $taxRate['tax_rate']), 2, '.', '')  . '₺</div>
                                     <div class="text-gray-600 mb-2" id="subscription_period">Kaç Aylık: ' . $this->getPackagePrice($package['id'])[0]['subscription_period'] . ' </div>
                                 </div>
                             </div>
