@@ -18,7 +18,7 @@ class AddAnnouncementContr extends AddAnnouncement
 		$this->data['slug'] = $slugName->slugify($this->data['title']);
 
 		$slugRes = $this->checkSlug($this->data['slug'] );
-
+		
 		$this->data['slug'] = $slugName->makeUniqueSlug($this->data['slug'], $slugRes);
 
 		$this->setAnnouncement($this->data, $this->targets) ;

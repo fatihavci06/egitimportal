@@ -38,6 +38,7 @@ try {
 		]);
 		exit;
 	}
+	
 	$announcementData = [
 		'title' => trim($input['title']),
 		'content' => trim($input['content']),
@@ -45,6 +46,7 @@ try {
 		'expire_date' => $input['expire_date'],
 		'created_by' => (int) $_SESSION['id']
 	];
+	
 
 	if (strlen($announcementData['title']) > 255) {
 		http_response_code(400);
@@ -59,14 +61,16 @@ try {
 	$today = new DateTime(date('Y-m-d'));
 
 	if ($inputDate < $today) {
+		
 		$announcementData['start_date'] = date('Y-m-d H:i:s');
 	}
 
 	// Validate dates
-	$startDate = DateTime::createFromFormat('Y-m-d H:i:s', $announcementData['start_date']);
+$startDate = DateTime::createFromFormat('Y-m-d', $announcementData['start_date']);
 	$expireDate = DateTime::createFromFormat('Y-m-d', $announcementData['expire_date']);
 
 	if (!$startDate) {
+		
 		http_response_code(400);
 		echo json_encode([
 			'success' => false,

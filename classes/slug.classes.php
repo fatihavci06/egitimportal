@@ -38,6 +38,7 @@ class Slug
   }
   function makeUniqueSlug(string $text, array $slugRes): string
   {
+    
     $maxNumber = 0;
 
     foreach ($slugRes as $row) {

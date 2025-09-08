@@ -23,7 +23,7 @@ class AddContentContr extends AddContent
 	private $urls;
 	private $is_approved;
 
-	public function __construct($name, $classes, $lessons, $units, $topics, $sub_topics, $short_desc, $content, $video_url, $files, $imageFiles, $photoSize, $photoName, $fileTmpName, $descriptions, $titles, $urls,$is_approved)
+	public function __construct($name, $classes, $lessons, $units, $topics, $sub_topics, $short_desc, $content, $video_url, $files, $imageFiles, $photoSize, $photoName, $fileTmpName, $descriptions, $titles, $urls, $is_approved)
 	{
 		$this->photoSize = $photoSize;
 		$this->photoName = $photoName;
@@ -53,21 +53,22 @@ class AddContentContr extends AddContent
 
 		$slugRes = $this->checkSlug($slug);
 
-		if (count($slugRes) > 0) {
-			$ech = end($slugRes);
+		// if (count($slugRes) > 0) {
+		// 	$ech = end($slugRes);
 
-			$output = substr($ech['slug'], -1, strrpos($ech['slug'], '-'));
+		// 	$output = substr($ech['slug'], -1, strrpos($ech['slug'], '-'));
 
-			if (!is_numeric($output)) {
-				$output = 1;
-			} else {
-				$output = $output + 1;
-			}
+		// 	if (!is_numeric($output)) {
+		// 		$output = 1;
+		// 	} else {
+		// 		$output = $output + 1;
+		// 	}
 
-			$slug = $slug . "-" . $output;
-		} else {
-			$slug = $slug;
-		}
+		// 	$slug = $slug . "-" . $output;
+		// } else {
+		// 	$slug = $slug;
+		// }
+		$slug = $slugName->makeUniqueSlug($slug, $slugRes);
 
 		if ($this->fileTmpName != NULL) {
 			$imageSent = new ImageUpload();
@@ -103,6 +104,5 @@ class AddContentContr extends AddContent
 
 		$result = $this->setContent($imgName, $slug, $this->name, $this->classes, $this->lessons, $this->units, $this->short_desc, $this->topics, $this->sub_topics, $this->content, $this->video_url, $file_urls, $this->imageFiles, $this->descriptions, $this->titles, $this->urls, $this->is_approved);
 		return $result;
-
 	}
 }

@@ -51,6 +51,7 @@ class AddAnnouncement extends Dbh
 
 	public function checkSlug($slug)
 	{
+		
 		$stmt = $this->connect()->prepare('SELECT slug FROM announcements_lnp WHERE slug LIKE ? OR slug = ? ORDER BY slug ASC');
 
 		if (!$stmt->execute([$slug . '-%', $slug])) {
