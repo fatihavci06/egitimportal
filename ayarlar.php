@@ -125,7 +125,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </div>
                                             <div class="mb-3 mt-4">
                                                 <a href="#" id="sendTaxRateButton" class="btn btn-primary btn-sm" role="button">
-                                                    Gönder
+                                                    Kaydet
                                                 </a>
                                             </div>
                                             <!--end::Table-->
