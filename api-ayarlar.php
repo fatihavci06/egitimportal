@@ -94,6 +94,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                 <input type="text" class="form-control" id="msgheader" name="msgheader"
                                                                     value="<?= htmlspecialchars($data['msgheader']); ?>" placeholder="SMS Başlığı">
                                                             </div>
+                                                            <p class="mt-2 mb-2">SMS Şablonu Ayarları için <a href="ayarlar" class="text-primary">tıklayınız</a>.</p>
                                                             <div class="d-grid">
                                                                 <a href="#" id="sendSmsSettings" class="btn btn-primary btn-hover-scale" role="button">
                                                                     <i class="fas fa-save me-2"></i> Kaydet
