@@ -16,7 +16,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
 
     $students = new ShowStudent();
 
-    ?>
+?>
     <!--end::Head-->
     <!--begin::Body-->
 
@@ -181,10 +181,16 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
                                                                         </select>
                                                                     </div>
                                                                     <div class="mb-3">
-                                                                        <label for="monthly_fee" class="form-label">Aylık
-                                                                            Ücret</label>
-                                                                        <input type="number" class="form-control"
+                                                                        <label for="monthly_fee" class="form-label">Aylık Ücret (KDV Hariç)</label>
+                                                                        <input type="number" step="0.01" class="form-control"
                                                                             id="monthly_fee" name="monthly_fee"
+                                                                            placeholder="Aylık ücret giriniz.">
+                                                                    </div>
+
+                                                                    <div class="mb-3">
+                                                                        <label for="monthly_fee_kdv" class="form-label">Aylık KDV Dahil Ücret</label>
+                                                                        <input type="number" step="0.01" class="form-control"
+                                                                            id="monthly_fee_kdv" name="monthly_fee_kdv"
                                                                             placeholder="Aylık ücret giriniz.">
                                                                     </div>
 
@@ -248,13 +254,16 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
 
 
 
-
+                                                                                <?php
+                                                                               $taxRate= $package->taxRate();
+                                                                                // echo $taxRate['tax_rate'];
+                                                                                ?>
                                             <!--begin::Table-->
                                             <table class="table align-middle table-row-dashed fs-6 gy-5"
                                                 id="kt_customers_table">
                                                 <thead>
                                                     <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                        <th class="min-w-125px">Paket Adı</th>
+                                                        <th class="min-w-125px">Paket Adı </th>
                                                         <th class="min-w-125px">Aylık Ücret</th>
                                                         <th class="min-w-125px">Kaç Aylık</th>
                                                         <th class="min-w-125px">Peşin Alımda İndirim Yüzdesi</th>
@@ -328,10 +337,33 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
 
         <script src="assets/js/custom/apps/packages/list/filter.js"></script>
         <!-- <script src="assets/js/custom/apps/class/list/list.js"></script> -->
-         
+
         <script>
-            $(document).ready(function () {
-                $('#packageCreate .btn-primary').on('click', function () {
+            $(document).ready(function() {
+                const kdvRate = <?=$taxRate['tax_rate']/100?> // %10 KDV
+                const feeInput = document.getElementById("monthly_fee");
+                const feeKdvInput = document.getElementById("monthly_fee_kdv");
+
+                // KDV hariç girildiğinde → KDV dahil hesapla
+                feeInput.addEventListener("input", function() {
+                    let fee = parseFloat(this.value);
+                    if (!isNaN(fee)) {
+                        feeKdvInput.value = (fee * (1 + kdvRate)).toFixed(2);
+                    } else {
+                        feeKdvInput.value = "";
+                    }
+                });
+
+                // KDV dahil girildiğinde → KDV hariç hesapla
+                feeKdvInput.addEventListener("input", function() {
+                    let feeKdv = parseFloat(this.value);
+                    if (!isNaN(feeKdv)) {
+                        feeInput.value = (feeKdv / (1 + kdvRate)).toFixed(2);
+                    } else {
+                        feeInput.value = "";
+                    }
+                });
+                $('#packageCreate .btn-primary').on('click', function() {
                     var packageName = $('#packageName').val().trim();
                     var classId = $('#class_id').val();
                     var monthlyFee = $('#monthly_fee').val().trim();
@@ -357,7 +389,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
                             monthly_fee: monthlyFee,
                             subscription_period: subscriptionPeriod
                         },
-                        success: function (response) {
+                        success: function(response) {
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Başarılı',
@@ -368,7 +400,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
                                 location.reload();
                             });
                         },
-                        error: function (xhr, status, error) {
+                        error: function(xhr, status, error) {
                             // error.message doğrudan burada undefined olabilir, bu yüzden response'dan alıyoruz
                             let errorMessage = 'Bilinmeyen hata oluştu';
 
@@ -404,7 +436,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
     </body>
     <!--end::Body-->
 
-    </html>
+</html>
 <?php } else {
     header("location: index");
 }

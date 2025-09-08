@@ -418,6 +418,7 @@ class ShowPackagesForAdmin extends PackagesForAdmin
     public function showUpdatePackage($id)
     {
         $packageInfo = $this->getOnePackage($id);
+        $taxRate = $this->taxRate();
         $classes = new Classes();
         $classList = $classes->getClasses();
 
@@ -463,7 +464,13 @@ class ShowPackagesForAdmin extends PackagesForAdmin
                         <div id="kt_modal_add_customer_billing_info" class="collapse show">
                             <div class="d-flex flex-column mb-7 fv-row">
                                 <label class="required fs-6 fw-semibold mb-2">Aylık Ücret</label>
-                                <input class="form-control form-control-solid" name="monthly_fee" id="monthly_fee" value="' . $value['monthly_fee'] . '" />
+                                <input class="form-control form-control-solid" id="monthly_fee" name="monthly_fee" id="monthly_fee" value="' . $value['monthly_fee'] . '" />
+                            </div>
+                        </div>
+                         <div id="kt_modal_add_customer_billing_info" class="collapse show">
+                            <div class="d-flex flex-column mb-7 fv-row">
+                                <label class="required fs-6 fw-semibold mb-2">Aylık KDV Dahil Ücret</label>
+                                <input class="form-control form-control-solid" id="monthly_fee_kdv" name="monthly_fee_kdv"  value="' .number_format($value['monthly_fee'] /100*(100+$taxRate['tax_rate']??10), 2, '.', '') . '" />
                             </div>
                         </div>
                         <div class="mb-3">

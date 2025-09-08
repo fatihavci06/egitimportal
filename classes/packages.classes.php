@@ -150,6 +150,22 @@ class PackagesForAdmin extends Dbh {
 
 		$stmt = null;
 	}
+	public function taxRate()
+	{
+		
+		$stmt = $this->connect()->prepare('SELECT tax_rate FROM settings_lnp WHERE school_id = ?'); 
+
+			if (!$stmt->execute(array(1))) {
+				$stmt = null;
+				exit();
+			}
+
+		$getData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return $getData;
+
+		$stmt = null;
+	}
 
 	public function getPackageUsers($id)
 	{

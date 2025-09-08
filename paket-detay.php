@@ -225,6 +225,30 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 	</body>
 	<script>
 		$(document).ready(function() {
+			document.getElementById("monthly_fee_kdv").addEventListener("input", function() {
+				let kdvDahil = parseFloat(this.value);
+				if (!isNaN(kdvDahil)) {
+					// KDV %10 ise
+					let kdvHaric = (kdvDahil / 1.10).toFixed(2);
+					document.getElementById("monthly_fee").value = kdvHaric;
+				}
+			});
+			document.addEventListener("DOMContentLoaded", function () {
+    let modal = document.getElementById("kt_modal_update_customer");
+
+    modal.addEventListener("shown.bs.modal", function () {
+        let feeInput = document.getElementById("monthly_fee");
+        let feeKdvInput = document.getElementById("monthly_fee_kdv");
+
+        if (feeInput && feeKdvInput) {
+            let kdvHaric = parseFloat(feeInput.value);
+            if (!isNaN(kdvHaric)) {
+                let kdvDahil = (kdvHaric * 1.10).toFixed(2);
+                feeKdvInput.value = kdvDahil;
+            }
+        }
+    });
+});
 			$('#packageUpdate').on('click', function() {
 
 
