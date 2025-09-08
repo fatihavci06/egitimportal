@@ -65,45 +65,100 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                         <!--end::Card header-->
                                         <!--begin::Card body-->
-                                        <div class="card-body  pt-0">
-                                            <div class="row">
-                                                <div class="col-8">
-                                                    <?php
-                                                    $data = new Classes();
-                                                    $data = $data->getSMSApiSettings();
-                                                    ?>
-                                                    <h3 class="mt-4">SMS API Ayarları</h3>
-                                                    <div class="mb-3 mt-4">
-                                                        <label for="username" class="form-label">Kullanıcı Adı</label>
-                                                        <input type="text" class="form-control" id="username" name="username" value="<?= $data['username']; ?>" placeholder="KDV Oranı ">
-                                                    </div>
-
-                                                    <div class="mb-3 mt-4">
-                                                        <label for="password" class="form-label">Şifre</label>
-                                                        <input type="password" class="form-control" id="password" name="password" value="<?= $data['password']; ?>" placeholder="KDV Oranı ">
-                                                    </div>
-                                                    <div class="mb-3 mt-4">
-                                                        <label for="msgheader" class="form-label">SMS Başlığı</label>
-                                                        <input type="text" class="form-control" id="msgheader" name="msgheader" value="<?= $data['msgheader']; ?>" placeholder="KDV Oranı ">
-                                                    </div>
-                                                    <div class="mb-3 mt-4">
-                                                        <a href="#" id="sendSmsSettings" class=" btn btn-primary" role="button">
-                                                            Gönder
-                                                        </a>
+                                        <div class="card-body pt-0">
+                                            <div class="row g-5 g-xl-8">
+                                                <div class="col-12 col-md-6">
+                                                    <div class="card card-custom h-md-100 shadow-sm border border-info">
+                                                        <div class="card-header border-0">
+                                                            <div class="card-title">
+                                                                <h3 class="fw-bold m-0"><i class="fas fa-sms fs-2 me-2 text-primary"></i> SMS API Ayarları</h3>
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-body pt-0">
+                                                            <?php
+                                                            $data = new Classes();
+                                                            $data = $data->getSMSApiSettings();
+                                                            ?>
+                                                            <div class="mb-5">
+                                                                <label for="username" class="form-label">Kullanıcı Adı</label>
+                                                                <input type="text" class="form-control" id="username" name="username"
+                                                                    value="<?= htmlspecialchars($data['username']); ?>" placeholder="Kullanıcı Adı">
+                                                            </div>
+                                                            <div class="mb-5">
+                                                                <label for="password" class="form-label">Şifre</label>
+                                                                <input type="password" class="form-control" id="password" name="password"
+                                                                    value="<?= htmlspecialchars($data['password']); ?>" placeholder="Şifre">
+                                                            </div>
+                                                            <div class="mb-5">
+                                                                <label for="msgheader" class="form-label">SMS Başlığı</label>
+                                                                <input type="text" class="form-control" id="msgheader" name="msgheader"
+                                                                    value="<?= htmlspecialchars($data['msgheader']); ?>" placeholder="SMS Başlığı">
+                                                            </div>
+                                                            <div class="d-grid">
+                                                                <a href="#" id="sendSmsSettings" class="btn btn-primary btn-hover-scale" role="button">
+                                                                    <i class="fas fa-save me-2"></i> Kaydet
+                                                                </a>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-4 mt-3">
-                                                    <?php
-                                                        $sms=new Sms();
-                                                        $sms=$sms->getBalance();
-                                                        
-                                                    ?>
-                                                   <h3> <span class="badge badge-success"><?=$sms?></span></h3>
 
+                                                <div class="col-12 col-md-6">
+                                                    <div class="card card-custom h-md-100 shadow-sm border border-info">
+                                                        <div class="card-header border-0">
+                                                            <div class="card-title">
+                                                                <h3 class="fw-bold m-0"><i class="fas fa-credit-card fs-2 me-2 text-info"></i> Ödeme API Bilgileri</h3>
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-body pt-0">
+                                                            <?php
+                                                            $merchantId = "77012194";
+                                                            $terminalId = "84012196";
+                                                            $supportEmail = "teknikdestek@tami.com.tr";
+                                                            $supportPhone = "444 0 777";
+                                                            ?>
+                                                            <div class="p-4 bg-light rounded-3 mb-4">
+                                                                <div class="d-flex align-items-center mb-3">
+                                                                    <i class="fas fa-store fs-4 text-secondary me-3"></i>
+                                                                    <div class="d-flex flex-column">
+                                                                        <span class="fw-bold text-muted">Merchant ID:</span>
+                                                                        <span class="text-dark fs-5 fw-bolder"><?= htmlspecialchars($merchantId); ?></span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="d-flex align-items-center mb-3">
+                                                                    <i class="fas fa-terminal fs-4 text-secondary me-3"></i>
+                                                                    <div class="d-flex flex-column">
+                                                                        <span class="fw-bold text-muted">Terminal ID:</span>
+                                                                        <span class="text-dark fs-5 fw-bolder"><?= htmlspecialchars($terminalId); ?></span>
+                                                                    </div>
+                                                                </div>
+                                                                <hr class="border-dashed my-3">
+                                                                <div class="d-flex align-items-center mb-2">
+                                                                    <i class="fas fa-envelope fs-4 text-danger me-3"></i>
+                                                                    <div class="d-flex flex-column">
+                                                                        <span class="fw-bold text-muted">Acil Destek (E-posta):</span>
+                                                                        <a href="mailto:<?= htmlspecialchars($supportEmail); ?>" class="text-danger fs-5 text-hover-underline">
+                                                                            <?= htmlspecialchars($supportEmail); ?>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="d-flex align-items-center">
+                                                                    <i class="fas fa-phone fs-4 text-danger me-3"></i>
+                                                                    <div class="d-flex flex-column">
+                                                                        <span class="fw-bold text-muted">Acil Destek (Telefon):</span>
+                                                                        <a href="tel:<?= str_replace(' ', '', htmlspecialchars($supportPhone)); ?>" class="text-danger fs-5 text-hover-underline">
+                                                                            <?= htmlspecialchars($supportPhone); ?>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <!--end::Table-->
                                         </div>
+
+
                                         <!--end::Card body-->
                                     </div>
                                     <!--end::Card-->
