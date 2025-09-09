@@ -10,9 +10,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     include_once "views/pages-head.php";
     $class = new Classes();
     $data = $class->getExtraPackageList();
-
+include_once "classes/packages.classes.php";
+$vat=new Packages();
+$tax=$vat->getVat();
+$taxRate=$tax['tax_rate'];
+$taxRate= $taxRate / 100 + 1;
 
 ?>
+
     <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
         <script>
             var defaultThemeMode = "light";
@@ -53,7 +58,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     </i>
                                                     <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder=" Ara" />
                                                 </div>
-                                                </div>
+                                            </div>
                                             <div class="card-toolbar">
                                                 <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
                                                     <button type="button" class="btn btn-primary btn-sm mb-3" data-bs-toggle="modal" data-bs-target="#addPackageModal">
@@ -67,8 +72,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <span class="me-2" data-kt-customer-table-select="selected_count"></span>Seçildi
                                                     </div>
                                                 </div>
-                                                </div>
                                             </div>
+                                        </div>
                                         <div class="card-body pt-0">
                                             <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_customers_table">
                                                 <thead>
@@ -82,7 +87,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <th class="min-w-125px">Tip</th>
                                                         <th class="min-w-125px">Aylık / Adet</th>
                                                         <th class="min-w-125px">Fiyat</th>
-                                                        <th class="min-w-200px">Açıklama</th> <th class="text-end min-w-90px">İşlemler</th>
+                                                        <th class="min-w-200px">Açıklama</th>
+                                                        <th class="text-end min-w-90px">İşlemler</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="fw-semibold text-gray-600">
@@ -98,7 +104,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             <td><?= $d['type'] ?></td>
                                                             <td><?= $d['limit_count'] ?></td>
                                                             <td><?= $d['price'] ?></td>
-                                                            <td><?= $d['description'] ?></td> <td class="text-end">
+                                                            <td><?= $d['description'] ?></td>
+                                                            <td class="text-end">
                                                                 <button class="btn  btn-primary btn-sm me-1 update-btn" data-id="<?= $d['id'] ?>">
                                                                     <i class="fas fa-edit"></i> </button>
                                                                 <button class="btn   btn-danger btn-sm delete-btn" data-id="<?= $d['id'] ?>">
@@ -124,8 +131,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                     <input type="text" id="addPackageName" name="addPackageName" class="form-control" required />
                                                                 </div>
                                                                 <div class="mb-3">
-                                                                    <label for="addPackagePrice" class="form-label required">Paket Fiyatı</label>
+                                                                    <label for="addPackagePrice" class="form-label required">Paket Fiyatı (KDV Hariç)</label>
                                                                     <input type="number" inputmode="decimal" step="0.01" id="addPackagePrice" name="addPackagePrice" class="form-control" required />
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="addPackagePriceWithTax" class="form-label required">Paket Fiyatı (KDV Dahil)</label>
+                                                                    <input type="number" inputmode="decimal" step="0.01" id="addPackagePriceWithTax" name="addPackagePriceWithTax" class="form-control" required />
                                                                 </div>
                                                                 <div class="mb-3">
                                                                     <label for="addPackageType" class="form-label required">Tip</label>
@@ -168,14 +179,22 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             </div>
                                                             <div class="modal-body">
                                                                 <input type="hidden" id="updatePackageId" name="updatePackageId" />
+
                                                                 <div class="mb-3">
                                                                     <label for="updatePackageName" class="form-label required">Paket Adı</label>
                                                                     <input type="text" id="updatePackageName" name="updatePackageName" class="form-control" required />
                                                                 </div>
+
                                                                 <div class="mb-3">
-                                                                    <label for="updatePackagePrice" class="form-label">Fiyat</label>
+                                                                    <label for="updatePackagePrice" class="form-label required">Fiyat (KDV Hariç)</label>
                                                                     <input type="number" step="0.01" id="updatePackagePrice" name="updatePackagePrice" class="form-control" required />
                                                                 </div>
+
+                                                                <div class="mb-3">
+                                                                    <label for="updatePackagePriceWithTax" class="form-label required">Fiyat (KDV Dahil)</label>
+                                                                    <input type="number" step="0.01" id="updatePackagePriceWithTax" name="updatePackagePriceWithTax" class="form-control" required  />
+                                                                </div>
+
                                                                 <div class="mb-3">
                                                                     <label for="updatePackageType" class="form-label required">Tip</label>
                                                                     <select id="updatePackageType" name="updatePackageType" class="form-select" required>
@@ -185,19 +204,23 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                         <option value="Özel Ders">Özel Ders</option>
                                                                     </select>
                                                                 </div>
+
                                                                 <div class="mb-3" id="updateMonthsWrapper" style="display:none;">
                                                                     <label for="updateMonths" class="form-label required">Kaç Aylık</label>
                                                                     <input type="number" id="updateMonths" name="updateMonths" min="1" class="form-control" />
                                                                 </div>
+
                                                                 <div class="mb-3" id="updateCountWrapper" style="display:none;">
                                                                     <label for="updateCount" class="form-label required">Adet</label>
                                                                     <input type="number" id="updateCount" name="updateCount" min="1" class="form-control" />
                                                                 </div>
+
                                                                 <div class="mb-3">
                                                                     <label for="updatePackageDescription" class="form-label">Açıklama</label>
                                                                     <textarea id="updatePackageDescription" name="updatePackageDescription" class="form-control" rows="3"></textarea>
                                                                 </div>
                                                             </div>
+
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
                                                                 <button type="submit" class="btn btn-primary">Güncelle</button>
@@ -208,18 +231,18 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </div>
 
 
-                                            </div>
                                         </div>
+                                    </div>
 
                                 </div>
-                                </div>
                             </div>
-                        <?php include_once "views/footer.php"; ?>
                         </div>
-                    <?php include_once "views/aside.php"; ?>
+                        <?php include_once "views/footer.php"; ?>
                     </div>
+                    <?php include_once "views/aside.php"; ?>
                 </div>
             </div>
+        </div>
         <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
             <i class="ki-duotone ki-arrow-up">
                 <span class="path1"></span>
@@ -236,7 +259,58 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/js/custom/widgets.js"></script>
 
         <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const updatePriceInput = document.getElementById("updatePackagePrice"); // KDV hariç
+                const updatePriceWithTaxInput = document.getElementById("updatePackagePriceWithTax"); // KDV dahil
+                const taxRate = <?=$taxRate?>; // %10 KDV
+
+                // KDV hariç fiyat girilince KDV dahil hesapla
+                updatePriceInput.addEventListener("input", function() {
+                    const price = parseFloat(updatePriceInput.value);
+                    if (!isNaN(price)) {
+                        updatePriceWithTaxInput.value = (price * taxRate).toFixed(2);
+                    } else {
+                        updatePriceWithTaxInput.value = "";
+                    }
+                });
+
+                // KDV dahil fiyat girilince KDV hariç hesapla
+                updatePriceWithTaxInput.addEventListener("input", function() {
+                    const priceWithTax = parseFloat(updatePriceWithTaxInput.value);
+                    if (!isNaN(priceWithTax)) {
+                        updatePriceInput.value = (priceWithTax / taxRate).toFixed(2);
+                    } else {
+                        updatePriceInput.value = "";
+                    }
+                });
+
+
+                const priceInput = document.getElementById("addPackagePrice"); // KDV hariç
+                const priceWithTaxInput = document.getElementById("addPackagePriceWithTax"); // KDV dahil
+
+
+                // KDV hariç fiyat girildiğinde otomatik dahil fiyatı doldur
+                priceInput.addEventListener("input", function() {
+                    const price = parseFloat(priceInput.value);
+                    if (!isNaN(price)) {
+                        priceWithTaxInput.value = (price * taxRate).toFixed(2);
+                    } else {
+                        priceWithTaxInput.value = "";
+                    }
+                });
+
+                // KDV dahil fiyat girildiğinde otomatik hariç fiyatı doldur
+                priceWithTaxInput.addEventListener("input", function() {
+                    const priceWithTax = parseFloat(priceWithTaxInput.value);
+                    if (!isNaN(priceWithTax)) {
+                        priceInput.value = (priceWithTax / taxRate).toFixed(2);
+                    } else {
+                        priceInput.value = "";
+                    }
+                });
+            });
             $(document).ready(function() {
+
                 // DataTable başlat
                 const table = $('#kt_customers_table').DataTable();
 
@@ -344,6 +418,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     $('#updatePackageId').val(id);
                     $('#updatePackageName').val(name);
                     $('#updatePackagePrice').val(price);
+                    $('#updatePackagePriceWithTax').val((price * <?= $taxRate ?>).toFixed(2));
                     $('#updatePackageType').val(type).trigger('change');
                     if (type === 'Koçluk' || type === 'Rehberlik') {
                         $('#updateMonths').val(months);
@@ -447,8 +522,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 
 
-        </body>
-    </html>
+    </body>
+
+</html>
 <?php } else {
     header("location: index");
 }
