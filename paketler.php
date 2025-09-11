@@ -247,9 +247,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
                                                 <thead>
                                                     <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                                                         <th class="min-w-125px">Paket Adı </th>
-                                                        <th class="min-w-125px">Aylık Ücret</th>
+                                                        <th class="min-w-125px">Havaleli Paket Ücreti</th>
+                                                        <th class="min-w-125px">Kredi Kartlı Paket Ücreti</th>
                                                         <th class="min-w-125px">Kaç Aylık</th>
-                                                        <th class="min-w-125px">Peşin Alımda İndirim Yüzdesi</th>
                                                         <th class="min-w-125px">Hangi Sınıf</th>
                                                         <th class="text-end min-w-125px">İşlem</th>
                                                     </tr>

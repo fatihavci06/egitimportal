@@ -227,9 +227,9 @@ class ShowPackagesForAdmin extends PackagesForAdmin
         foreach ($packageInfo as $value) {
             $id = htmlspecialchars($value['id']);
             $name = htmlspecialchars($value['name']);
-            $monthly_fee = htmlspecialchars($value['monthly_fee']);
+            $bank_transfer_fee = htmlspecialchars($value['bank_transfer_fee']);
             $subscription_period = htmlspecialchars($value['subscription_period']);
-            $discount = htmlspecialchars($value['discount']);
+            $credit_card_fee = htmlspecialchars($value['credit_card_fee']);
             $className = htmlspecialchars($value['className']);
             $status = (int) $value['status'];
             $sinifArama = 'data-filter="' . $value['classSlug'] . '"';
@@ -255,9 +255,10 @@ class ShowPackagesForAdmin extends PackagesForAdmin
             <td>
                 <a href="./paket-detay?id=' . $id . '" class="text-gray-800 text-hover-primary mb-1">' . $name . '</a>
             </td>
-            <td>' . $monthly_fee . ' ₺</td>
+            <td>' . $bank_transfer_fee . ' ₺</td>
+                <td>' . $credit_card_fee . ' ₺</td>
             <td>' . $subscription_period . ' Aylık</td>
-            <td>%' . $discount . '</td>
+        
             <td ' . $sinifArama . '>' . $className . '</td>
             <td style="width:250px;" class="text-end">
                 <a href="paket-detay?id=' . $id . '" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
