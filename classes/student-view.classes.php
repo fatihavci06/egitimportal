@@ -739,7 +739,7 @@ class ShowStudent extends Student
                             ' . $className . '
                         </td>
                         <td class="text-end">
-                            <button id="approve" data-ek=' . $value['user_id'] . ' data-info=' . $value['id'] . '" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary approve"
+                            <button data-ek=' . $value['user_id'] . ' data-info=' . $value['id'] . '" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary approve"
                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Ödemeyi Onayla
                                 <i class="fa-solid fa-check fs-5 ms-1"></i>
                             </button>

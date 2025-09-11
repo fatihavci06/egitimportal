@@ -34,8 +34,8 @@ var KTCustomersList = function () {
         // Re-init functions on every table re-draw -- more info: https://datatables.net/reference/event/draw
         datatable.on('draw', function () {
             initToggleToolbar();
-            handleDeleteRows();
-            toggleToolbars();
+            /* handleDeleteRows(); */
+            /* toggleToolbars(); */
             KTMenu.init(); // reinit KTMenu instances 
         });
     }
@@ -82,7 +82,7 @@ var KTCustomersList = function () {
      }
 
     // Delete customer
-    var handleDeleteRows = () => {
+    /* var handleDeleteRows = () => {
         // Select all delete buttons
         const deleteButtons = table.querySelectorAll('[data-kt-customer-table-filter="delete_row"]');
 
@@ -175,18 +175,6 @@ var KTCustomersList = function () {
 
                             },
                         });
-                        /*Swal.fire({
-                            text: "You have deleted " + customerName + "!.",
-                            icon: "success",
-                            buttonsStyling: false,
-                            confirmButtonText: "Ok, got it!",
-                            customClass: {
-                                confirmButton: "btn fw-bold btn-primary",
-                            }
-                        }).then(function () {
-                            // Remove current row
-                            datatable.row($(parent)).remove().draw();
-                        });*/
                     } else if (result.dismiss === 'cancel') {
                         Swal.fire({
                             text: customerName + " pasif edilmedi.",
@@ -201,7 +189,7 @@ var KTCustomersList = function () {
                 });
             })
         });
-    }
+    } */
 
     // Reset Filter
     /*var handleResetForm = () => {
@@ -228,7 +216,7 @@ var KTCustomersList = function () {
         const checkboxes = table.querySelectorAll('[type="checkbox"]');
 
         // Select elements
-        const deleteSelected = document.querySelector('[data-kt-customer-table-select="delete_selected"]');
+        /* const deleteSelected = document.querySelector('[data-kt-customer-table-select="delete_selected"]'); */
 
         // Toggle delete selected toolbar
         checkboxes.forEach(c => {
@@ -241,7 +229,7 @@ var KTCustomersList = function () {
         });
 
         // Deleted selected rows
-        deleteSelected.addEventListener('click', function () {
+        /* deleteSelected.addEventListener('click', function () {
             // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
             Swal.fire({
                 text: "Are you sure you want to delete selected customers?",
@@ -288,11 +276,11 @@ var KTCustomersList = function () {
                     });
                 }
             });
-        });
+        }); */
     }
 
     // Toggle toolbars
-    const toggleToolbars = () => {
+    /* const toggleToolbars = () => {
         // Define variables
         const toolbarBase = document.querySelector('[data-kt-customer-table-toolbar="base"]');
         const toolbarSelected = document.querySelector('[data-kt-customer-table-toolbar="selected"]');
@@ -322,7 +310,7 @@ var KTCustomersList = function () {
             toolbarBase.classList.remove('d-none');
             toolbarSelected.classList.add('d-none');
         }
-    }
+    } */
 
     // Public methods
     return {
@@ -337,7 +325,7 @@ var KTCustomersList = function () {
             initToggleToolbar();
             handleSearchDatatable();
             /*handleFilterDatatable();*/
-            handleDeleteRows();
+            /* handleDeleteRows(); */
             /*handleResetForm();*/
         }
     }
