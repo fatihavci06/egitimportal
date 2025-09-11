@@ -155,67 +155,50 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
 
                                                                 <div class="modal-body">
                                                                     <div class="mb-3">
-                                                                        <label for="packageName" class="form-label">Paket
-                                                                            Adı</label>
-                                                                        <input type="text" class="form-control"
-                                                                            id="packageName" name="packageName"
+                                                                        <label for="packageName" class="form-label">Paket Adı <span style="color:red">*</span></label>
+                                                                        <input type="text" class="form-control" id="packageName" name="packageName"
                                                                             placeholder="Paket adını giriniz">
                                                                     </div>
+
                                                                     <!-- Select Box -->
                                                                     <?php
                                                                     $classes = new Classes();
                                                                     $classList = $classes->getClasses();
                                                                     ?>
                                                                     <div class="mb-3">
-                                                                        <label for="packageType"
-                                                                            class="form-label">Sınıf</label>
-                                                                        <select class="form-select" id="class_id"
-                                                                            name="packageType">
-                                                                            <option value="" selected disabled>Seçiniz
-                                                                            </option>
+                                                                        <label for="packageType" class="form-label">Sınıf <span style="color:red">*</span></label>
+                                                                        <select class="form-select" id="class_id" name="packageType">
+                                                                            <option value="" selected disabled>Seçiniz</option>
                                                                             <?php foreach ($classList as $c) { ?>
-                                                                                <option value="<?= $c['id'] ?>">
-                                                                                    <?= $c['name'] ?>
-                                                                                </option>
+                                                                                <option value="<?= $c['id'] ?>"><?= $c['name'] ?></option>
                                                                             <?php } ?>
                                                                         </select>
                                                                     </div>
+
                                                                     <div class="mb-3">
-                                                                        <label for="monthly_fee" class="form-label">Aylık Ücret (KDV Hariç)</label>
-                                                                        <input type="number" step="0.01" class="form-control"
-                                                                            id="monthly_fee" name="monthly_fee"
-                                                                            placeholder="Aylık ücret giriniz.">
+                                                                        <label for="subscription_period" class="form-label">Paket Süresi (Ay) <span style="color:red">*</span></label>
+                                                                        <input type="number" class="form-control" id="subscription_period" name="subscription_period"
+                                                                            placeholder="Paket süresini ay olarak giriniz.">
                                                                     </div>
 
                                                                     <div class="mb-3">
-                                                                        <label for="monthly_fee_kdv" class="form-label">Aylık KDV Dahil Ücret</label>
-                                                                        <input type="number" step="0.01" class="form-control"
-                                                                            id="monthly_fee_kdv" name="monthly_fee_kdv"
-                                                                            placeholder="Aylık ücret giriniz.">
+                                                                        <label for="bank_transfer_fee" class="form-label">Havale/EFT ile Paket Ücreti <span style="color:red">*</span></label>
+                                                                        <input type="number" step="0.01" class="form-control" id="bank_transfer_fee" name="bank_transfer_fee"
+                                                                            placeholder="Havale/EFT ücreti giriniz.">
                                                                     </div>
 
                                                                     <div class="mb-3">
-                                                                        <label for="subscription_period"
-                                                                            class="form-label">Abonelik Periyodu
-                                                                            (Ay)</label>
-                                                                        <input type="number" class="form-control"
-                                                                            id="subscription_period" name="discount"
-                                                                            placeholder="Abonelik periyodu giriniz.">
+                                                                        <label for="credit_card_fee" class="form-label">Kredi Kartı ile Paket Ücreti <span style="color:red">*</span></label>
+                                                                        <input type="number" step="0.01" class="form-control" id="credit_card_fee" name="credit_card_fee"
+                                                                            placeholder="Kredi kartı ücreti giriniz.">
                                                                     </div>
-
-
-                                                                    <!-- Radio Buttons -->
-
-
-                                                                    <!-- Text Input -->
-
                                                                 </div>
 
+
+
                                                                 <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary"
-                                                                        data-bs-dismiss="modal">Vazgeç</button>
-                                                                    <button type="button"
-                                                                        class="btn btn-primary btn-sm">Kaydet</button>
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                                                                    <button type="button" id="savePackageBtn" class="btn btn-primary">Kaydet</button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -254,10 +237,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
 
 
 
-                                                                                <?php
-                                                                               $taxRate= $package->taxRate();
-                                                                                // echo $taxRate['tax_rate'];
-                                                                                ?>
+                                            <?php
+                                            $taxRate = $package->taxRate();
+                                            // echo $taxRate['tax_rate'];
+                                            ?>
                                             <!--begin::Table-->
                                             <table class="table align-middle table-row-dashed fs-6 gy-5"
                                                 id="kt_customers_table">
@@ -340,91 +323,71 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
 
         <script>
             $(document).ready(function() {
-                const kdvRate = <?=$taxRate['tax_rate']/100?> // %10 KDV
-                const feeInput = document.getElementById("monthly_fee");
-                const feeKdvInput = document.getElementById("monthly_fee_kdv");
+                $('#savePackageBtn').on('click', function(e) {
+                    e.preventDefault();
 
-                // KDV hariç girildiğinde → KDV dahil hesapla
-                feeInput.addEventListener("input", function() {
-                    let fee = parseFloat(this.value);
-                    if (!isNaN(fee)) {
-                        feeKdvInput.value = (fee * (1 + kdvRate)).toFixed(2);
-                    } else {
-                        feeKdvInput.value = "";
-                    }
-                });
+                    // Form alanlarını al
+                    let packageName = $('#packageName').val().trim();
+                    let classId = $('#class_id').val();
+                    let subscription_period = $('#subscription_period').val();
+                    let bank_transfer_fee = $('#bank_transfer_fee').val();
+                    let credit_card_fee = $('#credit_card_fee').val();
 
-                // KDV dahil girildiğinde → KDV hariç hesapla
-                feeKdvInput.addEventListener("input", function() {
-                    let feeKdv = parseFloat(this.value);
-                    if (!isNaN(feeKdv)) {
-                        feeInput.value = (feeKdv / (1 + kdvRate)).toFixed(2);
-                    } else {
-                        feeInput.value = "";
-                    }
-                });
-                $('#packageCreate .btn-primary').on('click', function() {
-                    var packageName = $('#packageName').val().trim();
-                    var classId = $('#class_id').val();
-                    var monthlyFee = $('#monthly_fee').val().trim();
-                    var subscriptionPeriod = $('#subscription_period').val().trim();
-
-                    // Boş alan kontrolü
-                    if (packageName === '' || !classId || monthlyFee === '' || subscriptionPeriod === '') {
+                    // Alan kontrolü
+                    if (!packageName || !classId || !subscription_period || !bank_transfer_fee || !credit_card_fee) {
                         Swal.fire({
                             icon: 'warning',
-                            title: 'Eksik Bilgi',
-                            text: 'Lütfen tüm alanları doldurunuz.'
+                            title: 'Eksik alan',
+                            text: 'Lütfen tüm alanları doldurunuz!'
                         });
                         return;
                     }
 
-                    // Ajax ile gönder
+                    let data = {
+                        packageName: packageName,
+                        class_id: classId,
+                        subscription_period: subscription_period,
+                        bank_transfer_fee: bank_transfer_fee,
+                        credit_card_fee: credit_card_fee,
+                    };
+
                     $.ajax({
-                        url: 'includes/ajax.php?service=createPackage',
+                        url: 'includes/ajax.php?service=createPackage', // backend endpoint
                         type: 'POST',
-                        data: {
-                            packageName: packageName,
-                            class_id: classId,
-                            monthly_fee: monthlyFee,
-                            subscription_period: subscriptionPeriod
+                        data: data,
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Laravel için CSRF
                         },
                         success: function(response) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Başarılı',
-                                text: 'Paket başarıyla kaydedildi.'
-                            }).then(() => {
-                                $('#packageCreate').modal('hide');
-                                $('#packageCreate input, #packageCreate select').val('');
-                                location.reload();
-                            });
+                            if (response.status === 'success') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Başarılı',
+                                    text: response.message
+                                });
+                                $('#packageModal').modal('hide');
+                                $('#packageForm')[0].reset();
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Hata',
+                                    text: response.message
+                                });
+                            }
                         },
                         error: function(xhr, status, error) {
-                            // error.message doğrudan burada undefined olabilir, bu yüzden response'dan alıyoruz
-                            let errorMessage = 'Bilinmeyen hata oluştu';
-
+                            // Backend'den gelen hata mesajı
+                            let errMsg = 'Bir hata oluştu!';
                             if (xhr.responseJSON && xhr.responseJSON.message) {
-                                errorMessage = xhr.responseJSON.message;
-                            } else if (xhr.responseText) {
-                                try {
-                                    let json = JSON.parse(xhr.responseText);
-                                    if (json.message) errorMessage = json.message;
-                                } catch (e) {
-                                    // JSON parse edilemedi, errorMessage değişmeden kalır
-                                }
+                                errMsg = xhr.responseJSON.message;
                             }
-
-                            console.log(errorMessage); // Hata mesajını konsola yazdır
-
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Hata',
-                                text: errorMessage
+                                text: errMsg
                             });
                         }
                     });
-
                 });
             });
         </script>

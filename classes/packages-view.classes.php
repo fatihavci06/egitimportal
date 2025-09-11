@@ -31,7 +31,7 @@ class ShowPackage extends Packages
                             <div class="card card-flush shadow-sm list-group-item-action">
                                 <div class="card-body text-center">
                                     <h3 class="mb-5">' . $package['name'] . '</h3>
-                                    <div class="text-gray-600 mb-2" id="monthly_fee">Aylık Birim Fiyat: ' .  number_format($this->getPackagePrice($package['id'])[0]['monthly_fee'] / 100 * (100 + $taxRate['tax_rate']), 2, '.', '')  . '₺</div>
+                                    <div class="text-gray-600 mb-2" id="monthly_fee">Aylık Birim Fiyat: ' .  number_format($this->getPackagePrice($package['id'])[0]['credit_card_fee']/$this->getPackagePrice($package['id'])[0]['subscription_period'] , 2, '.', '')  . '₺</div>
                                     <div class="text-gray-600 mb-2" id="subscription_period">Kaç Aylık: ' . $this->getPackagePrice($package['id'])[0]['subscription_period'] . ' </div>
                                 </div>
                             </div>
@@ -118,7 +118,7 @@ class ShowPackage extends Packages
             $monthly_fee = $package['monthly_fee'];
             $subscription_period = $package['subscription_period'];
 
-            $total = $monthly_fee * $subscription_period;
+            $total = $package['credit_card_fee'];
 
             $getVat = $this->getVat();
 
@@ -126,9 +126,9 @@ class ShowPackage extends Packages
             $vatPercentage = $kdv / 100;
 
             $priceTotal = '
-                        <h2 class="text-black-500 fw-semibold fs-12">Paket Ücreti: <span id="PriceWOVat">' . number_format($total, 2, '.', '') . '</span>₺</h2>
+                        <h2 class="text-black-500 fw-semibold fs-12">Paket Ücreti: <span id="PriceWOVat">' . number_format($package['credit_card_fee'] / (1 + ($kdv / 100)), 2, '.', '') . '</span>₺</h2>
                         <h2 class="text-black-500 fw-semibold fs-12">KDV Oranı: %<span id="vatPercentage">' . $kdv . '</span></h2>
-                        <h2 class="text-black-500 fw-semibold fs-12">Toplam Ücret: <span id="PriceWVat" value="' . number_format(($total + ($total * $vatPercentage)), 2, '.', '') . '">' . number_format(($total + ($total * $vatPercentage)), 2, '.', '') . '</span>₺</h2>
+                        <h2 class="text-black-500 fw-semibold fs-12">Toplam Ücret: <span id="PriceWVat" value="' .$package['credit_card_fee'] . '">' . $package['credit_card_fee'] . '</span>₺</h2>
             ';
         }
 
@@ -154,17 +154,19 @@ class ShowPackage extends Packages
 
     // GET Money Transfer Discount
 
-    public function getTransferDiscountInfo()
+    public function getTransferDiscountInfo($packageId=null)
     {
         $dicountInfo = $this->getTransferDiscount();
-
+        $packageInfo = $this->getPackagePrice($packageId);
+        $packagePrice = $packageInfo[0]['bank_transfer_fee'];
         if ($dicountInfo) {
             $discount = $dicountInfo['discount_rate'];
-            echo json_encode(["status" => "success", "message" => "% " . $discount . " Havale İndirimi Uygulandı!", "discount" => $discount]);
+            echo json_encode(["status" => "success", "message" => " Havale İndirimi Uygulandı!", "discount" => $discount, "bank_transfer_fee" =>$packagePrice]);
         } else {
             echo json_encode(["status" => "error", "message" => "İndirim Uygulanamadı!"]);
         }
     }
+   
 
     // Get Coupon Info Price
 
@@ -431,69 +433,71 @@ class ShowPackagesForAdmin extends PackagesForAdmin
             }
 
             $packages = '
-            
-                <!--begin::Modal header-->
-                <div class="modal-header" id="kt_modal_update_customer_header">
-                    <h2 class="fw-bold">Paket Güncelle</h2>
-                    
-                </div>
-                <!--end::Modal header-->
 
-                <!--begin::Modal body-->
-                <div class="modal-body py-10 px-lg-17">
-                    <div class="fw-bold fs-3 rotate collapsible mb-7" data-bs-toggle="collapse" aria-expanded="false" aria-controls="kt_modal_update_customer_user_info">
-                        Paket Bilgileri
-                    </div>
-                    <div>
-                        <!--begin::Input group-->
-                        <div class="fv-row mb-7">
-                            <label class="required fs-6 fw-semibold mb-2">Paket Adı</label>
-                            <input type="text" id="name" class="form-control form-control-solid" value="' . $value['name'] . '" name="name" />
-                            <input type="hidden" name="id" id="id" value="' . $value['id'] . '" />
-                        </div>
+    <!--begin::Modal header-->
+    <div class="modal-header" id="kt_modal_update_customer_header">
+        <h2 class="fw-bold">Paket Güncelle</h2>
+    </div>
+    <!--end::Modal header-->
 
-                        <!-- Sınıf Alanı -->
-                        <div class="fv-row mb-7">
-                            <label for="packageType" class="required fs-6 fw-semibold mb-2">Sınıf</label>
-                            <select class="form-select" id="class_id" name="packageType">
-                                <option value="" disabled>Sınıf seçin</option>
-                                ' . $classOptions . '
-                            </select>
-                        </div>
+    <!--begin::Modal body-->
+    <div class="modal-body py-10 px-lg-17">
+        <div class="fw-bold fs-3 rotate collapsible mb-7" data-bs-toggle="collapse" aria-expanded="false" aria-controls="kt_modal_update_customer_user_info">
+            Paket Bilgileri
+        </div>
+        <div>
+            <!-- Paket Adı -->
+            <div class="fv-row mb-7">
+                <label class="fs-6 fw-semibold mb-2">Paket Adı <span style="color:red">*</span></label>
+                <input type="text" id="packageName" class="form-control form-control-solid" value="' . $value['name'] . '" name="packageName" />
+                <input type="hidden" name="id" id="id" value="' . $value['id'] . '" />
+            </div>
 
-                        <div id="kt_modal_add_customer_billing_info" class="collapse show">
-                            <div class="d-flex flex-column mb-7 fv-row">
-                                <label class="required fs-6 fw-semibold mb-2">Aylık Ücret</label>
-                                <input class="form-control form-control-solid" id="monthly_fee" name="monthly_fee" id="monthly_fee" value="' . $value['monthly_fee'] . '" />
-                            </div>
-                        </div>
-                         <div id="kt_modal_add_customer_billing_info" class="collapse show">
-                            <div class="d-flex flex-column mb-7 fv-row">
-                                <label class="required fs-6 fw-semibold mb-2">Aylık KDV Dahil Ücret</label>
-                                <input class="form-control form-control-solid" id="monthly_fee_kdv" name="monthly_fee_kdv"  value="' .number_format($value['monthly_fee'] /100*(100+$taxRate['tax_rate']??10), 2, '.', '') . '" />
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                                                                        <label for="subscription_period" class="form-label">Abonelik Periyodu (Ay)</label>
-                                                                        <input type="number" class="form-control" id="subscription_period" name="subscription_period" placeholder="Abonelik periyodu giriniz." value="' . $value['subscription_period'] . '">
-                                                                    </div>
-                    </div>
-                </div>
-                <!--end::Modal body-->
+            <!-- Sınıf Alanı -->
+            <div class="fv-row mb-7">
+                <label for="packageType" class="fs-6 fw-semibold mb-2">Sınıf <span style="color:red">*</span></label>
+                <select class="form-select" id="class_id" name="packageType">
+                    <option value="" disabled>Sınıf seçin</option>
+                    ' . $classOptions . '
+                </select>
+            </div>
 
-                <!--begin::Modal footer-->
-                <div class="modal-footer flex-center">
-                    <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light btn-sm me-3">İptal</button>
-                    <button  id="packageUpdate" class="btn btn-primary btn-sm">
-                        <span class="indicator-label">Gönder</span>
-                        <span class="indicator-progress">Lütfen bekleyin...
-                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
-                        </span>
-                    </button>
-                </div>
-                <!--end::Modal footer-->
-            
-        ';
+            <!-- Paket Süresi -->
+            <div class="mb-3">
+                <label for="subscription_period" class="fs-6 fw-semibold mb-2">Paket Süresi (Ay) <span style="color:red">*</span></label>
+                <input type="number" class="form-control" id="subscription_period" name="subscription_period" placeholder="Paket süresini ay olarak giriniz." value="' . $value['subscription_period'] . '">
+            </div>
+
+            <!-- Havale/EFT Ücreti -->
+            <div class="mb-3">
+                <label for="bank_transfer_fee" class="fs-6 fw-semibold mb-2">Havale/EFT ile Paket Ücreti <span style="color:red">*</span></label>
+                <input type="number" step="0.01" class="form-control" id="bank_transfer_fee" name="bank_transfer_fee" value="' . $value['bank_transfer_fee'] . '">
+            </div>
+
+            <!-- Kredi Kartı Ücreti -->
+            <div class="mb-3">
+                <label for="credit_card_fee" class="fs-6 fw-semibold mb-2">Kredi Kartı ile Paket Ücreti <span style="color:red">*</span></label>
+                <input type="number" step="0.01" class="form-control" id="credit_card_fee" name="credit_card_fee" value="' . $value['credit_card_fee'] . '">
+            </div>
+
+        </div>
+    </div>
+    <!--end::Modal body-->
+
+    <!--begin::Modal footer-->
+    <div class="modal-footer flex-center">
+        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light btn-sm me-3">İptal</button>
+        <button id="packageUpdate" class="btn btn-primary btn-sm">
+            <span class="indicator-label">Gönder</span>
+            <span class="indicator-progress">Lütfen bekleyin...
+                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+            </span>
+        </button>
+    </div>
+    <!--end::Modal footer-->
+
+';
+
 
             echo $packages;
         }

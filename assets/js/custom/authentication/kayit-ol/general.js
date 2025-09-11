@@ -602,82 +602,47 @@ var KTSignupGeneral = function () {
     $(document).ready(function () {
 
         $('input[type="radio"][name="payment_type"]').change(function () {
+            console.log('Değişiklik algılandı');
             var vatPercentage = Number(document.getElementById("vatPercentage").innerHTML);
             var oldPrice = Number(document.getElementById("priceWoDiscount").innerHTML);
             var priceWCoupon = Number(document.getElementById("priceWCoupon").innerHTML);
+            var packageId = $('input[name="pack"]:checked').val();
+            console.log(packageId);
             /* var subscription_month = document.getElementById("subscription_month").innerHTML; */
             if ($(this).val() === '2') {
-
+                // Kredi kartı seçili
                 submitButton.disabled = false;
-                if ($('#couponInfo').text().trim() === '') {
-                    $('#PriceWOVat').html(oldPrice.toFixed(2));
-                    var newPriceWVat = oldPrice + (oldPrice * (vatPercentage / 100));
-                    $('#PriceWVat').html(newPriceWVat.toFixed(2));
-                    $('#PriceWVat').attr('value', newPriceWVat.toFixed(2));
-                } else {
-                    $('#PriceWOVat').html(priceWCoupon.toFixed(2));
-                    var newPriceWVat = priceWCoupon + (priceWCoupon * (vatPercentage / 100));
-                    $('#PriceWVat').html(newPriceWVat.toFixed(2));
-                    $('#PriceWVat').attr('value', newPriceWVat.toFixed(2));
-                }
-                $('#moneyTransferInfo').html("");
-                /* if (subscription_month > 1) {
-                    submitButton.disabled = true;
-                    $('#iscash').html(`<!--begin::Input group-->
-                                    <div class="fv-row mt-10">
-                                        <span class="form-check form-check-custom form-check-solid">
-                                            <label><input class="form-check-input" type="radio" name="isinstallment" value="1"> Peşin</label>
-                                            <label><input class="form-check-input ms-7" type="radio" name="isinstallment" value="2"> Taksitle</label>
-                                        </span>
-                                    </div>
-                                    <!--end::Input group-->`);
-                } else {
-                    submitButton.disabled = false;
-                    $('#iscash').html('');
-                } */
-                /* $('input[type="radio"][name="isinstallment"]').change(function () {
-                    
-                    submitButton.disabled = false;
-                    if ($(this).val() === '1') {
 
-                        var secilenPaket = $('input[name="pack"]:checked').val();
-                        $.ajax({
-                            url: 'includes/getpackages.inc.php?islem=noinstallment',
-                            type: 'POST',
-                            data: { secim: secilenPaket },
-                            success: function (response) {
-                                if (response.status === "success") {
-                                    var discount = response.discount;
+                $.ajax({
+                    url: 'includes/ajax-kayit.php?service=creditcard',
+                    type: 'POST',
+                    data: { packageId: packageId },
+                    success: function (response) {
+                        if (response.status === "success") {
+                            var creditCardFee = parseFloat(response.credit_card_fee); // 🔹 Vergili fiyat
 
-                                    if ($('#couponInfo').text().trim() === '') {
-                                        var newPrice = oldPrice - (oldPrice * (discount / 100));
-                                        $('#Price').html(newPrice);
-                                    } else {
-                                        var newPrice = priceWCoupon - (priceWCoupon * (discount / 100));
-                                        $('#Price').html(newPrice);
-                                    }
-                                    $('#cashdiscount').html("%" + discount + " peşin ödeme indirimi uygulandı!");
-                                } else {
-                                    $('#cashdiscount').html("<p>Veri yüklenirken bir hata oluştu.</p>");
-                                }
-                            },
-                            error: function (xhr, status, error) {
-                                console.error("Hata oluştu: " + error);
-                                $('#cashdiscount').html("<p>Veri yüklenirken bir hata oluştu.</p>");
+                            if ($('#couponInfo').text().trim() === '') {
+                                // KDV zaten dahil, o yüzden direkt gösteriyoruz
+                                $('#PriceWOVat').html((creditCardFee / (1 + (vatPercentage / 100))).toFixed(2)); // 🔹 KDV hariç hesap
+                                $('#PriceWVat').html(creditCardFee.toFixed(2)); // 🔹 DB’den gelen vergili fiyat
+                                $('#PriceWVat').attr('value', creditCardFee.toFixed(2));
+                            } else {
+                                // Kupon uygulanmış fiyatı vergili olarak kullanıyoruz
+                                $('#PriceWOVat').html((priceWCoupon / (1 + (vatPercentage / 100))).toFixed(2));
+                                $('#PriceWVat').html(priceWCoupon.toFixed(2));
+                                $('#PriceWVat').attr('value', priceWCoupon.toFixed(2));
                             }
-                        });
 
-                        //$('#iscash').show();
-                    } else {
-                        $('#cashdiscount').html("");
-                        if ($('#couponInfo').text().trim() === '') {
-                            $('#Price').html(oldPrice);
+                            $('#moneyTransferInfo').html("");
                         } else {
-                            $('#Price').html(priceWCoupon);
+                            $('#moneyTransferInfo').html(response.message);
                         }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Hata oluştu: " + error);
+                        $('#moneyTransferInfo').html("<p>Kredi kartı fiyatı alınırken hata oluştu.</p>");
                     }
-                }); */
-
+                });
             } else {
                 var typeVal = "1";
 
@@ -686,26 +651,37 @@ var KTSignupGeneral = function () {
                 $.ajax({
                     url: 'includes/getpackages.inc.php?islem=moneytransfer',
                     type: 'POST',
-                    data: { secim: typeVal },
+                    data: { packageId: packageId },
                     success: function (response) {
                         if (response.status === "success") {
                             var discount = response.discount;
+                            var vatPercentage = Number(document.getElementById("vatPercentage").innerHTML);
 
                             if ($('#couponInfo').text().trim() === '') {
-                                var newPrice = oldPrice - (oldPrice * (discount / 100));
-                                $('#PriceWOVat').html(newPrice.toFixed(2));
-                                var newPriceWVat = newPrice + (newPrice * (vatPercentage / 100));
-                                $('#PriceWVat').html(newPriceWVat.toFixed(2));
-                                $('#PriceWVat').attr('value', newPriceWVat.toFixed(2));
+                                console.log('coupon yok');
+
+                                // bank_transfer_fee vergili (KDV dahil)
+                                var priceWithVat = parseFloat(response.bank_transfer_fee);
+                                var priceWithoutVat = priceWithVat / (1 + (vatPercentage / 100));
+
+                                $('#PriceWOVat').html(priceWithoutVat.toFixed(2));
+                                $('#PriceWVat').html(priceWithVat.toFixed(2));
+                                $('#PriceWVat').attr('value', priceWithVat.toFixed(2));
+
                             } else {
-                                var newPrice = priceWCoupon - (priceWCoupon * (discount / 100));
-                                $('#PriceWOVat').html(newPrice.toFixed(2));
-                                var newPriceWVat = newPrice + (newPrice * (vatPercentage / 100));
-                                $('#PriceWVat').html(newPriceWVat.toFixed(2));
-                                $('#PriceWVat').attr('value', newPriceWVat.toFixed(2));
+                                // Kupon indirimi uygulandığında
+                                var priceWCoupon = parseFloat(response.bank_transfer_fee); // önce vergili fiyat
+                                var discountedPriceWithVat = priceWCoupon - (priceWCoupon * (discount / 100));
+                                var discountedPriceWithoutVat = discountedPriceWithVat / (1 + (vatPercentage / 100));
+
+                                $('#PriceWOVat').html(discountedPriceWithoutVat.toFixed(2));
+                                $('#PriceWVat').html(discountedPriceWithVat.toFixed(2));
+                                $('#PriceWVat').attr('value', discountedPriceWithVat.toFixed(2));
                             }
+
                             $('#moneyTransferInfo').html(response.message);
-                        } else {
+                        }
+                        else {
                             $('#moneyTransferInfo').html(response.message);
                         }
                     },

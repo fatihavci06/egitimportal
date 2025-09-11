@@ -5,6 +5,10 @@ include_once '../classes/Mailer.php';
 $mailer = new Mailer();
 header('Content-Type: application/json');
 session_start();
+if(!$_SESSION['role'] ){
+    echo json_encode(['status' => 'error', 'message' => 'Yetkisiz erişim.']);
+    exit();
+}
 // Sadece POST isteğini kabul et
 function cleanInput(string $data): string
 {
@@ -96,21 +100,18 @@ switch ($service) {
 
         $packageName = isset($_POST['packageName']) ? cleanInput($_POST['packageName']) : null;
         $classId = isset($_POST['class_id']) ? (int)$_POST['class_id'] : null;
-        $monthlyFee = isset($_POST['monthly_fee']) ? (float)$_POST['monthly_fee'] : null;
-        $subscriptionPeriod = $_POST['subscription_period'] ?? null;
+        $subscriptionPeriod = isset($_POST['subscription_period']) ? (int)$_POST['subscription_period'] : null;
+        $bankTransferFee = isset($_POST['bank_transfer_fee']) ? (float)$_POST['bank_transfer_fee'] : null;
+        $creditCardFee = isset($_POST['credit_card_fee']) ? (float)$_POST['credit_card_fee'] : null;
 
         // Girdileri doğrula
-
-
-        // Veritabanı işlemi (örnek güncelleme)
         try {
             if (!$packageName) {
-                throw new Exception('Paket adı boş olamaz');
+                throw new Exception('Paket adı boş olamaz.');
             }
 
-            if (!is_float($monthlyFee) || $monthlyFee < 0) {
-
-                throw new Exception('Aylık ücret geçerli bir sayı olmalıdır.');
+            if (!$classId || $classId < 1) {
+                throw new Exception('Sınıf seçimi zorunludur.');
             }
 
             if (
@@ -123,8 +124,21 @@ switch ($service) {
                 throw new Exception('Abonelik periyodu 1 ile 12 arasında bir tam sayı olmalıdır.');
             }
 
-            $stmt = $pdo->prepare("INSERT INTO packages_lnp (name, class_id, monthly_fee, subscription_period) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$packageName, $classId, $monthlyFee, $subscriptionPeriod]);
+            if (!isset($bankTransferFee) || $bankTransferFee < 0) {
+                throw new Exception('Havale/EFT ücreti geçerli bir sayı olmalıdır.');
+            }
+
+            if (!isset($creditCardFee) || $creditCardFee < 0) {
+                throw new Exception('Kredi kartı ücreti geçerli bir sayı olmalıdır.');
+            }
+
+            // Veritabanı işlemi
+            $stmt = $pdo->prepare("
+            INSERT INTO packages_lnp 
+                (name, class_id, subscription_period, bank_transfer_fee, credit_card_fee) 
+            VALUES (?, ?, ?, ?, ?)
+        ");
+            $stmt->execute([$packageName, $classId, $subscriptionPeriod, $bankTransferFee, $creditCardFee]);
 
             if ($stmt->rowCount() > 0) {
                 jsonResponse(200, 'success', 'Paket başarıyla eklendi.');
@@ -132,14 +146,16 @@ switch ($service) {
                 jsonResponse(500, 'error', 'Kayıt eklenemedi.');
             }
         } catch (Exception $e) {
-            http_response_code(422); // Veya uygun bir HTTP kodu
+            http_response_code(422);
             echo json_encode([
                 'status' => 'error',
                 'message' => $e->getMessage()
             ]);
             exit();
         }
+
         break;
+
 
     case 'settingsUpdate':
         $taxRatio = isset($_POST['taxRatio']) ? cleanInput($_POST['taxRatio']) : null;
@@ -201,23 +217,20 @@ switch ($service) {
 
     case 'updatePackage':
 
-        $packageName = isset($_POST['packageName']) ? cleanInput($_POST['packageName']) : null;
-        $classId = isset($_POST['class_id']) ? (int)$_POST['class_id'] : null;
-        $monthlyFee = isset($_POST['monthly_fee']) ? (float)$_POST['monthly_fee'] : null;
-        $subscriptionPeriod = $_POST['subscription_period'] ?? null;
-        $id = $_POST['id'] ?? null;
-        // Girdileri doğrula
+        $packageName         = isset($_POST['packageName']) ? cleanInput($_POST['packageName']) : null;
+        $classId             = isset($_POST['class_id']) ? (int)$_POST['class_id'] : null;
+        $subscriptionPeriod  = $_POST['subscription_period'] ?? null;
+        $bankTransferFee     = isset($_POST['bank_transfer_fee']) ? (float)$_POST['bank_transfer_fee'] : null;
+        $creditCardFee       = isset($_POST['credit_card_fee']) ? (float)$_POST['credit_card_fee'] : null;
+        $id                  = $_POST['id'] ?? null;
 
-
-        // Veritabanı işlemi (örnek güncelleme)
         try {
             if (!$packageName) {
                 throw new Exception('Paket adı boş olamaz');
             }
 
-            if (!is_float($monthlyFee) || $monthlyFee < 0) {
-
-                throw new Exception('Aylık ücret geçerli bir sayı olmalıdır.');
+            if (!$classId) {
+                throw new Exception('Sınıf seçilmelidir.');
             }
 
             if (
@@ -230,8 +243,18 @@ switch ($service) {
                 throw new Exception('Abonelik periyodu 1 ile 12 arasında bir tam sayı olmalıdır.');
             }
 
-            $stmt = $pdo->prepare("UPDATE packages_lnp SET name = ?, class_id = ?, monthly_fee = ?, subscription_period = ? WHERE id = ?");
-            $stmt->execute([$packageName, $classId, $monthlyFee, $subscriptionPeriod, $id]);
+            if (!is_float($bankTransferFee) || $bankTransferFee < 0) {
+                throw new Exception('Havale/EFT ücreti geçerli bir sayı olmalıdır.');
+            }
+
+            if (!is_float($creditCardFee) || $creditCardFee < 0) {
+                throw new Exception('Kredi kartı ücreti geçerli bir sayı olmalıdır.');
+            }
+
+            $stmt = $pdo->prepare("UPDATE packages_lnp 
+                               SET name = ?, class_id = ?, bank_transfer_fee = ?, credit_card_fee = ?, subscription_period = ? 
+                               WHERE id = ?");
+            $stmt->execute([$packageName, $classId, $bankTransferFee, $creditCardFee, $subscriptionPeriod, $id]);
 
             if ($stmt->rowCount() > 0) {
                 jsonResponse(200, 'success', 'Paket başarıyla güncellendi.');
@@ -239,14 +262,15 @@ switch ($service) {
                 jsonResponse(500, 'error', 'Paket güncellenemedi veya zaten bu veriler mevcut.');
             }
         } catch (Exception $e) {
-            http_response_code(422); // Veya uygun bir HTTP kodu
+            http_response_code(422);
             echo json_encode([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => $e->getMessage()
             ]);
             exit();
         }
         break;
+
     case 'deleteMainGroup':
         // Gelen ID kontrolü
         $id = $_POST['id'] ?? null;
@@ -4619,6 +4643,7 @@ ORDER BY msu.unit_order asc
             echo json_encode(['status' => 'error', 'message' => 'Bir hata oluştu: ' . $e->getMessage()]);
         }
         break;
+
 
     default:
         echo json_encode(['status' => 'error', 'message' => 'Geçersiz servis']);

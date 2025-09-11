@@ -5,12 +5,12 @@ class Packages extends Dbh
 
 	public function getPackage($class)
 	{
-
+		
 		/* if($class == 10 OR $class == 11 OR $class == 12){
 			$class = 2;
 		} */
 
-		$stmt = $this->connect()->prepare('SELECT id, name, image FROM packages_lnp WHERE class_id = ? AND status = ? AND pack_type IS ?');
+		$stmt = $this->connect()->prepare('SELECT id, name, image,bank_transfer_fee,credit_card_fee FROM packages_lnp WHERE class_id = ? AND status = ? AND pack_type IS ?');
 
 		if (!$stmt->execute(array($class, 1, NULL))) {
 			$stmt = null;
@@ -26,7 +26,7 @@ class Packages extends Dbh
 
 	public function getPackagePrice($id)
 	{
-		$stmt = $this->connect()->prepare('SELECT name, monthly_fee, subscription_period, discount, max_installment FROM packages_lnp WHERE id = ? AND status = ?');
+		$stmt = $this->connect()->prepare('SELECT name, monthly_fee, subscription_period, discount, max_installment,credit_card_fee,bank_transfer_fee FROM packages_lnp WHERE id = ? AND status = ?');
 
 		if (!$stmt->execute(array($id, 1))) {
 			$stmt = null;
@@ -137,7 +137,7 @@ class PackagesForAdmin extends Dbh {
 	public function getOnePackage($id)
 	{
 		
-		$stmt = $this->connect()->prepare('SELECT packages_lnp.id,packages_lnp.class_id, packages_lnp.name, packages_lnp.monthly_fee, packages_lnp.subscription_period, packages_lnp.discount, classes_lnp.name AS className FROM packages_lnp INNER JOIN classes_lnp ON packages_lnp.class_id = classes_lnp.id WHERE packages_lnp.id = ?'); 
+		$stmt = $this->connect()->prepare('SELECT packages_lnp.bank_transfer_fee,packages_lnp.credit_card_fee,  packages_lnp.id,packages_lnp.class_id, packages_lnp.name, packages_lnp.monthly_fee, packages_lnp.subscription_period, packages_lnp.discount, classes_lnp.name AS className FROM packages_lnp INNER JOIN classes_lnp ON packages_lnp.class_id = classes_lnp.id WHERE packages_lnp.id = ?'); 
 
 			if (!$stmt->execute(array($id))) {
 				$stmt = null;

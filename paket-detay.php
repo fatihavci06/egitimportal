@@ -225,90 +225,73 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 1) {
 	</body>
 	<script>
 		$(document).ready(function() {
-			document.getElementById("monthly_fee_kdv").addEventListener("input", function() {
-				let kdvDahil = parseFloat(this.value);
-				if (!isNaN(kdvDahil)) {
-					// KDV %10 ise
-					let kdvHaric = (kdvDahil / 1.10).toFixed(2);
-					document.getElementById("monthly_fee").value = kdvHaric;
-				}
-			});
-			document.addEventListener("DOMContentLoaded", function () {
-    let modal = document.getElementById("kt_modal_update_customer");
+			
+			$('#packageUpdate').on('click', function () {
+    const id = $('#id').val();
+    const packageName = $('#packageName').val();
+    const class_id = $('#class_id').val();
+    const subscription_period = $('#subscription_period').val();
+    const bank_transfer_fee = $('#bank_transfer_fee').val();
+    const credit_card_fee = $('#credit_card_fee').val();
 
-    modal.addEventListener("shown.bs.modal", function () {
-        let feeInput = document.getElementById("monthly_fee");
-        let feeKdvInput = document.getElementById("monthly_fee_kdv");
+    // Boş alan kontrolü
+    if (!packageName || !class_id || !subscription_period || !bank_transfer_fee || !credit_card_fee) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Eksik Bilgi',
+            text: 'Lütfen tüm zorunlu alanları doldurun.'
+        });
+        return;
+    }
 
-        if (feeInput && feeKdvInput) {
-            let kdvHaric = parseFloat(feeInput.value);
-            if (!isNaN(kdvHaric)) {
-                let kdvDahil = (kdvHaric * 1.10).toFixed(2);
-                feeKdvInput.value = kdvDahil;
+    // Ajax ile gönder
+    $.ajax({
+        url: 'includes/ajax.php?service=updatePackage',
+        type: 'POST',
+        data: {
+            id: id,
+            packageName: packageName,
+            class_id: class_id,
+            subscription_period: subscription_period,
+            bank_transfer_fee: bank_transfer_fee,
+            credit_card_fee: credit_card_fee
+        },
+        success: function (response) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Başarılı',
+                text: 'Paket başarıyla güncellendi.'
+            }).then(() => {
+                $('#packageUpdateModal').modal('hide'); // update modal id’si
+                $('#packageUpdateModal input, #packageUpdateModal select').val('');
+                location.reload();
+            });
+        },
+        error: function (xhr, status, error) {
+            let errorMessage = 'Bilinmeyen hata oluştu';
+
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+            } else if (xhr.responseText) {
+                try {
+                    let json = JSON.parse(xhr.responseText);
+                    if (json.message) errorMessage = json.message;
+                } catch (e) {
+                    // JSON parse edilemedi
+                }
             }
+
+            console.error(errorMessage);
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Hata',
+                text: errorMessage
+            });
         }
     });
 });
-			$('#packageUpdate').on('click', function() {
 
-
-				const id = $('#id').val();
-				const packageName = $('#name').val();
-				const class_id = $('#class_id').val();
-				const monthly_fee = $('#monthly_fee').val();
-				const subscription_period = $('#subscription_period').val();
-
-				// Boş alan kontrolü
-				console.log()
-
-				// Ajax ile gönder
-				$.ajax({
-					url: 'includes/ajax.php?service=updatePackage',
-					type: 'POST',
-					data: {
-						id: id,
-						packageName: packageName,
-						class_id: class_id,
-						monthly_fee: monthly_fee,
-						subscription_period: subscription_period
-					},
-					success: function(response) {
-						Swal.fire({
-							icon: 'success',
-							title: 'Başarılı',
-							text: 'Paket başarıyla kaydedildi.'
-						}).then(() => {
-							$('#packageCreate').modal('hide');
-							$('#packageCreate input, #packageCreate select').val('');
-							location.reload();
-						});
-					},
-					error: function(xhr, status, error) {
-						// error.message doğrudan burada undefined olabilir, bu yüzden response'dan alıyoruz
-						let errorMessage = 'Bilinmeyen hata oluştu';
-
-						if (xhr.responseJSON && xhr.responseJSON.message) {
-							errorMessage = xhr.responseJSON.message;
-						} else if (xhr.responseText) {
-							try {
-								let json = JSON.parse(xhr.responseText);
-								if (json.message) errorMessage = json.message;
-							} catch (e) {
-								// JSON parse edilemedi, errorMessage değişmeden kalır
-							}
-						}
-
-						console.log(errorMessage); // Hata mesajını konsola yazdır
-
-						Swal.fire({
-							icon: 'error',
-							title: 'Hata',
-							text: errorMessage
-						});
-					}
-				});
-
-			});
 			$('#kt_modal_update_customer_cancel').on('click', function(e) {
 				e.preventDefault();
 				$('#kt_modal_update_customer').modal('hide');

@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" AND $_GET["islem"] == "coupon") {
 if ($_SERVER['REQUEST_METHOD'] == "POST" AND $_GET["islem"] == "moneytransfer") {
 
 	// Grabbing the data
-	$id = $_POST["secim"];
+	$id = $_POST["packageId"];
 
 	// Instantiate AddUnitContr class
 	include_once "../classes/dbh.classes.php";
@@ -60,12 +60,29 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" AND $_GET["islem"] == "moneytransfer") 
 	$getPackage = new ShowPackage();
 
 	// Running error handlers and getPackage
-	$getPackage->getTransferDiscountInfo();
+	$getPackage->getTransferDiscountInfo($id);
 
 	
 	// Going to back to products page
 	//header("location: ../kategoriler");
 }
+// if ($_SERVER['REQUEST_METHOD'] == "POST" AND $_GET["islem"] == "islem=creditcard") {
+// 	// Grabbing the data
+// 	$id = $_POST["packageId"];
+
+// 	// Instantiate AddUnitContr class
+// 	include_once "../classes/dbh.classes.php";
+// 	include_once "../classes/packages.classes.php";
+// 	include_once "../classes/packages-view.classes.php";
+
+// 	$getPackage = new Packages();
+// 	// Running error handlers and getPackage
+// 	$getPackage->getPackagePrice($id);
+// 	echo json_encode(['test'=>2]);
+	
+// 	// Going to back to products page
+// 	//header("location: ../kategoriler");
+// }
 
 
 if ($_SERVER['REQUEST_METHOD'] == "POST" AND $_GET["islem"] == "noinstallment") {
