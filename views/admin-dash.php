@@ -1059,16 +1059,16 @@ $chartData = [
 
 <script>
 	$(document).ready(function() {
-    $.ajax({
-        url: './includes/ajax.php?service=getTopStudents',
-        method: 'GET',
-        data: {
-            schoolId: 1
-        }, // burayı dinamik yapabilirsin
-        beforeSend: function() {
-            const tbody = $('#topStudentsTable tbody');
-            tbody.empty(); // varsa eski dataları temizle
-            tbody.append(`
+		$.ajax({
+			url: './includes/ajax.php?service=getTopStudents',
+			method: 'GET',
+			data: {
+				schoolId: 1
+			}, // burayı dinamik yapabilirsin
+			beforeSend: function() {
+				const tbody = $('#topStudentsTable tbody');
+				tbody.empty(); // varsa eski dataları temizle
+				tbody.append(`
                 <tr id="loadingRow">
                     <td colspan="3" class="text-center">
                         <div class="spinner-border text-primary" role="status">
@@ -1077,25 +1077,25 @@ $chartData = [
                     </td>
                 </tr>
             `);
-        },
-        success: function(response) {
-            const tbody = $('#topStudentsTable tbody');
-            tbody.empty();
-            console.log(response);
+			},
+			success: function(response) {
+				const tbody = $('#topStudentsTable tbody');
+				tbody.empty();
+				console.log(response);
 
-            const students = response.data || [];
+				const students = response.data || [];
 
-            if (students.length === 0) {
-                tbody.append(`
+				if (students.length === 0) {
+					tbody.append(`
                     <tr>
                         <td colspan="3" class="text-center">
                             <span class="text-gray-600 fw-bold fs-6">Öğrenci Mevcut Değil !</span>
                         </td>
                     </tr>
                 `);
-            } else {
-                students.forEach(student => {
-                    tbody.append(`
+				} else {
+					students.forEach(student => {
+						tbody.append(`
                         <tr>
                             <td>
                                 <div class="d-flex align-items-center">
@@ -1121,23 +1121,23 @@ $chartData = [
                             </td>
                         </tr>
                     `);
-                });
-            }
-        },
-        error: function(err) {
-            console.error(err);
-            const tbody = $('#topStudentsTable tbody');
-            tbody.empty();
-            tbody.append(`
+					});
+				}
+			},
+			error: function(err) {
+				console.error(err);
+				const tbody = $('#topStudentsTable tbody');
+				tbody.empty();
+				tbody.append(`
                 <tr>
                     <td colspan="3" class="text-center text-danger fw-bold">
                         Veri alınırken hata oluştu!
                     </td>
                 </tr>
             `);
-        }
-    });
-});
+			}
+		});
+	});
 
 	const subscriptionData = <?php echo json_encode($chartData, JSON_NUMERIC_CHECK); ?>;
 

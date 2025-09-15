@@ -28,7 +28,7 @@ $getHomeworks = $tests->getHomeworks();
 $getPayments = $tests->getPayments();
 
 $getHighestScoreStudents = $gradeObj->getHighestGradeOverall("1");
-$getHighestAnaStudents = $contentObj->getHighestAnalyticsOverall("1");
+
 $getHighestTimespent = $contentObj->getTimeSpentByStudents("1");
 
 $totalClasses = $contentObj->getClassesBySchool("1");
@@ -852,55 +852,21 @@ $chartData = [
 						<div class="tab-pane fade active show" id="kt_chart_widget_8_month_tab" role="tabpanel">
 
 							<div class="table-responsive">
-								<table class="table table-row-dashed align-middle gs-0 gy-3 my-0">
+								<table class="table table-row-dashed align-middle gs-0 gy-3 my-0" id="topStudentsTable">
 									<thead>
 										<tr class="fs-7 fw-bold text-gray-500 border-bottom-0">
 											<th class="p-0 pb-3 min-w-150px text-start">ÖĞRENCİ ADI</th>
 											<th class="p-0 pb-3 min-w-100px text-end pe-13">SINIFI</th>
 											<th class="p-0 pb-3 min-w-100px text-end pe-13">ORAN</th>
-
 										</tr>
 									</thead>
-
 									<tbody>
-										<?php if (empty($getHighestAnaStudents)) { ?>
-											<tr>
-												<td colspan="3" class="text-center"><span
-														class="text-gray-600 fw-bold fs-6">Öğrenci Mevcut Değil!</span></td>
-											</tr>
-										<?php } else {
-											foreach ($getHighestAnaStudents as $student) { ?>
-												<tr>
-													<td>
-														<div class="d-flex align-items-center">
-															<div class="symbol symbol-50px me-3">
-																<img src="assets/media/profile/<?php echo $student['photo']; ?>"
-																	class="" alt="" />
-															</div>
-															<div class="d-flex justify-content-start flex-column">
-																<a href="ogrenci-detay/<?php echo $student['username']; ?>"
-																	class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6"><?php echo $student['name'] . ' ' . $student['surname']; ?></a>
-																<span
-																	class="text-gray-500 fw-semibold d-block fs-7"><?php echo $student['schoolName']; ?></span>
-															</div>
-														</div>
-													</td>
-													<td class="text-end pe-13">
-														<span
-															class="text-gray-600 fw-bold fs-6"><?php echo $student['className']; ?></span>
-													</td>
-													<td class="text-end pe-13">
-														<span
-															class="text-gray-600 fw-bold fs-6"><?php echo $student['ana_score']; ?>%</span>
-													</td>
-												</tr>
-											<?php }
-										} ?>
+										<!-- AJAX ile burada veri yüklenecek -->
 									</tbody>
 								</table>
-								<a href="ilerleme-performans-takip"><button type="button"
-										class="btn btn-primary btn-sm mt-5">Tüm
-										Öğrenciler</button></a>
+								<a href="ilerleme-performans-takip">
+									<button type="button" class="btn btn-primary btn-sm mt-5">Tüm Öğrenciler</button>
+								</a>
 							</div>
 						</div>
 					</div>
@@ -1098,8 +1064,89 @@ $chartData = [
 	</div>
 
 </div>
-<script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
+<script>
+$(document).ready(function() {
+		$.ajax({
+			url: './includes/ajax.php?service=getTopStudents',
+			method: 'GET',
+			data: {
+				schoolId: 1
+			}, // burayı dinamik yapabilirsin
+			beforeSend: function() {
+				const tbody = $('#topStudentsTable tbody');
+				tbody.empty(); // varsa eski dataları temizle
+				tbody.append(`
+                <tr id="loadingRow">
+                    <td colspan="3" class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Yükleniyor...</span>
+                        </div>
+                    </td>
+                </tr>
+            `);
+			},
+			success: function(response) {
+				const tbody = $('#topStudentsTable tbody');
+				tbody.empty();
+				console.log(response);
+
+				const students = response.data || [];
+
+				if (students.length === 0) {
+					tbody.append(`
+                    <tr>
+                        <td colspan="3" class="text-center">
+                            <span class="text-gray-600 fw-bold fs-6">Öğrenci Mevcut Değil !</span>
+                        </td>
+                    </tr>
+                `);
+				} else {
+					students.forEach(student => {
+						tbody.append(`
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="symbol symbol-50px me-3">
+                                        <img src="assets/media/profile/${student.photo}" alt="" />
+                                    </div>
+                                    <div class="d-flex justify-content-start flex-column">
+                                        <a href="ogrenci-detay/${student.username}" 
+                                           class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6">
+                                            ${student.name} ${student.surname}
+                                        </a>
+                                        <span class="text-gray-500 fw-semibold d-block fs-7">
+                                            ${student.schoolName}
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-end pe-13">
+                                <span class="text-gray-600 fw-bold fs-6">${student.className}</span>
+                            </td>
+                            <td class="text-end pe-13">
+                                <span class="text-gray-600 fw-bold fs-6">${student.ana_score}%</span>
+                            </td>
+                        </tr>
+                    `);
+					});
+				}
+			},
+			error: function(err) {
+				console.error(err);
+				const tbody = $('#topStudentsTable tbody');
+				tbody.empty();
+				tbody.append(`
+                <tr>
+                    <td colspan="3" class="text-center text-danger fw-bold">
+                        Veri alınırken hata oluştu!
+                    </td>
+                </tr>
+            `);
+			}
+		});
+	});
 	const subscriptionData = <?php echo json_encode($chartData, JSON_NUMERIC_CHECK); ?>;
 
 	let chart;
