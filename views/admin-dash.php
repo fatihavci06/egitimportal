@@ -1068,7 +1068,7 @@ $chartData = [
 			success: function(response) {
     const tbody = $('#topStudentsTable tbody');
     tbody.empty();
-
+	console.log(response)
     // JSON objesi içindeki data array'ini alıyoruz
     const students = response.data || [];
 
@@ -1076,7 +1076,7 @@ $chartData = [
         tbody.append(`
             <tr>
                 <td colspan="3" class="text-center">
-                    <span class="text-gray-600 fw-bold fs-6">Öğrenci Mevcut Değil !</span>
+                    <span class="text-gray-600 fw-bold fs-6">Öğrenci Mevcut Değilw !</span>
                 </td>
             </tr>
         `);

@@ -4645,7 +4645,7 @@ ORDER BY msu.unit_order asc
         break;
 
     case 'getTopStudents':
-        $schoolId = $_POST['schoolId'] ?? null;
+        $schoolId = $_GET['schoolId'] ?? null;
 
         if (!$schoolId) {
             echo json_encode(['status' => 'error', 'message' => 'Geçersiz parametreler.']);
