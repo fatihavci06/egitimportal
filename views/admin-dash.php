@@ -16,9 +16,22 @@ $students = new Student();
 $packages = new PackagesForAdmin();
 $tests = new Dashes();
 
-$getAllStudents = $students->getStudentsList();
-$getActiveStudents = $students->getActiveStudents();
-$getPassiveStudents = $students->getPassiveStudents();
+$studentData = $students->getAllStudentData();
+
+// Verileri tek bir değişkenden alın
+if ($studentData) {
+	// Öğrenci listesi
+	$getAllStudents = $studentData['students'];
+
+	// Aktif ve pasif öğrenci sayıları
+	$getActiveStudents = $studentData['counts']['active'];
+	$getPassiveStudents = $studentData['counts']['passive'];
+} else {
+	// Hata durumunda boş veri ataması
+	$getAllStudents = [];
+	$getActiveStudents = 0;
+	$getPassiveStudents = 0;
+}
 
 $getAllPackages = $packages->getAllPackages();
 $getMostUsedPackages = $packages->getMostUsedPackage();
@@ -28,21 +41,22 @@ $getHomeworks = $tests->getHomeworks();
 $getPayments = $tests->getPayments();
 
 $getHighestScoreStudents = $gradeObj->getHighestGradeOverall($_SESSION['school_id']);
-$getHighestAnaStudents = $contentObj->getHighestAnalyticsOverall($_SESSION['school_id']);
+
 $getHighestTimespent = $contentObj->getTimeSpentByStudents($_SESSION['school_id']);
+$stats = $contentObj->getSchoolStats($_SESSION['school_id']);
 
-$totalClasses = $contentObj->getClassesBySchool($_SESSION['school_id']);
-$totalLessons = $contentObj->getLessonsBySchool($_SESSION['school_id']);
-$totalUnits = $contentObj->getUnitsBySchool($_SESSION['school_id']);
-$totalTopics = $contentObj->getTopicsBySchool($_SESSION['school_id']);
-$totalSubtopis = $contentObj->getSubtopicsBySchool($_SESSION['school_id']);
-$totalGames = $contentObj->getGamesBySchool($_SESSION['school_id']);
-$totalBooks = $contentObj->getBooksBySchool($_SESSION['school_id']);
+$totalClasses   = $stats['totalClasses'];
+$totalLessons   = $stats['totalLessons'];
+$totalUnits     = $stats['totalUnits'];
+$totalTopics    = $stats['totalTopics'];
+$totalSubtopis  = $stats['totalSubtopics'];
+$totalGames     = $stats['totalGames'];
+$totalBooks     = $stats['totalBooks'];
+$totalContents  = $stats['totalContents'];
 
-$totalContents = $contentObj->getContentsBySchool($_SESSION['school_id']);
-
-$testsHigh = $contentObj->getExamsWithHighestScore($_SESSION['school_id']);
-$testsLow = $contentObj->getExamsWithLowestScore($_SESSION['school_id']);
+$examScores = $contentObj->getExamsByScore($_SESSION['school_id']);
+$testsHigh = $examScores['highest'];
+$testsLow = $examScores['lowest'];
 
 // $subsState = $contentObj->getSubscriptionState($_SESSION['school_id']);
 
@@ -95,7 +109,7 @@ $chartData = [
 							<div class="d-flex align-items-center">
 								<i class="fa-regular fa-clock fs-2 text-success me-2"></i>
 								<div class="fs-2 fw-bold">
-									<?php echo $totalClasses['total']; ?>
+									<?php echo $totalClasses; ?>
 								</div>
 							</div>
 							<div class="fw-semibold fs-6 text-gray-500">Toplam
@@ -306,11 +320,11 @@ $chartData = [
 									<span class="fs-1 fw-semibold text-gray-500 me-1 mt-n1">Öğrenci</span>
 									<span class="badge badge-light-success fs-base">
 										<i class="ki-duotone ki-arrow-up fs-5 text-success ms-n1">
-										</i><?php echo count($getActiveStudents); ?> Aktif
+										</i><?php echo $getActiveStudents; ?> Aktif
 									</span>
 									<span class="badge badge-light-danger ms-3 fs-base">
 										<i class="ki-duotone ki-arrow-up fs-5 text-danger ms-n1">
-										</i><?php echo count($getPassiveStudents); ?> Pasif
+										</i><?php echo $getPassiveStudents; ?> Pasif
 									</span>
 								</div>
 								<!--end::Statistics-->
@@ -338,7 +352,7 @@ $chartData = [
 												<td colspan="3" class="text-center"><span
 														class="text-gray-600 fw-bold fs-6">Öğrenci Mevcut Değil!</span></td>
 											</tr>
-										<?php } else {
+											<?php } else {
 											foreach (array_slice($getAllStudents, 0, 5) as $student) { ?>
 												<tr>
 													<td>
@@ -360,7 +374,7 @@ $chartData = [
 															class="text-gray-600 fw-bold fs-6"><?php echo $student['className']; ?></span>
 													</td>
 												</tr>
-											<?php }
+										<?php }
 										} ?>
 									</tbody>
 									<!--end::Table body-->
@@ -434,7 +448,7 @@ $chartData = [
 														class="text-gray-600 fw-bold fs-6">Satılan Paket Mevcut
 														Değil!</span></td>
 											</tr>
-										<?php } else {
+											<?php } else {
 											foreach ($getMostUsedPackages as $packs) { ?>
 												<tr>
 													<td>
@@ -453,7 +467,7 @@ $chartData = [
 															class="text-gray-600 fw-bold fs-6"><?php echo $packs['className']; ?></span>
 													</td>
 												</tr>
-											<?php }
+										<?php }
 										} ?>
 									</tbody>
 									<!--end::Table body-->
@@ -527,7 +541,7 @@ $chartData = [
 														class="text-gray-600 fw-bold fs-6">Eklenmiş Test Mevcut
 														Değil!</span></td>
 											</tr>
-										<?php } else {
+											<?php } else {
 											foreach (array_slice($getTests, 0, 5) as $tests) { ?>
 												<tr>
 													<td>
@@ -546,7 +560,7 @@ $chartData = [
 															class="text-gray-600 fw-bold fs-6"><?php echo $dateFormat->changeDate($tests['created_at']); ?></span>
 													</td>
 												</tr>
-											<?php }
+										<?php }
 										} ?>
 									</tbody>
 									<!--end::Table body-->
@@ -620,7 +634,7 @@ $chartData = [
 														class="text-gray-600 fw-bold fs-6">Eklenmiş Ödev Mevcut
 														Değil!</span></td>
 											</tr>
-										<?php } else {
+											<?php } else {
 											foreach (array_slice($getHomeworks, 0, 5) as $homeworks) { ?>
 												<tr>
 													<td>
@@ -639,7 +653,7 @@ $chartData = [
 															class="text-gray-600 fw-bold fs-6"><?php echo $dateFormat->changeDate($homeworks['created_at']); ?></span>
 													</td>
 												</tr>
-											<?php }
+										<?php }
 										} ?>
 									</tbody>
 									<!--end::Table body-->
@@ -776,7 +790,7 @@ $chartData = [
 												<td colspan="3" class="text-center"><span
 														class="text-gray-600 fw-bold fs-6">Öğrenci Mevcut Değil!</span></td>
 											</tr>
-										<?php } else {
+											<?php } else {
 											foreach ($getHighestScoreStudents as $student) { ?>
 												<tr>
 													<td>
@@ -802,7 +816,7 @@ $chartData = [
 															class="text-gray-600 fw-bold fs-6"><?php echo $student['average_score']; ?>%</span>
 													</td>
 												</tr>
-											<?php }
+										<?php }
 										} ?>
 									</tbody>
 								</table>
@@ -829,56 +843,22 @@ $chartData = [
 						<div class="tab-pane fade active show" id="kt_chart_widget_8_month_tab" role="tabpanel">
 
 							<div class="table-responsive">
-								<table class="table table-row-dashed align-middle gs-0 gy-3 my-0">
-									<thead>
-										<tr class="fs-7 fw-bold text-gray-500 border-bottom-0">
-											<th class="p-0 pb-3 min-w-150px text-start">ÖĞRENCİ ADI</th>
-											<th class="p-0 pb-3 min-w-100px text-end pe-13">SINIFI</th>
-											<th class="p-0 pb-3 min-w-100px text-end pe-13">ORAN</th>
-
-										</tr>
-									</thead>
-
-									<tbody>
-										<?php if (empty($getHighestAnaStudents)) { ?>
-											<tr>
-												<td colspan="3" class="text-center"><span
-														class="text-gray-600 fw-bold fs-6">Öğrenci Mevcut Değil!</span></td>
-											</tr>
-										<?php } else {
-											foreach ($getHighestAnaStudents as $student) { ?>
-												<tr>
-													<td>
-														<div class="d-flex align-items-center">
-															<div class="symbol symbol-50px me-3">
-																<img src="assets/media/profile/<?php echo $student['photo']; ?>"
-																	class="" alt="" />
-															</div>
-															<div class="d-flex justify-content-start flex-column">
-																<a href="ogrenci-detay/<?php echo $student['username']; ?>"
-																	class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6"><?php echo $student['name'] . ' ' . $student['surname']; ?></a>
-																<span
-																	class="text-gray-500 fw-semibold d-block fs-7"><?php echo $student['schoolName']; ?></span>
-															</div>
-														</div>
-													</td>
-													<td class="text-end pe-13">
-														<span
-															class="text-gray-600 fw-bold fs-6"><?php echo $student['className']; ?></span>
-													</td>
-													<td class="text-end pe-13">
-														<span
-															class="text-gray-600 fw-bold fs-6"><?php echo $student['ana_score']; ?>%</span>
-													</td>
-												</tr>
-											<?php }
-										} ?>
-									</tbody>
-								</table>
-								<a href="ilerleme-performans-takip"><button type="button"
-										class="btn btn-primary btn-sm mt-5">Tüm
-										Öğrenciler</button></a>
-							</div>
+    <table class="table table-row-dashed align-middle gs-0 gy-3 my-0" id="topStudentsTable">
+        <thead>
+            <tr class="fs-7 fw-bold text-gray-500 border-bottom-0">
+                <th class="p-0 pb-3 min-w-150px text-start">ÖĞRENCİ ADI</th>
+                <th class="p-0 pb-3 min-w-100px text-end pe-13">SINIFI</th>
+                <th class="p-0 pb-3 min-w-100px text-end pe-13">ORAN</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- AJAX ile burada veri yüklenecek -->
+        </tbody>
+    </table>
+    <a href="ilerleme-performans-takip">
+        <button type="button" class="btn btn-primary btn-sm mt-5">Tüm Öğrenciler</button>
+    </a>
+</div>
 						</div>
 					</div>
 				</div>
@@ -914,7 +894,7 @@ $chartData = [
 												<td colspan="3" class="text-center"><span
 														class="text-gray-600 fw-bold fs-6">Öğrenci Mevcut Değil!</span></td>
 											</tr>
-										<?php } else {
+											<?php } else {
 											foreach ($getHighestTimespent as $student) { ?>
 												<tr>
 													<td>
@@ -940,7 +920,7 @@ $chartData = [
 															class="text-gray-600 fw-bold fs-6"><?php echo $dateFormat->secondsToReadableTime($student['totalTime']); ?></span>
 													</td>
 												</tr>
-											<?php }
+										<?php }
 										} ?>
 									</tbody>
 								</table>
@@ -981,7 +961,7 @@ $chartData = [
 														class="text-gray-600 fw-bold fs-6">Eklenmiş Test Mevcut
 														Değil!</span></td>
 											</tr>
-										<?php } else {
+											<?php } else {
 											foreach ($testsHigh as $tests) { ?>
 												<tr>
 													<td>
@@ -1000,7 +980,7 @@ $chartData = [
 															class="text-gray-600 fw-bold fs-6"><?php echo $tests['total']; ?>%</span>
 													</td>
 												</tr>
-											<?php }
+										<?php }
 										} ?>
 									</tbody>
 								</table>
@@ -1040,7 +1020,7 @@ $chartData = [
 														class="text-gray-600 fw-bold fs-6">Eklenmiş Test Mevcut
 														Değil!</span></td>
 											</tr>
-										<?php } else {
+											<?php } else {
 											foreach ($testsLow as $tests) { ?>
 												<tr>
 													<td>
@@ -1059,7 +1039,7 @@ $chartData = [
 															class="text-gray-600 fw-bold fs-6"><?php echo $tests['total']; ?>%</span>
 													</td>
 												</tr>
-											<?php }
+										<?php }
 										} ?>
 									</tbody>
 								</table>
@@ -1075,8 +1055,68 @@ $chartData = [
 	</div>
 
 </div>
-<script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
+<script>
+	$(document).ready(function() {
+		$.ajax({
+			url: './includes/ajax.php?service=getTopStudents',
+			method: 'GET',
+			data: {
+				schoolId: 1
+			}, // burayı dinamik yapabilirsin
+			success: function(response) {
+    const tbody = $('#topStudentsTable tbody');
+    tbody.empty();
+
+    // JSON objesi içindeki data array'ini alıyoruz
+    const students = response.data || [];
+
+    if (students.length === 0) {
+        tbody.append(`
+            <tr>
+                <td colspan="3" class="text-center">
+                    <span class="text-gray-600 fw-bold fs-6">Öğrenci Mevcut Değil !</span>
+                </td>
+            </tr>
+        `);
+    } else {
+        students.forEach(student => {
+            tbody.append(`
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="symbol symbol-50px me-3">
+                                <img src="assets/media/profile/${student.photo}" alt="" />
+                            </div>
+                            <div class="d-flex justify-content-start flex-column">
+                                <a href="ogrenci-detay/${student.username}" 
+                                   class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6">
+                                    ${student.name} ${student.surname}
+                                </a>
+                                <span class="text-gray-500 fw-semibold d-block fs-7">
+                                    ${student.schoolName}
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-end pe-13">
+                        <span class="text-gray-600 fw-bold fs-6">${student.className}</span>
+                    </td>
+                    <td class="text-end pe-13">
+                        <span class="text-gray-600 fw-bold fs-6">${student.ana_score}%</span>
+                    </td>
+                </tr>
+            `);
+        });
+    }
+},
+
+			error: function(err) {
+				console.error(err);
+			}
+		});
+	});
 	const subscriptionData = <?php echo json_encode($chartData, JSON_NUMERIC_CHECK); ?>;
 
 	let chart;
@@ -1122,7 +1162,7 @@ $chartData = [
 						padding: 12,
 						displayColors: false,
 						callbacks: {
-							label: function (context) {
+							label: function(context) {
 								return `${context.parsed.y} new subscriptions`;
 							}
 						}
@@ -1194,7 +1234,7 @@ $chartData = [
 	}
 
 	document.querySelectorAll('[data-period]').forEach(button => {
-		button.addEventListener('click', function () {
+		button.addEventListener('click', function() {
 			document.querySelectorAll('[data-period]').forEach(btn => btn.classList.remove('active'));
 
 			this.classList.add('active');
@@ -1203,7 +1243,7 @@ $chartData = [
 		});
 	});
 
-	document.addEventListener('DOMContentLoaded', function () {
+	document.addEventListener('DOMContentLoaded', function() {
 		initChart();
 		updateStats('week');
 	});

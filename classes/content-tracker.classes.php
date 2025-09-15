@@ -54,7 +54,6 @@ class ContentTracker
             ];
 
             return $subscriptionStats;
-
         } catch (PDOException $e) {
             return [
                 'error' => true,
@@ -75,6 +74,75 @@ class ContentTracker
             $stmt = $this->db->prepare($sql);
             $stmt->execute(['user_id' => $userId]);
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+    public function getExamsByScore($schoolId)
+    {
+        try {
+            $sql = "
+            (SELECT AVG(score) as total, t.test_title, c.name AS className, l.name AS lessonName
+            FROM user_grades_lnp ug 
+            LEFT JOIN tests_lnp t ON ug.test_id = t.id
+            LEFT JOIN classes_lnp c ON t.class_id = c.id
+            LEFT JOIN lessons_lnp l ON t.lesson_id = l.id
+            WHERE t.school_id = :school_id
+            GROUP BY ug.test_id
+            ORDER BY total DESC
+            LIMIT 5)
+            
+            UNION ALL
+
+            (SELECT AVG(score) as total, t.test_title, c.name AS className, l.name AS lessonName
+            FROM user_grades_lnp ug 
+            LEFT JOIN tests_lnp t ON ug.test_id = t.id
+            LEFT JOIN classes_lnp c ON t.class_id = c.id
+            LEFT JOIN lessons_lnp l ON t.lesson_id = l.id
+            WHERE t.school_id = :school_id
+            GROUP BY ug.test_id
+            ORDER BY total ASC
+            LIMIT 5)
+        ";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['school_id' => $schoolId]);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // En yüksek ve en düşük skorları ayır
+            $highestScores = array_slice($result, 0, 5);
+            $lowestScores = array_slice($result, 5, 5);
+
+            return [
+                'highest' => $highestScores,
+                'lowest' => $lowestScores
+            ];
+        } catch (Exception $e) {
+            // Hata durumunda boş veri döndür
+            return [
+                'highest' => [],
+                'lowest' => []
+            ];
+        }
+    }
+    public function getSchoolStats($schoolId)
+    {
+        try {
+            $sql = "
+            SELECT 
+                (SELECT COUNT(*) FROM classes_lnp WHERE school_id = :school_id) AS totalClasses,
+                (SELECT COUNT(*) FROM lessons_lnp WHERE school_id = :school_id) AS totalLessons,
+                (SELECT COUNT(*) FROM units_lnp WHERE school_id = :school_id) AS totalUnits,
+                (SELECT COUNT(*) FROM topics_lnp WHERE school_id = :school_id) AS totalTopics,
+                (SELECT COUNT(*) FROM subtopics_lnp WHERE school_id = :school_id) AS totalSubtopics,
+                (SELECT COUNT(*) FROM games_lnp WHERE school_id = :school_id) AS totalGames,
+                (SELECT COUNT(*) FROM audio_book_lnp WHERE school_id = :school_id) AS totalBooks,
+                (SELECT COUNT(*) FROM school_content_lnp WHERE school_id = :school_id) AS totalContents
+        ";
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['school_id' => $schoolId]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
             return $result;
         } catch (Exception $e) {
             return false;
@@ -303,7 +371,6 @@ class ContentTracker
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             return $results;
-
         } catch (PDOException $e) {
             return null;
         }
@@ -357,47 +424,83 @@ class ContentTracker
 
     public function getHighestAnalyticsOverall($schoolId)
     {
-        $sql_students = 'SELECT users_lnp.*,
-        classes_lnp.name AS className, 
-        classes_lnp.slug AS classSlug, 
-        users_lnp.active AS userActive, 
-        schools_lnp.name AS schoolName 
-        FROM users_lnp 
-        INNER JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id 
-        INNER JOIN schools_lnp ON users_lnp.school_id = schools_lnp.id 
-        WHERE users_lnp.active = 1 
-        AND (users_lnp.role = ? 
-        OR users_lnp.role = ?) 
-        AND users_lnp.school_id = ?
-        ORDER BY users_lnp.id DESC';
+        $sql = "
+        SELECT *
+        FROM (
+            SELECT 
+                u.id AS student_id,
+                u.name AS student_name,
+                c.name AS className,
+                c.slug AS classSlug,
+                u.active AS userActive,
+                s.name AS schoolName,
+                
+                -- Toplam içerik sayısı
+                COUNT(DISTINCT sc.id) AS total_content_items,
+                
+                -- Videolar
+                COUNT(DISTINCT scv.id) AS total_videos,
+                SUM(CASE WHEN vd.duration > 0 AND vt.max_timestamp >= (vd.duration * 0.9) THEN 1 ELSE 0 END) AS completed_videos,
+                
+                -- Dosyalar
+                COUNT(DISTINCT scf.id) AS total_files,
+                SUM(CASE WHEN fd.user_id IS NOT NULL THEN 1 ELSE 0 END) AS downloaded_files,
+                
+                -- Wordwall
+                COUNT(DISTINCT scw.id) AS total_wordwalls,
+                SUM(CASE WHEN wv.user_id IS NOT NULL THEN 1 ELSE 0 END) AS viewed_wordwalls,
+                
+                -- Content visits
+                SUM(CASE WHEN cv.user_id IS NOT NULL THEN 1 ELSE 0 END) AS content_visits,
 
+                -- ana_score hesaplama
+                CASE 
+                    WHEN (COUNT(DISTINCT scv.id) + COUNT(DISTINCT scf.id) + COUNT(DISTINCT scw.id) + COUNT(DISTINCT sc.id)) > 0
+                    THEN ROUND(
+                        (
+                            SUM(CASE WHEN vd.duration > 0 AND vt.max_timestamp >= (vd.duration * 0.9) THEN 1 ELSE 0 END)
+                            + SUM(CASE WHEN fd.user_id IS NOT NULL THEN 1 ELSE 0 END)
+                            + SUM(CASE WHEN wv.user_id IS NOT NULL THEN 1 ELSE 0 END)
+                            + SUM(CASE WHEN cv.user_id IS NOT NULL THEN 1 ELSE 0 END)
+                        ) * 100.0 /
+                        (COUNT(DISTINCT scv.id) + COUNT(DISTINCT scf.id) + COUNT(DISTINCT scw.id) + COUNT(DISTINCT sc.id)),
+                        3
+                    )
+                    ELSE 0
+                END AS ana_score
 
+            FROM users_lnp u
+            INNER JOIN classes_lnp c ON u.class_id = c.id
+            INNER JOIN schools_lnp s ON u.school_id = s.id
+            LEFT JOIN school_content_lnp sc ON sc.active = 1
+            LEFT JOIN content_visits cv ON sc.id = cv.content_id AND cv.user_id = u.id
+            LEFT JOIN school_content_videos_url scv ON sc.id = scv.school_content_id
+            LEFT JOIN video_durations vd ON scv.id = vd.video_id
+            LEFT JOIN video_timestamp_lnp vt ON scv.id = vt.video_id AND vt.user_id = u.id
+            LEFT JOIN school_content_files_lnp scf ON sc.id = scf.school_content_id
+            LEFT JOIN file_downloads fd ON scf.id = fd.file_id AND fd.user_id = u.id
+            LEFT JOIN school_content_wordwall_lnp scw ON sc.id = scw.school_content_id
+            LEFT JOIN wordwall_views wv ON scw.id = wv.wordwall_id AND wv.user_id = u.id
+            WHERE u.active = 1
+            AND (u.role = ? OR u.role = ?)
+            AND u.school_id = ?
+            GROUP BY u.id, u.name, c.name, c.slug, u.active, s.name
+        ) AS t
+        ORDER BY t.ana_score DESC
+        LIMIT 5
+    ";
 
         try {
-            $stmt_students = $this->db->prepare($sql_students);
-
-            $stmt_students->execute(["2", "10002", $schoolId]);
-
-
-            $students = $stmt_students->fetchAll(PDO::FETCH_ASSOC);
-
-            $students = array_map(function ($student) {
-                $student['ana_score'] = $this->getSchoolContentAnalyticsOverall($student['id']) ?? '-';
-                return $student;
-            }, $students);
-
-            usort($students, function ($a, $b) {
-                return $b['ana_score'] <=> $a['ana_score'];
-            });
-
-            $topStudents = array_slice($students, 0, 5);
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(["2", "10002", $schoolId]);
+            $topStudents = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             return $topStudents;
-
         } catch (PDOException $e) {
             return null;
         }
     }
+
     public function getSchoolContentAnalyticsOverall($user_id)
     {
         $sql = "
@@ -471,7 +574,6 @@ class ContentTracker
             $percentage = 0;
             if (empty($results)) {
                 return null;
-
             }
 
             $sums = [
@@ -483,7 +585,6 @@ class ContentTracker
                 if (($item['total_wordwalls'] == 0) && ($item['total_files'] == 0) && ($item['total_videos'] == 0)) {
                     $sums['total_content_visits'] += 1;
                     $sums['content_visits'] += $item['content_visited'];
-
                 }
 
                 foreach ($item as $key => $value) {
@@ -498,14 +599,14 @@ class ContentTracker
                 if ($total_points > 0) {
                     $percentage = $this->getFirstThreeDecimalDigits(($result_points / $total_points) * 100);
                 }
-
             }
             return $percentage;
-
         } catch (PDOException $e) {
             return null;
         }
     }
+
+
     public function getSchoolContentAnalyticsByLessonId($user_id, $class_id, $lesson_id)
     {
         $sql = "
@@ -581,7 +682,6 @@ class ContentTracker
             $percentage = 0;
             if (empty($results)) {
                 return null;
-
             }
 
             $sums = [
@@ -593,7 +693,6 @@ class ContentTracker
                 if (($item['total_wordwalls'] == 0) && ($item['total_files'] == 0) && ($item['total_videos'] == 0)) {
                     $sums['total_content_visits'] += 1;
                     $sums['content_visits'] += $item['content_visited'];
-
                 }
 
                 foreach ($item as $key => $value) {
@@ -608,10 +707,8 @@ class ContentTracker
                 if ($total_points > 0) {
                     $percentage = $this->getFirstThreeDecimalDigits(($result_points / $total_points) * 100);
                 }
-
             }
             return $percentage;
-
         } catch (PDOException $e) {
             return null;
         }
@@ -690,7 +787,6 @@ class ContentTracker
             $percentage = 0;
             if (empty($results)) {
                 return null;
-
             }
             $sums = [
                 'content_visits' => 0,
@@ -701,7 +797,6 @@ class ContentTracker
                 if (($item['total_wordwalls'] == 0) && ($item['total_files'] == 0) && ($item['total_videos'] == 0)) {
                     $sums['total_content_visits'] += 1;
                     $sums['content_visits'] += $item['content_visited'];
-
                 }
 
                 foreach ($item as $key => $value) {
@@ -716,10 +811,8 @@ class ContentTracker
                 if ($total_points > 0) {
                     $percentage = $this->getFirstThreeDecimalDigits(($result_points / $total_points) * 100);
                 }
-
             }
             return $percentage;
-
         } catch (PDOException $e) {
             return null;
         }
@@ -798,7 +891,6 @@ class ContentTracker
             $percentage = 0;
             if (empty($results)) {
                 return null;
-
             }
 
             $sums = [
@@ -810,7 +902,6 @@ class ContentTracker
                 if (($item['total_wordwalls'] == 0) && ($item['total_files'] == 0) && ($item['total_videos'] == 0)) {
                     $sums['total_content_visits'] += 1;
                     $sums['content_visits'] += $item['content_visited'];
-
                 }
 
                 foreach ($item as $key => $value) {
@@ -825,10 +916,8 @@ class ContentTracker
                 if ($total_points > 0) {
                     $percentage = $this->getFirstThreeDecimalDigits(($result_points / $total_points) * 100);
                 }
-
             }
             return $percentage;
-
         } catch (PDOException $e) {
             return null;
         }
@@ -907,7 +996,6 @@ class ContentTracker
             $percentage = 0;
             if (empty($results)) {
                 return null;
-
             }
 
             $sums = [
@@ -919,7 +1007,6 @@ class ContentTracker
                 if (($item['total_wordwalls'] == 0) && ($item['total_files'] == 0) && ($item['total_videos'] == 0)) {
                     $sums['total_content_visits'] += 1;
                     $sums['content_visits'] += $item['content_visited'];
-
                 }
 
                 foreach ($item as $key => $value) {
@@ -934,10 +1021,8 @@ class ContentTracker
                 if ($total_points > 0) {
                     $percentage = $this->getFirstThreeDecimalDigits(($result_points / $total_points) * 100);
                 }
-
             }
             return $percentage;
-
         } catch (PDOException $e) {
             return null;
         }
@@ -1023,10 +1108,8 @@ class ContentTracker
             $stmt->execute(['user_id' => $user_id, 'class_id' => $class_id]);
             $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
             foreach ($items as $key => $item) {
-
             }
             return $items;
-
         } catch (PDOException $e) {
             return null;
         }
@@ -1284,6 +1367,4 @@ class ContentTracker
             return null;
         }
     }
-
-
 }

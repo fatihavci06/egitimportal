@@ -5,7 +5,7 @@ include_once '../classes/Mailer.php';
 $mailer = new Mailer();
 header('Content-Type: application/json');
 session_start();
-if(!$_SESSION['role'] ){
+if (!$_SESSION['role']) {
     echo json_encode(['status' => 'error', 'message' => 'Yetkisiz erişim.']);
     exit();
 }
@@ -4643,6 +4643,87 @@ ORDER BY msu.unit_order asc
             echo json_encode(['status' => 'error', 'message' => 'Bir hata oluştu: ' . $e->getMessage()]);
         }
         break;
+
+    case 'getTopStudents':
+        $schoolId = $_POST['schoolId'] ?? null;
+
+        if (!$schoolId) {
+            echo json_encode(['status' => 'error', 'message' => 'Geçersiz parametreler.']);
+            exit();
+        }
+
+        try {
+            // PDO bağlantısı $pdo olarak varsayılıyor
+            $sql = "
+        SELECT 
+            u.id AS student_id,
+            u.username,
+            u.name,
+            u.surname,
+            u.photo,
+            c.name AS className,
+            c.slug AS classSlug,
+            u.active AS userActive,
+            s.name AS schoolName,
+            
+            COUNT(DISTINCT sc.id) AS total_content_items,
+            COUNT(DISTINCT scv.id) AS total_videos,
+            SUM(CASE WHEN vd.duration > 0 AND vt.max_timestamp >= (vd.duration * 0.9) THEN 1 ELSE 0 END) AS completed_videos,
+            
+            COUNT(DISTINCT scf.id) AS total_files,
+            SUM(CASE WHEN fd.user_id IS NOT NULL THEN 1 ELSE 0 END) AS downloaded_files,
+            
+            COUNT(DISTINCT scw.id) AS total_wordwalls,
+            SUM(CASE WHEN wv.user_id IS NOT NULL THEN 1 ELSE 0 END) AS viewed_wordwalls,
+            
+            SUM(CASE WHEN cv.user_id IS NOT NULL THEN 1 ELSE 0 END) AS content_visits,
+            
+            CASE 
+                WHEN (COUNT(DISTINCT scv.id) + COUNT(DISTINCT scf.id) + COUNT(DISTINCT scw.id) + COUNT(DISTINCT sc.id)) > 0
+                THEN ROUND(
+                    (
+                        SUM(CASE WHEN vd.duration > 0 AND vt.max_timestamp >= (vd.duration * 0.9) THEN 1 ELSE 0 END)
+                        + SUM(CASE WHEN fd.user_id IS NOT NULL THEN 1 ELSE 0 END)
+                        + SUM(CASE WHEN wv.user_id IS NOT NULL THEN 1 ELSE 0 END)
+                        + SUM(CASE WHEN cv.user_id IS NOT NULL THEN 1 ELSE 0 END)
+                    ) * 100.0 /
+                    (COUNT(DISTINCT scv.id) + COUNT(DISTINCT scf.id) + COUNT(DISTINCT scw.id) + COUNT(DISTINCT sc.id)),
+                    3
+                )
+                ELSE 0
+            END AS ana_score
+
+        FROM users_lnp u
+        INNER JOIN classes_lnp c ON u.class_id = c.id
+        INNER JOIN schools_lnp s ON u.school_id = s.id
+        LEFT JOIN school_content_lnp sc ON sc.active = 1
+        LEFT JOIN content_visits cv ON sc.id = cv.content_id AND cv.user_id = u.id
+        LEFT JOIN school_content_videos_url scv ON sc.id = scv.school_content_id
+        LEFT JOIN video_durations vd ON scv.id = vd.video_id
+        LEFT JOIN video_timestamp_lnp vt ON scv.id = vt.video_id AND vt.user_id = u.id
+        LEFT JOIN school_content_files_lnp scf ON sc.id = scf.school_content_id
+        LEFT JOIN file_downloads fd ON scf.id = fd.file_id AND fd.user_id = u.id
+        LEFT JOIN school_content_wordwall_lnp scw ON sc.id = scw.school_content_id
+        LEFT JOIN wordwall_views wv ON scw.id = wv.wordwall_id AND wv.user_id = u.id
+        WHERE u.active = 1
+          AND u.role IN (?, ?)
+          AND u.school_id = ?
+        GROUP BY u.id
+        ORDER BY ana_score DESC
+        LIMIT 5
+        ";
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(["2", "10002", $schoolId]);
+            $topStudents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            echo json_encode(['status' => 'success', 'data' => $topStudents]);
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Bir hata oluştu: ' . $e->getMessage()]);
+        }
+        break;
+
+
 
 
     default:

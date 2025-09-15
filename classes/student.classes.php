@@ -284,7 +284,69 @@ class Student extends Dbh
 
 		$stmt = null;
 	}
+	public function getAllStudentData()
+{
+    // Dinamik WHERE koşulunu belirleme
+    $where = '';
+    $params = [];
+    
+    switch ($_SESSION['role']) {
+        case 1:
+            $where = ' WHERE (users_lnp.role = 2 OR users_lnp.role = 10002)';
+            break;
+        case 3:
+        case 8:
+            $where = ' WHERE (users_lnp.role = 2 OR users_lnp.role = 10002) AND users_lnp.school_id = ?';
+            $params = [$_SESSION['school_id']];
+            break;
+        case 4:
+            $where = ' WHERE (users_lnp.role = 2 OR users_lnp.role = 10002) AND users_lnp.school_id = ? AND users_lnp.class_id = ?';
+            $params = [$_SESSION['school_id'], $_SESSION['class_id']];
+            break;
+        default:
+            return null;
+    }
+    
+    $sql = "SELECT
+                SUM(CASE WHEN users_lnp.active = 1 THEN 1 ELSE 0 END) AS active_count,
+                SUM(CASE WHEN users_lnp.active = 0 THEN 1 ELSE 0 END) AS passive_count,
+                users_lnp.*,
+                classes_lnp.name AS className,
+                classes_lnp.slug AS classSlug,
+                schools_lnp.name AS schoolName
+            FROM users_lnp
+            INNER JOIN classes_lnp ON users_lnp.class_id = classes_lnp.id
+            INNER JOIN schools_lnp ON users_lnp.school_id = schools_lnp.id
+            " . $where . "
+            GROUP BY users_lnp.id
+            ORDER BY users_lnp.id DESC";
 
+    $stmt = $this->connect()->prepare($sql);
+    
+    if (!$stmt->execute($params)) {
+        return null;
+    }
+    
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Toplam sayıları almak için ilk satıra bakabiliriz
+    $counts = [
+        'active' => $data[0]['active_count'] ?? 0,
+        'passive' => $data[0]['passive_count'] ?? 0,
+        'all' => count($data)
+    ];
+    
+    // İlk satırdaki count verilerini temizleyip sadece öğrenci listesini döndürmek için
+    foreach ($data as &$row) {
+        unset($row['active_count']);
+        unset($row['passive_count']);
+    }
+    
+    return [
+        'counts' => $counts,
+        'students' => $data
+    ];
+}
 
 	public function getStudentId($slug)
 	{
