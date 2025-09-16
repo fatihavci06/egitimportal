@@ -306,17 +306,34 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         }
 
         function initTinyMCE(selector) {
-            if (tinymce.get(selector.replace('#', ''))) {
-                tinymce.get(selector.replace('#', '')).remove();
-            }
-            tinymce.init({
-                selector: selector,
-                height: 150,
-                menubar: false,
-                plugins: 'link image media',
-                toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright | bullist numlist outdent indent | link image media',
+    if (tinymce.get(selector.replace('#', ''))) {
+        tinymce.get(selector.replace('#', '')).remove();
+    }
+    tinymce.init({
+        selector: selector,
+        height: 150,
+        menubar: false,
+        plugins: 'link image media',
+        toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright | bullist numlist outdent indent | link image media | fraction',
+        setup: function(editor) {
+
+            // Özel Kesir Butonu
+            editor.ui.registry.addButton('fraction', {
+                text: 'Kesir',
+                tooltip: 'Kesir ekle',
+                onAction: function () {
+                    editor.insertContent(
+                        '<span style="display:inline-block; text-align:center;">' +
+                            '<span style="display:block;">1</span>' +
+                            '<span style="border-top:1px solid #000; display:block;">2</span>' +
+                        '</span>'
+                    );
+                }
             });
         }
+    });
+}
+
 
         function createVideoInput(index) {
             return `
