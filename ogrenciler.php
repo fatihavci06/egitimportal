@@ -52,35 +52,49 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     <?php include_once "views/sidebar.php"; ?>
                     <!--end::Sidebar-->
                     <!--begin::Main-->
-                      <div class="card-body pt-0">
-                                            <div class="modal fade" id="excelAktarModal" tabindex="-1" aria-labelledby="excelAktarModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="excelAktarModalLabel">Excel Dosyası Yükle</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <form id="excelAktarForm" enctype="multipart/form-data">
-                                                                <div class="mb-3">
-                                                                    <label for="excelFile" class="form-label">Excel Dosyası Seçiniz (.csv)</label>
-                                                                    <input class="form-control" type="file" id="excelFile" name="excelFile" accept=".csv" required>
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <label for="schoolName" class="form-label">Okul Adı</label>
-                                                                    <input class="form-control" type="text" id="schoolName" name="schoolName" required>
-                                                                </div>
-                                                                <div class="d-grid">
-                                                                    <button type="submit" id="excelSubmitBtn" class="btn btn-primary">Aktarımı Başlat</button>
-                                                                </div>
-                                                            </form>
-                                                            <div id="sonucAlani" class="mt-3"></div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                    <div class="card-body pt-0">
+                        <div class="modal fade" id="excelAktarModal" tabindex="-1" aria-labelledby="excelAktarModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="excelAktarModalLabel">Excel Dosyası Yükle</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="excelAktarForm" enctype="multipart/form-data">
+                                            <div class="mb-3">
+                                                <label for="excelFile" class="form-label">Excel Dosyası Seçiniz (.csv)</label>
+                                                <input class="form-control" type="file" id="excelFile" name="excelFile" accept=".csv" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="schoolName" class="form-label">Okul Adı</label>
+                                                <input class="form-control" type="text" id="schoolName" name="schoolName" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="price" class="form-label">Öğrenci Başı KDV Dahil Ücret</label>
+                                                <input
+                                                    class="form-control"
+                                                    type="number"
+                                                    id="price"
+                                                    name="price"
+                                                    step="0.01"
+                                                    min="0"
+                                                    required
+                                                  >
                                             </div>
 
-                                        </div>
+                                            
+                                            <div class="d-grid">
+                                                <button type="submit" id="excelSubmitBtn" class="btn btn-primary">Aktarımı Başlat</button>
+                                            </div>
+                                        </form>
+                                        <div id="sonucAlani" class="mt-3"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
                         <!--begin::Content wrapper-->
                         <div class="d-flex flex-column flex-column-fluid">
@@ -114,94 +128,94 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
                                                     <!--begin::Add school-->
                                                     <div class="d-flex justify-content-end" style="margin-right: 30px;" data-kt-customer-table-toolbar="base">
-                                                    <button type="button" class="btn btn-primary btn-sm mr-4" data-bs-toggle="modal" data-bs-target="#excelAktarModal">
-                                                        Excel Aktar
-                                                    </button>
-                                                </div>
-                                                    <?php if (!empty($waitingStudents->getWaitingMoneyTransfers()) AND $_SESSION['role'] == 1) { ?><a href="havale-beklenenler"><button type="button" class="btn btn-primary me-3" data-bs-toggle="modal">Havalesi Beklenen Öğrenciler</button></a><?php } ?>
+                                                        <button type="button" class="btn btn-primary btn-sm mr-4" data-bs-toggle="modal" data-bs-target="#excelAktarModal">
+                                                            Excel Aktar
+                                                        </button>
+                                                    </div>
+                                                    <?php if (!empty($waitingStudents->getWaitingMoneyTransfers()) and $_SESSION['role'] == 1) { ?><a href="havale-beklenenler"><button type="button" class="btn btn-primary me-3" data-bs-toggle="modal">Havalesi Beklenen Öğrenciler</button></a><?php } ?>
                                                     <!--end::Add school-->
                                                     <!--begin::Filter-->
-                                                    <?php if ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 OR $_SESSION['role'] == 8) { ?>
-                                                    <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                                                        <i class="ki-duotone ki-filter fs-2">
-                                                            <span class="path1"></span>
-                                                            <span class="path2"></span>
-                                                        </i>Filtre</button>
-                                                    <!--begin::Menu 1-->
-                                                    <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true" id="kt-toolbar-filter">
-                                                        <!--begin::Header-->
-                                                        <div class="px-7 py-5">
-                                                            <div class="fs-4 text-gray-900 fw-bold">Filtreleme</div>
-                                                        </div>
-                                                        <!--end::Header-->
-                                                        <!--begin::Separator-->
-                                                        <div class="separator border-gray-200"></div>
-                                                        <!--end::Separator-->
-                                                        <!--begin::Content-->
-                                                        <div class="px-7 py-5">
-                                                            <!--begin::Input group-->
-                                                            <div class="mb-10">
-                                                                <!--begin::Label-->
-                                                                <label class="form-label fs-5 fw-semibold mb-3">Durum:</label>
-                                                                <!--end::Label-->
-                                                                <!--begin::Input-->
-                                                                <select class="form-select form-select-solid fw-bold" data-kt-select2="true" data-placeholder="Durum Seçin" data-allow-clear="true" data-kt-customer-table-filter="status" data-dropdown-parent="#kt-toolbar-filter">
-                                                                    <option></option>
-                                                                    <option value="Aktif">Aktif</option>
-                                                                    <option value="Passive">Pasif</option>
-                                                                </select>
-                                                                <!--end::Input-->
+                                                    <?php if ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 8) { ?>
+                                                        <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                                            <i class="ki-duotone ki-filter fs-2">
+                                                                <span class="path1"></span>
+                                                                <span class="path2"></span>
+                                                            </i>Filtre</button>
+                                                        <!--begin::Menu 1-->
+                                                        <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true" id="kt-toolbar-filter">
+                                                            <!--begin::Header-->
+                                                            <div class="px-7 py-5">
+                                                                <div class="fs-4 text-gray-900 fw-bold">Filtreleme</div>
                                                             </div>
-                                                            <?php if($_SESSION['role'] != 8){ ?>
-                                                            <!--end::Input group-->
-                                                            <div class="mb-10">
-                                                                <!--begin::Label-->
-                                                                <label class="form-label fs-5 fw-semibold mb-3">Okul:</label>
-                                                                <!--end::Label-->
-                                                                <!--begin::Input-->
-                                                                <select class="form-select form-select-solid fw-bold" data-kt-select2="true" data-placeholder="Okul Seçin" data-allow-clear="true" data-kt-customer-table-filter="school" data-dropdown-parent="#kt-toolbar-filter">
-                                                                    <option></option>
-                                                                    <?php $schools->getSchoolListFilter(); ?>
-                                                                </select>
-                                                                <!--end::Input-->
-                                                            </div>
-                                                            <!--end::Input group-->
-                                                            <?php } ?>
-                                                            <!--begin::Input group-->
-                                                            <div class="mb-10">
-                                                                <!--begin::Label-->
-                                                                <label class="form-label fs-5 fw-semibold mb-3">Sınıf:</label>
-                                                                <!--end::Label-->
-                                                                <!--begin::Options-->
-                                                                <div class="d-flex flex-column flex-wrap fw-semibold" data-kt-customer-table-filter="student_class">
-                                                                    <!--begin::Option-->
-                                                                    <label class="form-check form-check-sm form-check-custom form-check-solid mb-3 me-5">
-                                                                        <input class="form-check-input" type="radio" name="student_class" value="all" checked="checked" />
-                                                                        <span class="form-check-label text-gray-600">Tüm Sınıflar</span>
-                                                                    </label>
-                                                                    <!--end::Option-->
-                                                                    <?php
-                                                                        if($_SESSION['role'] == 8){ 
+                                                            <!--end::Header-->
+                                                            <!--begin::Separator-->
+                                                            <div class="separator border-gray-200"></div>
+                                                            <!--end::Separator-->
+                                                            <!--begin::Content-->
+                                                            <div class="px-7 py-5">
+                                                                <!--begin::Input group-->
+                                                                <div class="mb-10">
+                                                                    <!--begin::Label-->
+                                                                    <label class="form-label fs-5 fw-semibold mb-3">Durum:</label>
+                                                                    <!--end::Label-->
+                                                                    <!--begin::Input-->
+                                                                    <select class="form-select form-select-solid fw-bold" data-kt-select2="true" data-placeholder="Durum Seçin" data-allow-clear="true" data-kt-customer-table-filter="status" data-dropdown-parent="#kt-toolbar-filter">
+                                                                        <option></option>
+                                                                        <option value="Aktif">Aktif</option>
+                                                                        <option value="Passive">Pasif</option>
+                                                                    </select>
+                                                                    <!--end::Input-->
+                                                                </div>
+                                                                <?php if ($_SESSION['role'] != 8) { ?>
+                                                                    <!--end::Input group-->
+                                                                    <div class="mb-10">
+                                                                        <!--begin::Label-->
+                                                                        <label class="form-label fs-5 fw-semibold mb-3">Okul:</label>
+                                                                        <!--end::Label-->
+                                                                        <!--begin::Input-->
+                                                                        <select class="form-select form-select-solid fw-bold" data-kt-select2="true" data-placeholder="Okul Seçin" data-allow-clear="true" data-kt-customer-table-filter="school" data-dropdown-parent="#kt-toolbar-filter">
+                                                                            <option></option>
+                                                                            <?php $schools->getSchoolListFilter(); ?>
+                                                                        </select>
+                                                                        <!--end::Input-->
+                                                                    </div>
+                                                                    <!--end::Input group-->
+                                                                <?php } ?>
+                                                                <!--begin::Input group-->
+                                                                <div class="mb-10">
+                                                                    <!--begin::Label-->
+                                                                    <label class="form-label fs-5 fw-semibold mb-3">Sınıf:</label>
+                                                                    <!--end::Label-->
+                                                                    <!--begin::Options-->
+                                                                    <div class="d-flex flex-column flex-wrap fw-semibold" data-kt-customer-table-filter="student_class">
+                                                                        <!--begin::Option-->
+                                                                        <label class="form-check form-check-sm form-check-custom form-check-solid mb-3 me-5">
+                                                                            <input class="form-check-input" type="radio" name="student_class" value="all" checked="checked" />
+                                                                            <span class="form-check-label text-gray-600">Tüm Sınıflar</span>
+                                                                        </label>
+                                                                        <!--end::Option-->
+                                                                        <?php
+                                                                        if ($_SESSION['role'] == 8) {
                                                                             $students->getClassListWithOutPre();
                                                                         } else {
                                                                             $students->getClassList();
                                                                         }
-                                                                    ?>
+                                                                        ?>
+                                                                    </div>
+                                                                    <!--end::Options-->
                                                                 </div>
-                                                                <!--end::Options-->
+                                                                <!--end::Input group-->
+                                                                <!--begin::Actions-->
+                                                                <div class="d-flex justify-content-end">
+                                                                    <button type="reset" class="btn btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true" data-kt-customer-table-filter="reset">Temizle</button>
+                                                                    <button type="submit" class="btn btn-primary" data-kt-menu-dismiss="true" data-kt-customer-table-filter="filter">Uygula</button>
+                                                                </div>
+                                                                <!--end::Actions-->
                                                             </div>
-                                                            <!--end::Input group-->
-                                                            <!--begin::Actions-->
-                                                            <div class="d-flex justify-content-end">
-                                                                <button type="reset" class="btn btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true" data-kt-customer-table-filter="reset">Temizle</button>
-                                                                <button type="submit" class="btn btn-primary" data-kt-menu-dismiss="true" data-kt-customer-table-filter="filter">Uygula</button>
-                                                            </div>
-                                                            <!--end::Actions-->
+                                                            <!--end::Content-->
                                                         </div>
-                                                        <!--end::Content-->
-                                                    </div>
-                                                    <!--end::Menu 1-->
-                                                    <!--end::Filter-->
+                                                        <!--end::Menu 1-->
+                                                        <!--end::Filter-->
                                                     <?php } ?>
                                                     <!--begin::Add school-->
                                                     <?php if ($_SESSION['role'] != 4) { ?><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_customer">Öğrenci Ekle</button><?php } ?>
@@ -336,7 +350,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/js/custom/utilities/modals/create-account.js"></script>
         <script src="assets/js/custom/utilities/modals/create-app.js"></script>
         <script src="assets/js/custom/utilities/modals/users-search.js"></script>
-         <script>
+        <script>
             document.addEventListener("DOMContentLoaded", function() {
                 // Form elemanlarını seçin
                 const excelAktarForm = document.getElementById('excelAktarForm');
