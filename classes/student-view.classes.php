@@ -208,6 +208,7 @@ class ShowStudent extends Student
                             ' . $value['schoolName'] . '
                         </td>
                         <td  data-order="' . $dateFormat->forDB($value['subscribed_end']) . '">' . $dateFormat->changeDate($value['subscribed_end']) . '</td>
+                        <td>' . $value['school_name'] . '</td>
                         <td>' . $aktifYazi . '</td>
                         <td class="text-end">
                             <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"

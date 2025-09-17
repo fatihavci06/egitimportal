@@ -52,6 +52,35 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     <?php include_once "views/sidebar.php"; ?>
                     <!--end::Sidebar-->
                     <!--begin::Main-->
+                      <div class="card-body pt-0">
+                                            <div class="modal fade" id="excelAktarModal" tabindex="-1" aria-labelledby="excelAktarModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="excelAktarModalLabel">Excel Dosyası Yükle</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form id="excelAktarForm" enctype="multipart/form-data">
+                                                                <div class="mb-3">
+                                                                    <label for="excelFile" class="form-label">Excel Dosyası Seçiniz (.csv)</label>
+                                                                    <input class="form-control" type="file" id="excelFile" name="excelFile" accept=".csv" required>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="schoolName" class="form-label">Okul Adı</label>
+                                                                    <input class="form-control" type="text" id="schoolName" name="schoolName" required>
+                                                                </div>
+                                                                <div class="d-grid">
+                                                                    <button type="submit" id="excelSubmitBtn" class="btn btn-primary">Aktarımı Başlat</button>
+                                                                </div>
+                                                            </form>
+                                                            <div id="sonucAlani" class="mt-3"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
                         <!--begin::Content wrapper-->
                         <div class="d-flex flex-column flex-column-fluid">
@@ -84,6 +113,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <!--begin::Toolbar-->
                                                 <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
                                                     <!--begin::Add school-->
+                                                    <div class="d-flex justify-content-end" style="margin-right: 30px;" data-kt-customer-table-toolbar="base">
+                                                    <button type="button" class="btn btn-primary btn-sm mr-4" data-bs-toggle="modal" data-bs-target="#excelAktarModal">
+                                                        Excel Aktar
+                                                    </button>
+                                                </div>
                                                     <?php if (!empty($waitingStudents->getWaitingMoneyTransfers()) AND $_SESSION['role'] == 1) { ?><a href="havale-beklenenler"><button type="button" class="btn btn-primary me-3" data-bs-toggle="modal">Havalesi Beklenen Öğrenciler</button></a><?php } ?>
                                                     <!--end::Add school-->
                                                     <!--begin::Filter-->
@@ -197,13 +231,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                 <input class="form-check-input" type="checkbox" data-kt-check="true" data-kt-check-target="#kt_customers_table .form-check-input" value="1" />
                                                             </div>
                                                         </th>
-                                                        <th class="min-w-125px">Fotoğraf</th>
-                                                        <th class="min-w-125px">Öğrenci Adı</th>
-                                                        <th class="min-w-125px">E-posta Adresi</th>
-                                                        <th class="min-w-125px">Sınıfı</th>
-                                                        <th class="min-w-125px">Okulu</th>
-                                                        <th class="min-w-125px">Paket Bitiş Tarihi</th>
-                                                        <th class="min-w-125px">Durum</th>
+                                                        <th class="min-w-100px">Fotoğraf</th>
+                                                        <th class="min-w-100px">Öğrenci Adı</th>
+                                                        <th class="min-w-100px">E-posta Adresi</th>
+                                                        <th class="min-w-100px">Sınıfı</th>
+                                                        <th class="min-w-100px">Okulu</th>
+                                                        <th class="min-w-100px">Paket Bitiş Tarihi</th>
+                                                        <th class="min-w-100px">Ana Okulu</th>
+                                                        <th class="min-w-100px">Durum</th>
                                                         <th class="text-end min-w-70px">İşlemler</th>
                                                     </tr>
                                                 </thead>
@@ -301,6 +336,70 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/js/custom/utilities/modals/create-account.js"></script>
         <script src="assets/js/custom/utilities/modals/create-app.js"></script>
         <script src="assets/js/custom/utilities/modals/users-search.js"></script>
+         <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                // Form elemanlarını seçin
+                const excelAktarForm = document.getElementById('excelAktarForm');
+                const excelSubmitBtn = document.getElementById('excelSubmitBtn');
+                const sonucAlani = document.getElementById('sonucAlani');
+                // Form gönderildiğinde çalışacak olay dinleyicisi
+                excelAktarForm.addEventListener('submit', function(e) {
+                    e.preventDefault(); // Sayfanın yeniden yüklenmesini engelle
+
+                    // Form verilerini FormData nesnesiyle topla
+                    const formData = new FormData(this);
+
+                    // Butonun durumunu güncelle ve yükleniyor animasyonu ekle
+                    excelSubmitBtn.disabled = true;
+                    excelSubmitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Yükleniyor...';
+                    sonucAlani.innerHTML = ''; // Önceki sonuç mesajını temizle
+
+                    // AJAX isteği başlat
+                    fetch('./includes/ajax.php?service=anaOkuluOgrenciAktar', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                // HTTP hatası (örn. 403, 500) durumunda hata fırlat
+                                return response.json().then(errorData => {
+                                    throw new Error(errorData.message || 'Sunucu hatası oluştu.');
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            // Sunucudan dönen JSON verisini işle
+                            if (data.status === 'success') {
+                                sonucAlani.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+                            } else if (data.status === 'warning') {
+                                sonucAlani.innerHTML = `<div class="alert alert-warning">${data.message}</div>`;
+                            } else {
+                                sonucAlani.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+                            }
+                        })
+                        .catch(error => {
+                            // Ağ veya sunucu tarafında bir hata oluşursa
+                            console.error('Hata:', error);
+                            sonucAlani.innerHTML = `<div class="alert alert-danger">Bir hata oluştu: ${error.message}</div>`;
+                        })
+                        .finally(() => {
+                            // İşlem bittiğinde butonu eski haline getir
+                            excelSubmitBtn.disabled = false;
+                            excelSubmitBtn.innerHTML = 'Aktarımı Başlat';
+                        });
+                });
+
+                // Modal kapatıldığında formu sıfırla
+                const excelAktarModal = document.getElementById('excelAktarModal');
+                if (excelAktarModal) {
+                    excelAktarModal.addEventListener('hidden.bs.modal', function() {
+                        excelAktarForm.reset();
+                        sonucAlani.innerHTML = '';
+                    });
+                }
+            });
+        </script>
         <!--end::Custom Javascript-->
         <!--end::Javascript-->
     </body>
