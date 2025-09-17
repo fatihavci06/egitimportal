@@ -237,8 +237,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <th class="min-w-100px">Sınıfı</th>
                                                         <th class="min-w-100px">Okulu</th>
                                                         <th class="min-w-100px">Paket Bitiş Tarihi</th>
-                                                        <th class="min-w-100px">Ana Okulu</th>
                                                         <th class="min-w-100px">Durum</th>
+                                                        <th class="min-w-100px">Ana Okulu</th>
                                                         <th class="text-end min-w-70px">İşlemler</th>
                                                     </tr>
                                                 </thead>
