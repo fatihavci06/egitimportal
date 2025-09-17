@@ -79,11 +79,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     name="price"
                                                     step="0.01"
                                                     min="0"
-                                                    required
-                                                  >
+                                                    required>
                                             </div>
 
-                                            
+
                                             <div class="d-grid">
                                                 <button type="submit" id="excelSubmitBtn" class="btn btn-primary">Aktarımı Başlat</button>
                                             </div>
@@ -383,9 +382,18 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             return response.json();
                         })
                         .then(data => {
-                            // Sunucudan dönen JSON verisini işle
                             if (data.status === 'success') {
-                                sonucAlani.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+                                sonucAlani.innerHTML = `
+            <div class="alert alert-success">
+                ${data.message} <br>
+                Sayfa 3 saniye içinde yenilenecek...
+            </div>
+        `;
+
+                                // 3 saniye sonra sayfayı yenile
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 2500);
                             } else if (data.status === 'warning') {
                                 sonucAlani.innerHTML = `<div class="alert alert-warning">${data.message}</div>`;
                             } else {
