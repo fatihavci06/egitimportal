@@ -601,6 +601,7 @@ var KTSignupGeneral = function () {
 
     $(document).ready(function () {
 
+        
         $('input[type="radio"][name="payment_type"]').change(function () {
             console.log('Değişiklik algılandı');
             var vatPercentage = Number(document.getElementById("vatPercentage").innerHTML);
