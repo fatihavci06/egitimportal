@@ -4727,32 +4727,36 @@ ORDER BY msu.unit_order asc
 
         try {
             if (!isset($_FILES['excelFile']) || $_FILES['excelFile']['error'] !== UPLOAD_ERR_OK) {
-            throw new Exception('Dosya yükleme hatası. Lütfen tekrar deneyin.');
-        }
+                throw new Exception('Dosya yükleme hatası. Lütfen tekrar deneyin.');
+            }
 
-        // Yükleme klasörü
-        $uploadDir = __DIR__ . "/../uploads/ana-okulu-ogrenci/";
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0777, true);
-        }
 
-        // Dosya adı ve hedef yol
-        $fileName   = basename($_FILES['excelFile']['name']);
-        $targetPath = $uploadDir . $fileName;
+            // Yükleme klasörü
+            $uploadDir = __DIR__ . "/../uploads/ana-okulu-ogrenci/";
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
 
-        // Dosyayı kalıcı klasöre taşı
-        if (!move_uploaded_file($_FILES['excelFile']['tmp_name'], $targetPath)) {
-            throw new Exception("Dosya yüklenirken hata oluştu!");
-        }
+            // Dosya adı ve hedef yol
+            $fileName   = basename($_FILES['excelFile']['name']);
+            $targetPath = $uploadDir . $fileName;
 
-        // Artık buradan dosya yolunu alıyoruz
-        $file = $targetPath;
+            // Dosyayı kalıcı klasöre taşı
+            if (!move_uploaded_file($_FILES['excelFile']['tmp_name'], $targetPath)) {
+                throw new Exception("Dosya yüklenirken hata oluştu!");
+            }
+            $price = $_POST['price'] ?? null;
+            if ($price === null || !is_numeric($price)) {
+                throw new Exception("Öğrenci başı ücret geçerli değil.");
+            }
+            // Artık buradan dosya yolunu alıyoruz
+            $file = $targetPath;
 
-        // Uzantı kontrolü
-        $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
-        if (strtolower($fileExtension) !== 'csv') {
-            throw new Exception('Lütfen geçerli bir CSV dosyası yükleyin.');
-        }
+            // Uzantı kontrolü
+            $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
+            if (strtolower($fileExtension) !== 'csv') {
+                throw new Exception('Lütfen geçerli bir CSV dosyası yükleyin.');
+            }
             // Frontend’den gelen okul bilgileri
             $schoolId   = $_POST['school_id']   ?? 1;
             $schoolName = $_POST['schoolName']  ?? null;
@@ -4940,9 +4944,49 @@ ORDER BY msu.unit_order asc
                     $packageId
                 ]);
 
-                if (!$resultStudent) {
+                $studentId = $pdo->lastInsertId();
+
+                // Frontend’den gelen price
+                $price = $_POST['price'] ?? null;
+                if ($price === null || !is_numeric($price)) {
                     $pdo->rollBack();
-                    throw new Exception("Satır $rowNumber: Öğrenci eklenirken hata.");
+                    throw new Exception("Öğrenci başı ücret geçerli değil.");
+                }
+                $price = (float)$price;
+
+                // KDV ve pay_amount hesapla
+                $stmtSettings = $pdo->prepare("SELECT tax_rate FROM settings_lnp LIMIT 1");
+                $stmtSettings->execute();
+                $settings = $stmtSettings->fetch(PDO::FETCH_ASSOC);
+
+                if (!$settings || !isset($settings['tax_rate'])) {
+                    throw new Exception("KDV oranı ayarlardan alınamadı.");
+                }
+
+                $kdv_percent = (float)$settings['tax_rate'];
+                $kdv_amount  = round($price * $kdv_percent / 100, 2);
+                $pay_amount  = round($price * (100 - $kdv_percent) / 100, 2);
+
+                // package_payment_lnp tablosuna ekle
+                $sqlPayment = "INSERT INTO package_payments_lnp 
+    (user_id, pack_id, kdv_percent, payment_type, payment_status, kdv_amount, pay_amount, created_at) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+
+                $stmtPayment = $pdo->prepare($sqlPayment);
+
+                $resultPayment = $stmtPayment->execute([
+                    $studentId,
+                    $packageId,
+                    $kdv_percent,
+                    1,
+                    2,
+                    $kdv_amount,
+                    $pay_amount
+                ]);
+
+                if (!$resultPayment) {
+                    $pdo->rollBack();
+                    throw new Exception("Satır $rowNumber: Ödeme bilgisi eklenirken hata oluştu.");
                 }
 
                 $successCount++;
