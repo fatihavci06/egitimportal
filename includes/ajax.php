@@ -4723,8 +4723,248 @@ ORDER BY msu.unit_order asc
         }
         break;
 
+    case 'anaOkuluOgrenciAktar';
 
+        try {
+            if (!isset($_FILES['excelFile']) || $_FILES['excelFile']['error'] !== UPLOAD_ERR_OK) {
+            throw new Exception('Dosya yükleme hatası. Lütfen tekrar deneyin.');
+        }
 
+        // Yükleme klasörü
+        $uploadDir = __DIR__ . "/../uploads/ana-okulu-ogrenci/";
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+
+        // Dosya adı ve hedef yol
+        $fileName   = basename($_FILES['excelFile']['name']);
+        $targetPath = $uploadDir . $fileName;
+
+        // Dosyayı kalıcı klasöre taşı
+        if (!move_uploaded_file($_FILES['excelFile']['tmp_name'], $targetPath)) {
+            throw new Exception("Dosya yüklenirken hata oluştu!");
+        }
+
+        // Artık buradan dosya yolunu alıyoruz
+        $file = $targetPath;
+
+        // Uzantı kontrolü
+        $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
+        if (strtolower($fileExtension) !== 'csv') {
+            throw new Exception('Lütfen geçerli bir CSV dosyası yükleyin.');
+        }
+            // Frontend’den gelen okul bilgileri
+            $schoolId   = $_POST['school_id']   ?? 1;
+            $schoolName = $_POST['schoolName']  ?? null;
+
+            if (empty($schoolId) || empty($schoolName)) {
+                throw new Exception("Okul bilgileri eksik gönderildi.");
+            }
+
+            // Dosyayı okuma modunda aç
+            $handle = fopen($file, 'r');
+            if ($handle === false) {
+                throw new Exception('Dosya okunamadı.');
+            }
+
+            $successCount = 0;
+            $rowNumber    = 1;
+
+            // Transaksiyonu başlat
+            $pdo->beginTransaction();
+
+            // Öğrenci SQL
+            $sqlStudent = "INSERT INTO users_lnp (
+            name, surname, username, email, password, role, active, telephone, birth_date, gender, identity_id,
+            address, district, postcode, city, class_id, school_id, school_name, parent_id,
+            subscribed_at, subscribed_end, package_id
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmtStudentInsert = $pdo->prepare($sqlStudent);
+
+            // Veli SQL
+            $sqlParent = "INSERT INTO users_lnp (
+            name, surname, username, password, role, active, school_id, school_name
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmtParentInsert = $pdo->prepare($sqlParent);
+
+            // Paket SQL
+            $sqlPackage = "SELECT id, subscription_period FROM packages_lnp WHERE name LIKE ? AND class_id = ?";
+            $stmtPackage = $pdo->prepare($sqlPackage);
+
+            // CSV başlık satırını atla
+            fgetcsv($handle, 1000, ';');
+
+            // Satır satır oku
+            while (($data = fgetcsv($handle, 1000, ';')) !== false) {
+                $rowNumber++;
+
+                // Beklenen minimum sütun sayısı
+                if (count($data) < 15) { // Artık paket bilgisi de olduğu için 15
+                    $pdo->rollBack();
+                    throw new Exception("Satır " . $rowNumber . ": Yetersiz veri. Dosya formatı bozuk.");
+                }
+
+                // CSV indexleri (username yok → sola kaydı)
+                $adi             = trim($data[0]);
+                $soyadi          = trim($data[1]);
+                $tcNo            = trim($data[2]);
+                $cinsiyet        = trim($data[3]);
+                $dogumTarihi     = trim($data[4]);
+                $ePosta          = trim($data[5]);
+                $adres           = trim($data[8]);
+                $ilce            = trim($data[9]);
+                $postaKodu       = trim($data[10]);
+                $sehir           = trim($data[11]);
+                $telefonNumarasi = trim($data[12]);
+                $sinifMetin      = trim($data[13]);
+                $paketMetin      = trim($data[14]);
+
+                // Kullanıcı adı türet (TC No)
+                $kullaniciAdi = $tcNo;
+
+                // Validasyon
+                $missingFields = [];
+                if (empty($adi))         $missingFields[] = 'Adı';
+                if (empty($soyadi))      $missingFields[] = 'Soyadı';
+                if (empty($tcNo))        $missingFields[] = 'TC No';
+                if (empty($sinifMetin))  $missingFields[] = 'Sınıf';
+                if (empty($paketMetin))  $missingFields[] = 'Paket Adı';
+
+                if (!empty($missingFields)) {
+                    $pdo->rollBack();
+                    throw new Exception("Satır " . $rowNumber . ": Eksik zorunlu veri: " . implode(", ", $missingFields));
+                }
+
+                // Sınıf dönüştürme
+                $sinifId = 0;
+                if (strpos($sinifMetin, '3-4') !== false) {
+                    $sinifId = 10;
+                } elseif (strpos($sinifMetin, '4-5') !== false) {
+                    $sinifId = 11;
+                } elseif (strpos($sinifMetin, '5-6') !== false) {
+                    $sinifId = 12;
+                }
+
+                if ($sinifId === 0) {
+                    $pdo->rollBack();
+                    throw new Exception("Satır $rowNumber: Sınıf bilgisi geçersiz.");
+                }
+
+                if (!is_numeric($tcNo) || strlen($tcNo) !== 11) {
+                    $pdo->rollBack();
+                    throw new Exception("Satır $rowNumber: TC Kimlik Numarası geçersiz ($tcNo).");
+                }
+
+                if (!filter_var($ePosta, FILTER_VALIDATE_EMAIL)) {
+                    $pdo->rollBack();
+                    throw new Exception("Satır $rowNumber: E-posta adresi geçersiz ($ePosta).");
+                }
+
+                // TC kontrolü
+                $stmtCheck = $pdo->prepare("SELECT id FROM users_lnp WHERE identity_id = ? LIMIT 1");
+                $stmtCheck->execute([$tcNo]);
+                if ($stmtCheck->fetch()) {
+                    $pdo->rollBack();
+                    throw new Exception("Satır $rowNumber: TC ($tcNo) zaten kayıtlı.");
+                }
+
+                // Doğum tarihi
+                try {
+                    $dogumTarihi = (new DateTime($dogumTarihi))->format('Y-m-d');
+                } catch (Exception $e) {
+                    $pdo->rollBack();
+                    throw new Exception("Satır $rowNumber: Doğum tarihi hatalı ($dogumTarihi).");
+                }
+
+                // Parola (TC son 6 hane)
+                $password = password_hash(substr((string)$tcNo, -6), PASSWORD_DEFAULT);
+
+                // Paket bilgilerini sorgula
+                $stmtPackage->execute(["$paketMetin%", $sinifId]);
+                $packageInfo = $stmtPackage->fetch(PDO::FETCH_ASSOC);
+
+                if (!$packageInfo) {
+                    $pdo->rollBack();
+                    throw new Exception("Satır $rowNumber: '$paketMetin' paketi bulunamadı veya bu sınıfa ait değil.");
+                }
+
+                $packageId = $packageInfo['id'];
+                $subscriptionPeriod = $packageInfo['subscription_period'];
+
+                // Abone başlangıç ve bitiş tarihlerini hesapla
+                $subscribedAt = date('Y-m-d H:i:s');
+                $subscribedEnd = (new DateTime($subscribedAt))->modify("+$subscriptionPeriod months")->format('Y-m-d H:i:s');
+
+                // 1. Veli ekle
+                $parentUsername = $kullaniciAdi . '-veli';
+                $resultParent = $stmtParentInsert->execute([
+                    $adi,
+                    $soyadi,
+                    $parentUsername,
+                    $password,
+                    '10005', // veli rolü
+                    '1',     // aktif
+                    $schoolId,
+                    $schoolName
+                ]);
+
+                if (!$resultParent) {
+                    $pdo->rollBack();
+                    throw new Exception("Satır $rowNumber: Veli eklenirken hata.");
+                }
+                $parentId = $pdo->lastInsertId();
+
+                // 2. Öğrenci ekle
+                $resultStudent = $stmtStudentInsert->execute([
+                    $adi,
+                    $soyadi,
+                    $kullaniciAdi,
+                    $ePosta,
+                    $password,
+                    '10002', // öğrenci rolü
+                    '1',
+                    $telefonNumarasi,
+                    $dogumTarihi,
+                    $cinsiyet,
+                    $tcNo,
+                    $adres,
+                    $ilce,
+                    $postaKodu,
+                    $sehir,
+                    $sinifId,
+                    $schoolId,
+                    $schoolName,
+                    $parentId,
+                    $subscribedAt,
+                    $subscribedEnd,
+                    $packageId
+                ]);
+
+                if (!$resultStudent) {
+                    $pdo->rollBack();
+                    throw new Exception("Satır $rowNumber: Öğrenci eklenirken hata.");
+                }
+
+                $successCount++;
+            }
+
+            fclose($handle);
+            $pdo->commit();
+
+            echo json_encode([
+                'status'  => 'success',
+                'message' => "$successCount öğrenci ve velisi başarıyla içe aktarıldı."
+            ]);
+        } catch (Exception $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            echo json_encode([
+                'status'  => 'error',
+                'message' => 'Aktarım işlemi başarısız. ' . $e->getMessage()
+            ]);
+        }
+        break;
 
     default:
         echo json_encode(['status' => 'error', 'message' => 'Geçersiz servis']);
