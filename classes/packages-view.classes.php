@@ -354,7 +354,7 @@ class ShowPackagesForAdmin extends PackagesForAdmin
                                     <!--begin::Details item-->
                                     <div class="fw-bold mt-5">Aylık Ücret</div>
                                     <div class="text-gray-600">
-                                        ' . $value['monthly_fee'] . ' ₺
+                                        ' . $value['credit_card_fee'] . ' ₺
                                     </div>
                                     <!--end::Details item-->
                                     <!--begin::Details item-->
