@@ -11,72 +11,72 @@
     <script src="assets/js/scripts.bundle.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-    body {
-        font-family: 'Inter', sans-serif;
-        background-color: #f3f4f6;
-    }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
 
-    span {
-        font-size: 17px !important;
-    }
+        span {
+            font-size: 17px !important;
+        }
 
-    .video-responsive {
-        position: relative;
-        width: 100%;
-        padding-bottom: 45%;
-        height: 0;
-        margin: 0 auto;
-        overflow: hidden;
-        border-radius: 0.5rem;
-        margin-bottom: 1.5rem;
-        max-width: 800px;
-    }
+        .video-responsive {
+            position: relative;
+            width: 100%;
+            padding-bottom: 45%;
+            height: 0;
+            margin: 0 auto;
+            overflow: hidden;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            max-width: 800px;
+        }
 
-    .video-responsive iframe {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 800px;;
-        height: 400px;
-    }
+        .video-responsive iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 800px;
+            ;
+            height: 400px;
+        }
 
-    /* Image container for question files */
-    .question-image-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-        justify-content: center;
-    }
+        /* Soru resimleri için container */
+        .question-image-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            justify-content: center;
+        }
 
-    .question-image-container img {
-        max-width: 700px; /* Burayı büyüttük */
-        max-height: 100%; /* Burayı büyüttük */
-        object-fit: contain;
-        border-radius: 0.5rem;
-        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        background-color: #f9fafb;
-    }
+        .question-image-container img {
+            max-width: 700px;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            background-color: #f9fafb;
+        }
 
-    /* Image container for option files */
-    .option-image-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-top: 0.5rem;
-        /* Seçenek resimlerinin dikeyde de hizalanmasını sağlar */
-        align-items: center; 
-    }
+        /* Seçenek resimleri için container */
+        .option-image-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            align-items: center;
+        }
 
-    .option-image-container img {
-        max-width: 800px; /* Burayı büyüttük */
-        max-height: 700px; /* Burayı büyüttük */
-        object-fit: contain;
-        border-radius: 0.25rem;
-        border: 1px solid #e5e7eb;
-        background-color: #fff;
-    }
-</style>
+        .option-image-container img {
+            max-width: 800px;
+            max-height: 700px;
+            object-fit: contain;
+            border-radius: 0.25rem;
+            border: 1px solid #e5e7eb;
+            background-color: #fff;
+        }
+    </style>
 </head>
 
 <body class="flex items-center justify-center min-h-screen p-4">
@@ -105,7 +105,7 @@
     </div>
 
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             let testData = null;
             let currentQuestionIndex = 0;
             let userAnswers = [];
@@ -120,6 +120,113 @@
                 const match = url.match(regExp);
                 return (match && match[1].length === 11) ? match[1] : null;
             }
+
+            // ... (The rest of your code remains the same)
+
+            function renderResultReport(response) {
+                console.log(response); // Now the full response object is logged
+
+                // The test title and content_url should be accessed directly from the response object
+                const testTitle = response.test_title || 'Test Sonuçları';
+                $('#test-title').text(testTitle);
+
+                // Get the user answers with correctness from the response object
+                const results = response.user_answers_with_correctness || [];
+
+                // Add "Konu Anlatımına Git" button to the top of the page
+                const contentUrlButtonHtml = response.content_url ?
+                    `<a href="${response.content_url}" target="_blank" class="w-full md:w-auto px-8 py-4 bg-orange-600 text-white font-semibold rounded-lg shadow-md hover:bg-orange-700 transition-all duration-300 ease-in-out text-center inline-block mb-4">Konu Anlatımına Git</a>` : '';
+                $('#test-app').prepend(contentUrlButtonHtml);
+
+                const $questionDisplay = $('#question-display').empty();
+                $questionDisplay.removeClass('bg-gray-50').addClass('bg-white');
+
+                const reportHtml = (results || []).map((userAnswer, index) => {
+                    const question = testData.questions[index];
+                    const isCorrect = userAnswer.is_correct;
+                    const correctOptionKey = question.correct_option_key;
+                    const userSelectedOptionKey = userAnswer.selected_option_key;
+
+                    const statusIcon = isCorrect ? '✅' : '❌';
+                    const statusColor = isCorrect ? 'text-green-600' : 'text-red-600';
+
+                    let optionsHtml = question.options.map(option => {
+                        let optionClass = 'bg-white border border-gray-300';
+                        let iconHtml = '';
+
+                        // User's selected answer
+                        if (option.option_key === userSelectedOptionKey) {
+                            if (isCorrect) {
+                                optionClass = 'bg-green-100 border border-green-400';
+                                iconHtml = '✅';
+                            } else {
+                                optionClass = 'bg-red-100 border border-red-400';
+                                iconHtml = '❌';
+                            }
+                        }
+                        // Correct answer if the user's answer was wrong
+                        else if (!isCorrect && option.option_key === correctOptionKey) {
+                            optionClass = 'bg-white border-2 border-green-500';
+                            iconHtml = '✅';
+                        }
+
+                        let optionTextContent = `<span class="font-semibold text-gray-700">${option.option_key}.</span> <span class="text-gray-800 ml-2">${option.option_text.replace(/\r\n/g, '<br>')}</span>`;
+
+                        if (option.files && option.files.length > 0) {
+                            let optionImageHtml = '<div class="option-image-container mt-2">';
+                            option.files.forEach(file => {
+                                optionImageHtml += `<img src="${file}" alt="Seçenek Resmi" onerror="this.onerror=null;this.src='https://placehold.co/300x200/E0E0E0/333333?text=Resim+Yok';" />`;
+                            });
+                            optionImageHtml += '</div>';
+                            optionTextContent += optionImageHtml;
+                        }
+
+                        return `
+                <div class="p-4 rounded-lg shadow-sm flex items-start ${optionClass}">
+                    ${iconHtml ? `<span class="mr-2 text-xl">${iconHtml}</span>` : ''}
+                    <div class="flex-1">${optionTextContent}</div>
+                </div>
+            `;
+                    }).join('');
+
+                    let questionMediaHtml = '';
+                    if (question.videos && question.videos.length > 0) {
+                        const videoId = getYouTubeVideoId(question.videos[0]);
+                        if (videoId) {
+                            questionMediaHtml = `<div class="video-responsive shadow-sm"><iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe></div>`;
+                        } else {
+                            questionMediaHtml = `<div class="text-sm text-gray-500 p-2 border border-gray-200 rounded-md mb-6">Video Linki: <a href="${question.videos[0]}" target="_blank" class="text-blue-500 hover:underline break-all">${question.videos[0]}</a></div>`;
+                        }
+                    } else if (question.files && question.files.length > 0) {
+                        let imageHtml = '<div class="question-image-container">';
+                        question.files.forEach(file => {
+                            imageHtml += `<img src="${file}" alt="Soru Resmi" onerror="this.onerror=null;this.src='https://placehold.co/300x300/E0E0E0/333333?text=Resim+Yok';" />`;
+                        });
+                        imageHtml += '</div>';
+                        questionMediaHtml = imageHtml;
+                    }
+
+                    return `
+            <div class="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-100 shadow-md">
+                <div class="flex items-center mb-4">
+                    <span class="text-xl font-bold mr-3 ${statusColor}">${statusIcon}</span>
+                    <p class="text-lg font-medium text-gray-800">${index + 1}. Soru</p>
+                </div>
+                <p class="text-xl font-medium mb-5 text-gray-800 leading-relaxed">${question.question_text.replace(/\r\n/g, '<br>')}</p>
+                ${questionMediaHtml}
+                <div class="space-y-4 mt-6">
+                    ${optionsHtml}
+                </div>
+            </div>
+        `;
+                }).join('');
+
+                $questionDisplay.html(reportHtml);
+
+                $('#prev-btn, #next-btn, #submit-btn, #question-counter').hide();
+            }
+
+            // ... (The rest of your code remains the same)
 
             function renderQuestion(index) {
                 if (!testData || !testData.questions || testData.questions.length === 0) {
@@ -145,24 +252,24 @@
                     const videoId = getYouTubeVideoId(firstVideoUrl);
                     if (videoId) {
                         $questionMedia.append(`
-                                        <div class="video-responsive shadow-sm">
-                                            <iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                                        </div>
-                                    `);
+                            <div class="video-responsive shadow-sm">
+                                <iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                        `);
                     } else {
                         $questionMedia.append(`
-                                        <div class="text-sm text-gray-500 p-2 border border-gray-200 rounded-md mb-6">
-                                            Video Linki: <a href="${firstVideoUrl}" target="_blank" class="text-blue-500 hover:underline break-all">${firstVideoUrl}</a>
-                                        </div>
-                                    `);
+                            <div class="text-sm text-gray-500 p-2 border border-gray-200 rounded-md mb-6">
+                                Video Linki: <a href="${firstVideoUrl}" target="_blank" class="text-blue-500 hover:underline break-all">${firstVideoUrl}</a>
+                            </div>
+                        `);
                     }
                 } else if (question.files && question.files.length > 0) {
                     let imageHtml = '<div class="question-image-container">';
                     question.files.forEach(file => {
                         const imageUrl = file;
                         imageHtml += `
-                                        <img src="${imageUrl}" alt="Soru Resmi" onerror="this.onerror=null;this.src='https://placehold.co/300x300/E0E0E0/333333?text=Resim+Yok';" />
-                                    `;
+                            <img src="${imageUrl}" alt="Soru Resmi" onerror="this.onerror=null;this.src='https://placehold.co/300x300/E0E0E0/333333?text=Resim+Yok';" />
+                        `;
                     });
                     imageHtml += '</div>';
                     $questionMedia.append(imageHtml);
@@ -171,27 +278,27 @@
                 const $optionsContainer = $('#options-container').empty();
                 question.options.forEach(option => {
                     const optionId = `option-${question.id}-${option.id}`;
-                    const isChecked = userAnswers[index] === option.option_key;
+                    const isChecked = userAnswers[index]?.selected_option_key === option.option_key;
                     let optionHtml = `
-                                    <label for="${optionId}" class="flex items-start p-4 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-blue-50 transition-colors duration-200 shadow-sm">
-                                        <input type="radio" id="${optionId}" name="question-${question.id}" value="${option.option_key}" class="mt-1 mr-3 h-5 w-5 text-blue-600 focus:ring-blue-500" ${isChecked ? 'checked' : ''}>
-                                        <div class="flex-1">
-                                            <span class="font-semibold text-gray-700">${option.option_key}.</span>
-                                            <span class="text-gray-800 ml-2">${option.option_text.replace(/\r\n/g, '<br>')}</span>
-                                        `;
+                        <label for="${optionId}" class="flex items-start p-4 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-blue-50 transition-colors duration-200 shadow-sm">
+                            <input type="radio" id="${optionId}" name="question-${question.id}" value="${option.option_key}" class="mt-1 mr-3 h-5 w-5 text-blue-600 focus:ring-blue-500" ${isChecked ? 'checked' : ''}>
+                            <div class="flex-1">
+                                <span class="font-semibold text-gray-700">${option.option_key}.</span>
+                                <span class="text-gray-800 ml-2">${option.option_text.replace(/\r\n/g, '<br>')}</span>
+                            `;
                     if (option.files && option.files.length > 0) {
                         optionHtml += '<div class="option-image-container">';
                         option.files.forEach(file => {
                             optionHtml += `
-                                                <img src="${file}" alt="Seçenek Resmi" onerror="this.onerror=null;this.src='https://placehold.co/300x200/E0E0E0/333333?text=Resim+Yok';" />
-                                            `;
+                                        <img src="${file}" alt="Seçenek Resmi" onerror="this.onerror=null;this.src='https://placehold.co/300x200/E0E0E0/333333?text=Resim+Yok';" />
+                                    `;
                         });
                         optionHtml += '</div>';
                     }
                     optionHtml += `
-                                        </div>
-                                    </label>
-                                    `;
+                            </div>
+                        </label>
+                    `;
                     $optionsContainer.append(optionHtml);
                 });
 
@@ -209,16 +316,18 @@
             }
 
             function saveCurrentAnswer() {
-                const currentQuestionId = testData.questions[currentQuestionIndex].id;
-                const selectedOptionKey = $(`input[name="question-${currentQuestionId}"]:checked`).val();
+                const currentQuestion = testData.questions[currentQuestionIndex];
+                if (!currentQuestion) return;
+
+                const selectedOptionKey = $(`input[name="question-${currentQuestion.id}"]:checked`).val();
 
                 userAnswers[currentQuestionIndex] = {
-                    question_id: currentQuestionId,
+                    question_id: currentQuestion.id,
                     selected_option_key: selectedOptionKey || null
                 };
             }
 
-            $('#prev-btn').on('click', function () {
+            $('#prev-btn').on('click', function() {
                 saveCurrentAnswer();
                 if (currentQuestionIndex > 0) {
                     currentQuestionIndex--;
@@ -226,7 +335,7 @@
                 }
             });
 
-            $('#next-btn').on('click', function () {
+            $('#next-btn').on('click', function() {
                 saveCurrentAnswer();
                 if (currentQuestionIndex < testData.questions.length - 1) {
                     currentQuestionIndex++;
@@ -234,7 +343,7 @@
                 }
             });
 
-            $('#submit-btn').on('click', function () {
+            $('#submit-btn').on('click', function() {
                 saveCurrentAnswer();
 
                 Swal.fire({
@@ -267,7 +376,7 @@
                             dataType: 'json',
                             contentType: 'application/json',
                             data: JSON.stringify(submissionData),
-                            success: function (response) {
+                            success: function(response) {
                                 Swal.close();
 
                                 if (response.status === 'success') {
@@ -283,27 +392,53 @@
                                     Swal.fire({
                                         title: titleText,
                                         html: `
-                                                        <div style="font-size: 16px; text-align: left; line-height: 1.6;">
-                                                            <p>Testi tamamladınız. İşte sonuçlarınız:</p>
-                                                            <p>✅ <strong>Doğru Sayısı:</strong> <span style="color:green;">${response.correct_count}</span> / ${response.total_questions}</p>
-                                                            <p>📊 <strong>Puanınız:</strong> <span style="color:blue; font-size: 20px;">${response.score} / 100</span></p>
-                                                            <hr>
-                                                            <p style="font-size: 14px; color: gray;">
-                                                                ${response.score >= 80 ?
-                                                                    'Tebrikler, bu başarıyı sürdürmeye devam et! 👏' :
-                                                                    response.score >= 50 ?
-                                                                        'Biraz daha çalışmayla çok daha iyisini yapabilirsin! 🚀' :
-                                                                        'Endişelenme, tekrar denemek gelişmenin bir parçası. 💡'
-                                                                }
-                                                            </p>
-                                                        </div>
-                                                    `,
+                                                            <div style="font-size: 16px; text-align: left; line-height: 1.6;">
+                                                                <p>Testi tamamladınız. İşte sonuçlarınız:</p>
+                                                                <p>✅ <strong>Doğru Sayısı:</strong> <span style="color:green;">${response.correct_count}</span> / ${response.total_questions}</p>
+                                                                <p>📊 <strong>Puanınız:</strong> <span style="color:blue; font-size: 20px;">${response.score} / 100</span></p>
+                                                                <hr>
+                                                                <p style="font-size: 14px; color: gray;">
+                                                                    ${response.score >= 80 ?
+                                                                        'Tebrikler, bu başarıyı sürdürmeye devam et! 👏' :
+                                                                        response.score >= 50 ?
+                                                                            'Biraz daha çalışmayla çok daha iyisini yapabilirsin! 🚀' :
+                                                                            'Endişelenme, tekrar denemek gelişmenin bir parçası. 💡'
+                                                                    }
+                                                                </p>
+                                                            </div>
+                                                        `,
                                         icon: 'success',
-                                        confirmButtonText: 'Devam Et',
+                                        showCancelButton: true,
+                                        confirmButtonText: 'Cevapları İncele',
+                                        cancelButtonText: 'Ana Sayfaya Dön',
                                         confirmButtonColor: '#3085d6',
-                                        backdrop: true
+                                        cancelButtonColor: '#d33',
+                                        backdrop: true,
+                                        showDenyButton: true,
+                                        denyButtonText: 'Konu Anlatımına Git',
+                                        denyButtonColor: '#f97316' 
                                     }).then((result) => {
+                                        // 'Cevapları İncele' butonu tıklandığında
                                         if (result.isConfirmed) {
+                                            renderResultReport(response);
+                                        }
+                                        // 'Konu Anlatımına Git' butonu tıklandığında
+                                        else if (result.isDenied) {
+                                            // response'tan gelen content_url'i kullan
+                                            if (response.content_url) {
+                                                window.open(response.content_url, '_blank');
+                                            } else {
+                                                console.error("Konu anlatımı URL'si bulunamadı.");
+                                                Swal.fire({
+                                                    icon: 'info',
+                                                    title: 'Bilgi',
+                                                    text: "Bu testin bir konu anlatımı bulunmuyor.",
+                                                    confirmButtonText: 'Tamam'
+                                                });
+                                            }
+                                        }
+                                        // 'Ana Sayfaya Dön' butonu tıklandığında
+                                        else if (result.dismiss === Swal.DismissReason.cancel) {
                                             window.location.href = 'ogrenci-testler';
                                         }
                                     });
@@ -316,7 +451,7 @@
                                     });
                                 }
                             },
-                            error: function (xhr, status, error) {
+                            error: function(xhr, status, error) {
                                 Swal.close();
                                 console.error("AJAX Hatası: Cevaplar gönderilemedi.", status, error, xhr);
                                 Swal.fire({
@@ -347,7 +482,7 @@
                 url: 'includes/ajax-ayd.php?service=getTestByStudent&test_id=' + testId,
                 method: 'GET',
                 dataType: 'json',
-                success: function (response) {
+                success: function(response) {
                     if (response.status === 'success' && response.data && Array.isArray(response.data.questions)) {
                         testData = response.data;
                         userAnswers = new Array(testData.questions.length).fill(null).map((_, i) => ({
@@ -369,7 +504,7 @@
                         $('#prev-btn, #next-btn, #submit-btn').hide();
                     }
                 },
-                error: function (xhr, status, error) {
+                error: function(xhr, status, error) {
                     console.error("AJAX Hatası: Test verileri çekilemedi.", status, error, xhr);
                     Swal.fire({
                         icon: 'error',
