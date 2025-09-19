@@ -2513,167 +2513,166 @@ WHERE t.id = :id";
         }
         break;
     case 'submitTestAnswers':
-    $data = json_decode(file_get_contents('php://input'), true);
+        $data = json_decode(file_get_contents('php://input'), true);
 
-    $testId = $data['test_id'];
-    $userAnswers = $data['user_answers'];
-    $userId = $_SESSION['id'] ?? null;
+        $testId = $data['test_id'];
+        $userAnswers = $data['user_answers'];
+        $userId = $_SESSION['id'] ?? null;
 
-    try {
-        $pdo->beginTransaction();
+        try {
+            $pdo->beginTransaction();
 
-        // Doğru cevapları ve soru bilgilerini tek seferde veritabanından çekme
-        $questionIds = array_column($userAnswers, 'question_id');
-        $inClause = str_repeat('?,', count($questionIds) - 1) . '?';
-        $stmtGetCorrectAnswers = $pdo->prepare("SELECT id, correct_answer FROM test_questions_lnp WHERE id IN ($inClause)");
-        $stmtGetCorrectAnswers->execute($questionIds);
-        $correctAnswersMap = $stmtGetCorrectAnswers->fetchAll(PDO::FETCH_KEY_PAIR);
+            // Doğru cevapları ve soru bilgilerini tek seferde veritabanından çekme
+            $questionIds = array_column($userAnswers, 'question_id');
+            $inClause = str_repeat('?,', count($questionIds) - 1) . '?';
+            $stmtGetCorrectAnswers = $pdo->prepare("SELECT id, correct_answer FROM test_questions_lnp WHERE id IN ($inClause)");
+            $stmtGetCorrectAnswers->execute($questionIds);
+            $correctAnswersMap = $stmtGetCorrectAnswers->fetchAll(PDO::FETCH_KEY_PAIR);
 
-        // Cevapları kaydetme ve doğru/yanlış durumunu belirleme
-        $correctCount = 0;
-        $totalQuestions = count($userAnswers);
-        $userAnswersWithCorrectness = [];
+            // Cevapları kaydetme ve doğru/yanlış durumunu belirleme
+            $correctCount = 0;
+            $totalQuestions = count($userAnswers);
+            $userAnswersWithCorrectness = [];
 
-        $stmtInsert = $pdo->prepare("INSERT INTO test_user_answers_lnp (user_id, test_id, question_id, selected_option_key) VALUES (:user_id, :test_id, :question_id, :selected_option_key)");
+            $stmtInsert = $pdo->prepare("INSERT INTO test_user_answers_lnp (user_id, test_id, question_id, selected_option_key) VALUES (:user_id, :test_id, :question_id, :selected_option_key)");
 
-        foreach ($userAnswers as $answer) {
-            $questionId = $answer['question_id'];
-            $selectedOption = $answer['selected_option_key'];
-            $correctAnswer = $correctAnswersMap[$questionId] ?? null;
+            foreach ($userAnswers as $answer) {
+                $questionId = $answer['question_id'];
+                $selectedOption = $answer['selected_option_key'];
+                $correctAnswer = $correctAnswersMap[$questionId] ?? null;
 
-            // Cevabı kaydet
-            $stmtInsert->execute([
-                ':user_id' => $userId,
-                ':test_id' => $testId,
-                ':question_id' => $questionId,
-                ':selected_option_key' => $selectedOption
-            ]);
+                // Cevabı kaydet
+                $stmtInsert->execute([
+                    ':user_id' => $userId,
+                    ':test_id' => $testId,
+                    ':question_id' => $questionId,
+                    ':selected_option_key' => $selectedOption
+                ]);
 
-            // Doğru/yanlış kontrolü
-            $isCorrect = ($correctAnswer !== null && $selectedOption !== null && $selectedOption === $correctAnswer);
-            if ($isCorrect) {
-                $correctCount++;
+                // Doğru/yanlış kontrolü
+                $isCorrect = ($correctAnswer !== null && $selectedOption !== null && $selectedOption === $correctAnswer);
+                if ($isCorrect) {
+                    $correctCount++;
+                }
+
+                // Yeni diziye doğru/yanlış bilgisini ve doğru cevabı ekle
+                $userAnswersWithCorrectness[] = [
+                    'question_id' => $questionId,
+                    'selected_option_key' => $selectedOption,
+                    'is_correct' => $isCorrect,
+                    'correct_option_key' => $correctAnswer
+                ];
             }
 
-            // Yeni diziye doğru/yanlış bilgisini ve doğru cevabı ekle
-            $userAnswersWithCorrectness[] = [
-                'question_id' => $questionId,
-                'selected_option_key' => $selectedOption,
-                'is_correct' => $isCorrect,
-                'correct_option_key' => $correctAnswer
-            ];
-        }
+            // Skor hesaplama ve kaydetme
+            $testInfoStmt = $pdo->prepare("SELECT end_date, class_id, lesson_id, unit_id, topic_id, subtopic_id FROM tests_lnp WHERE id = :test_id");
+            $testInfoStmt->execute([':test_id' => $testId]);
+            $testInfo = $testInfoStmt->fetch(PDO::FETCH_ASSOC);
 
-        // Skor hesaplama ve kaydetme
-        $testInfoStmt = $pdo->prepare("SELECT end_date, class_id, lesson_id, unit_id, topic_id, subtopic_id FROM tests_lnp WHERE id = :test_id");
-        $testInfoStmt->execute([':test_id' => $testId]);
-        $testInfo = $testInfoStmt->fetch(PDO::FETCH_ASSOC);
+            $percentageScore = $totalQuestions > 0 ? round(($correctCount / $totalQuestions) * 100, 2) : 0;
 
-        $percentageScore = $totalQuestions > 0 ? round(($correctCount / $totalQuestions) * 100, 2) : 0;
-        
-        // Test süresinin dolup dolmadığını kontrol et
-        if (isset($testInfo['end_date']) && strtotime($testInfo['end_date']) < time()) {
-            $percentageScore *= 0.95;
-        }
-        
-        // Öncelik sırasına göre ID'yi ve anahtarını bulma
-        $finalParentId = null;
-        $finalParentKey = null;
+            // Test süresinin dolup dolmadığını kontrol et
+            if (isset($testInfo['end_date']) && strtotime($testInfo['end_date']) < time()) {
+                $percentageScore *= 0.95;
+            }
 
-        if (!empty($testInfo['subtopic_id'])) {
-            $finalParentId = $testInfo['subtopic_id'];
-            $finalParentKey = 'subtopic_id';
-        } elseif (!empty($testInfo['topic_id'])) {
-            $finalParentId = $testInfo['topic_id'];
-            $finalParentKey = 'topic_id';
-        } elseif (!empty($testInfo['unit_id'])) {
-            $finalParentId = $testInfo['unit_id'];
-            $finalParentKey = 'unit_id';
-        } elseif (!empty($testInfo['lesson_id'])) {
-            $finalParentId = $testInfo['lesson_id'];
-            $finalParentKey = 'lesson_id';
-        } elseif (!empty($testInfo['class_id'])) {
-            $finalParentId = $testInfo['class_id'];
-            $finalParentKey = 'class_id';
-        }
-        
-        // Yeni eklenen kısım: school_content_lnp'den ilgili veriyi çekme
-        $contentUrl = null;
-        if ($finalParentId && $finalParentKey) {
-            // Sütun ismini PDO'da bind edemediğimiz için, whitelisting (güvenli liste) kontrolü yapıyoruz.
-            $allowedColumns = ['subtopic_id', 'topic_id', 'unit_id', 'lesson_id', 'class_id'];
-            if (in_array($finalParentKey, $allowedColumns)) {
-                $stmtContent = $pdo->prepare("SELECT id, slug FROM school_content_lnp WHERE {$finalParentKey} = :id LIMIT 1");
-                $stmtContent->execute([':id' => $finalParentId]);
-                $contentInfo = $stmtContent->fetch(PDO::FETCH_ASSOC);
+            // Öncelik sırasına göre ID'yi ve anahtarını bulma
+            $finalParentId = null;
+            $finalParentKey = null;
 
-                if ($contentInfo) {
-                    $contentUrl = "icerik-detay/" . $contentInfo['slug'];
+            if (!empty($testInfo['subtopic_id'])) {
+                $finalParentId = $testInfo['subtopic_id'];
+                $finalParentKey = 'subtopic_id';
+            } elseif (!empty($testInfo['topic_id'])) {
+                $finalParentId = $testInfo['topic_id'];
+                $finalParentKey = 'topic_id';
+            } elseif (!empty($testInfo['unit_id'])) {
+                $finalParentId = $testInfo['unit_id'];
+                $finalParentKey = 'unit_id';
+            } elseif (!empty($testInfo['lesson_id'])) {
+                $finalParentId = $testInfo['lesson_id'];
+                $finalParentKey = 'lesson_id';
+            } elseif (!empty($testInfo['class_id'])) {
+                $finalParentId = $testInfo['class_id'];
+                $finalParentKey = 'class_id';
+            }
+
+            // Yeni eklenen kısım: school_content_lnp'den ilgili veriyi çekme
+            $contentUrl = null;
+            if ($finalParentId && $finalParentKey) {
+                // Sütun ismini PDO'da bind edemediğimiz için, whitelisting (güvenli liste) kontrolü yapıyoruz.
+                $allowedColumns = ['subtopic_id', 'topic_id', 'unit_id', 'lesson_id', 'class_id'];
+                if (in_array($finalParentKey, $allowedColumns)) {
+                    $stmtContent = $pdo->prepare("SELECT id, slug FROM school_content_lnp WHERE {$finalParentKey} = :id LIMIT 1");
+                    $stmtContent->execute([':id' => $finalParentId]);
+                    $contentInfo = $stmtContent->fetch(PDO::FETCH_ASSOC);
+
+                    if ($contentInfo) {
+                        $contentUrl = "icerik-detay/" . $contentInfo['slug'];
+                    }
                 }
             }
-        }
 
-        $checkStmt = $pdo->prepare("SELECT * FROM user_grades_lnp WHERE test_id = :test_id AND user_id = :user_id");
-        $checkStmt->execute([
-            ':test_id' => $testId,
-            ':user_id' => $userId
-        ]);
-        $existingGrade = $checkStmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($existingGrade) {
-            $updateStmt = $pdo->prepare("UPDATE user_grades_lnp SET score = :score, fail_count = IFNULL(fail_count, 0) + :fail_increment WHERE test_id = :test_id AND user_id = :user_id");
-            $updateStmt->execute([
-                ':score' => $percentageScore,
-                ':fail_increment' => $percentageScore < 80 ? 1 : 0,
+            $checkStmt = $pdo->prepare("SELECT * FROM user_grades_lnp WHERE test_id = :test_id AND user_id = :user_id");
+            $checkStmt->execute([
                 ':test_id' => $testId,
                 ':user_id' => $userId
             ]);
-        } else {
-            $insertGradeStmt = $pdo->prepare("INSERT INTO user_grades_lnp (user_id, test_id, class_id, lesson_id, unit_id, topic_id, subtopic_id, score, fail_count) VALUES (:user_user_id, :test_id, :class_id, :lesson_id, :unit_id, :topic_id, :subtopic_id, :score, :fail_count)");
-            $insertGradeStmt->execute([
-                ':user_id' => $userId,
-                ':test_id' => $testId,
-                ':class_id' => $testInfo['class_id'],
-                ':lesson_id' => $testInfo['lesson_id'],
-                ':unit_id' => $testInfo['unit_id'],
-                ':topic_id' => $testInfo['topic_id'],
-                ':subtopic_id' => $testInfo['subtopic_id'],
-                ':score' => $percentageScore,
-                ':fail_count' => $percentageScore < 80 ? 1 : 0
+            $existingGrade = $checkStmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($existingGrade) {
+                $updateStmt = $pdo->prepare("UPDATE user_grades_lnp SET score = :score, fail_count = IFNULL(fail_count, 0) + :fail_increment WHERE test_id = :test_id AND user_id = :user_id");
+                $updateStmt->execute([
+                    ':score' => $percentageScore,
+                    ':fail_increment' => $percentageScore < 80 ? 1 : 0,
+                    ':test_id' => $testId,
+                    ':user_id' => $userId
+                ]);
+            } else {
+                $insertGradeStmt = $pdo->prepare("INSERT INTO user_grades_lnp (user_id, test_id, class_id, lesson_id, unit_id, topic_id, subtopic_id, score, fail_count) VALUES (:user_id, :test_id, :class_id, :lesson_id, :unit_id, :topic_id, :subtopic_id, :score, :fail_count)");
+                $insertGradeStmt->execute([
+                    ':user_id' => $userId,
+                    ':test_id' => $testId,
+                    ':class_id' => $testInfo['class_id'],
+                    ':lesson_id' => $testInfo['lesson_id'],
+                    ':unit_id' => $testInfo['unit_id'],
+                    ':topic_id' => $testInfo['topic_id'],
+                    ':subtopic_id' => $testInfo['subtopic_id'],
+                    ':score' => $percentageScore,
+                    ':fail_count' => $percentageScore < 80 ? 1 : 0
+                ]);
+            }
+
+            $pdo->commit();
+
+            // Yanıt dizisini oluştur ve dinamik anahtarı ekle
+            $response = [
+                'status' => 'success',
+                'message' => 'Cevaplar başarıyla kaydedildi ve değerlendirildi.',
+                'score' => $percentageScore,
+                'correct_count' => $correctCount,
+                'total_questions' => $totalQuestions,
+                'user_answers_with_correctness' => $userAnswersWithCorrectness
+            ];
+
+            if ($finalParentKey !== null) {
+                $response[$finalParentKey] = $finalParentId;
+            }
+
+            // Oluşturulan URL'yi yanıt dizisine ekle
+            if ($contentUrl !== null) {
+                $response['content_url'] = $contentUrl;
+            }
+
+            echo json_encode($response);
+        } catch (PDOException $e) {
+            $pdo->rollBack();
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Veritabanı hatası: ' . $e->getMessage()
             ]);
         }
-
-        $pdo->commit();
-
-        // Yanıt dizisini oluştur ve dinamik anahtarı ekle
-        $response = [
-            'status' => 'success',
-            'message' => 'Cevaplar başarıyla kaydedildi ve değerlendirildi.',
-            'score' => $percentageScore,
-            'correct_count' => $correctCount,
-            'total_questions' => $totalQuestions,
-            'user_answers_with_correctness' => $userAnswersWithCorrectness
-        ];
-
-        if ($finalParentKey !== null) {
-            $response[$finalParentKey] = $finalParentId;
-        }
-        
-        // Oluşturulan URL'yi yanıt dizisine ekle
-        if ($contentUrl !== null) {
-            $response['content_url'] = $contentUrl;
-        }
-
-        echo json_encode($response);
-
-    } catch (PDOException $e) {
-        $pdo->rollBack();
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'Veritabanı hatası: ' . $e->getMessage()
-        ]);
-    }
-    break;
+        break;
     case 'mainSchoolLessonAdd':
         $classIdArray = $_POST['class_id'] ?? [];
         $lessonName = $_POST['lesson_name'] ?? null;
