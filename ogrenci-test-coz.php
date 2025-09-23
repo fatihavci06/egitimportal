@@ -144,11 +144,19 @@
                 const reportHtml = (results || []).map((userAnswer, index) => {
                     const question = testData.questions[index];
                     const isCorrect = userAnswer.is_correct;
-                    const correctOptionKey = question.correct_option_key;
+                    const correctOptionKey = userAnswer.correct_option_key;
+                   
                     const userSelectedOptionKey = userAnswer.selected_option_key;
 
                     const statusIcon = isCorrect ? '✅' : '❌';
                     const statusColor = isCorrect ? 'text-green-600' : 'text-red-600';
+
+                    // Yanlış cevap için açıklama ekleyelim
+                    let explanationHtml = '';
+                    if (!isCorrect) {
+                        explanationHtml = `
+                `;
+                    }
 
                     let optionsHtml = question.options.map(option => {
                         let optionClass = 'bg-white border border-gray-300';
@@ -166,8 +174,8 @@
                         }
                         // Correct answer if the user's answer was wrong
                         else if (!isCorrect && option.option_key === correctOptionKey) {
-                            optionClass = 'bg-white border-2 border-green-500';
-                            iconHtml = '✅';
+                            optionClass = 'bg-green-100 border-2 border-green-500';
+                            iconHtml = '✅ ';
                         }
 
                         let optionTextContent = `<span class="font-semibold text-gray-700">${option.option_key}.</span> <span class="text-gray-800 ml-2">${option.option_text.replace(/\r\n/g, '<br>')}</span>`;
@@ -183,7 +191,7 @@
 
                         return `
                 <div class="p-4 rounded-lg shadow-sm flex items-start ${optionClass}">
-                    ${iconHtml ? `<span class="mr-2 text-xl">${iconHtml}</span>` : ''}
+                    ${iconHtml ? `<span class="mr-2 text-xl flex items-center">${iconHtml}</span>` : ''}
                     <div class="flex-1">${optionTextContent}</div>
                 </div>
             `;
@@ -217,6 +225,7 @@
                 <div class="space-y-4 mt-6">
                     ${optionsHtml}
                 </div>
+                ${explanationHtml}
             </div>
         `;
                 }).join('');
@@ -416,7 +425,7 @@
                                         backdrop: true,
                                         showDenyButton: true,
                                         denyButtonText: 'Konu Anlatımına Git',
-                                        denyButtonColor: '#f97316' 
+                                        denyButtonColor: '#f97316'
                                     }).then((result) => {
                                         // 'Cevapları İncele' butonu tıklandığında
                                         if (result.isConfirmed) {
