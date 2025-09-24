@@ -136,24 +136,22 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
                                                                 $ariaDisabled = $buttonDisabled ? 'aria-disabled="true"' : '';
                                                                 $opacityStyle = $buttonDisabled ? 'opacity:0.5; pointer-events:none;' : '';
                                                         ?>
-                                                                <div class="col-12 mb-4">
-                                                                    <div class="card mb-3 border border-2 rounded-3 shadow-sm">
-                                                                        <div class="card-body p-3 d-flex align-items-center">
-                                                                            <!-- Play ikonu -->
-                                                                            <i class="bi bi-play-fill text-muted d-flex align-items-center justify-content-center"
-                                                                                style="font-size: 35px !important; width: 40px; height: 40px; line-height: 1; flex-shrink: 0; color: #58d0cd!important;"></i>
-
-                                                                            <!-- Metin alanı -->
-                                                                            <div class="flex-grow-1 ms-3 d-flex align-items-center">
-                                                                                <a href="<?= $anchorHref ?>" class="text-decoration-none text-dark fw-bold stretched-link"
-                                                                                    style="line-height: 1.2;font-size:12px!important; <?= $opacityStyle ?>" <?= $ariaDisabled ?>>
-                                                                                    <?= htmlspecialchars($test['test_title']) . ' ' . $testText ?>
-                                                                                </a>
+                                                                <div class="row">
+                                                                    <div class="col-md-6 col-xl-4 mb-4">
+                                                                        <div class="card h-100 shadow-sm border-0">
+                                                                            <div class="d-flex justify-content-center align-items-center" style="height: 180px; background-image: url('uploads/contents/testDefault.png');
+                                             background-size: cover; background-position: center; border-top-left-radius: .375rem; border-top-right-radius: .375rem;">
                                                                             </div>
-
-                                                                            <!-- Aksiyon -->
-                                                                            <div class="ms-3">
-                                                                                <i class="bi bi-eye fs-4 text-secondary"></i>
+                                                                            <div class="card-body d-flex flex-column">
+                                                                                <h5 class="card-title fw-bold text-dark mb-1" style="font-size: 16px;">
+                                                                                    <?= htmlspecialchars($test['test_title']) . ' ' . $testText ?>
+                                                                                </h5>
+                                                                                <p class="card-text text-muted mb-3" style="font-size: 14px;">Test</p>
+                                                                                <div class="mt-auto d-flex justify-content-start">
+                                                                                    <a href="<?= $anchorHref ?>" style="padding: 8px 28px; font-size: 14px; border-radius: 999px; text-decoration: none; background-color: rgb(43, 140, 1); color: white !important; border: 1px solid rgb(43, 140, 1) !important;" onmouseover="this.style.backgroundColor='#ed5606'" onmouseout="this.style.backgroundColor='#2b8c01'" <?= $ariaDisabled ?>>
+                                                                                        Aç
+                                                                                    </a>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
