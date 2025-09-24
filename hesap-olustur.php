@@ -42,9 +42,9 @@ include_once "views/pages-head.php";
 		<!--begin::Authentication - Sign-in -->
 		<div class="d-flex flex-column flex-lg-row flex-column-fluid">
 			<!--begin::Aside-->
-				<?php
-				include_once "views/home-side.php";
-				?>
+			<?php
+			include_once "views/home-side.php";
+			?>
 			<!--begin::Aside-->
 			<!--begin::Body-->
 			<div class="d-flex flex-column flex-lg-row-fluid py-10">
@@ -303,15 +303,15 @@ include_once "views/pages-head.php";
 							</div>
 
 							<div id="subscription_month" style="display: none;">
-							
+
 							</div>
 
 							<div id="priceWoDiscount" style="display: none;">
-							
+
 							</div>
 
 							<div id="priceWCoupon" style="display: none;">
-							
+
 							</div>
 
 							<div id="couponInfo">
@@ -337,6 +337,12 @@ include_once "views/pages-head.php";
 									<label><input class="form-check-input" type="radio" name="payment_type" value="1"> Havale/EFT</label>
 									<label><input class="form-check-input ms-7" type="radio" name="payment_type" value="2"> Kredi Kartı</label>
 								</span>
+							</div>
+							<div id="coupon_method" class="fv-row" style="display: none;">
+								<div class="fs-6 fw-bold mt-10">İndirim Kuponu</div>
+								<div class="text-gray-600 mb-2">Kupon kodu varsa giriniz.</div>
+								<input type="text" class="form-control form-control-solid" name="coupon_code" id="coupon_code" placeholder="Kupon Kodu">
+								<button type="button" id="apply_coupon" class="btn btn-success mt-5">Kuponu Uygula</button> <button style="display:none" type="button" id="delete_coupon" class="btn btn-danger mt-5">Kuponu Kaldır</button>
 							</div>
 							<!--end::Input group-->
 
