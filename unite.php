@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="tr">
 <?php
+
 session_start();
 define('GUARD', true);
 if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
@@ -139,26 +140,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 																$opacityStyle = $buttonDisabled ? 'opacity:0.5; pointer-events:none;' : '';
 														?>
 
-																<div class="card mb-3 border border-2 rounded-3 shadow-sm">
-																	<div class="card-body p-3 d-flex align-items-center">
-																		<!-- Play ikonu -->
-																		<i class="bi bi-play-fill text-muted d-flex align-items-center justify-content-center"
-																			style="font-size: 35px !important; width: 40px; height: 40px; line-height: 1; flex-shrink: 0; color: #58d0cd!important;"></i>
-
-																		<!-- Metin alanı -->
-																		<div class="flex-grow-1 ms-3 d-flex align-items-center">
-																			<a href="<?= $anchorHref ?>" class="text-decoration-none text-dark fw-bold stretched-link"
-																				style="line-height: 1.2;font-size:12px!important; <?= $opacityStyle ?>" <?= $ariaDisabled ?>>
-																				<?= htmlspecialchars($test['test_title']) . ' ' . $testText ?>
-																			</a>
-																		</div>
-
-																		<!-- Aksiyon -->
-																		<div class="ms-3">
-																			<i class="bi bi-eye fs-4 text-secondary"></i>
-																		</div>
-																	</div>
-																</div>
+															
 
 
 														<?php
