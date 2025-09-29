@@ -322,6 +322,7 @@ var KTSignupGeneral = function () {
                             success: function (response) {
                                 if (response.status === "success") {
 
+                                    var packageId = $('input[name="pack"]:checked').val();
                                     var telephone = $("#telephone").val();
                                     var PriceWVat = $("#PriceWVat").attr('value');
 
@@ -479,7 +480,8 @@ var KTSignupGeneral = function () {
                                 $('#iscash').html('');
                                 /* $('#cashdiscount').html(""); */
                                 $('input[type="radio"][name="isinstallment"]').prop('checked', false);
-                                $('#payment_method').css('display', 'inline');;
+                                $('#payment_method').css('display', 'inline');
+                                $('#coupon_method').css('display', 'inline');
                                 couponButton.disabled = false;
                                 submitButton.disabled = true;
 
@@ -515,7 +517,10 @@ var KTSignupGeneral = function () {
                             data: { secim: couponVal },
                             success: function (response) {
                                 if (response.status === "success") {
-                                    var oldPrice = Number(document.getElementById("PriceWOVat").innerHTML);
+                                    /* var oldPrice = Number(document.getElementById("PriceWOVat").innerHTML);
+                                    var priceWoDiscount = Number(document.getElementById("priceWoDiscount").innerHTML);
+                                    var vatPercentage = Number(document.getElementById("vatPercentage").innerHTML); */
+                                    var oldPrice = Number(document.getElementById("PriceWVat").innerHTML);
                                     var priceWoDiscount = Number(document.getElementById("priceWoDiscount").innerHTML);
                                     var vatPercentage = Number(document.getElementById("vatPercentage").innerHTML);
                                     couponButton.disabled = true;
@@ -523,19 +528,28 @@ var KTSignupGeneral = function () {
                                     $('input[type="radio"][name="payment_type"]').prop('checked', false);
 
                                     var discount = response.discount;
-                                    var type = response.type;
+                                    var type = response.type;/* 
                                     if (type === "percentage") {
                                         var newPrice = priceWoDiscount - (priceWoDiscount * (discount / 100));
                                         var newPriceWVat = newPrice + (newPrice * (vatPercentage / 100));
                                     } else if (type === "amount") {
                                         var newPrice = priceWoDiscount - discount;
                                         var newPriceWVat = newPrice + (newPrice * (vatPercentage / 100));
+                                    } */
+                                    if (type === "percentage") {
+                                        var newPrice = (priceWoDiscount / (1 + (vatPercentage / 100))).toFixed(2);
+                                        var newPriceWVat = (oldPrice / (1 + (vatPercentage / 100))).toFixed(2);
+                                        /* var newPriceWVat = priceWoDiscount.toFixed(2); */
+                                    } else if (type === "amount") {
+                                        var newPrice = priceWoDiscount - discount.toFixed(2);
+                                        var newPriceWVat = (newPrice / (1 + (vatPercentage / 100))).toFixed(2);
+                                        /* var newPriceWVat = newPrice + (newPrice * (vatPercentage / 100)); */
                                     }
 
                                     $('#moneyTransferInfo').html("");
-                                    $('#PriceWOVat').html(newPrice);
+                                    $('#PriceWOVat').html(newPriceWVat);
                                     $('#priceWCoupon').html(newPrice);
-                                    $('#PriceWVat').html(newPriceWVat);
+                                    $('#PriceWVat').html(newPrice);
                                     $('#couponInfo').html(response.message);
                                     $('#couponCode').html('<input type="hidden" name="coupon_codeDb" value="' + couponVal + '">');
                                     $('input[type="radio"][name="isinstallment"]').prop('checked', false);
@@ -601,7 +615,6 @@ var KTSignupGeneral = function () {
 
     $(document).ready(function () {
 
-        
         $('input[type="radio"][name="payment_type"]').change(function () {
             console.log('Değişiklik algılandı');
             var vatPercentage = Number(document.getElementById("vatPercentage").innerHTML);
@@ -663,10 +676,11 @@ var KTSignupGeneral = function () {
 
                                 // bank_transfer_fee vergili (KDV dahil)
                                 var priceWithVat = parseFloat(response.bank_transfer_fee);
-                                var priceWithoutVat = priceWithVat / (1 + (vatPercentage / 100));
+                                var priceWithoutVat = priceWithVat / (1 + (vatPercentage / 100)).toFixed(2);
 
                                 $('#PriceWOVat').html(priceWithoutVat.toFixed(2));
                                 $('#PriceWVat').html(priceWithVat.toFixed(2));
+                                $('#priceWoDiscount').html(priceWithVat.toFixed(2));
                                 $('#PriceWVat').attr('value', priceWithVat.toFixed(2));
 
                             } else {

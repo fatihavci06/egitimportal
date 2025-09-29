@@ -49,12 +49,8 @@ class ShowPackage extends Packages
         }
 
         $coupons .= '
-				<div class="fv-row mb-5">
-                    <div class="fs-6 fw-bold">İndirim Kuponu</div>
-                    <div class="text-gray-600 mb-2">Kupon kodu varsa giriniz.</div>
-					<input type="text" class="form-control form-control-solid" name="coupon_code" id="coupon_code" placeholder="Kupon Kodu"> 
-                    <button type="button" id="apply_coupon" class="btn btn-success mt-5">Kuponu Uygula</button> <button style="display:none" type="button" id="delete_coupon" class="btn btn-danger mt-5">Kuponu Kaldır</button>
-				</div>
+				<div class="fv-row ">
+                </div>
                 ';
 
         echo json_encode([$packages, $coupons]);
