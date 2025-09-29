@@ -167,6 +167,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 															$testData = $lesson->getTestByTopicLessonUnit($_SESSION['class_id'], $lessonInfo['id']);
 
 															if (!empty($testData)) {
+																?><div class="row mt-7" ></div><?php
 																foreach ($testData as $test) {
 																	$testResult = $lesson->getTestResult($test['id'], $_SESSION['id']);
 
@@ -190,9 +191,9 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 																	$opacityStyle = $buttonDisabled ? 'opacity:0.5; pointer-events:none;' : '';
 															?>
 
-																	<div class="col-12 mb-4">
+																	<div class="col-12 " style="margin-top: 0px;">
 																		<a href="<?= $anchorHref ?>" class="text-decoration-none" <?= $ariaDisabled ?> style="<?= $opacityStyle ?>">
-																			<div class="card border-2 shadow-sm p-3 d-flex flex-row align-items-center">
+																			<div class="border rounded d-flex align-items-center p-2 " style="border: 2px solid #333; box-shadow: 0 2px 6px rgba(0,0,0,0.15); justify-content: flex-start;height:55px;">
 
 																				<!-- Görsel -->
 																				<i class="bi bi-play-fill fs-1 me-3" style="font-size:20px!important; margin-left:10px; color:#58d0cd;"></i>
@@ -205,9 +206,7 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
 																				</div>
 
 																				<!-- Aksiyon -->
-																				<div class="ms-3">
-																					<i class="bi bi-eye fs-4 text-secondary"></i>
-																				</div>
+																				
 																			</div>
 																		</a>
 																	</div>

@@ -378,6 +378,7 @@ class ShowTopic extends Topics
                     $testQuery = 80 >= 80;
                 } else {
                     $getPreviousTopicId = $this->getPrevTopicId($getOrderNo - 1, $getClassId, $getLessonId, $getUnitId, $_SESSION['school_id']);
+                
                     $prevTopicId = $getPreviousTopicId['id'];
                     $getTestResult = $testResults->getTopicTestResults($getUnitId, $getClassId, $prevTopicId, $_SESSION['id']);
                     $result = $getTestResult['score'] ?? 0;

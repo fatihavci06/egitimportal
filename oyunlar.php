@@ -10,7 +10,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     include_once "classes/games-view.classes.php";
     $games = new ShowGame();
     $classes = new Classes();
-    $classList = $classes->getClassesList($_SESSION['school_id']);
+    $classList = $classes->getClasses();
     
 
     include_once "views/pages-head.php";

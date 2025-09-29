@@ -109,78 +109,78 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
                                                     </div>
                                                 </div>
 
-                                               <div class="col-9 col-lg-10">
-    
-    <div class="row" style="margin-left: -20px;">
-        <?php
-        // Alt konular bu satırda listelenir ve biter.
-        $subtopics->getSubTopicsListStudent();
-        ?>
-    </div>
-    
-    <?php
-    $testData = $lesson->getTestByTopicLessonUnit($_SESSION['class_id'], null, null, $topicInfo['id']);
+                                                <div class="col-9 col-lg-10">
 
-    if (!empty($testData)) {
-        // Yeni row açılıyor
-        ?><div class="row mt-3" style="margin-left:-20px"><?php
-        
-        foreach ($testData as $test) {
+                                                    <div class="row" style="margin-left: -20px;">
+                                                        <?php
+                                                        // Alt konular bu satırda listelenir ve biter.
+                                                        $subtopics->getSubTopicsListStudent();
+                                                        ?>
+                                                    
 
-            $testResult = $lesson->getTestResult($test['id'], $_SESSION['id']);
+                                                    <?php
+                                                    $testData = $lesson->getTestByTopicLessonUnit($_SESSION['class_id'], null, null, $topicInfo['id']);
 
-            if ($testResult['fail_count'] >= 3 and $testResult['user_test_status'] == 0) {
-                $buttonDisabled = true;
-                $testText = " (3 kez başarısız oldunuz)";
-            } elseif ($testResult['user_test_status'] == 1) {
-                $buttonDisabled = true;
-                $testText = " (Testi başarıyla tamamladınız. Puanınız " . $testResult['score'] . ")";
-            } else {
-                $buttonDisabled = false;
-                $testText = "";
-            }
-            
-            $testLink = 'ogrenci-test-coz.php?id=' . urlencode($test['id']);
-            $anchorHref = $buttonDisabled ? '#' : $testLink;
-            $ariaDisabled = $buttonDisabled ? 'aria-disabled="true"' : '';
-            
-            ?>
-            
-            <div class="col-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <?php
-                    $cover = !empty($test['cover_img']) ? $test['cover_img'] : 'uploads/contents/testDefault.png';
-                    ?>
-                    <div class="d-flex justify-content-center align-items-center"
-                        style="height: 180px;
-                                background-image: url('<?= htmlspecialchars($cover, ENT_QUOTES) ?>');
-                                background-size: cover;
-                                background-position: center;
-                                border-top-left-radius: .375rem;
-                                border-top-right-radius: .375rem;">
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title fw-bold text-dark mb-1" style="font-size: 16px;">
-                            <?= htmlspecialchars($test['test_title']) . ' ' . $testText ?>
-                        </h5>
-                        <p class="card-text text-muted mb-3" style="font-size: 14px;">Test</p>
-                        <div class="mt-auto d-flex justify-content-start">
-                            <a href="<?= $anchorHref ?>" style="padding: 8px 28px; font-size: 14px; border-radius: 999px; text-decoration: none; background-color: rgb(43, 140, 1); color: white !important; border: 1px solid rgb(43, 140, 1) !important;" onmouseover="this.style.backgroundColor='#ed5606'" onmouseout="this.style.backgroundColor='#2b8c01'" <?= $ariaDisabled ?>>
-                                Sınava Gir
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-        <?php
-        } // foreach döngüsü sonu
-        
-        // Yeni row kapatılıyor
-        ?></div><?php
-    } // if (!empty($testData)) sonu
-    ?>
+                                                    if (!empty($testData)) {
+                                                        // Yeni row açılıyor
+                                                    ?><?php
+
+                                                        foreach ($testData as $test) {
+
+                                                            $testResult = $lesson->getTestResult($test['id'], $_SESSION['id']);
+
+                                                            if ($testResult['fail_count'] >= 3 and $testResult['user_test_status'] == 0) {
+                                                                $buttonDisabled = true;
+                                                                $testText = " (3 kez başarısız oldunuz)";
+                                                            } elseif ($testResult['user_test_status'] == 1) {
+                                                                $buttonDisabled = true;
+                                                                $testText = " (Testi başarıyla tamamladınız. Puanınız " . $testResult['score'] . ")";
+                                                            } else {
+                                                                $buttonDisabled = false;
+                                                                $testText = "";
+                                                            }
+
+                                                            $testLink = 'ogrenci-test-coz.php?id=' . urlencode($test['id']);
+                                                            $anchorHref = $buttonDisabled ? '#' : $testLink;
+                                                            $ariaDisabled = $buttonDisabled ? 'aria-disabled="true"' : '';
+
+                                         ?>
+
+                                                    <div class="col-md-6 col-xl-4 mb-4">
+                                                        <div class="card h-100 shadow-sm border-0">
+                                                            <?php
+                                                            $cover = !empty($test['cover_img']) ? $test['cover_img'] : 'uploads/contents/testDefault.png';
+                                                            ?>
+                                                            <div class="d-flex justify-content-center align-items-center"
+     style="height: 180px; 
+            background-image: url('<?= htmlspecialchars($cover, ENT_QUOTES) ?>'); 
+            background-size: cover; 
+            background-position: center; 
+            border-top-left-radius: .375rem; 
+            border-top-right-radius: .375rem;">
 </div>
+                                                                                            <div class="card-body d-flex flex-column">
+                                                                                                <h5 class="card-title fw-bold text-dark mb-1" style="font-size: 16px;">
+                                                                                                    <?= htmlspecialchars($test['test_title']) . ' ' . $testText ?>
+                                                                                                </h5>
+                                                                                                <p class="card-text text-muted " style="font-size: 14px;">Test</p>
+                                                                                                <div class="">
+                                                                                                    <a href="<?= $anchorHref ?>" style="padding: 8px 28px; font-size: 14px; border-radius: 999px; text-decoration: none; background-color: rgb(43, 140, 1); color: white !important; border: 1px solid rgb(43, 140, 1) !important;" onmouseover="this.style.backgroundColor='#ed5606'" onmouseout="this.style.backgroundColor='#2b8c01'" <?= $ariaDisabled ?>>
+                                                                                                        Sınava Gir
+                                                                                                    </a>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+
+                                                    <?php
+                                                        } // foreach döngüsü sonu
+
+                                                        // Yeni row kapatılıyor
+                                                    ?><?php
+                                                    } // if (!empty($testData)) sonu
+            ?>
+                                                </div>
 
 
                                                 <!--end::Sidebar-->

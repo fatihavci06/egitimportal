@@ -475,20 +475,52 @@ class Topics extends Dbh
 	}
 
 	public function getPrevTopicId($orderNo, $classId, $lessonId, $unit_id, $schoolId)
-	{
-		$stmt = $this->connect()->prepare('SELECT id FROM topics_lnp WHERE lesson_id = ? AND class_id = ? AND unit_id = ? AND order_no = ? AND (school_id = ? OR school_id = ?) AND active = 1');
+{
+    // 1️⃣ Tam eşleşme kontrolü
+    $sqlExact = '
+        SELECT id, order_no
+        FROM topics_lnp
+        WHERE lesson_id = ?
+          AND class_id = ?
+          AND unit_id = ?
+          AND order_no = ?
+          AND (school_id = ? OR school_id = ?)
+          AND active = 1
+        LIMIT 1
+    ';
+    $stmt = $this->connect()->prepare($sqlExact);
 
-		if (!$stmt->execute(array($lessonId, $classId, $unit_id, $orderNo, $schoolId, "1"))) {
-			$stmt = null;
-			exit();
-		}
+    if (!$stmt->execute([$lessonId, $classId, $unit_id, $orderNo, $schoolId, 1])) {
+        return null; // Hata durumunda null döndür
+    }
 
-		$topicData = $stmt->fetch(PDO::FETCH_ASSOC);
+    $topicData = $stmt->fetch(PDO::FETCH_ASSOC);
 
-		return $topicData;
+    // 2️⃣ Eğer tam eşleşme yoksa, en yakın order_no kaydını bul
+    if (!$topicData) {
+        $sqlNearest = '
+            SELECT id, order_no
+            FROM topics_lnp
+            WHERE lesson_id = ?
+              AND class_id = ?
+              AND unit_id = ?
+              AND (school_id = ? OR school_id = ?)
+              AND active = 1
+            ORDER BY ABS(order_no - ?) ASC
+            LIMIT 1
+        ';
+        $stmt = $this->connect()->prepare($sqlNearest);
 
-		$stmt = null;
-	}
+        if (!$stmt->execute([$lessonId, $classId, $unit_id, $schoolId, 1, $orderNo])) {
+            return null;
+        }
+
+        $topicData = $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    return $topicData ?: null;
+}
+
 
 	public function getYouTubeVideoId($url)
 	{
