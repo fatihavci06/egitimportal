@@ -160,16 +160,26 @@ if (isset($_SESSION['role']) and $_SESSION['role'] == 2) {
             border-top-right-radius: .375rem;">
 </div>
                                                                                             <div class="card-body d-flex flex-column">
-                                                                                                <h5 class="card-title fw-bold text-dark mb-1" style="font-size: 16px;">
-                                                                                                    <?= htmlspecialchars($test['test_title']) . ' ' . $testText ?>
-                                                                                                </h5>
-                                                                                                <p class="card-text text-muted " style="font-size: 14px;">Test</p>
-                                                                                                <div class="">
-                                                                                                    <a href="<?= $anchorHref ?>" style="padding: 8px 28px; font-size: 14px; border-radius: 999px; text-decoration: none; background-color: rgb(43, 140, 1); color: white !important; border: 1px solid rgb(43, 140, 1) !important;" onmouseover="this.style.backgroundColor='#ed5606'" onmouseout="this.style.backgroundColor='#2b8c01'" <?= $ariaDisabled ?>>
-                                                                                                        Sınava Gir
-                                                                                                    </a>
-                                                                                                </div>
-                                                                                            </div>
+    <h5 class="card-title fw-bold text-dark mb-1" style="font-size:16px;">
+        <?= htmlspecialchars($test['test_title']) . ' ' . $testText ?>
+    </h5>
+
+    <p class="card-text text-muted" style="font-size:14px;">Test</p>
+
+    <!-- Buton alanı en alta sabit -->
+    <div class="mt-auto">
+        <a href="<?= $anchorHref ?>"
+           style="padding:8px 28px; font-size:14px; border-radius:999px;
+                  text-decoration:none; background-color:#2b8c01;
+                  color:#fff !important; border:1px solid #2b8c01 !important;"
+           onmouseover="this.style.backgroundColor='#ed5606'"
+           onmouseout="this.style.backgroundColor='#2b8c01'"
+           <?= $ariaDisabled ?>>
+            Sınava Gir
+        </a>
+    </div>
+</div>
+
                                                                                         </div>
                                                                                     </div>
 
