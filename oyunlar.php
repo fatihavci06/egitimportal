@@ -5,11 +5,16 @@ session_start();
 define('GUARD', true);
 if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 8)) {
     include_once "classes/dbh.classes.php";
+    include_once "classes/classes.classes.php";
     include_once "classes/games.classes.php";
     include_once "classes/games-view.classes.php";
     $games = new ShowGame();
+    $classes = new Classes();
+    $classList = $classes->getClassesList($_SESSION['school_id']);
+    
+
     include_once "views/pages-head.php";
-    ?>
+?>
     <!--end::Head-->
     <!--begin::Body-->
 
@@ -67,9 +72,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         <!--begin::Card header-->
                                         <div class="card-header border-0 pt-6">
                                             <!--begin::Card title-->
-                                            <div class="card-title">
+                                            <div class="card-title d-flex align-items-center justify-content-between">
                                                 <!--begin::Search-->
-                                                <div class="d-flex align-items-center position-relative my-1">
+                                                <div class="d-flex align-items-center position-relative my-1 me-3">
                                                     <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5">
                                                         <span class="path1"></span>
                                                         <span class="path2"></span>
@@ -79,6 +84,19 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         placeholder="Oyun Ara" />
                                                 </div>
                                                 <!--end::Search-->
+
+                                                <!--begin::Filter-->
+                                                <div class="d-flex align-items-center my-1">
+                                                    <select id="classFilter" class="form-select w-300px me-2">
+                                                        <option value="">Tüm Sınıflar</option>
+                                                        <?php foreach ($classList as $class) { ?>
+                                                            <option value="<?php echo $class['name']; ?>"><?php echo $class['name']; ?></option>
+                                                        <?php } ?>
+                                                        
+                                                    </select>
+                                                    <button type="button" id="applyFilter" class="btn btn-primary btn-sm" style="margin-left: 65px;">Filtrele</button>
+                                                </div>
+                                                <!--end::Filter-->
                                             </div>
                                             <!--begin::Card title-->
                                             <!--begin::Card toolbar-->
@@ -111,14 +129,16 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         <!--end::Card header-->
                                         <!--begin::Card body-->
                                         <div class="card-body pt-0">
+                                            <!--begin::Filter Select-->
+
+                                            <!--end::Filter Select-->
+
                                             <!--begin::Table-->
-                                            <table class="table align-middle table-row-dashed fs-6 gy-5"
-                                                id="kt_customers_table">
+                                            <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_customers_table">
                                                 <thead>
                                                     <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                                                         <th class="w-10px pe-2">
-                                                            <div
-                                                                class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                                            <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                                                 <input class="form-check-input" type="checkbox"
                                                                     data-kt-check="true"
                                                                     data-kt-check-target="#kt_customers_table .form-check-input"
@@ -197,12 +217,23 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/js/custom/utilities/modals/create-account.js"></script>
         <script src="assets/js/custom/utilities/modals/create-app.js"></script>
         <script src="assets/js/custom/utilities/modals/users-search.js"></script>
+        <script>
+            $(document).ready(function() {
+                var table = $('#kt_customers_table').DataTable();
+
+                // Filtrele butonu
+                $('#applyFilter').on('click', function() {
+                    var selectedClass = $('#classFilter').val();
+                    table.column(4).search(selectedClass).draw(); // 4. sütun = Sınıf
+                });
+            });
+        </script>
         <!--end::Custom Javascript-->
         <!--end::Javascript-->
     </body>
     <!--end::Body-->
 
-    </html>
+</html>
 <?php } else {
     header("location: index");
 }
