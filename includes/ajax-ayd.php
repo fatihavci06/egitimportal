@@ -1569,6 +1569,7 @@ switch ($service) {
             $pdo->commit();
             echo json_encode([
                 'status' => 'success',
+                'test_id' => $testId,
                 'message' => 'Test ve sorular başarıyla eklendi.'
             ]);
         } catch (Exception $e) {

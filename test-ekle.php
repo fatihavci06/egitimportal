@@ -14,18 +14,20 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     $chooseUnit = new ShowUnit();
 
 ?>
-<style>
-    .spinner-overlay {
-    display: none;               /* Başlangıçta gizli */
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(255, 255, 255, 0.6);
-    z-index: 9999;
-    justify-content: center;
-    align-items: center;
-}
-
+    <style>
+        .spinner-overlay {
+            display: none;
+            /* Başlangıçta gizli */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.6);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
     </style>
     <!--end::Head-->
     <!--begin::Body-->
@@ -304,10 +306,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/js/custom/apps/tests/list/list.js"></script>
         <!-- Yükleme Spinner -->
         <div id="formSpinner" class="spinner-overlay">
-    <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Yükleniyor...</span>
-    </div>
-</div>
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Yükleniyor...</span>
+            </div>
+        </div>
 
         <!--end::Custom Javascript-->
         <!--end::Javascript-->
@@ -441,7 +443,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         }
 
         function createQuestionBlock(index, questionNumber) {
-            const optionCount = parseInt($('#option_count').val()) || 3;
+            const optionCount = parseInt($('#option_count').val()) || 4;
+            console.log('Seçenek Sayısı:', optionCount);
             const optionInputsHTML = createOptionInputs(index, optionCount);
             const optionLabels = getOptionLabels(optionCount);
 
@@ -854,7 +857,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     });
                     return;
                 }
-    document.getElementById('formSpinner').style.display = 'flex';
+                document.getElementById('formSpinner').style.display = 'flex';
 
                 $.ajax({
                     url: 'includes/ajax-ayd.php?service=testAdd',
@@ -871,7 +874,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 text: 'Form başarıyla gönderildi!',
                                 confirmButtonText: 'Tamam'
                             }).then(() => {
-                                location.reload();
+                                if (response.test_id) {
+                                    window.location.href = `test-guncelle?id=${response.test_id}`;
+                                } else {
+                                    // test_id yoksa fallback olarak ana sayfa veya reload
+                                    location.reload();
+                                }
                             });
                         } else {
                             Swal.fire({
@@ -885,10 +893,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     error: function(xhr) {
                         handleAjaxError(xhr);
                     },
-        complete: function() {
-            // 🔴 Spinner'ı gizle
-            document.getElementById('formSpinner').style.display = 'none';
-        }
+                    complete: function() {
+                        // 🔴 Spinner'ı gizle
+                        document.getElementById('formSpinner').style.display = 'none';
+                    }
                 });
             });
 
