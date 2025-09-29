@@ -278,7 +278,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
             return `
     <div class="image-upload-group mb-2 d-flex align-items-center gap-2">
-        <input type="file" name="questions[${index}][images][]" accept="image/*" class="form-control" />
+        <input type="file" name="questions[${index}][images][]" accept="image/*,audio/mpeg,audio/wav,audio/ogg" class="form-control" />
         <button type="button" class="btn btn-danger btn-sm remove-image-btn">Kaldır</button>
         ${currentImageDisplay}
     </div>`;
@@ -296,7 +296,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
             }
             return `
         <div class="option-image-upload-group mb-2 d-flex align-items-center gap-2">
-            <input type="file" name="questions[${questionIdx}][options][${optionLabel}][images][]" accept="image/*" class="form-control" />
+            <input type="file" name="questions[${questionIdx}][options][${optionLabel}][images][]" accept="image/*,audio/mpeg,audio/wav,audio/ogg" class="form-control" />
             <button type="button" class="btn btn-danger btn-sm remove-option-image-btn">Kaldır</button>
             ${currentImageDisplay}
         </div>`;
@@ -329,11 +329,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
             <label class="mt-3 mb-3"  style="font-size:16px;"><b>Seçenek ${label}</b></label>
             <textarea name="questions[${index}][options][${label}][text]" id="option-tinymce-${index}-${label}" class="option-textarea form-control mb-2">${optionText}</textarea>
             <div class="option-images-container">
-                <label>Seçeneğe Görsel Ekle</label>
+                <label>Seçeneğe Görsel veya Ses Ekle</label>
                 <div class="option-image-inputs">
                     ${imagesHtml}
                 </div>
-                <button type="button" class="btn btn-sm btn-secondary add-option-image-btn" data-index="${index}" data-label="${label}">+ Görsel Ekle</button>
+                <button type="button" class="btn btn-sm btn-secondary add-option-image-btn" data-index="${index}" data-label="${label}">+ Görsel veya Ses Ekle</button>
             </div>
         </div>`;
             });
@@ -393,9 +393,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
             </div>
 
             <div class="images-container mb-3 border p-2 rounded bg-light">
-                <label class="form-label">Görseller</label>
+                <label class="form-label">Dosyalar</label>
                 ${imagesHtml}
-                <button type="button" class="btn btn-sm btn-secondary add-image-btn" data-index="${index}">+ Görsel Ekle</button>
+                <button type="button" class="btn btn-sm btn-secondary add-image-btn" data-index="${index}">+ Görsel veya Ses Ekle</button>
             </div>
 
             <div class="options-container border p-2 rounded bg-light">

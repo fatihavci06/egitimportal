@@ -14,6 +14,19 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     $chooseUnit = new ShowUnit();
 
 ?>
+<style>
+    .spinner-overlay {
+    display: none;               /* Başlangıçta gizli */
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(255, 255, 255, 0.6);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+    </style>
     <!--end::Head-->
     <!--begin::Body-->
 
@@ -289,6 +302,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <!--begin::Custom Javascript(used for this page only)-->
         <script src="assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
         <script src="assets/js/custom/apps/tests/list/list.js"></script>
+        <!-- Yükleme Spinner -->
+        <div id="formSpinner" class="spinner-overlay">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Yükleniyor...</span>
+    </div>
+</div>
 
         <!--end::Custom Javascript-->
         <!--end::Javascript-->
@@ -306,33 +325,33 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         }
 
         function initTinyMCE(selector) {
-    if (tinymce.get(selector.replace('#', ''))) {
-        tinymce.get(selector.replace('#', '')).remove();
-    }
-    tinymce.init({
-        selector: selector,
-        height: 150,
-        menubar: false,
-        plugins: 'link image media',
-        toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright | bullist numlist outdent indent | link image media | fraction',
-        setup: function(editor) {
+            if (tinymce.get(selector.replace('#', ''))) {
+                tinymce.get(selector.replace('#', '')).remove();
+            }
+            tinymce.init({
+                selector: selector,
+                height: 150,
+                menubar: false,
+                plugins: 'link image media',
+                toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright | bullist numlist outdent indent | link image media | fraction',
+                setup: function(editor) {
 
-            // Özel Kesir Butonu
-            editor.ui.registry.addButton('fraction', {
-                text: 'Kesir',
-                tooltip: 'Kesir ekle',
-                onAction: function () {
-                    editor.insertContent(
-                        '<span style="display:inline-block; text-align:center;">' +
-                            '<span style="display:block;">1</span>' +
-                            '<span style="border-top:1px solid #000; display:block;">2</span>' +
-                        '</span>'
-                    );
+                    // Özel Kesir Butonu
+                    editor.ui.registry.addButton('fraction', {
+                        text: 'Kesir',
+                        tooltip: 'Kesir ekle',
+                        onAction: function() {
+                            editor.insertContent(
+                                '<span style="display:inline-block; text-align:center;">' +
+                                '<span style="display:block;">1</span>' +
+                                '<span style="border-top:1px solid #000; display:block;">2</span>' +
+                                '</span>'
+                            );
+                        }
+                    });
                 }
             });
         }
-    });
-}
 
 
         function createVideoInput(index) {
@@ -387,7 +406,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         function createImageInput(index) {
             return `
     <div class="image-upload-group mb-2 d-flex align-items-center gap-2">
-        <input type="file" name="questions[${index}][images][]" accept="image/*" class="form-control" />
+        <input type="file" name="questions[${index}][images][]"   accept="image/*,audio/mpeg,audio/wav,audio/ogg" class="form-control" />
         <button type="button" class="btn btn-danger btn-sm remove-image-btn">Kaldır</button>
     </div>`;
         }
@@ -395,7 +414,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         function createOptionImageInput(questionIdx, optionLabel) {
             return `
         <div class="option-image-upload-group mb-2 d-flex align-items-center gap-2">
-            <input type="file" name="questions[${questionIdx}][options][${optionLabel}][images][]" accept="image/*" class="form-control" />
+            <input type="file" name="questions[${questionIdx}][options][${optionLabel}][images][]" accept="image/*,audio/mpeg,audio/wav,audio/ogg" class="form-control" />
             <button type="button" class="btn btn-danger btn-sm remove-option-image-btn">Kaldır</button>
         </div>`;
         }
@@ -409,11 +428,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
             <label>Seçenek ${label}</label>
             <textarea name="questions[${index}][options][${label}][text]" id="option-tinymce-${index}-${label}" class="option-textarea form-control mb-2"></textarea>
             <div class="option-images-container">
-                <label>Seçeneğe Görsel Ekle</label>
+                <label>Seçeneğe Görsel veya Ses Ekle</label>
                 <div class="option-image-inputs">
                     ${createOptionImageInput(index, label)} 
                 </div>
-                <button type="button" class="btn btn-sm btn-secondary add-option-image-btn" data-index="${index}" data-label="${label}">+ Görsel Ekle</button>
+                <button type="button" class="btn btn-sm btn-secondary add-option-image-btn" data-index="${index}" data-label="${label}">+ Görsel veya Ses Ekle</button>
             </div>
         </div>`;
             });
@@ -445,9 +464,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
             </div>
 
             <div class="images-container mb-3 border p-2 rounded bg-light">
-                <label class="form-label">Görseller</label>
+                <label class="form-label">Dosyalar</label>
                 ${createImageInput(index)}
-                <button type="button" class="btn btn-sm btn-secondary add-image-btn" data-index="${index}">+ Görsel Ekle</button>
+                <button type="button" class="btn btn-sm btn-secondary add-image-btn" data-index="${index}">+ Görsel veya Ses Ekle</button>
             </div>
 
             <div class="options-container border p-2 rounded bg-light">
@@ -835,6 +854,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     });
                     return;
                 }
+    document.getElementById('formSpinner').style.display = 'flex';
 
                 $.ajax({
                     url: 'includes/ajax-ayd.php?service=testAdd',
@@ -864,7 +884,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     },
                     error: function(xhr) {
                         handleAjaxError(xhr);
-                    }
+                    },
+        complete: function() {
+            // 🔴 Spinner'ı gizle
+            document.getElementById('formSpinner').style.display = 'none';
+        }
                 });
             });
 

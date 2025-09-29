@@ -145,7 +145,7 @@
                     const question = testData.questions[index];
                     const isCorrect = userAnswer.is_correct;
                     const correctOptionKey = userAnswer.correct_option_key;
-                   
+
                     const userSelectedOptionKey = userAnswer.selected_option_key;
 
                     const statusIcon = isCorrect ? '✅' : '❌';
@@ -180,21 +180,64 @@
 
                         let optionTextContent = `<span class="font-semibold text-gray-700">${option.option_key}.</span> <span class="text-gray-800 ml-2">${option.option_text.replace(/\r\n/g, '<br>')}</span>`;
 
-                        if (option.files && option.files.length > 0) {
-                            let optionImageHtml = '<div class="option-image-container mt-2">';
-                            option.files.forEach(file => {
-                                optionImageHtml += `<img src="${file}" alt="Seçenek Resmi" onerror="this.onerror=null;this.src='https://placehold.co/300x200/E0E0E0/333333?text=Resim+Yok';" />`;
-                            });
-                            optionImageHtml += '</div>';
-                            optionTextContent += optionImageHtml;
-                        }
+                       if (option.files && option.files.length > 0) {
+    console.log("Seçenek dosyaları:", option.files);
+    let optionMediaHtml = '<div class="option-media-container mt-2">';
+
+    option.files.forEach(file => {
+        // Eğer file bir File nesnesiyse geçici URL oluştur
+        const fileUrl = (file instanceof File) ? URL.createObjectURL(file) : file;
+        const lowerUrl = fileUrl.toLowerCase();
+
+        if (/\.(jpe?g|png|gif|webp)$/i.test(lowerUrl)) {
+            // 🎨 Resim
+            optionMediaHtml += `
+                <img src="${fileUrl}" alt="Seçenek Resmi"
+                     onerror="this.onerror=null;
+                              this.src='https://placehold.co/300x200/E0E0E0/333333?text=Resim+Yok';"
+                     style="max-width:100%; margin-bottom:8px; border-radius:6px;" />
+            `;
+                } else if (/\.(mp3|wav|ogg)$/i.test(lowerUrl)) {
+                    // 🎵 Ses
+                    optionMediaHtml += `
+                        <div style="
+                           
+                         
+                            padding: 12px;
+                            border-radius: 10px;
+                            background-color: #f8f9fa;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        ">
+                            <audio controls style="width: 100%; height: 45px;">
+                                <source src="${fileUrl}" type="audio/${lowerUrl.split('.').pop()}">
+                                Tarayıcınız bu ses dosyasını desteklemiyor.
+                            </audio>
+                        </div>
+                    `;
+                } else {
+                    // 🗂 Diğer dosya tipleri
+                    const fileName = fileUrl.split('/').pop();
+                    optionMediaHtml += `
+                        <p>
+                            <a href="${fileUrl}" target="_blank" rel="noopener">${fileName}</a>
+                        </p>
+                    `;
+                }
+            });
+
+            optionMediaHtml += '</div>';
+            optionTextContent += optionMediaHtml;
+        }
+
 
                         return `
                 <div class="p-4 rounded-lg shadow-sm flex items-start ${optionClass}">
                     ${iconHtml ? `<span class="mr-2 text-xl flex items-center">${iconHtml}</span>` : ''}
                     <div class="flex-1">${optionTextContent}</div>
                 </div>
-            `;
+             `;
                     }).join('');
 
                     let questionMediaHtml = '';
@@ -206,16 +249,59 @@
                             questionMediaHtml = `<div class="text-sm text-gray-500 p-2 border border-gray-200 rounded-md mb-6">Video Linki: <a href="${question.videos[0]}" target="_blank" class="text-blue-500 hover:underline break-all">${question.videos[0]}</a></div>`;
                         }
                     } else if (question.files && question.files.length > 0) {
-                        let imageHtml = '<div class="question-image-container">';
-                        question.files.forEach(file => {
-                            imageHtml += `<img src="${file}" alt="Soru Resmi" onerror="this.onerror=null;this.src='https://placehold.co/300x300/E0E0E0/333333?text=Resim+Yok';" />`;
-                        });
-                        imageHtml += '</div>';
-                        questionMediaHtml = imageHtml;
-                    }
+                            let mediaHtml = '<div class="question-media-container">';
+
+                            question.files.forEach(file => {
+                                // Eğer file bir File nesnesiyse URL.createObjectURL ile geçici URL üret
+                                const fileUrl = (file instanceof File) ? URL.createObjectURL(file) : file;
+                                const lowerUrl = fileUrl.toLowerCase();
+
+                                if (/\.(jpe?g|png|gif|webp)$/i.test(lowerUrl)) {
+                                    // 🎨 Resim
+                                    mediaHtml += `
+                                        <img src="${fileUrl}" alt="Soru Resmi"
+                                            onerror="this.onerror=null;
+                                                    this.src='https://placehold.co/300x300/E0E0E0/333333?text=Resim+Yok';"
+                                            style="max-width:100%; margin-bottom:10px; border-radius:8px;" />
+                                    `;
+                                } else if (/\.(mp3|wav|ogg)$/i.test(lowerUrl)) {
+                                    // 🎵 Ses dosyası
+                                    mediaHtml += `
+                                        <div style="
+                                            width: 100%;
+                                          
+                                            margin: 10px auto;
+                                            padding: 15px;
+                                            border: 2px solid #ff8800; /* Turuncu çerçeve */
+                                            border-radius: 12px;
+                                            background-color: #f8f9fa;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                        ">
+                                            <audio controls style="width: 100%; height: 50px;">
+                                                <source src="${fileUrl}" type="audio/${lowerUrl.split('.').pop()}">
+                                                Tarayıcınız bu ses dosyasını desteklemiyor.
+                                            </audio>
+                                        </div>
+                                    `;
+                                } else {
+                                    // 🗂 Diğer dosya tipleri için link
+                                    const fileName = fileUrl.split('/').pop();
+                                    mediaHtml += `
+                                        <p>
+                                            <a href="${fileUrl}" target="_blank" rel="noopener">${fileName}</a>
+                                        </p>
+                                    `;
+                                }
+                            });
+
+                            mediaHtml += '</div>';
+                            questionMediaHtml = mediaHtml;
+                        }
 
                     return `
-            <div class="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-100 shadow-md">
+               <div class="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-100 shadow-md">
                 <div class="flex items-center mb-4">
                     <span class="text-xl font-bold mr-3 ${statusColor}">${statusIcon}</span>
                     <p class="text-lg font-medium text-gray-800">${index + 1}. Soru</p>
@@ -226,8 +312,8 @@
                     ${optionsHtml}
                 </div>
                 ${explanationHtml}
-            </div>
-        `;
+                </div>
+             `;
                 }).join('');
 
                 $questionDisplay.html(reportHtml);
@@ -273,19 +359,67 @@
                         `);
                     }
                 } else if (question.files && question.files.length > 0) {
-                    let imageHtml = '<div class="question-image-container">';
+                    console.log("Soru dosyaları:", question.files);
+                    let mediaHtml = '<div class="question-media-container">';
+
                     question.files.forEach(file => {
-                        const imageUrl = file;
-                        imageHtml += `
-                            <img src="${imageUrl}" alt="Soru Resmi" onerror="this.onerror=null;this.src='https://placehold.co/300x300/E0E0E0/333333?text=Resim+Yok';" />
-                        `;
+                        const fileUrl = file; // file zaten URL ise
+                        const lowerUrl = fileUrl.toLowerCase();
+
+                        if (/\.(jpe?g|png|gif|webp)$/i.test(lowerUrl)) {
+                            // 🎨 Resim
+                            mediaHtml += `
+                                    <img src="${fileUrl}" alt="Soru Resmi"
+                                        onerror="this.onerror=null;
+                                                this.src='https://placehold.co/300x300/E0E0E0/333333?text=Resim+Yok';" />
+                                `;
+                        } else if (/\.(mp3|wav|ogg)$/i.test(lowerUrl)) {
+                            // 🎵 Ses
+                          mediaHtml += `
+                                <div style="
+                                    width: 100%;
+                                    height: 170px;
+                                    margin: 10px auto;
+                                    padding: 15px;
+                                            border: 2px solid #ff8800; /* Turuncu çerçeve */
+
+                                    border-radius: 12px;
+                                    background-color: #f8f9fa;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                ">
+                                    <audio controls style="
+                                        width: 100%;
+                                        height: 50px;
+                                    ">
+                                        <source src="${fileUrl}" type="audio/${lowerUrl.split('.').pop()}">
+                                        Tarayıcınız bu ses dosyasını desteklemiyor.
+                                    </audio>
+                                </div>
+                            `;
+
+
+                        } else {
+                            // Başka bir dosya türü ise link olarak gösterelim
+                            const fileName = fileUrl.split('/').pop();
+                            mediaHtml += `
+                                        <p>
+                                            <a href="${fileUrl}" target="_blank" rel="noopener">
+                                                ${fileName}
+                                            </a>
+                                        </p>
+                                    `;
+                        }
                     });
-                    imageHtml += '</div>';
-                    $questionMedia.append(imageHtml);
+
+                    mediaHtml += '</div>';
+                    $questionMedia.append(mediaHtml);
                 }
 
                 const $optionsContainer = $('#options-container').empty();
                 question.options.forEach(option => {
+                    console.log("Seçenek dosyaları:", option.files);
                     const optionId = `option-${question.id}-${option.id}`;
                     const isChecked = userAnswers[index]?.selected_option_key === option.option_key;
                     let optionHtml = `
@@ -296,14 +430,44 @@
                                 <span class="text-gray-800 ml-2">${option.option_text.replace(/\r\n/g, '<br>')}</span>
                             `;
                     if (option.files && option.files.length > 0) {
-                        optionHtml += '<div class="option-image-container">';
+                        optionHtml += '<div class="option-media-container">';
+
                         option.files.forEach(file => {
-                            optionHtml += `
-                                        <img src="${file}" alt="Seçenek Resmi" onerror="this.onerror=null;this.src='https://placehold.co/300x200/E0E0E0/333333?text=Resim+Yok';" />
-                                    `;
+                            // Eğer file bir File nesnesiyse URL.createObjectURL ile geçici URL üret
+                            const fileUrl = (file instanceof File) ? URL.createObjectURL(file) : file;
+                            const lowerUrl = fileUrl.toLowerCase();
+
+                            if (/\.(jpe?g|png|gif|webp)$/i.test(lowerUrl)) {
+                                // 🎨 Resim dosyası
+                                optionHtml += `
+                <img src="${fileUrl}" alt="Seçenek Resmi"
+                     onerror="this.onerror=null;
+                              this.src='https://placehold.co/300x200/E0E0E0/333333?text=Resim+Yok';" />
+            `;
+                            } else if (/\.(mp3|wav|ogg)$/i.test(lowerUrl)) {
+                                // 🎵 Ses dosyası
+                                optionHtml += `
+                <audio controls style="display:block; margin-top:8px;">
+                    <source src="${fileUrl}" type="audio/${lowerUrl.split('.').pop()}">
+                    Tarayıcınız bu ses dosyasını desteklemiyor.
+                </audio>
+            `;
+                            } else {
+                                // 🗂 Diğer dosya tipleri için bağlantı
+                                const fileName = fileUrl.split('/').pop();
+                                optionHtml += `
+                <p>
+                    <a href="${fileUrl}" target="_blank" rel="noopener">
+                        ${fileName}
+                    </a>
+                </p>
+            `;
+                            }
                         });
+
                         optionHtml += '</div>';
                     }
+
                     optionHtml += `
                             </div>
                         </label>

@@ -1303,8 +1303,9 @@ switch ($service) {
         $pdo->beginTransaction();
         try {
             // --- GENEL DOSYA VALİDASYONLARI (En Başta) ---
-            $maxTotalFileSize = 2 * 1024 * 1024; // 3 MB
-            $allowedImageExtensions = ['jpg', 'jpeg', 'png'];
+            $maxTotalFileSize = 5 * 1024 * 1024; // 3 MB
+           $allowedExtensions = ['jpg', 'jpeg', 'png', 'mp3', 'wav', 'ogg'];
+
             $totalUploadedSize = 0;
 
             // Geçici olarak yüklenen tüm dosyaları kontrol et
@@ -1368,8 +1369,8 @@ switch ($service) {
                 $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
 
                 // Sadece resim uzantılarını kontrol et (jpg, jpeg, png)
-                if (!in_array($fileExtension, $allowedImageExtensions)) {
-                    throw new Exception("Desteklenmeyen dosya türü: {$file['name']}. Sadece JPG, JPEG ve PNG resimler yüklenebilir.");
+                if (!in_array($fileExtension, $allowedExtensions)) {
+                    throw new Exception("Desteklenmeyen dosya türü: {$file['name']}. Sadece JPG, JPEG ve PNG resimler ve wav,mp3 yüklenebilir.");
                 }
             }
 
@@ -1860,7 +1861,7 @@ WHERE t.id = :id";
         }
 
         // Ortak dosya kontrol fonksiyonu tanımla
-        function validateAndUploadFile($fileInfo, $uploadDir, $maxFileSize = 3145728, $allowedExtensions = ['jpg', 'jpeg', 'png'])
+        function validateAndUploadFile($fileInfo, $uploadDir, $maxFileSize = 3145728, $allowedExtensions = ['jpg', 'jpeg', 'png', 'mp3', 'wav', 'ogg'])
         {
             if ($fileInfo['error'] !== UPLOAD_ERR_OK) {
                 throw new Exception('Dosya yükleme hatası: ' . $fileInfo['error']);
