@@ -5421,7 +5421,7 @@ ORDER BY msu.unit_order asc
             $existing_word = $check_stmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$existing_word) {
-                echo json_encode(['success' => false, 'message' => 'Güncellenecek kelime bulunamadı!']);
+                echo json_encode(['success' => false, 'message' => 'Güncellenecek bilgi bulunamadı!']);
                 exit;
             }
 
