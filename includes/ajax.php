@@ -5387,7 +5387,7 @@ ORDER BY msu.unit_order asc
 
         // Gerekli alanları kontrol et
         if (empty($_POST['id'])) {
-            echo json_encode(['success' => false, 'message' => 'Kelime ID belirtilmedi!']);
+            echo json_encode(['success' => false, 'message' => 'Bilgi ID belirtilmedi!']);
             exit;
         }
 
@@ -5415,7 +5415,7 @@ ORDER BY msu.unit_order asc
             $pdo = $dbh->connect();
 
             // Önce kelimenin var olup olmadığını kontrol et
-            $check_sql = "SELECT id, image FROM todays_word WHERE id = :id";
+            $check_sql = "SELECT id, image FROM doyouknow WHERE id = :id";
             $check_stmt = $pdo->prepare($check_sql);
             $check_stmt->execute([':id' => $id]);
             $existing_word = $check_stmt->fetch(PDO::FETCH_ASSOC);
