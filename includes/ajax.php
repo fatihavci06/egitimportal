@@ -5179,7 +5179,7 @@ ORDER BY msu.unit_order asc
             exit;
         }
 
-        $required_fields = ['word', 'meaning', 'classes', 'start_date', 'end_date', 'status'];
+        $required_fields = ['word', 'meaning', 'classes', 'start_date', 'end_date'];
         foreach ($required_fields as $field) {
             if (empty($_POST[$field])) {
                 echo json_encode(['success' => false, 'message' => 'Tüm zorunlu alanları doldurunuz!']);
