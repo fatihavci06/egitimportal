@@ -103,8 +103,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
                                                         <th class="min-w-150px">İçerik (Anlamı)</th>
                                                         <th class="min-w-75px">Görsel</th>
                                                         <th class="min-w-100px">Sınıf</th>
-                                                        <th class="min-w-100px">Baş. Tarihi</th>
-                                                        <th class="min-w-100px">Bitiş Tarihi</th>
+                                                        <th class="min-w-150px">Baş. Tarihi</th>
+                                                        <th class="min-w-150px">Bitiş Tarihi</th>
                                                         <th class="min-w-75px">Durum</th>
                                                         <th class="text-end min-w-100px">İşlemler</th>
                                                     </tr>
@@ -123,8 +123,21 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
                                                                 <?php endif; ?>
                                                             </td>
                                                             <td><?php echo getClassNames($row['class_id'], $class_options); ?></td>
-                                                            <td><?php echo !empty($row['start_date']) ? htmlspecialchars($row['start_date']) : '-'; ?></td>
-                                                            <td><?php echo !empty($row['end_date']) ? htmlspecialchars($row['end_date']) : '-'; ?></td>
+                                                            <td>
+                                                                <?php
+                                                                echo !empty($row['start_date'])
+                                                                    ? date("d-m-Y", strtotime($row['start_date']))
+                                                                    : '-';
+                                                                ?>
+                                                            </td>
+                                                            <td>
+                                                                <?php
+                                                                echo !empty($row['end_date'])
+                                                                    ? date("d-m-Y", strtotime($row['end_date']))
+                                                                    : '-';
+                                                                ?>
+                                                            </td>
+
                                                             <td>
                                                                 <span class="badge badge-light-<?php echo ($row['is_active'] == 1 ? 'success' : 'danger'); ?>">
                                                                     <?php echo ($row['is_active'] == 1 ? 'Aktif' : 'Pasif'); ?>
@@ -143,12 +156,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
                                                                     data-status="<?php echo $row['is_active']; ?>">
                                                                     <i class="ki-duotone ki-pencil fs-4"><span class="path1"></span><span class="path2"></span></i>
                                                                 </a>
-                                                               
-                                                                    <!-- Pasif kelimeler için sil butonu -->
-                                                                    <a href="#" class="btn btn-icon btn-sm btn-light-danger delete-btn" data-id="<?php echo $row['id']; ?>">
-                                                                        <i class="ki-duotone ki-trash-square fs-4"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
-                                                                    </a>
-                                                               
+
+                                                                <!-- Pasif kelimeler için sil butonu -->
+                                                                <a href="#" class="btn btn-icon btn-sm btn-light-danger delete-btn" data-id="<?php echo $row['id']; ?>">
+                                                                    <i class="ki-duotone ki-trash-square fs-4"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
+                                                                </a>
+
                                                             </td>
                                                         </tr>
                                                     <?php endforeach; ?>
@@ -204,7 +217,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
                             <div class="fv-row mb-7">
                                 <label class="required fw-semibold fs-6 mb-2">Sınıf</label>
                                 <select name="classes[]" id="add_classes" class="form-select form-select-solid" multiple="multiple" required>
-                                   
+
                                     <?php foreach ($class_options as $id => $name): ?>
                                         <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($name); ?></option>
                                     <?php endforeach; ?>
@@ -284,7 +297,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
                             <div class="fv-row mb-7">
                                 <label class="required fw-semibold fs-6 mb-2">Sınıf</label>
                                 <select name="classes[]" id="update_classes" class="form-select form-select-solid" multiple="multiple" required>
-                                   
+
                                     <?php foreach ($class_options as $id => $name): ?>
                                         <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($name); ?></option>
                                     <?php endforeach; ?>
@@ -583,7 +596,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
                 });
             }
 
-           
+
 
             // Silme işlemi
             $(document).on('click', '.delete-btn', function(e) {
