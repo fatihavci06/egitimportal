@@ -5466,12 +5466,12 @@ ORDER BY msu.unit_order asc
                 }
 
                 // Benzersiz dosya adı oluştur
-                $new_file_name = uniqid('word_', true) . '.' . $file_ext;
+                $new_file_name = uniqid('doyouknow_', true) . '.' . $file_ext;
                 $upload_path = $upload_dir . $new_file_name;
 
                 // Dosyayı yükle
                 if (move_uploaded_file($file_tmp, $upload_path)) {
-                    $image_path = 'uploads/words/' . $new_file_name;
+                    $image_path = 'uploads/doyouknow/' . $new_file_name;
                 } else {
                     echo json_encode(['success' => false, 'message' => 'Dosya yüklenirken hata oluştu!']);
                     exit;
