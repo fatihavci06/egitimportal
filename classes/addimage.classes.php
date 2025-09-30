@@ -305,12 +305,13 @@ class ImageUpload
         if ($fileSize > $maxFileSize) {
             $message = "Dosya boyutu 2mb'dan fazla.<br>";
             $uploadOk = 0;
+        
         }
 
         $fileName_Arr = explode(".", $fileName);
         $fileNameOnly = $fileName_Arr[0];
-        $fileType = $fileName_Arr[1];
-
+        $fileType = end($fileName_Arr);
+       
         if (!in_array($fileType, $fileTypes)) {
             $message .= "Kabul edilen dosya uzantıları : " . implode(", ", $fileTypes) . "<br>";
             $uploadOk = 0;
@@ -320,6 +321,7 @@ class ImageUpload
         $photoPath = $uploadFolder . $newFileName;
 
         if ($uploadOk == 0) {
+               
             $message .= "Dosya yüklenemedi.<br>";
             echo json_encode(["status" => "error", "message" => $name]);
             exit();

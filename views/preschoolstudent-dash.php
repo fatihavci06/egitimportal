@@ -318,81 +318,210 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
         <div class="gx-5 gx-xl-10 col-lg-3" style="padding-left: 0px; padding-right: 0px;">
 
             <!--begin::Col-->
-            <div class="col-xxl-12 mb-1">
-                <!--begin::Chart widget 8-->
-                <div class="card card-flush">
-                    <!--begin::Header-->
-                    <div class="card-header pt-5" style="padding: 10px;">
-                        <!--begin::Title-->
-                        <h3 class="card-title d-flex align-items-center">
-                            <i class="fa-regular fa-comment me-2 fs-1" style="transform: scaleX(-1)"></i> <span class="card-label fw-bold text-gray-900">Haftanın Kelimesi
-                                "<?php echo $todaysWord['word'] ?>"</span>
-                        </h3>
+            <div class="col-xxl-12 mb-5">
+                <div class="card card-flush shadow-lg border-2 border-primary h-100">
+                    <div class="card-header pt-5 border-bottom border-primary border-3">
+                        <h2 class="card-title d-flex align-items-center flex-wrap">
+                            <i class="fa-solid fa-graduation-cap me-3 fs-3 text-info"></i>
+                            <span class="card-label fw-bolder text-gray-800">Haftanın Kelime Keşfi</span>
+                        </h2>
                     </div>
-                    <!--end::Header-->
-                    <!--begin::Body-->
-                    <div class="card-body pt-0" style="padding: 10px;">
-                        <!--begin::Tab content-->
-                        <div class="tab-content">
-                            <!--begin::Tab pane-->
-                            <div class="tab-pane fade active show" id="kt_chart_widget_8_month_tab" role="tabpanel">
-                                <!--begin::Table container-->
-                                <div class="table-responsive">
-                                    <!--begin::Table-->
-                                    <p class="kalangun">
-                                        <?php echo $todaysWord['body'] ?>
-                                    </p>
+                    <div class="card-body p-5">
+                        <?php if (!empty($todaysWord['word'])): ?>
+                            <div class="row g-5 align-items-center">
 
+                                <div class="col-lg-8 order-lg-1 order-2">
+                                    <div class="mb-4">
+                                        <span class="fs-7 fw-semibold text-muted d-block mb-1">HAFTANIN KELİMESİ</span>
+                                        <h3 style="font-size:20px;" class="display-3 fw-bolder text-dark mb-2 border-bottom border-warning border-3 d-inline-block pb-1">
+                                            "<?php echo htmlspecialchars($todaysWord['word']) ?>"
+                                        </h3>
+                                    </div>
+                                    <?php if (!empty($todaysWord['body'])): ?>
+                                        <div class="bg-light-primary rounded-3 p-4">
+                                            <p class="text-gray-700 fw-normal fs-5 lh-base mb-0">
+                                                <i class="fa-solid fa-quote-left text-primary me-2"></i>
+                                                <?php echo nl2br(htmlspecialchars($todaysWord['body'])) ?>
+                                            </p>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
-                                <!--end::Table container-->
-                            </div>
-                            <!--end::Tab pane-->
-                        </div>
-                        <!--end::Tab content-->
-                    </div>
-                    <!--end::Body-->
-                </div>
-                <!--end::Chart widget 8-->
-            </div>
-            <!--end::Col-->
 
-            <!--begin::Col-->
+                                <div class="col-lg-4 text-center order-lg-2 order-1">
+                                    <?php if (!empty($todaysWord['image'])): ?>
+                                        <div class="image-container mx-auto">
+                                            <a
+                                                href="#"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#wordImageModal"
+                                                data-image-url="<?php echo htmlspecialchars($todaysWord['image']) ?>"
+                                                class="d-inline-block position-relative image-link-hover"
+                                                title="Görseli büyütmek için tıklayın">
+
+                                                <img
+                                                    src="<?php echo htmlspecialchars($todaysWord['image']) ?>"
+                                                    alt="<?php echo htmlspecialchars($todaysWord['word']) ?> görseli"
+                                                    class="img-fluid rounded-circle shadow-lg border border-5 border-light"
+                                                    style="max-height: 250px; width: 250px; object-fit: cover; cursor: pointer;"
+                                                    loading="lazy"
+                                                    onerror="this.style.display='none';">
+
+                                                <div class="position-absolute top-50 start-50 translate-middle text-white bg-dark bg-opacity-50 p-2 rounded-circle" style="opacity: 0.8; transition: opacity 0.3s;">
+                                                    <i class="fa-solid fa-magnifying-glass-plus fs-4"></i>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    <?php else: ?>
+                                        <div class="p-4 bg-light-secondary rounded-3">
+                                            <i class="fa-solid fa-feather-pointed fs-1 text-secondary mb-2"></i>
+
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php else: ?>
+                            <div class="text-center p-5 bg-light-danger rounded">
+                                <i class="fa-solid fa-triangle-exclamation fs-2 text-danger mb-3"></i>
+                                <p class="text-danger fs-5 mb-0">Bu haftaya ait keşfedilecek bir kelime henüz yayınlanmamıştır.</p>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+
             <div class="col-xxl-12 mb-5 mb-xl-10">
-                <!--begin::Chart widget 8-->
-                <div class="card card-flush">
-                    <!--begin::Header-->
-                    <div class="card-header pt-5" style="padding: 10px;">
-                        <!--begin::Title-->
-                        <h3 class="d-flex align-items-center">
-                            <i class="fa-solid fa-graduation-cap me-2 fs-1" style="transform: scaleX(-1)"></i> <span class="card-label fw-bold text-gray-900">Bunu Biliyor Musunuz?
-                            </span>
-                        </h3>
+                <div class="card card-flush shadow border-2 border-info h-100">
+                    <div class="card-header pt-5 border-bottom border-info border-3">
+                        <h2 class="card-title d-flex align-items-center flex-wrap">
+                            <i class="fa-solid fa-lightbulb me-3 fs-3 text-warning"></i>
+                            <span class="card-label fw-bolder text-gray-800">Bunu Biliyor Musunuz?</span>
+                        </h2>
                     </div>
-                    <!--end::Header-->
-                    <!--begin::Body-->
-                    <div class="card-body pt-0" style="padding: 10px;">
-                        <!--begin::Tab content-->
-                        <div class="tab-content">
-                            <!--begin::Tab pane-->
-                            <div class="tab-pane fade active show" id="kt_chart_widget_8_month_tab" role="tabpanel">
-                                <!--begin::Table container-->
-                                <div class="table-responsive">
-                                    <!--begin::Table-->
-                                    <p class="kalangun">
-                                        <?php echo $todaysKnow['body'] ?>
-                                    </p>
+                    <div class="card-body p-5">
+                        <?php if (!empty($todaysKnow['body'])): ?>
+                            <div class="row g-5 align-items-center">
 
+                                <div class="col-lg-4 col-md-5 text-center order-md-1 order-1 mb-4 mb-md-0">
+                                    <?php
+                                    $imagePath = !empty($todaysKnow['image']) ? "assets/media/tdo-you-know/" . $todaysKnow['image'] : null;
+                                    if ($imagePath && file_exists($imagePath)):
+                                    ?>
+                                        <div class="image-container mx-auto">
+                                            <a
+                                                href="#"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#knowImageModal"
+                                                data-image-url="<?php echo htmlspecialchars($imagePath) ?>"
+                                                class="d-inline-block position-relative"
+                                                title="Görseli büyütmek için tıklayın">
+
+                                                <img
+                                                    src="<?php echo htmlspecialchars($imagePath) ?>"
+                                                    alt="İlginç Bilgi Görseli"
+                                                    class="img-fluid rounded-3 shadow border border-3 border-light-info"
+                                                    style="max-height: 220px; width: auto; object-fit: contain; cursor: pointer;"
+                                                    loading="lazy"
+                                                    onerror="this.style.display='none';">
+
+                                                <div class="position-absolute top-50 start-50 translate-middle text-white bg-dark bg-opacity-50 p-2 rounded-circle" style="opacity: 0.8; transition: opacity 0.3s;">
+                                                    <i class="fa-solid fa-magnifying-glass-plus fs-4"></i>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    <?php else: ?>
+                                        <div class="p-4 bg-light-secondary rounded-3">
+                                            <i class="fa-solid fa-image fs-1 text-secondary mb-2"></i>
+
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
-                                <!--end::Table container-->
+
+                                <div class="col-lg-8 col-md-7 order-md-2 order-2">
+                                    <h3 class="fs-2 fw-bolder text-info mb-3">Günün İlginç Bilgisi</h3>
+                                    <div class="bg-light-primary rounded-3 p-4 border-start border-4 border-primary">
+                                        <p class="text-gray-700 fw-normal fs-5 lh-base mb-0">
+                                            <i class="fa-solid fa-check-circle text-primary me-2"></i>
+                                            <?php echo nl2br($todaysKnow['body']) ?>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
-                            <!--end::Tab pane-->
-                        </div>
-                        <!--end::Tab content-->
+                        <?php else: ?>
+                            <div class="text-center p-5 bg-light-danger rounded">
+                                <i class="fa-solid fa-triangle-exclamation fs-2 text-danger mb-3"></i>
+                                <p class="text-danger fs-5 mb-0">Bugüne ait ilginç bir bilgi bulunmamaktadır.</p>
+                            </div>
+                        <?php endif; ?>
                     </div>
-                    <!--end::Body-->
                 </div>
-                <!--end::Chart widget 8-->
             </div>
+
+            <div class="modal fade" id="wordImageModal" tabindex="-1" aria-labelledby="wordImageModalLabel" aria-hidden="true"
+                data-bs-backdrop="true"
+                data-bs-keyboard="true">
+                <div class="modal-dialog modal-dialog-centered modal-xl">
+                    <div class="modal-content bg-transparent border-0 shadow-none">
+                        <div class="modal-header border-0 p-0 position-relative">
+                            <button type="button" class="btn-close btn-close-white position-absolute end-0 me-4 mt-3"
+                                data-bs-dismiss="modal" aria-label="Kapat" style="z-index: 1056; opacity: 1;"></button>
+                        </div>
+                        <div class="modal-body p-0 text-center">
+                            <img id="modalWordImage" src="" alt="Büyütülmüş Kelime Görseli" class="img-fluid rounded shadow-lg" style="max-height: 90vh;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="knowImageModal" tabindex="-1" aria-labelledby="knowImageModalLabel" aria-hidden="true"
+                data-bs-backdrop="true"
+                data-bs-keyboard="true">
+                <div class="modal-dialog modal-dialog-centered modal-xl">
+                    <div class="modal-content bg-transparent border-0 shadow-none">
+                        <div class="modal-header border-0 p-0 position-relative">
+                            <button type="button" class="btn-close btn-close-white position-absolute end-0 me-4 mt-3"
+                                data-bs-dismiss="modal" aria-label="Kapat" style="z-index: 1056; opacity: 1;"></button>
+                        </div>
+                        <div class="modal-body p-0 text-center">
+                            <img id="modalKnowImage" src="" alt="Büyütülmüş Bilgi Görseli" class="img-fluid rounded shadow-lg" style="max-height: 90vh;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+
+                    // 1. Kelime Modal İşlemleri
+                    const wordImageModal = document.getElementById('wordImageModal');
+                    const modalWordImage = document.getElementById('modalWordImage');
+
+                    if (wordImageModal && modalWordImage) {
+                        wordImageModal.addEventListener('show.bs.modal', function(event) {
+                            const link = event.relatedTarget;
+                            const imageUrl = link.getAttribute('data-image-url');
+                            const imageAlt = link.querySelector('img').alt;
+
+                            modalWordImage.src = imageUrl;
+                            modalWordImage.alt = imageAlt;
+                        });
+                    }
+
+                    // 2. Bilgi Modal İşlemleri
+                    const knowImageModal = document.getElementById('knowImageModal');
+                    const modalKnowImage = document.getElementById('modalKnowImage');
+
+                    if (knowImageModal && modalKnowImage) {
+                        knowImageModal.addEventListener('show.bs.modal', function(event) {
+                            const link = event.relatedTarget;
+                            const imageUrl = link.getAttribute('data-image-url');
+                            const imageAlt = link.querySelector('img').alt;
+
+                            modalKnowImage.src = imageUrl;
+                            modalKnowImage.alt = imageAlt;
+                        });
+                    }
+                });
+            </script>
             <!--end::Col-->
         </div>
     </div>

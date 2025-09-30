@@ -4991,7 +4991,660 @@ ORDER BY msu.unit_order asc
             ]);
         }
         break;
+    case 'addTodayWord':
+        try {
+            // Gerekli alanları kontrol et
+            $required_fields = ['word', 'meaning', 'classes', 'start_date', 'end_date', 'status'];
+            foreach ($required_fields as $field) {
+                if (empty($_POST[$field])) {
+                    echo json_encode(['success' => false, 'message' => 'Tüm zorunlu alanları doldurunuz!']);
+                    exit;
+                }
+            }
 
+            // Verileri al
+            $word = trim($_POST['word']);
+            $meaning = trim($_POST['meaning']);
+            $classes = $_POST['classes']; // Array olarak gelecek
+            $start_date = $_POST['start_date'];
+            $end_date = $_POST['end_date'];
+            $status = $_POST['status'];
+            $school_id = $_SESSION['school_id'] ?? 1; // Session'dan school_id al veya default 1
+
+            // Sınıf ID'lerini string formatına çevir (noktalı virgül ile birleştir)
+            $class_ids = is_array($classes) ? implode(';', $classes) : $classes;
+
+            // Görsel yükleme işlemi
+            $image_path = '';
+            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                $upload_dir = '../uploads/words/';
+
+                // Upload dizini yoksa oluştur
+                if (!is_dir($upload_dir)) {
+                    mkdir($upload_dir, 0755, true);
+                }
+
+                // Dosya bilgilerini al
+                $file_name = $_FILES['image']['name'];
+                $file_tmp = $_FILES['image']['tmp_name'];
+                $file_size = $_FILES['image']['size'];
+                $file_error = $_FILES['image']['error'];
+
+                // Dosya uzantısı kontrolü
+                $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+                $allowed_ext = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+                if (!in_array($file_ext, $allowed_ext)) {
+                    echo json_encode(['success' => false, 'message' => 'Sadece JPG, JPEG, PNG, GIF ve WEBP formatları kabul edilir!']);
+                    exit;
+                }
+
+                // Dosya boyutu kontrolü (max 5MB)
+                if ($file_size > 5 * 1024 * 1024) {
+                    echo json_encode(['success' => false, 'message' => 'Dosya boyutu 5MB\'dan küçük olmalıdır!']);
+                    exit;
+                }
+
+                // Benzersiz dosya adı oluştur
+                $new_file_name = uniqid('word_', true) . '.' . $file_ext;
+                $upload_path = $upload_dir . $new_file_name;
+
+                // Dosyayı yükle
+                if (move_uploaded_file($file_tmp, $upload_path)) {
+                    $image_path = 'uploads/words/' . $new_file_name;
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'Dosya yüklenirken hata oluştu!']);
+                    exit;
+                }
+            }
+
+            // Veritabanına ekleme işlemi
+
+
+            $sql = "INSERT INTO todays_word 
+            (word, body, school_id, class_id, start_date, end_date, is_active, image) 
+            VALUES 
+            (:word, :body, :school_id, :class_id, :start_date, :end_date, :is_active, :image)";
+
+            $stmt = $pdo->prepare($sql);
+
+            $result = $stmt->execute([
+                ':word' => $word,
+                ':body' => $meaning,
+                ':school_id' => $school_id,
+                ':class_id' => $class_ids,
+                ':start_date' => $start_date,
+                ':end_date' => $end_date,
+                ':is_active' => $status,
+                ':image' => $image_path
+            ]);
+
+            if ($result) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Kelime başarıyla eklendi!',
+                    'id' => $pdo->lastInsertId()
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Kelime eklenirken bir hata oluştu!'
+                ]);
+            }
+        } catch (PDOException $e) {
+            error_log("Database error in add-word.php: " . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Veritabanı hatası: ' . $e->getMessage()
+            ]);
+        } catch (Exception $e) {
+            error_log("General error in add-word.php: " . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Bir hata oluştu: ' . $e->getMessage()
+            ]);
+        }
+
+        break;
+    case 'deleteTodayWord':
+        $word_id = (int)$_POST['id'];
+
+        try {
+
+
+            // Önce kelimenin var olup olmadığını kontrol et
+            $check_sql = "SELECT id, image FROM todays_word WHERE id = :id";
+            $check_stmt = $pdo->prepare($check_sql);
+            $check_stmt->execute([':id' => $word_id]);
+            $word = $check_stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$word) {
+                echo json_encode(['success' => false, 'message' => 'Kelime bulunamadı!']);
+                exit;
+            }
+
+            // Kelimeyi sil
+            $delete_sql = "DELETE FROM todays_word WHERE id = :id";
+            $delete_stmt = $pdo->prepare($delete_sql);
+            $result = $delete_stmt->execute([':id' => $word_id]);
+
+            if ($result) {
+                // Eğer kelimenin görseli varsa, dosyayı da sil
+                if (!empty($word['image'])) {
+                    $image_path = '../' . $word['image'];
+                    if (file_exists($image_path)) {
+                        unlink($image_path);
+                    }
+                }
+
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Kelime başarıyla silindi!'
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Kelime silinirken bir hata oluştu!'
+                ]);
+            }
+        } catch (PDOException $e) {
+            error_log("Database error in delete-word.php: " . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Veritabanı hatası: ' . $e->getMessage()
+            ]);
+        } catch (Exception $e) {
+            error_log("General error in delete-word.php: " . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Bir hata oluştu: ' . $e->getMessage()
+            ]);
+        }
+        break;
+    case 'updateTodayWord':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'message' => 'Geçersiz istek methodu!']);
+            exit;
+        }
+
+        // Yetki kontrolü
+        if (!isset($_SESSION['role']) || $_SESSION['role'] != 1) {
+            echo json_encode(['success' => false, 'message' => 'Yetkiniz bulunmamaktadır!']);
+            exit;
+        }
+
+        // Gerekli alanları kontrol et
+        if (empty($_POST['id'])) {
+            echo json_encode(['success' => false, 'message' => 'Kelime ID belirtilmedi!']);
+            exit;
+        }
+
+        $required_fields = ['word', 'meaning', 'classes', 'start_date', 'end_date', 'status'];
+        foreach ($required_fields as $field) {
+            if (empty($_POST[$field])) {
+                echo json_encode(['success' => false, 'message' => 'Tüm zorunlu alanları doldurunuz!']);
+                exit;
+            }
+        }
+
+        try {
+            // Verileri al
+            $id = (int)$_POST['id'];
+            $word = trim($_POST['word']);
+            $meaning = trim($_POST['meaning']);
+            $classes = $_POST['classes']; // Array olarak gelecek
+            $start_date = $_POST['start_date'];
+            $end_date = $_POST['end_date'];
+            $status = $_POST['status'];
+
+            // Sınıf ID'lerini string formatına çevir (noktalı virgül ile birleştir)
+            $class_ids = is_array($classes) ? implode(';', $classes) : $classes;
+
+            $dbh = new Dbh();
+            $pdo = $dbh->connect();
+
+            // Önce kelimenin var olup olmadığını kontrol et
+            $check_sql = "SELECT id, image FROM todays_word WHERE id = :id";
+            $check_stmt = $pdo->prepare($check_sql);
+            $check_stmt->execute([':id' => $id]);
+            $existing_word = $check_stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$existing_word) {
+                echo json_encode(['success' => false, 'message' => 'Güncellenecek kelime bulunamadı!']);
+                exit;
+            }
+
+            // Görsel yükleme işlemi
+            $image_path = $existing_word['image']; // Mevcut görseli koru
+
+            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                $upload_dir = '../uploads/words/';
+
+                // Upload dizini yoksa oluştur
+                if (!is_dir($upload_dir)) {
+                    mkdir($upload_dir, 0755, true);
+                }
+
+                // Dosya bilgilerini al
+                $file_name = $_FILES['image']['name'];
+                $file_tmp = $_FILES['image']['tmp_name'];
+                $file_size = $_FILES['image']['size'];
+                $file_error = $_FILES['image']['error'];
+
+                // Dosya uzantısı kontrolü
+                $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+                $allowed_ext = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+                if (!in_array($file_ext, $allowed_ext)) {
+                    echo json_encode(['success' => false, 'message' => 'Sadece JPG, JPEG, PNG, GIF ve WEBP formatları kabul edilir!']);
+                    exit;
+                }
+
+                // Dosya boyutu kontrolü (max 5MB)
+                if ($file_size > 5 * 1024 * 1024) {
+                    echo json_encode(['success' => false, 'message' => 'Dosya boyutu 5MB\'dan küçük olmalıdır!']);
+                    exit;
+                }
+
+                // Eski görsel varsa sil
+                if (!empty($existing_word['image'])) {
+                    $old_image_path = '../' . $existing_word['image'];
+                    if (file_exists($old_image_path)) {
+                        unlink($old_image_path);
+                    }
+                }
+
+                // Benzersiz dosya adı oluştur
+                $new_file_name = uniqid('word_', true) . '.' . $file_ext;
+                $upload_path = $upload_dir . $new_file_name;
+
+                // Dosyayı yükle
+                if (move_uploaded_file($file_tmp, $upload_path)) {
+                    $image_path = 'uploads/words/' . $new_file_name;
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'Dosya yüklenirken hata oluştu!']);
+                    exit;
+                }
+            }
+
+            // Güncelleme işlemi
+            $sql = "UPDATE todays_word 
+            SET word = :word, 
+                body = :body, 
+                class_id = :class_id, 
+                start_date = :start_date, 
+                end_date = :end_date, 
+                is_active = :is_active, 
+                image = :image 
+            WHERE id = :id";
+
+            $stmt = $pdo->prepare($sql);
+
+            $result = $stmt->execute([
+                ':word' => $word,
+                ':body' => $meaning,
+                ':class_id' => $class_ids,
+                ':start_date' => $start_date,
+                ':end_date' => $end_date,
+                ':is_active' => $status,
+                ':image' => $image_path,
+                ':id' => $id
+            ]);
+
+            if ($result) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Kelime başarıyla güncellendi!'
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Kelime güncellenirken bir hata oluştu!'
+                ]);
+            }
+        } catch (PDOException $e) {
+            error_log("Database error in update-word.php: " . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Veritabanı hatası: ' . $e->getMessage()
+            ]);
+        } catch (Exception $e) {
+            error_log("General error in update-word.php: " . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Bir hata oluştu: ' . $e->getMessage()
+            ]);
+        }
+        break;
+
+
+    case 'deleteDoyouKnow':
+        $word_id = (int)$_POST['id'];
+
+        try {
+
+
+            // Önce kelimenin var olup olmadığını kontrol et
+            $check_sql = "SELECT id, image FROM doyouknow WHERE id = :id";
+            $check_stmt = $pdo->prepare($check_sql);
+            $check_stmt->execute([':id' => $word_id]);
+            $word = $check_stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$word) {
+                echo json_encode(['success' => false, 'message' => 'Bilgi bulunamadı!']);
+                exit;
+            }
+
+            // Kelimeyi sil
+            $delete_sql = "DELETE FROM doyouknow WHERE id = :id";
+            $delete_stmt = $pdo->prepare($delete_sql);
+            $result = $delete_stmt->execute([':id' => $word_id]);
+
+            if ($result) {
+                // Eğer kelimenin görseli varsa, dosyayı da sil
+                if (!empty($word['image'])) {
+                    $image_path = '../' . $word['image'];
+                    if (file_exists($image_path)) {
+                        unlink($image_path);
+                    }
+                }
+
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Bilgi başarıyla silindi!'
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Bilgi silinirken bir hata oluştu!'
+                ]);
+            }
+        } catch (PDOException $e) {
+            error_log("Database error in delete-word.php: " . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Veritabanı hatası: ' . $e->getMessage()
+            ]);
+        } catch (Exception $e) {
+            error_log("General error in delete-word.php: " . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Bir hata oluştu: ' . $e->getMessage()
+            ]);
+        }
+        break;
+    case 'updateDoyouKnow':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'message' => 'Geçersiz istek methodu!']);
+            exit;
+        }
+
+        // Yetki kontrolü
+        if (!isset($_SESSION['role']) || $_SESSION['role'] != 1) {
+            echo json_encode(['success' => false, 'message' => 'Yetkiniz bulunmamaktadır!']);
+            exit;
+        }
+
+        // Gerekli alanları kontrol et
+        if (empty($_POST['id'])) {
+            echo json_encode(['success' => false, 'message' => 'Kelime ID belirtilmedi!']);
+            exit;
+        }
+
+        $required_fields = ['meaning', 'classes', 'start_date', 'end_date'];
+        foreach ($required_fields as $field) {
+            if (empty($_POST[$field])) {
+                echo json_encode(['success' => false, 'message' => 'Tüm zorunlu alanları doldurunuz!']);
+                exit;
+            }
+        }
+
+        try {
+            // Verileri al
+            $id = (int)$_POST['id'];
+            $meaning = trim($_POST['meaning']);
+            $classes = $_POST['classes']; // Array olarak gelecek
+            $start_date = $_POST['start_date'];
+            $end_date = $_POST['end_date'];
+            $status = $_POST['status'];
+
+            // Sınıf ID'lerini string formatına çevir (noktalı virgül ile birleştir)
+            $class_ids = is_array($classes) ? implode(';', $classes) : $classes;
+
+            $dbh = new Dbh();
+            $pdo = $dbh->connect();
+
+            // Önce kelimenin var olup olmadığını kontrol et
+            $check_sql = "SELECT id, image FROM todays_word WHERE id = :id";
+            $check_stmt = $pdo->prepare($check_sql);
+            $check_stmt->execute([':id' => $id]);
+            $existing_word = $check_stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$existing_word) {
+                echo json_encode(['success' => false, 'message' => 'Güncellenecek kelime bulunamadı!']);
+                exit;
+            }
+
+            // Görsel yükleme işlemi
+            $image_path = $existing_word['image']; // Mevcut görseli koru
+
+            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                $upload_dir = '../uploads/doyouknow/';
+
+                // Upload dizini yoksa oluştur
+                if (!is_dir($upload_dir)) {
+                    mkdir($upload_dir, 0755, true);
+                }
+
+                // Dosya bilgilerini al
+                $file_name = $_FILES['image']['name'];
+                $file_tmp = $_FILES['image']['tmp_name'];
+                $file_size = $_FILES['image']['size'];
+                $file_error = $_FILES['image']['error'];
+
+                // Dosya uzantısı kontrolü
+                $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+                $allowed_ext = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+                if (!in_array($file_ext, $allowed_ext)) {
+                    echo json_encode(['success' => false, 'message' => 'Sadece JPG, JPEG, PNG, GIF ve WEBP formatları kabul edilir!']);
+                    exit;
+                }
+
+                // Dosya boyutu kontrolü (max 5MB)
+                if ($file_size > 5 * 1024 * 1024) {
+                    echo json_encode(['success' => false, 'message' => 'Dosya boyutu 5MB\'dan küçük olmalıdır!']);
+                    exit;
+                }
+
+                // Eski görsel varsa sil
+                if (!empty($existing_word['image'])) {
+                    $old_image_path = '../' . $existing_word['image'];
+                    if (file_exists($old_image_path)) {
+                        unlink($old_image_path);
+                    }
+                }
+
+                // Benzersiz dosya adı oluştur
+                $new_file_name = uniqid('word_', true) . '.' . $file_ext;
+                $upload_path = $upload_dir . $new_file_name;
+
+                // Dosyayı yükle
+                if (move_uploaded_file($file_tmp, $upload_path)) {
+                    $image_path = 'uploads/words/' . $new_file_name;
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'Dosya yüklenirken hata oluştu!']);
+                    exit;
+                }
+            }
+            
+            // Güncelleme işlemi
+            $sql = "UPDATE doyouknow 
+            SET 
+                body = :body, 
+                class_id = :class_id, 
+                start_date = :start_date, 
+                end_date = :end_date, 
+                is_active = :is_active, 
+                image = :image 
+            WHERE id = :id";
+
+            $stmt = $pdo->prepare($sql);
+
+            $result = $stmt->execute([
+               
+                ':body' => $meaning,
+                ':class_id' => $class_ids,
+                ':start_date' => $start_date,
+                ':end_date' => $end_date,
+                ':is_active' => $status,
+                ':image' => $image_path,
+                ':id' => $id
+            ]);
+
+            if ($result) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Bilgi başarıyla güncellendi!'
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Bilgi güncellenirken bir hata oluştu!'
+                ]);
+            }
+        } catch (PDOException $e) {
+            error_log("Database error in update-word.php: " . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Veritabanı hatası: ' . $e->getMessage()
+            ]);
+        } catch (Exception $e) {
+            error_log("General error in update-word.php: " . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Bir hata oluştu: ' . $e->getMessage()
+            ]);
+        }
+        break;
+
+
+
+    case 'addDoyouKnow':
+        try {
+            // Gerekli alanları kontrol et
+            $required_fields = ['meaning', 'classes', 'start_date', 'end_date'];
+            foreach ($required_fields as $field) {
+                if (empty($_POST[$field])) {
+                    echo json_encode(['success' => false, 'message' => 'Tüm zorunlu alanları doldurunuz!']);
+                    exit;
+                }
+            }
+
+            // Verileri al
+           
+            $meaning = trim($_POST['meaning']);
+            $classes = $_POST['classes']; // Array olarak gelecek
+            $start_date = $_POST['start_date'];
+            $end_date = $_POST['end_date'];
+            $status = $_POST['status'];
+            $school_id = $_SESSION['school_id'] ?? 1; // Session'dan school_id al veya default 1
+
+            // Sınıf ID'lerini string formatına çevir (noktalı virgül ile birleştir)
+            $class_ids = is_array($classes) ? implode(';', $classes) : $classes;
+
+            // Görsel yükleme işlemi
+            $image_path = '';
+            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                $upload_dir = '../uploads/doyouknow/';
+
+                // Upload dizini yoksa oluştur
+                if (!is_dir($upload_dir)) {
+                    mkdir($upload_dir, 0755, true);
+                }
+
+                // Dosya bilgilerini al
+                $file_name = $_FILES['image']['name'];
+                $file_tmp = $_FILES['image']['tmp_name'];
+                $file_size = $_FILES['image']['size'];
+                $file_error = $_FILES['image']['error'];
+
+                // Dosya uzantısı kontrolü
+                $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+                $allowed_ext = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+                if (!in_array($file_ext, $allowed_ext)) {
+                    echo json_encode(['success' => false, 'message' => 'Sadece JPG, JPEG, PNG, GIF ve WEBP formatları kabul edilir!']);
+                    exit;
+                }
+
+                // Dosya boyutu kontrolü (max 5MB)
+                if ($file_size > 5 * 1024 * 1024) {
+                    echo json_encode(['success' => false, 'message' => 'Dosya boyutu 5MB\'dan küçük olmalıdır!']);
+                    exit;
+                }
+
+                // Benzersiz dosya adı oluştur
+                $new_file_name = uniqid('word_', true) . '.' . $file_ext;
+                $upload_path = $upload_dir . $new_file_name;
+
+                // Dosyayı yükle
+                if (move_uploaded_file($file_tmp, $upload_path)) {
+                    $image_path = 'uploads/words/' . $new_file_name;
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'Dosya yüklenirken hata oluştu!']);
+                    exit;
+                }
+            }
+
+            // Veritabanına ekleme işlemi
+
+
+            $sql = "INSERT INTO doyouknow 
+            ( body, school_id, class_id, start_date, end_date, is_active, image) 
+            VALUES 
+            (:body, :school_id, :class_id, :start_date, :end_date, :is_active, :image)";
+
+            $stmt = $pdo->prepare($sql);
+
+            $result = $stmt->execute([
+              
+                ':body' => $meaning,
+                ':school_id' => $school_id,
+                ':class_id' => $class_ids,
+                ':start_date' => $start_date,
+                ':end_date' => $end_date,
+                ':is_active' => $status,
+                ':image' => $image_path
+            ]);
+
+            if ($result) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Bilgi başarıyla eklendi!',
+                    'id' => $pdo->lastInsertId()
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Bilgi eklenirken bir hata oluştu!'
+                ]);
+            }
+        } catch (PDOException $e) {
+            error_log("Database error in add-word.php: " . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Veritabanı hatası: ' . $e->getMessage()
+            ]);
+        } catch (Exception $e) {
+            error_log("General error in add-word.php: " . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Bir hata oluştu: ' . $e->getMessage()
+            ]);
+        }
+
+        break;
     default:
         echo json_encode(['status' => 'error', 'message' => 'Geçersiz servis']);
         break;

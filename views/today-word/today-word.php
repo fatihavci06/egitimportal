@@ -104,7 +104,7 @@ $classShow = new ShowClass();
                             <select name="classes" aria-label="Sınıf Seçiniz" data-control="select2"
                                 data-placeholder="Sınıf Seçiniz..." class="form-select form-select-solid fw-bold">
                                 <option value="">Sınıf Seçin</option>
-                                <?php echo $classShow->getClassSelectListByschool(); ?>
+                              
                             </select>
                         </div>
 

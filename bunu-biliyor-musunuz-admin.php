@@ -1,25 +1,46 @@
 <!DOCTYPE html>
 <html lang="tr">
-<?php
 
+<?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role'])) {
-    // && $_SESSION['role'] == 1
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
     include_once "classes/dbh.classes.php";
-    include_once "classes/doyouknow.php";
-    $doyouknowObj = new DoYouKnow();
-    include_once "views/pages-head.php";
-    ?>
-    <!--end::Head-->
-    <!--begin::Body-->
+    include "classes/classes.classes.php";
 
-    <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true"
-        data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true"
-        data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true"
-        data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true"
-        data-kt-app-aside-push-footer="true" class="app-default">
-        <!--begin::Theme mode setup on page load-->
+    include_once "views/pages-head.php";
+    $class = new Classes();
+    $class_data = $class->getClasses();
+
+    // Sınıf seçeneklerini uygun formata dönüştür
+    $class_options = [];
+    foreach ($class_data as $class_item) {
+        $class_options[$class_item['id']] = $class_item['name'];
+    }
+
+    // Kelime verilerini al
+    $word_data = $class->doyouKnowList();
+
+    // Helper fonksiyon: Sınıf ID'lerini isimlere çevirir
+    function getClassNames($class_ids, $options)
+    {
+        if (empty($class_ids)) return '-';
+
+        $names = [];
+        // Sınıf ID'lerini ayır (noktalı virgül ile ayrılmış)
+        $id_array = explode(';', $class_ids);
+
+        foreach ($id_array as $id) {
+            if (isset($options[$id])) {
+                $names[] = $options[$id];
+            }
+        }
+        return empty($names) ? '-' : implode(', ', $names);
+    }
+
+?>
+
+    <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
         <script>
             var defaultThemeMode = "light";
             var themeMode;
@@ -39,179 +60,583 @@ if (isset($_SESSION['role'])) {
                 document.documentElement.setAttribute("data-bs-theme", themeMode);
             }
         </script>
-        <!--end::Theme mode setup on page load-->
-        <!--begin::App-->
         <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
-            <!--begin::Page-->
             <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
-                <!--begin::Header-->
                 <?php include_once "views/header.php"; ?>
-                <!--end::Header-->
-                <!--begin::Wrapper-->
                 <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
-                    <!--begin::Sidebar-->
                     <?php include_once "views/sidebar.php"; ?>
-                    <!--end::Sidebar-->
-                    <!--begin::Main-->
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
-                        <!--begin::Content wrapper-->
                         <div class="d-flex flex-column flex-column-fluid">
-                            <!--begin::Toolbar-->
                             <?php include_once "views/toolbar.php"; ?>
-                            <!--end::Toolbar-->
-                            <!--begin::Content-->
                             <div id="kt_app_content" class="app-content flex-column-fluid">
-                                <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
-                                    <!--begin::Card-->
                                     <div class="card">
-                                        <!--begin::Card header-->
                                         <div class="card-header border-0 pt-6">
-                                            <!--begin::Card title-->
                                             <div class="card-title">
-                                                <!--begin::Search-->
                                                 <div class="d-flex align-items-center position-relative my-1">
                                                     <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5">
                                                         <span class="path1"></span>
                                                         <span class="path2"></span>
                                                     </i>
-                                                    <input type="text" data-kt-customer-table-filter="search"
-                                                        class="form-control form-control-solid w-250px ps-12"
-                                                        placeholder="Ara" />
+                                                    <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder=" Bilgi/Sınıf Ara" />
                                                 </div>
-                                                <!--end::Search-->
                                             </div>
-                                            <!--begin::Card title-->
-                                            <?php if ($_SESSION['role'] == 1 or $_SESSION['id'] == 3) { ?>
-                                                <!--begin::Card toolbar-->
-                                                <div class="card-toolbar">
-                                                    <!--begin::Toolbar-->
-                                                    <div class="d-flex justify-content-end"
-                                                        data-kt-customer-table-toolbar="base">
-                                                        <!--begin::Add school-->
-                                                        <button type="button" class="btn btn-primary btn-sm"
-                                                            data-bs-toggle="modal" data-bs-target="#kt_modal_add_customer">Bilgi
-                                                            Ekle</button>
-                                                        <!--end::Add school-->
-                                                    </div>
-                                                    <!--end::Toolbar-->
-                                                    <div class="d-flex justify-content-end align-items-center d-none"
-                                                        data-kt-customer-table-toolbar="selected">
-                                                        <div class="fw-bold me-5">
-                                                            <span class="me-2"
-                                                                data-kt-customer-table-select="selected_count"></span>Seçildi
-                                                        </div>
-                                                        <button type="button" class="btn btn-danger btn-sm"
-                                                            data-kt-customer-table-select="delete_selected">Seçilenleri Pasif
-                                                            Yap</button>
+                                            <div class="card-toolbar">
+                                                <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
+                                                    <button type="button" class="btn btn-primary btn-sm mb-3" data-bs-toggle="modal" data-bs-target="#addPackageModal">
+                                                        Bilgi Ekle
+                                                    </button>
+                                                </div>
+                                                <div class="d-flex justify-content-end align-items-center d-none" data-kt-customer-table-toolbar="selected">
+                                                    <div class="fw-bold me-5">
+                                                        <span class="me-2" data-kt-customer-table-select="selected_count"></span>Seçildi
                                                     </div>
                                                 </div>
-                                                <!--end::Card toolbar-->
-                                            <?php } ?>
+                                            </div>
                                         </div>
-                                        <!--end::Card header-->
-                                        <!--begin::Card body-->
                                         <div class="card-body pt-0">
-                                            <!--begin::Table-->
-                                            <table class="table align-middle table-row-dashed fs-6 gy-5"
-                                                id="kt_customers_table">
+                                            <table id="kt_datatable_words" class="table align-middle table-row-dashed fs-6 gy-5">
                                                 <thead>
-                                                    <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-
-                                                        <th class="w-10px pe-2">
-                                                            <div
-                                                                class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                                                <input class="form-check-input" type="checkbox"
-                                                                    data-kt-check="true"
-                                                                    data-kt-check-target="#kt_customers_table .form-check-input"
-                                                                    value="1" />
-                                                            </div>
-                                                        </th>
-                                                        <th class="min-w-40px">Görsel</th>
-                                                        <th class="min-w-125px">İçerik</th>
-                                                        <th class="min-w-125px">Sınıf</th>
-                                                        <th class="min-w-125px">Okul</th>
-                                                        <th class="min-w-125px">Görüntüleme Tarihi</th>
-                                                        <th class="min-w-40px">Durum</th>
-                                                        <th class="text-end min-w-70px">İşlemler</th>
+                                                    <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
+                                                        <th class="min-w-50px">ID</th>
+                                                        <th class="min-w-250px">Bilgi</th>
+                                                        <th class="min-w-75px">Görsel</th>
+                                                        <th class="min-w-100px">Sınıf</th>
+                                                        <th class="min-w-100px">Baş. Tarihi</th>
+                                                        <th class="min-w-100px">Bitiş Tarihi</th>
+                                                        <th class="min-w-75px">Durum</th>
+                                                        <th class="text-end min-w-100px">İşlemler</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="fw-semibold text-gray-600">
-                                                    <?php
-
-                                                    $doyouknowObj->getAllDoYouKnowsList();
-
-                                                    ?>
+                                                    <?php foreach ($word_data as $row): ?>
+                                                        <tr>
+                                                            <td><?php echo $row['id']; ?></td>
+                                                            <td>
+                                                                <div class="text-gray-800 fs-6">
+                                                                    <?php echo htmlspecialchars(mb_substr($row['body'], 0, 80, 'UTF-8')) . (mb_strlen($row['body'], 'UTF-8') > 80 ? '...' : ''); ?>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <?php if (!empty($row['image'])): ?>
+                                                                    <a href="<?php echo htmlspecialchars($row['image']); ?>" target="_blank">Gör</a>
+                                                                <?php else: ?>
+                                                                    -
+                                                                <?php endif; ?>
+                                                            </td>
+                                                            <td><?php echo getClassNames($row['class_id'], $class_options); ?></td>
+                                                            <td><?php echo !empty($row['start_date']) ? htmlspecialchars($row['start_date']) : '-'; ?></td>
+                                                            <td><?php echo !empty($row['end_date']) ? htmlspecialchars($row['end_date']) : '-'; ?></td>
+                                                            <td>
+                                                                <span class="badge badge-light-<?php echo ($row['is_active'] == 1 ? 'success' : 'danger'); ?>">
+                                                                    <?php echo ($row['is_active'] == 1 ? 'Aktif' : 'Pasif'); ?>
+                                                                </span>
+                                                            </td>
+                                                            <td class="text-end">
+                                                                <a href="#" class="btn btn-icon btn-sm btn-light-primary me-2 edit-btn"
+                                                                    data-bs-toggle="modal" data-bs-target="#updatePackageModal"
+                                                                    data-id="<?php echo $row['id']; ?>"
+                                                                    data-meaning="<?php echo htmlspecialchars($row['body']); ?>"
+                                                                    data-image="<?php echo htmlspecialchars($row['image']); ?>"
+                                                                    data-classes='<?php echo $row['class_id']; ?>'
+                                                                    data-start-date="<?php echo htmlspecialchars($row['start_date']); ?>"
+                                                                    data-end-date="<?php echo htmlspecialchars($row['end_date']); ?>"
+                                                                    data-status="<?php echo $row['is_active']; ?>">
+                                                                    <i class="ki-duotone ki-pencil fs-4"><span class="path1"></span><span class="path2"></span></i>
+                                                                </a>
+                                                               
+                                                                    <!-- Pasif kelimeler için sil butonu -->
+                                                                    <a href="#" class="btn btn-icon btn-sm btn-light-danger delete-btn" data-id="<?php echo $row['id']; ?>">
+                                                                        <i class="ki-duotone ki-trash-square fs-4"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
+                                                                    </a>
+                                                               
+                                                            </td>
+                                                        </tr>
+                                                    <?php endforeach; ?>
                                                 </tbody>
                                             </table>
-                                            <!--end::Table-->
                                         </div>
-                                        <!--end::Card body-->
                                     </div>
-                                    <!--end::Card-->
-                                    <!--begin::Modals-->
-                                    <!--begin::Modal - Customers - Add-->
-                                    <?php include_once "views/do-you-know/do-you-know.php"; ?>
-                                    <!--end::Modal - Customers - Add-->
-                                    <!--end::Modals-->
                                 </div>
-                                <!--end::Content container-->
                             </div>
-                            <!--end::Content-->
                         </div>
-                        <!--end::Content wrapper-->
-                        <!--begin::Footer-->
                         <?php include_once "views/footer.php"; ?>
-                        <!--end::Footer-->
                     </div>
-                    <!--end:::Main-->
-                    <!--begin::aside-->
                     <?php include_once "views/aside.php"; ?>
-                    <!--end::aside-->
                 </div>
-                <!--end::Wrapper-->
             </div>
-            <!--end::Page-->
         </div>
-        <!--end::App-->
-        <!--begin::Scrolltop-->
         <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
             <i class="ki-duotone ki-arrow-up">
                 <span class="path1"></span>
                 <span class="path2"></span>
             </i>
         </div>
-        <!--end::Scrolltop-->
-        <!--begin::Javascript-->
+
+        <!-- ADD MODAL -->
+        <div class="modal fade" id="addPackageModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered mw-650px">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="fw-bold">Yeni Bilgi Ekle</h2>
+                        <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
+                            <i class="ki-duotone ki-cross fs-1">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                        </div>
+                    </div>
+                    <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
+                        <form id="addPackageForm" class="form" action="api/add-word.php" method="POST" enctype="multipart/form-data">
+                            <div class="fv-row mb-7">
+                                <label class="required fw-semibold fs-6 mb-2">Bilgi</label>
+                                <textarea name="meaning" id="add_meaning" class="form-control form-control-solid mb-3 mb-lg-0" rows="4" placeholder="İçeriği yazın..." required></textarea>
+                            </div>
+
+                            <div class="fv-row mb-7">
+                                <label class="fw-semibold fs-6 mb-2">Görsel</label>
+                                <input type="file" name="image" id="add_image" class="form-control form-control-solid mb-3 mb-lg-0" accept="image/*" />
+                            </div>
+
+                            <div class="fv-row mb-7">
+                                <label class="required fw-semibold fs-6 mb-2">Sınıf</label>
+                                <select name="classes[]" id="add_classes" class="form-select form-select-solid" multiple="multiple" required>
+                                   
+                                    <?php foreach ($class_options as $id => $name): ?>
+                                        <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($name); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <div class="row row-cols-lg-2 g-10">
+                                <div class="col">
+                                    <div class="fv-row mb-7">
+                                        <label class="required fw-semibold fs-6 mb-2">Başlangıç Tarihi</label>
+                                        <input type="date" name="start_date" id="add_start_date" class="form-control form-control-solid" required />
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="fv-row mb-7">
+                                        <label class="required fw-semibold fs-6 mb-2">Bitiş Tarihi</label>
+                                        <input type="date" name="end_date" id="add_end_date" class="form-control form-control-solid" required />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="fv-row mb-7">
+                                <label class="required fw-semibold fs-6 mb-2">Durum</label>
+                                <select name="status" id="add_status" class="form-select form-select-solid" required>
+                                    <option value="1">Aktif</option>
+                                    <option value="0">Pasif</option>
+                                </select>
+                            </div>
+
+                            <div class="text-center pt-15">
+                                <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">İptal</button>
+                                <button type="submit" class="btn btn-primary" id="add_submit_btn">
+                                    <span class="indicator-label">Kaydet</span>
+                                    <span class="indicator-progress">Lütfen bekleyiniz...
+                                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                    </span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- UPDATE MODAL -->
+        <div class="modal fade" id="updatePackageModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered mw-650px">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="fw-bold">İçeriği Güncelle</h2>
+                        <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
+                            <i class="ki-duotone ki-cross fs-1">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                        </div>
+                    </div>
+                    <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
+                        <form id="updatePackageForm" class="form" action="api/update-word.php" method="POST" enctype="multipart/form-data">
+                            <input type="hidden" name="id" id="update_id" />
+
+                            <div class="fv-row mb-7">
+                                <label class="required fw-semibold fs-6 mb-2">Bilgi</label>
+                                <textarea name="meaning" id="update_meaning" class="form-control form-control-solid mb-3 mb-lg-0" rows="4" placeholder="Bilgi" required></textarea>
+                            </div>
+
+                            <div class="fv-row mb-7">
+                                <label class="fw-semibold fs-6 mb-2">Görsel</label>
+                                <input type="file" name="image" id="update_image" class="form-control form-control-solid mb-3 mb-lg-0" accept="image/*" />
+                                <small class="form-text text-muted" id="current_image_info">Mevcut görsel: Yok</small>
+                            </div>
+
+                            <div class="fv-row mb-7">
+                                <label class="required fw-semibold fs-6 mb-2">Sınıf</label>
+                                <select name="classes[]" id="update_classes" class="form-select form-select-solid" multiple="multiple" required>
+                                   
+                                    <?php foreach ($class_options as $id => $name): ?>
+                                        <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($name); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <div class="row row-cols-lg-2 g-10">
+                                <div class="col">
+                                    <div class="fv-row mb-7">
+                                        <label class="required fw-semibold fs-6 mb-2">Başlangıç Tarihi</label>
+                                        <input type="date" name="start_date" id="update_start_date" class="form-control form-control-solid" required />
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="fv-row mb-7">
+                                        <label class="required fw-semibold fs-6 mb-2">Bitiş Tarihi</label>
+                                        <input type="date" name="end_date" id="update_end_date" class="form-control form-control-solid" required />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="fv-row mb-7">
+                                <label class="required fw-semibold fs-6 mb-2">Durum</label>
+                                <select name="status" id="update_status" class="form-select form-select-solid" required>
+                                    <option value="1">Aktif</option>
+                                    <option value="0">Pasif</option>
+                                </select>
+                            </div>
+
+                            <div class="text-center pt-15">
+                                <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">İptal</button>
+                                <button type="submit" class="btn btn-primary" id="update_submit_btn">
+                                    <span class="indicator-label">Güncelle</span>
+                                    <span class="indicator-progress">Lütfen bekleyiniz...
+                                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                    </span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script>
             var hostUrl = "assets/";
         </script>
-        <!--begin::Global Javascript Bundle(mandatory for all pages)-->
         <script src="assets/plugins/global/plugins.bundle.js"></script>
         <script src="assets/js/scripts.bundle.js"></script>
-        <!--end::Global Javascript Bundle-->
-        <!--begin::Vendors Javascript(used for this page only)-->
         <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
-        <!--end::Vendors Javascript-->
-        <!--begin::Custom Javascript(used for this page only)-->
-
-        <script src="assets/js/custom/apps/doyouknow/list.js"></script>;
-        <script src="assets/js/custom/apps/doyouknow/add.js"></script>
-
-
         <script src="assets/js/widgets.bundle.js"></script>
         <script src="assets/js/custom/widgets.js"></script>
-        <script src="assets/js/custom/apps/chat/chat.js"></script>
-        <script src="assets/js/custom/utilities/modals/upgrade-plan.js"></script>
-        <script src="assets/js/custom/utilities/modals/create-account.js"></script>
-        <script src="assets/js/custom/utilities/modals/create-app.js"></script>
-        <script src="assets/js/custom/utilities/modals/users-search.js"></script>
-        <!--end::Custom Javascript-->
-        <!--end::Javascript-->
-    </body>
-    <!--end::Body-->
 
-    </html>
+        <script>
+            // Datatables başlatma
+            var KTDatatables = (function() {
+                var table;
+
+                var initDatatable = function() {
+                    table = $('#kt_datatable_words').DataTable({
+                        info: false,
+                        order: [],
+                        paging: true,
+                        searching: true,
+                        columnDefs: [{
+                            targets: 7,
+                            orderable: false,
+                            searchable: false,
+                            className: 'text-end',
+                        }],
+                        initComplete: function() {
+                            const searchInput = document.querySelector('[data-kt-customer-table-filter="search"]');
+                            if (searchInput) {
+                                searchInput.addEventListener('keyup', function(e) {
+                                    table.search(e.target.value).draw();
+                                });
+                            }
+                        }
+                    });
+                };
+
+                return {
+                    init: function() {
+                        initDatatable();
+                    },
+                };
+            })();
+
+            // Sayfa yüklendiğinde çalışacak kod
+            $(document).ready(function() {
+                // Datatable'ı başlat
+                KTDatatables.init();
+
+                // Modal event listener'ları
+                initializeModalEvents();
+
+                // Form submit event'leri
+                initializeFormSubmits();
+            });
+
+            // Modal event'lerini başlatma
+            function initializeModalEvents() {
+                // Edit buton event'i
+                $(document).on('click', '.edit-btn', function(e) {
+                    e.preventDefault();
+
+                    const id = $(this).data('id');
+                    const meaning = $(this).data('meaning');
+                    const image = $(this).data('image');
+                    const classes = $(this).data('classes');
+                    const startDate = $(this).data('start-date');
+                    const endDate = $(this).data('end-date');
+                    const status = $(this).data('status');
+
+                    // Form alanlarını doldur
+                    $('#update_id').val(id);
+                    $('#update_meaning').val(meaning);
+                    $('#update_start_date').val(startDate);
+                    $('#update_end_date').val(endDate);
+
+                    // Görsel bilgisi
+                    const currentImageInfo = $('#current_image_info');
+                    currentImageInfo.html(image ? `Mevcut görsel: <a href="${image}" target="_blank">Görüntüle</a>` : 'Mevcut görsel: Yok');
+
+                    // Sınıf ID'lerini array'e çevir ve select'e set et
+                    const classArray = classes ? classes.split(';') : [];
+                    $('#update_classes').val(classArray);
+
+                    // Durumu set et
+                    $('#update_status').val(status);
+                });
+
+                // Modal kapandığında formları resetle
+                $('#addPackageModal').on('hidden.bs.modal', function() {
+                    $('#addPackageForm')[0].reset();
+                    $('#add_classes').val([]);
+                    $('#add_status').val('1');
+                });
+
+                $('#updatePackageModal').on('hidden.bs.modal', function() {
+                    $('#updatePackageForm')[0].reset();
+                    $('#update_classes').val([]);
+                    $('#update_status').val('1');
+                });
+            }
+
+            // Form submit event'lerini başlatma
+            function initializeFormSubmits() {
+                // Add form submit - AJAX ile backend'e gönder
+                $('#addPackageForm').on('submit', function(e) {
+                    e.preventDefault();
+
+                    const submitBtn = $('#add_submit_btn');
+                    const indicator = submitBtn.find('.indicator-label');
+                    const progress = submitBtn.find('.indicator-progress');
+
+                    // Loading state
+                    indicator.addClass('d-none');
+                    progress.removeClass('d-none');
+                    submitBtn.prop('disabled', true);
+
+                    // FormData oluştur
+                    const formData = new FormData(this);
+
+                    // AJAX ile backend'e gönder
+                    $.ajax({
+                        url: './includes/ajax.php?service=addDoyouKnow',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    text: response.message || "Bilgi başarıyla eklendi!",
+                                    icon: "success",
+                                    buttonsStyling: false,
+                                    confirmButtonText: "Tamam",
+                                    customClass: {
+                                        confirmButton: "btn btn-primary"
+                                    }
+                                }).then(() => {
+                                    // Modalı kapat ve formu resetle
+                                    $('#addPackageModal').modal('hide');
+                                    $('#addPackageForm')[0].reset();
+                                    $('#add_classes').val([]);
+                                    $('#add_status').val('1');
+
+                                    // Sayfayı yenile (veya datatable'ı güncelle)
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    text: response.message || "Bir hata oluştu!",
+                                    icon: "error",
+                                    buttonsStyling: false,
+                                    confirmButtonText: "Tamam",
+                                    customClass: {
+                                        confirmButton: "btn btn-primary"
+                                    }
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire({
+                                text: "Sunucu hatası: " + error,
+                                icon: "error",
+                                buttonsStyling: false,
+                                confirmButtonText: "Tamam",
+                                customClass: {
+                                    confirmButton: "btn btn-primary"
+                                }
+                            });
+                        },
+                        complete: function() {
+                            // Loading state'i kaldır
+                            indicator.removeClass('d-none');
+                            progress.addClass('d-none');
+                            submitBtn.prop('disabled', false);
+                        }
+                    });
+                });
+
+                // Update form submit - AJAX ile backend'e gönder
+                $('#updatePackageForm').on('submit', function(e) {
+                    e.preventDefault();
+
+                    const submitBtn = $('#update_submit_btn');
+                    const indicator = submitBtn.find('.indicator-label');
+                    const progress = submitBtn.find('.indicator-progress');
+
+                    // Loading state
+                    indicator.addClass('d-none');
+                    progress.removeClass('d-none');
+                    submitBtn.prop('disabled', true);
+
+                    // FormData oluştur
+                    const formData = new FormData(this);
+
+                    // AJAX ile backend'e gönder
+                    $.ajax({
+                        url: './includes/ajax.php?service=updateDoyouKnow',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    text: response.message || "Bilgi başarıyla güncellendi!",
+                                    icon: "success",
+                                    buttonsStyling: false,
+                                    confirmButtonText: "Tamam",
+                                    customClass: {
+                                        confirmButton: "btn btn-primary"
+                                    }
+                                }).then(() => {
+                                    // Modalı kapat
+                                    $('#updatePackageModal').modal('hide');
+
+                                    // Sayfayı yenile (veya datatable'ı güncelle)
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    text: response.message || "Bir hata oluştu!",
+                                    icon: "error",
+                                    buttonsStyling: false,
+                                    confirmButtonText: "Tamam",
+                                    customClass: {
+                                        confirmButton: "btn btn-primary"
+                                    }
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire({
+                                text: "Sunucu hatası: " + error,
+                                icon: "error",
+                                buttonsStyling: false,
+                                confirmButtonText: "Tamam",
+                                customClass: {
+                                    confirmButton: "btn btn-primary"
+                                }
+                            });
+                        },
+                        complete: function() {
+                            // Loading state'i kaldır
+                            indicator.removeClass('d-none');
+                            progress.addClass('d-none');
+                            submitBtn.prop('disabled', false);
+                        }
+                    });
+                });
+            }
+
+            // Silme işlemi
+            $(document).on('click', '.delete-btn', function(e) {
+                e.preventDefault();
+                const wordId = $(this).data('id');
+
+                Swal.fire({
+                    text: `ID ${wordId} numaralı içeriği silmek istediğinizden emin misiniz?`,
+                    icon: "error",
+                    showCancelButton: true,
+                    buttonsStyling: false,
+                    confirmButtonText: "Evet, Sil!",
+                    cancelButtonText: "Hayır, İptal",
+                    customClass: {
+                        confirmButton: "btn btn-danger",
+                        cancelButton: "btn btn-light"
+                    }
+                }).then(function(result) {
+                    if (result.isConfirmed) {
+                        // AJAX ile silme işlemi
+                        $.post('./includes/ajax.php?service=deleteDoyouKnow', {
+                            id: wordId
+                        }, function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    text: response.message || "Bilgi başarıyla silindi!",
+                                    icon: "success",
+                                    buttonsStyling: false,
+                                    confirmButtonText: "Tamam",
+                                    customClass: {
+                                        confirmButton: "btn btn-primary"
+                                    }
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    text: response.message || "Bir hata oluştu!",
+                                    icon: "error",
+                                    buttonsStyling: false,
+                                    confirmButtonText: "Tamam",
+                                    customClass: {
+                                        confirmButton: "btn btn-primary"
+                                    }
+                                });
+                            }
+                        }).fail(function() {
+                            Swal.fire({
+                                text: "Sunucu hatası!",
+                                icon: "error",
+                                buttonsStyling: false,
+                                confirmButtonText: "Tamam",
+                                customClass: {
+                                    confirmButton: "btn btn-primary"
+                                }
+                            });
+                        });
+                    }
+                });
+            });
+        </script>
+    </body>
+
+</html>
 <?php } else {
     header("location: index");
 }

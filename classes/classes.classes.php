@@ -885,6 +885,34 @@ class Classes extends Dbh
 
 		return $classData;
 	}
+	public function todayWord()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM todays_word ');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		
+	}
+	public function doyouKnowList()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM doyouknow ');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		
+	}
 
 	public function getClassesListsWithPreschool()
 	{

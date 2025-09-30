@@ -114,49 +114,60 @@ class TodayWord extends Dbh
             if (!$value['is_active']) {
                 $active_status = '<span class="badge badge-light-danger">Pasif</span>';
             }
-            $date = $value['show_date'] ? $dateFormat->changeDate($value['show_date']) : '-';
+
+            // GÖRÜNTÜLEME TARİHİ ALANI KALDIRILDI
+            // $date = $value['show_date'] ? $dateFormat->changeDate($value['show_date']) : '-'; 
+
+            // Başlangıç ve Bitiş Tarihleri Eklendi
+            $start_date = $value['start_date'] ? $dateFormat->changeDate($value['start_date']) : '-';
+            $end_date = $value['end_date'] ? $dateFormat->changeDate($value['end_date']) : '-';
 
             $alter_button = $value['is_active'] ? "Pasif Yap" : "Aktif Yap";
             $wordsList = '
-                    <tr id="' . $value['id'] . '">
-                        <td>
-                            <div class="form-check form-check-sm form-check-custom form-check-solid">
-                                <input class="form-check-input" type="checkbox" value="1" />
+                <tr id="' . $value['id'] . '">
+                    <td>
+                        <div class="form-check form-check-sm form-check-custom form-check-solid">
+                            <input class="form-check-input" type="checkbox" value="' . $value['id'] . '" />
+                        </div>
+                    </td>
+                    <td>
+                        <a class="cursor-pointer symbol symbol-90px symbol-lg-90px"><img src="assets/media/today-word/' . $value['image'] . '"></a>
+                    </td>
+                    <td>
+                        <a class="text-gray-800 text-hover-primary mb-1">' . $value['word'] . '</a>
+                    </td>
+                    <td>
+                    ' . (strlen($value['body']) > 40 ? substr($value['body'], 0, 40) . '...' : $value['body']) . '
+                    </td>
+
+                    <td>' . $value['class_name'] . '</td>
+                    <td>' . $value['school_name'] . '</td>
+                    
+                    <td>' . $start_date . '</td>
+                    <td>' . $end_date . '</td>
+                    <td>
+                        <span class="symbol symbol-10px me-2">
+                        ' . $active_status . '
+                        </span>
+                    </td>
+                    <td class="text-end">
+                        <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
+                            data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
+                            <i class="ki-duotone ki-down fs-5 ms-1"></i></a>
+                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
+                            data-kt-menu="true">
+                            
+                            <div class="menu-item px-3">
+                                <a href="#" class="menu-link px-3" data-bs-toggle="modal" data-bs-target="#kt_modal_edit_customer" 
+                                    data-id="' . $value['id'] . '" onclick="loadWordData(' . $value['id'] . ')">Düzenle</a>
                             </div>
-                        </td>
-                        <td>
-                            <a class="cursor-pointer symbol symbol-90px symbol-lg-90px"><img src="assets/media/today-word/' . $value['image'] . '"></a>
-                        </td>
-                        <td>
-                            <a class="text-gray-800 text-hover-primary mb-1">' . $value['word'] . '</a>
-                        </td>
-                        <td>
-                        ' . (strlen($value['body']) > 40 ? substr($value['body'], 0, 40) . '...' : $value['body']) . '
-                        </td>
-
-                        <td>' . $value['class_name'] . '</td>
-                        <td>' . $value['school_name'] . '</td>
-                        <td>' . $date . '</td>
-
-                        <td>
-                            <span class="symbol symbol-10px me-2">
-
-                            ' . $active_status . '
-                            </span>
-                        </td>
-                        <td class="text-end">
-                            <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
-                                data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">İşlemler
-                                <i class="ki-duotone ki-down fs-5 ms-1"></i></a>
-                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
-                                data-kt-menu="true">
-                                <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row">' . $alter_button . '</a>
-                                </div>
+                            <div class="menu-item px-3">
+                                <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row" data-id="' . $value['id'] . '">' . $alter_button . '</a>
                             </div>
-                        </td>
-                    </tr>
-                ';
+                        </div>
+                    </td>
+                </tr>
+            ';
             echo $wordsList;
         }
     }
@@ -209,20 +220,18 @@ class TodayWord extends Dbh
 
     function getTodaysOrRandomWord(int $school_id, ?int $class_id): ?array
     {
-
         $db = $this->connect();
 
+        // Önce bugünün tarihine uygun ve aktif kelimeleri ara
         $queryToday = "
-        SELECT *
-        FROM todays_word d
-        LEFT JOIN classes_lnp c ON c.id = :class_id
-        WHERE d.is_active = 1
-            AND d.school_id = :school_id
-            AND (d.class_id = :class_id OR d.class_id IS NULL)
-            AND d.show_date = CURDATE()
-            AND (d.group_type = c.class_type OR d.group_type IS NULL)
-        LIMIT 1;
-        ";
+    SELECT tw.* 
+    FROM todays_word tw
+    WHERE tw.is_active = 1
+        AND tw.school_id = :school_id
+        AND (tw.class_id LIKE CONCAT('%', :class_id, '%') OR tw.class_id IS NULL OR tw.class_id = '')
+        AND CURDATE() BETWEEN tw.start_date AND tw.end_date
+    LIMIT 1;
+    ";
 
         $stmt = $db->prepare($queryToday);
         $stmt->execute([
@@ -231,20 +240,23 @@ class TodayWord extends Dbh
         ]);
 
         $todayWord = $stmt->fetch(PDO::FETCH_ASSOC);
+
         if ($todayWord) {
             return $todayWord;
         }
 
+        // Bugüne özel kelime bulunamazsa, rastgele aktif bir kelime getir
         $queryRandom = "
-        SELECT * FROM todays_word d
-        LEFT JOIN classes_lnp c ON c.id = :class_id
-        WHERE is_active = 1
-            AND d.school_id = :school_id
-            AND (d.class_id = :class_id OR d.class_id IS NULL)
-            AND (d.group_type = c.class_type OR d.group_type IS NULL)
-        ORDER BY RAND()
-        LIMIT 1
-        ";
+    SELECT tw.* 
+    FROM todays_word tw
+    WHERE tw.is_active = 1
+        AND tw.school_id = :school_id
+        AND (tw.class_id LIKE CONCAT('%', :class_id, '%') OR tw.class_id IS NULL OR tw.class_id = '')
+        AND (tw.start_date IS NULL OR tw.start_date <= CURDATE())
+        AND (tw.end_date IS NULL OR tw.end_date >= CURDATE())
+    ORDER BY RAND()
+    LIMIT 1
+    ";
 
         $stmt = $db->prepare($queryRandom);
         $stmt->execute([
@@ -252,7 +264,7 @@ class TodayWord extends Dbh
             ':class_id' => $class_id,
         ]);
 
-        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        return  $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+       
     }
-
 }
