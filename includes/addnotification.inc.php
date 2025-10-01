@@ -60,8 +60,8 @@ try {
 		$notificationtData['start_date'] = date('Y-m-d H:i:s');
 	}
 
-	$startDate = DateTime::createFromFormat('Y-m-d H:i:s', $notificationtData['start_date']);
-	$expireDate = DateTime::createFromFormat('Y-m-d', $notificationtData['expire_date']);
+	$startDate = DateTime::createFromFormat('d-m-Y', $notificationtData['start_date']);
+	$expireDate = DateTime::createFromFormat('d-m-Y', $notificationtData['expire_date']);
 
 	if (!$startDate) {
 		http_response_code(400);

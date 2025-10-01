@@ -122,7 +122,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <!--end::Menu 1-->
                                                         <!--end::Filter-->
                                                     <!--begin::Add school-->
-                                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#kt_modal_add_customer">Ünite Ekle</button>
+                                                   
                                                     <!--end::Add school-->
                                                 </div>
                                                 <!--end::Toolbar-->

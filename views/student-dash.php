@@ -524,9 +524,9 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
             <!--end::Col-->
 
             <!--begin::Col-->
-            <div class="col-xxl-12 mb-5">
-                <div class="card card-flush shadow-lg border-2 border-primary h-100">
-                    <div class="card-header pt-5 border-bottom border-primary border-3">
+            <div class="col-xxl-12 mb-1">
+                <div class="card card-flush shadow-lg border-2  h-100">
+                    <div class="card-header  border-bottom border-primary border-3">
                         <h2 class="card-title d-flex align-items-center flex-wrap">
                             <i class="fa-solid fa-graduation-cap me-3 fs-3 text-info"></i>
                             <span class="card-label fw-bolder text-gray-800">Haftanın Kelime Keşfi</span>
@@ -536,16 +536,16 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                         <?php if (!empty($todaysWord['word'])): ?>
                             <div class="row g-5 align-items-center">
 
-                                <div class="col-lg-8 order-lg-1 order-2">
-                                    <div class="mb-4">
-                                        <span class="fs-7 fw-semibold text-muted d-block mb-1">HAFTANIN KELİMESİ</span>
-                                        <h3 style="font-size:20px;" class="display-3 fw-bolder text-dark mb-2 border-bottom border-warning border-3 d-inline-block pb-1">
-                                            "<?php echo htmlspecialchars($todaysWord['word']) ?>"
-                                        </h3>
+                                <div class="col-lg-8 order-lg-1 order-2" style="margin-top: -16px;">
+                                    <div class="mb-2">
+                                        <h3 style="font-size:16px; background-color:orange; padding:6px 12px; border-radius:8px; display:inline-block;" 
+    class="display-3 fw-bolder text-dark mb-2">
+    🔸 <?php echo htmlspecialchars($todaysWord['word']) ?> 🔸
+</h3>
                                     </div>
                                     <?php if (!empty($todaysWord['body'])): ?>
                                         <div class="bg-light-primary rounded-3 p-4">
-                                            <p class="text-gray-700 fw-normal fs-5 lh-base mb-0">
+                                            <p class="text-gray-700 fw-normal fs-5 lh-base mb-0" style="font-size:12px!important">
                                                 <i class="fa-solid fa-quote-left text-primary me-2"></i>
                                                 <?php echo nl2br(htmlspecialchars($todaysWord['body'])) ?>
                                             </p>
@@ -596,8 +596,8 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
             </div>
 
             <div class="col-xxl-12 mb-5 mb-xl-10">
-                <div class="card card-flush shadow border-2 border-info h-100">
-                    <div class="card-header pt-5 border-bottom border-info border-3">
+                <div class="card card-flush shadow border-2  h-100">
+                    <div class="card-header  border-bottom border-info border-3">
                         <h2 class="card-title d-flex align-items-center flex-wrap">
                             <i class="fa-solid fa-lightbulb me-3 fs-3 text-warning"></i>
                             <span class="card-label fw-bolder text-gray-800">Bunu Biliyor Musunuz?</span>
@@ -605,9 +605,9 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                     </div>
                     <div class="card-body p-5">
                         <?php if (!empty($todaysKnow['body'])): ?>
-                            <div class="row g-5 align-items-center">
+                            <div class="row g-5 align-items-center" style="margin-top:-45px;">
 
-                                <div class="col-lg-4 col-md-5 text-center order-md-1 order-1 mb-4 mb-md-0">
+                                <div class="col-lg-4 col-md-5 text-center order-md-1 order-1 mb-4 mb-md-0" >
                                     <?php
                                     $imagePath = !empty($todaysKnow['image']) ? "assets/media/tdo-you-know/" . $todaysKnow['image'] : null;
                                     if ($imagePath && file_exists($imagePath)):
@@ -642,10 +642,10 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                     <?php endif; ?>
                                 </div>
 
-                                <div class="col-lg-8 col-md-7 order-md-2 order-2">
-                                    <h3 class="fs-2 fw-bolder text-info mb-3">Günün İlginç Bilgisi</h3>
+                                <div class="col-lg-8 col-md-7 order-md-2 order-2" >
+                                    
                                     <div class="bg-light-primary rounded-3 p-4 border-start border-4 border-primary">
-                                        <p class="text-gray-700 fw-normal fs-5 lh-base mb-0">
+                                        <p class="text-gray-700 fw-normal fs-5 lh-base mb-0" style="font-size:12px!important">
                                             <i class="fa-solid fa-check-circle text-primary me-2"></i>
                                             <?php echo nl2br($todaysKnow['body']) ?>
                                         </p>
