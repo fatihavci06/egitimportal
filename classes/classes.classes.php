@@ -1282,24 +1282,69 @@ WHERE t.id = :id";
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
 	public function getMainSchoolContentByUnitAndTopicId($unit_id, $topic_id)
-	{
-		$stmt = $this->connect()->prepare('
+{
+    // Ana içerikleri çek
+    $stmt = $this->connect()->prepare('
         SELECT * 
-        FROM main_school_content_lnp 
-        WHERE unit_id = :unit_id AND topic_id = :topic_id  AND status=1
+        FROM main_school_content_lnp
+        WHERE unit_id = :unit_id AND topic_id = :topic_id AND status = 1
         ORDER BY id ASC
     ');
 
-		if (!$stmt->execute([
-			'unit_id' => $unit_id,
-			'topic_id' => $topic_id
-		])) {
-			$stmt = null;
-			exit();
-		}
+    if (!$stmt->execute([
+        'unit_id' => $unit_id,
+        'topic_id' => $topic_id
+    ])) {
+        $stmt = null;
+        exit();
+    }
 
-		return $stmt->fetchAll(PDO::FETCH_ASSOC);
-	}
+    $contents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($contents as &$content) {
+        // Öncelik 1: Wordwall varsa
+        $wordwallStmt = $this->connect()->prepare('
+            SELECT * FROM mainschool_wordwall_lnp WHERE main_id = :main_id
+        ');
+        $wordwallStmt->execute(['main_id' => $content['id']]);
+        $wordwall = $wordwallStmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($wordwall) {
+            $content['content_type'] = 'İnteraktif Oyun';
+            continue;
+        }
+
+        // Öncelik 2: İndirilebilir içerik varsa
+        $fileStmt = $this->connect()->prepare('
+            SELECT * FROM mainschool_content_file_lnp WHERE main_id = :main_id
+        ');
+        $fileStmt->execute(['main_id' => $content['id']]);
+        $file = $fileStmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($file) {
+            $content['content_type'] = 'İndirilebilir İçerik';
+            continue;
+        }
+
+        // Öncelik 3: video_url varsa
+        if (!empty($content['video_url'])) {
+            $content['content_type'] = 'Eğitim Videosu';
+            continue;
+        }
+
+        // Öncelik 4: content varsa
+        if (!empty($content['content'])) {
+            $content['content_type'] = 'Text İçerik';
+            continue;
+        }
+
+        // Hiçbiri yoksa boş bırakabiliriz
+        $content['content_type'] = null;
+    }
+
+    return $contents;
+}
+
 
 
 	public function getClassId($userId)
@@ -1540,7 +1585,7 @@ WHERE mc.school_id = 1
 
 		$wordwalls = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		$classData['wordwalls'] = $wordwalls;
-
+		
 		return $classData;
 	}
 

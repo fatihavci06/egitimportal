@@ -286,7 +286,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <?php endforeach;
                                                     } ?>
                                                 </div>
-                                                 <?php  if (isset($data['video_url']) && $data['video_url'] !=null) {   ?>
+
                                                 <div class="row mt-4" id="videoContent"
                                                     style="justify-content: center; margin-top: -35px !important;">
                                                     <div class="video-responsive" style="background: none; max-width: 95%;">
@@ -310,14 +310,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                 title="Video player" <?= $iframeProperties ?>>
                                                             </iframe>
 
-                                                       
+                                                        <?php else: ?>
+                                                            <p>Video bulunamadı veya geçersiz bir video linki.</p>
                                                         <?php endif; ?>
                                                     </div>
                                                 </div>
-                                                <?php } ?>
                                                 <div class="row mt-4">
                                                     <?php
-                                                  
+
                                                     if (isset($data['wordwalls']) && count($data['wordwalls']) > 0) {
                                                         foreach ($data['wordwalls'] as $wordWall): ?>
                                                             <div class="col-md-12 mb-4">
@@ -325,7 +325,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                     <h3 class="card-title mt-4 mb-4">
                                                                         <?= $wordWall['wordwall_title']; ?>
                                                                     </h3>
-                                                                    <div class="card-body p-0" style="height: 800px;">
+                                                                    <div class="card-body p-0" style="height: 400px;">
                                                                         <iframe style="max-width:100%"
                                                                             src="<?= $wordWall['wordwall_url'] ?>" width="100%"
                                                                             height="100%" frameborder="0" allowfullscreen></iframe>

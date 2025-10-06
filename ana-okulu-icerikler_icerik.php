@@ -16,9 +16,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     } else {
         $studentidsi = $_SESSION['id'];
     }
-    $contentList = $unit->getMainSchoolContentByUnitAndTopicId($_GET['unit_id'],$_GET['topic_id']);
+    $contentList = $unit->getMainSchoolContentByUnitAndTopicId($_GET['unit_id'], $_GET['topic_id']);
+
     $topicInfo = $unit->getMainSchoolTopicById($_GET['topic_id']);
-   
+
     include_once "views/pages-head.php";
 ?>
     <style>
@@ -189,7 +190,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
                         <div class="d-flex flex-column flex-column-fluid">
                             <?php include_once "views/toolbar.php"; ?>
-                           
+
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <div class="card-body pt-5 ">
@@ -203,7 +204,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <i class="fas fa-bullseye fa-2x text-white"></i>
                                                     </div>
 
-                                                    <h1 class="fs-3 fw-bold text-dark mb-0"><?= $topicInfo['name'];?></h1>
+                                                    <h1 class="fs-3 fw-bold text-dark mb-0"><?= $topicInfo['name']; ?></h1>
                                                 </div>
 
                                             </header>
@@ -215,7 +216,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 $class = new Classes();
                                                 $roleId = $_SESSION['role'];
 
-                                                if ($roleId == 10002 OR $roleId == 10005) {
+                                                if ($roleId == 10002 or $roleId == 10005) {
                                                     $classId = $class->getClassId($studentidsi);
                                                     $mainSchoolClasses = $class->getAgeGroup($classId);
                                                     $_SESSION['class_id'] = $classId;
@@ -233,6 +234,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </div>
                                             <?php
                                             $lessonList = $class->getMainSchoolLessonList();
+
                                             ?>
                                             <div class="col-lg-4">
                                                 <label for="lesson_id" class="form-label">Ders Adı</label>
@@ -299,6 +301,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <option value="">Seçiniz</option>
                                                     <?php
                                                     $activityTitle = $class->getTitleList(3);
+
                                                     foreach ($activityTitle as $title) {
                                                     ?>
                                                         <option value="<?= $title['id'] ?>"><?= $title['title'] ?></option>
@@ -311,6 +314,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <option value="">Seçiniz</option>
                                                     <?php
                                                     $titlesContent = $class->getTitleList(1);
+
                                                     foreach ($titlesContent as $title) {
                                                     ?>
                                                         <option value="<?= $title['id'] ?>"><?= $title['title'] ?></option>
@@ -323,7 +327,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <option value="">Seçiniz</option>
                                                    
                                                     <?php
-                                                    
+
                                                     $titlesContent = $class->getTitleList(2);
                                                     foreach ($titlesContent as $title) {
                                                     ?>
@@ -342,16 +346,40 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                     </div>
                                     <div class="row container-fluid">
                                         <?php foreach ($contentList as $u): ?>
-                                            <div class="col-12" style=" font-size:12px!important">
-                                                <a href="ana-okulu-icerikler-detay.php?id=<?=$u['id']?>" class="text-decoration-none">
-                                                    <div class="border rounded d-flex align-items-center p-2"
-                                                        style="border: 2px solid #333; box-shadow: 0 2px 6px rgba(0,0,0,0.15); justify-content: flex-start;">
-                                                        <button type="button" class="btn btn-light btn-sm me-3">
-                                                            <i style="font-size:20px!important" class="bi bi-play-fill"></i>
-                                                        </button>
-                                                        <div>
-                                                            <div class="fw-semibold fs-5" style="font-size:12px!important; color: #000;">
+                                            <div class="col-md-3 col-xl-3 mb-4">
+                                                <a href="ana-okulu-icerikler-detay.php?id=<?= $u['id'] ?>" class="text-decoration-none d-block h-100">
+                                                    <div class="card h-100 shadow-sm border-0">
+                                                        <div class="d-flex justify-content-center align-items-center" style="height: 180px; 
+                        background-image: url('uploads/contents/konuDefault.jpg'); 
+                        background-size: cover; background-position: center; 
+                        border-top-left-radius: .375rem; border-top-right-radius: .375rem;">
+
+                                                            <?php if (!empty($u['video_url'])): ?>
+                                                                <i class="bi bi-play-circle-fill text-white" style="font-size: 50px; opacity: 0.9;"></i>
+                                                            <?php else: ?>
+                                                                <i class="bi bi-file-earmark-text-fill text-white" style="font-size: 50px; opacity: 0.9;"></i>
+                                                            <?php endif; ?>
+
+                                                        </div>
+                                                        <div class="card-body d-flex flex-column">
+                                                            <h5 class="card-title fw-bold text-dark mb-1" style="font-size: 16px;">
                                                                 <?= htmlspecialchars($u['subject']) ?>
+                                                            </h5>
+                                                            <?php
+                                                            $contentType = $u['content_type'];
+                                                            
+                                                            ?>
+                                                            <p class="card-text text-muted mb-3" style="font-size: 14px;"><?= $contentType ?></p>
+
+                                                            <div class="mt-auto d-flex justify-content-start">
+                                                                <span style="background-color: #2b8c01 !important; color: white !important; 
+                                    border: 1px solid #2b8c01 !important; padding: 8px 28px; 
+                                    font-size: 14px; border-radius: 999px; text-decoration: none; 
+                                    transition: background-color 0.3s;"
+                                                                    onmouseover="this.style.backgroundColor='#ed5606'"
+                                                                    onmouseout="this.style.backgroundColor='#2b8c01'">
+                                                                    Aç
+                                                                </span>
                                                             </div>
                                                         </div>
                                                     </div>
