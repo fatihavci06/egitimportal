@@ -18,8 +18,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         $class_idsi = $_SESSION['class_id'];
         $studentidsi = $_SESSION['id'];
     }
-    $lessonId=$_GET['lesson_id']??'';
-    $unitList = $unit->getMainSchoolUnitByClassId($class_idsi,$lessonId);
+
+    $unitList = $unit->getMainSchoolUnitByClassId($class_idsi);
 
     include_once "views/pages-head.php";
 ?>
@@ -205,7 +205,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <i class="fas fa-bullseye fa-2x text-white"></i>
                                                     </div>
 
-                                                    <h1 class="fs-3 fw-bold text-dark mb-0"><?=$_GET['lesson_name']??'İngilizce'?> Üniteler</h1>
+                                                    <h1 class="fs-3 fw-bold text-dark mb-0">İngilizce Üniteler</h1>
                                                 </div>
 
                                             </header>

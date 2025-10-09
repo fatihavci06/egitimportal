@@ -9,7 +9,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
     include_once "views/pages-head.php";
 ?>
+    <!--end::Head-->
+    <!--begin::Body-->
+
     <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
+        <!--begin::Theme mode setup on page load-->
         <script>
             var defaultThemeMode = "light";
             var themeMode;
@@ -29,16 +33,31 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 document.documentElement.setAttribute("data-bs-theme", themeMode);
             }
         </script>
+        <!--end::Theme mode setup on page load-->
+        <!--begin::App-->
         <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
+            <!--begin::Page-->
             <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
+                <!--begin::Header-->
                 <?php include_once "views/header.php"; ?>
+                <!--end::Header-->
+                <!--begin::Wrapper-->
                 <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
+                    <!--begin::Sidebar-->
                     <?php include_once "views/sidebar.php"; ?>
+                    <!--end::Sidebar-->
+                    <!--begin::Main-->
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+                        <!--begin::Content wrapper-->
                         <div class="d-flex flex-column flex-column-fluid">
+                            <!--begin::Toolbar-->
                             <?php include_once "views/toolbar.php"; ?>
+                            <!--end::Toolbar-->
+                            <!--begin::Content-->
                             <div id="kt_app_content" class="app-content flex-column-fluid">
+                                <!--begin::Content container-->
                                 <div id="kt_app_content_container" class="app-container container-fluid">
+                                    <!--begin::Card-->
                                     <div class="card-body pt-5">
                                         <form class="form" action="#" id="ContentForm">
                                             <div class="row">
@@ -78,7 +97,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     </select>
 
                                                 </div>
-                                                <div class="col-lg-4" id="unit_div"> <label for="unit_id" class=" form-label">Ünite Adı</label> <select class="form-select form-control" id="unit_id" name="lesson_id">
+                                                <div class="col-lg-4">
+
+                                                    <label for="unit_id" class=" required form-label">Ünite Adı</label>
+                                                    <select class="form-select form-control" id="unit_id" name="lesson_id">
                                                         <option selected disabled>Önce ders seçiniz...</option>
                                                     </select>
 
@@ -87,7 +109,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </div>
 
                                             <div class="row mt-4">
-                                                <div class="col-lg-4" id="topic_div"> <label for="topic_id" class=" form-label">Konu Adı</label> <select class="form-select form-control" id="topic_id" name="lesson_id">
+                                                <div class="col-lg-4">
+
+                                                    <label for="topic_id" class=" required form-label">Konu Adı</label>
+                                                    <select class="form-select form-control" id="topic_id" name="lesson_id">
                                                         <option selected disabled>Önce ünite seçiniz...</option>
                                                     </select>
 
@@ -204,6 +229,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     </label>
                                                 </div>
 
+                                                <!-- Video URL input -->
                                                 <div id="videoInput" class="mb-4" style="display:none;">
                                                     <label for="video_url">Video Link(Youtube,Vimeo):</label>
                                                     <input type="text" class="form-control" name="video_url" id="video_url">
@@ -213,11 +239,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <input type="file" class="form-control" name="images[]" id="images" multiple accept=".png,.jpeg,.jpg,.svg">
                                                 </div>
 
+                                                <!-- File upload input -->
                                                 <div id="fileInput" class="mb-4" style="display:none;">
                                                     <label for="file_path">Dosya Yükle:</label>
                                                     <input type="file" class="form-control" name="file_path[]" id="files" multiple accept=".xls,.xlsx,.doc,.docx,.ppt,.pptx,.png,.jpeg,.jpg,.svg">
                                                     <div id="fileDescriptions"></div>
                                                 </div>
+                                                <!-- Video URL input -->
                                                 <div id="wordwallInputs" class="mb-4" style="display:none;">
                                                     <label>WordWall Iframe Linkleri:</label>
                                                     <div id="dynamicFields">
@@ -230,8 +258,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <button type="button" id="addField" class="btn btn-sm btn-primary mt-2">Ekle</button>
                                                 </div>
 
-                                                </div>
+                                                <!-- Açıklama alanlarının ekleneceği yer -->
 
+                                            </div>
+
+                                            <!-- Textarea input -->
                                             <div id="textInput" class="mb-4" style="display:none;">
                                                 <label for="mcontent">Metin İçeriği:</label>
                                                 <textarea class="form-control tinymce-editor" name="mcontent" id="mcontent" rows="4"></textarea>
@@ -250,26 +281,47 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 
                                 </div>
-                                </div>
+                                <!--end::Card-->
                             </div>
+                            <!--end::Content container-->
                         </div>
-                    <?php include_once "views/footer.php"; ?>
+                        <!--end::Content-->
                     </div>
-                <?php include_once "views/aside.php"; ?>
+                    <!--end::Content wrapper-->
+                    <!--begin::Footer-->
+                    <?php include_once "views/footer.php"; ?>
+                    <!--end::Footer-->
                 </div>
+                <!--end:::Main-->
+                <!--begin::aside-->
+                <?php include_once "views/aside.php"; ?>
+                <!--end::aside-->
             </div>
+            <!--end::Wrapper-->
+        </div>
+        <!--end::Page-->
+        </div>
+        <!--end::App-->
+        <!--begin::Scrolltop-->
         <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
             <i class="ki-duotone ki-arrow-up">
                 <span class="path1"></span>
                 <span class="path2"></span>
             </i>
         </div>
+        <!--end::Scrolltop-->
+        <!--begin::Javascript-->
         <script>
             var hostUrl = "assets/";
         </script>
+        <!--begin::Global Javascript Bundle(mandatory for all pages)-->
         <script src="assets/plugins/global/plugins.bundle.js"></script>
         <script src="assets/js/scripts.bundle.js"></script>
+        <!--end::Global Javascript Bundle-->
+        <!--begin::Vendors Javascript(used for this page only)-->
         <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
+        <!--end::Vendors Javascript-->
+        <!--begin::Custom Javascript(used for this page only)-->
         <script src="assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
         <script src="assets/js/custom/apps/subtopics/list/export.js"></script>
         <script src="assets/js/custom/apps/subtopics/list/list.js"></script>
@@ -288,8 +340,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 $('#main_school_class_id').on('change', function () {
     var selectedClassId = $(this).val();
 
-    // Yeni: Ünite ve Konu alanlarını görünür yap (Yaş grubu değiştiğinde sıfırlanır)
-    $('#unit_div, #topic_div').show();
+    // class_id dışındaki tüm input/select/textarea alanlarını temizle
+    
 
     // AJAX isteği
     $.ajax({
@@ -325,24 +377,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 $('#lesson_id').on('change', function() {
                     var selectedLessonId = $(this).val();
                     var selectedClassId = $('#main_school_class_id').val();
-                    
-                    // Ders Adı metnini al (Türkçe kontrolü için)
-                    const selectedLessonText = $(this).find('option:selected').text().trim();
-
-                    // Türkçe dersi kontrolü
-                    if (selectedLessonText === 'Türkçe') {
-                        // Ünite ve Konu alanlarını gizle
-                        $('#unit_div, #topic_div').hide();
-                        // Değerlerini temizle
-                        $('#unit_id, #topic_id').val('');
-                        
-                        // Türkçe ise, AJAX isteği yapmaya gerek yok, return ile çık.
-                        return; 
-                    } else {
-                        // Türkçe değilse tekrar görünür yap
-                        $('#unit_div, #topic_div').show();
-                    }
-                    
                     $.ajax({
                         url: 'includes/ajax.php?service=mainSchoolGetUnits', // Backend dosyanın yolu
                         type: 'POST',
@@ -368,7 +402,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         );
                                     });
                                 } else {
-                                    unitSelect.append('<option disabled>Bu derse ait ünite bulunamadı.</option>');
+                                    unitSelect.append('<option disabled>Bu sınıfa ait ders bulunamadı.</option>');
                                 }
                             } else {
                             }
@@ -406,7 +440,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         );
                                     });
                                 } else {
-                                    topicSelect.append('<option disabled>Bu üniteye ait konu bulunamadı.</option>');
+                                    topicSelect.append('<option disabled>Bu sınıfa ait ders bulunamadı.</option>');
                                 }
                             } else {
                             }
@@ -559,8 +593,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                     formData.append('month', $('#month').val());
                     formData.append('week', $('#week').val());
-                    
-                    // Türkçe dersi seçilse bile bu değerler gönderilmeli (boş olarak)
+
                     formData.append('lesson_id', $('#lesson_id').val());
                     formData.append('unit_id', $('#unit_id').val());
                     formData.append('topic_id', $('#topic_id').val());
@@ -662,10 +695,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
             });
         </script>
-        </body>
-    </html>
+        <!--end::Custom Javascript-->
+        <!--end::Javascript-->
+    </body>
+    <!--end::Body-->
+
+</html>
 <?php } else {
     header("location: index");
 }
-
-?>

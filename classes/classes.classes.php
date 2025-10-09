@@ -896,8 +896,6 @@ class Classes extends Dbh
 		}
 
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-		
 	}
 	public function doyouKnowList()
 	{
@@ -910,8 +908,6 @@ class Classes extends Dbh
 		}
 
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-		
 	}
 
 	public function getClassesListsWithPreschool()
@@ -1181,8 +1177,8 @@ WHERE t.id = :id";
 	}
 
 	public function getMainSchoolTopicList($unit_id = null)
-{
-    $sql = 'SELECT 
+	{
+		$sql = 'SELECT 
                 c.name as class_name,
                 t.id as id,
                 u.name as unit_name,
@@ -1194,30 +1190,30 @@ WHERE t.id = :id";
             INNER JOIN classes_lnp c ON u.class_id = c.id
             INNER JOIN main_school_lessons_lnp l ON u.lesson_id = l.id';
 
-    $params = [];
+		$params = [];
 
-    if (!empty($unit_id)) {
-        $sql .= ' WHERE t.unit_id = ?';
-        $params[] = $unit_id;
-    }
+		if (!empty($unit_id)) {
+			$sql .= ' WHERE t.unit_id = ?';
+			$params[] = $unit_id;
+		}
 
-    $sql .= ' ORDER BY t.id DESC';
+		$sql .= ' ORDER BY t.id DESC';
 
-    $stmt = $this->connect()->prepare($sql);
+		$stmt = $this->connect()->prepare($sql);
 
-    if (!$stmt->execute($params)) {
-        $stmt = null;
-        exit();
-    }
+		if (!$stmt->execute($params)) {
+			$stmt = null;
+			exit();
+		}
 
-    $classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    return $classData;
-}
+		return $classData;
+	}
 
 	public function getMainSchoolUnitList($lesson_id = null)
-{
-    $sql = 'SELECT 
+	{
+		$sql = 'SELECT 
                 mu.name as unit_name, 
                 mu.id as id, 
                 ml.name as lesson_name,
@@ -1228,46 +1224,61 @@ WHERE t.id = :id";
             INNER JOIN main_school_lessons_lnp ml ON ml.id = mu.lesson_id
             INNER JOIN classes_lnp mc ON mc.id = mu.class_id';
 
-    $params = [];
+		$params = [];
 
-    if (!empty($lesson_id)) {
-        $sql .= ' WHERE mu.lesson_id = ?';
-        $params[] = $lesson_id;
-    }
+		if (!empty($lesson_id)) {
+			$sql .= ' WHERE mu.lesson_id = ?';
+			$params[] = $lesson_id;
+		}
 
-    $sql .= ' ORDER BY mu.unit_order ASC';
+		$sql .= ' ORDER BY mu.unit_order ASC';
 
-    $stmt = $this->connect()->prepare($sql);
+		$stmt = $this->connect()->prepare($sql);
 
-    if (!$stmt->execute($params)) {
-        $stmt = null;
-        exit();
-    }
+		if (!$stmt->execute($params)) {
+			$stmt = null;
+			exit();
+		}
 
-    $classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    return $classData;
-}
+		return $classData;
+	}
 
-	public function getMainSchoolUnitByClassId($class_id)
+	public function getMainSchoolUnitByClassId($class_id, $lesson_id = '')
 	{
-		$stmt = $this->connect()->prepare('
-    SELECT 
-        mu.name AS unit_name, 
-        mu.id AS id, 
-        mu.unit_order
-    FROM main_school_units_lnp mu 
-    WHERE mu.class_id = :class_id AND mu.status = 1
-    ORDER BY mu.unit_order ASC
-');
+		$query = '
+        SELECT 
+            mu.name AS unit_name, 
+            mu.id AS id, 
+            mu.unit_order
+        FROM main_school_units_lnp mu 
+        WHERE mu.class_id = :class_id AND mu.status = 1
+    ';
 
-		if (!$stmt->execute(['class_id' => $class_id])) {
+		// Eğer lesson_id boş değilse, filtreyi ekle
+		if (!empty($lesson_id)) {
+			$query .= ' AND mu.lesson_id = :lesson_id';
+		}
+
+		$query .= ' ORDER BY mu.unit_order ASC';
+
+		$stmt = $this->connect()->prepare($query);
+
+		// Parametreleri bağla
+		$params = ['class_id' => $class_id];
+		if (!empty($lesson_id)) {
+			$params['lesson_id'] = $lesson_id;
+		}
+
+		if (!$stmt->execute($params)) {
 			$stmt = null;
 			exit();
 		}
 
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
+
 	public function getMainSchoolTopicByUnitId($unit_id)
 	{
 		$stmt = $this->connect()->prepare('
@@ -1282,68 +1293,68 @@ WHERE t.id = :id";
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
 	public function getMainSchoolContentByUnitAndTopicId($unit_id, $topic_id)
-{
-    // Ana içerikleri çek
-    $stmt = $this->connect()->prepare('
+	{
+		// Ana içerikleri çek
+		$stmt = $this->connect()->prepare('
         SELECT * 
         FROM main_school_content_lnp
         WHERE unit_id = :unit_id AND topic_id = :topic_id AND status = 1
         ORDER BY id ASC
     ');
 
-    if (!$stmt->execute([
-        'unit_id' => $unit_id,
-        'topic_id' => $topic_id
-    ])) {
-        $stmt = null;
-        exit();
-    }
+		if (!$stmt->execute([
+			'unit_id' => $unit_id,
+			'topic_id' => $topic_id
+		])) {
+			$stmt = null;
+			exit();
+		}
 
-    $contents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$contents = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    foreach ($contents as &$content) {
-        // Öncelik 1: Wordwall varsa
-        $wordwallStmt = $this->connect()->prepare('
+		foreach ($contents as &$content) {
+			// Öncelik 1: Wordwall varsa
+			$wordwallStmt = $this->connect()->prepare('
             SELECT * FROM mainschool_wordwall_lnp WHERE main_id = :main_id
         ');
-        $wordwallStmt->execute(['main_id' => $content['id']]);
-        $wordwall = $wordwallStmt->fetch(PDO::FETCH_ASSOC);
+			$wordwallStmt->execute(['main_id' => $content['id']]);
+			$wordwall = $wordwallStmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($wordwall) {
-            $content['content_type'] = 'İnteraktif Oyun';
-            continue;
-        }
+			if ($wordwall) {
+				$content['content_type'] = 'İnteraktif Oyun';
+				continue;
+			}
 
-        // Öncelik 2: İndirilebilir içerik varsa
-        $fileStmt = $this->connect()->prepare('
+			// Öncelik 2: İndirilebilir içerik varsa
+			$fileStmt = $this->connect()->prepare('
             SELECT * FROM mainschool_content_file_lnp WHERE main_id = :main_id
         ');
-        $fileStmt->execute(['main_id' => $content['id']]);
-        $file = $fileStmt->fetch(PDO::FETCH_ASSOC);
+			$fileStmt->execute(['main_id' => $content['id']]);
+			$file = $fileStmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($file) {
-            $content['content_type'] = 'İndirilebilir İçerik';
-            continue;
-        }
+			if ($file) {
+				$content['content_type'] = 'İndirilebilir İçerik';
+				continue;
+			}
 
-        // Öncelik 3: video_url varsa
-        if (!empty($content['video_url'])) {
-            $content['content_type'] = 'Eğitim Videosu';
-            continue;
-        }
+			// Öncelik 3: video_url varsa
+			if (!empty($content['video_url'])) {
+				$content['content_type'] = 'Eğitim Videosu';
+				continue;
+			}
 
-        // Öncelik 4: content varsa
-        if (!empty($content['content'])) {
-            $content['content_type'] = 'Text İçerik';
-            continue;
-        }
+			// Öncelik 4: content varsa
+			if (!empty($content['content'])) {
+				$content['content_type'] = 'Text İçerik';
+				continue;
+			}
 
-        // Hiçbiri yoksa boş bırakabiliriz
-        $content['content_type'] = null;
-    }
+			// Hiçbiri yoksa boş bırakabiliriz
+			$content['content_type'] = null;
+		}
 
-    return $contents;
-}
+		return $contents;
+	}
 
 
 
@@ -1585,7 +1596,7 @@ WHERE mc.school_id = 1
 
 		$wordwalls = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		$classData['wordwalls'] = $wordwalls;
-		
+
 		return $classData;
 	}
 
@@ -1633,5 +1644,275 @@ WHERE mc.school_id = 1
 		$classData = $stmt->fetch(PDO::FETCH_ASSOC);
 
 		return $classData;
+	}
+	public function getTurkceImportanWeekDetail()
+	{
+		$stmt = $this->connect()->prepare('
+        SELECT 
+            iw.id AS week_id,
+            iw.name AS week_name,
+            msc.id AS content_id,
+            msc.subject
+        FROM important_weeks_lnp iw
+        INNER JOIN main_school_content_lnp msc ON msc.week_id = iw.id
+		WHERE msc.lesson_id = 14
+        ORDER BY iw.id ASC, msc.id ASC
+    ');
+
+		if (!$stmt->execute()) {
+			$stmt = null;
+			exit();
+		}
+
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		$weeks = [];
+
+		foreach ($rows as $row) {
+			$weekId = $row['week_id'];
+
+			// Eğer bu hafta daha önce eklenmediyse, oluştur
+			if (!isset($weeks[$weekId])) {
+				$weeks[$weekId] = [
+					'week_id' => $weekId,
+					'week_name' => $row['week_name'],
+					'contents' => [],
+				];
+			}
+
+			// O haftanın içeriklerine ekle
+			$weeks[$weekId]['contents'][] = [
+				'content_id' => $row['content_id'],
+				'subject' => $row['subject'],
+			];
+		}
+		return $weeks;
+		// JSON uyumlu hale getir
+		return array_values($weeks);
+	}
+	public function getMontBasedContentList($month)
+	{
+		// Ana içerikleri çek
+		$stmt = $this->connect()->prepare('
+        SELECT * 
+        FROM main_school_content_lnp
+        WHERE lesson_id = :lesson_id AND month = :month
+        ORDER BY id ASC
+    ');
+
+		$lessonId = 14;
+
+		if (!$stmt->execute([
+			':lesson_id' => $lessonId,
+			':month' => $month
+		])) {
+			$stmt = null;
+			exit();
+		}
+
+		$contents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		foreach ($contents as &$content) {
+			// Öncelik 1: Wordwall varsa
+			$wordwallStmt = $this->connect()->prepare('
+            SELECT * FROM mainschool_wordwall_lnp WHERE main_id = :main_id
+        ');
+			$wordwallStmt->execute(['main_id' => $content['id']]);
+			$wordwall = $wordwallStmt->fetch(PDO::FETCH_ASSOC);
+
+			if ($wordwall) {
+				$content['content_type'] = 'İnteraktif Oyun';
+				continue;
+			}
+
+			// Öncelik 2: İndirilebilir içerik varsa
+			$fileStmt = $this->connect()->prepare('
+            SELECT * FROM mainschool_content_file_lnp WHERE main_id = :main_id
+        ');
+			$fileStmt->execute(['main_id' => $content['id']]);
+			$file = $fileStmt->fetch(PDO::FETCH_ASSOC);
+
+			if ($file) {
+				$content['content_type'] = 'İndirilebilir İçerik';
+				continue;
+			}
+
+			// Öncelik 3: video_url varsa
+			if (!empty($content['video_url'])) {
+				$content['content_type'] = 'Eğitim Videosu';
+				continue;
+			}
+
+			// Öncelik 4: content varsa
+			if (!empty($content['content'])) {
+				$content['content_type'] = 'Text İçerik';
+				continue;
+			}
+
+			// Hiçbiri yoksa boş bırakabiliriz
+			$content['content_type'] = null;
+		}
+
+
+		return $contents;
+	}
+	public function getWeekBasedContentList($weekId)
+	{
+		// Ana içerikleri çek
+		$stmt = $this->connect()->prepare('
+        SELECT * 
+        FROM main_school_content_lnp
+        WHERE lesson_id = :lesson_id AND week_id = :week_id
+        ORDER BY id ASC
+   		 ');
+
+		$lessonId = 14;
+
+		if (!$stmt->execute([
+			':lesson_id' => $lessonId,
+			':week_id' => $weekId
+		])) {
+			$stmt = null;
+			exit();
+		}
+
+		$contents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		foreach ($contents as &$content) {
+			// Öncelik 1: Wordwall varsa
+			$wordwallStmt = $this->connect()->prepare('
+            SELECT * FROM mainschool_wordwall_lnp WHERE main_id = :main_id
+        ');
+			$wordwallStmt->execute(['main_id' => $content['id']]);
+			$wordwall = $wordwallStmt->fetch(PDO::FETCH_ASSOC);
+
+			if ($wordwall) {
+				$content['content_type'] = 'İnteraktif Oyun';
+				continue;
+			}
+
+			// Öncelik 2: İndirilebilir içerik varsa
+			$fileStmt = $this->connect()->prepare('
+            SELECT * FROM mainschool_content_file_lnp WHERE main_id = :main_id
+        ');
+			$fileStmt->execute(['main_id' => $content['id']]);
+			$file = $fileStmt->fetch(PDO::FETCH_ASSOC);
+
+			if ($file) {
+				$content['content_type'] = 'İndirilebilir İçerik';
+				continue;
+			}
+
+			// Öncelik 3: video_url varsa
+			if (!empty($content['video_url'])) {
+				$content['content_type'] = 'Eğitim Videosu';
+				continue;
+			}
+
+			// Öncelik 4: content varsa
+			if (!empty($content['content'])) {
+				$content['content_type'] = 'Text İçerik';
+				continue;
+			}
+
+			// Hiçbiri yoksa boş bırakabiliriz
+			$content['content_type'] = null;
+		}
+
+
+		return $contents;
+	}
+
+public function getEtkinlikBasedContentList($activityTitleId)
+	{
+		// Ana içerikleri çek
+		$stmt = $this->connect()->prepare('
+        SELECT * 
+        FROM main_school_content_lnp
+        WHERE lesson_id = :lesson_id AND activity_title_id = :activity_title_id
+        ORDER BY id ASC
+   		 ');
+
+		$lessonId = 14;
+
+		if (!$stmt->execute([
+			':lesson_id' => $lessonId,
+			':activity_title_id' => $activityTitleId
+		])) {
+			$stmt = null;
+			exit();
+		}
+
+		$contents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		foreach ($contents as &$content) {
+			// Öncelik 1: Wordwall varsa
+			$wordwallStmt = $this->connect()->prepare('
+            SELECT * FROM mainschool_wordwall_lnp WHERE main_id = :main_id
+        ');
+			$wordwallStmt->execute(['main_id' => $content['id']]);
+			$wordwall = $wordwallStmt->fetch(PDO::FETCH_ASSOC);
+
+			if ($wordwall) {
+				$content['content_type'] = 'İnteraktif Oyun';
+				continue;
+			}
+
+			// Öncelik 2: İndirilebilir içerik varsa
+			$fileStmt = $this->connect()->prepare('
+            SELECT * FROM mainschool_content_file_lnp WHERE main_id = :main_id
+        ');
+			$fileStmt->execute(['main_id' => $content['id']]);
+			$file = $fileStmt->fetch(PDO::FETCH_ASSOC);
+
+			if ($file) {
+				$content['content_type'] = 'İndirilebilir İçerik';
+				continue;
+			}
+
+			// Öncelik 3: video_url varsa
+			if (!empty($content['video_url'])) {
+				$content['content_type'] = 'Eğitim Videosu';
+				continue;
+			}
+
+			// Öncelik 4: content varsa
+			if (!empty($content['content'])) {
+				$content['content_type'] = 'Text İçerik';
+				continue;
+			}
+
+			// Hiçbiri yoksa boş bırakabiliriz
+			$content['content_type'] = null;
+		}
+
+
+		return $contents;
+	}
+	public function getImportantWeekList()
+	{
+		$stmt = $this->connect()->prepare('SELECT id,name FROM important_weeks_lnp where status=1');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $data;
+	}
+	public function getCategoryEtkinlikList()
+	{
+		$stmt = $this->connect()->prepare('SELECT id,title FROM category_titles_lnp where status=1 and type=3');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $data;
 	}
 }
