@@ -5795,7 +5795,7 @@ ORDER BY msu.unit_order asc
         }
         break;
     case 'pskTestUpload':
-        $userId = $_SESSION['id'] ?? 0;
+        $userId = $_POST['student_id'] ?? 0;
         $schoolId = $_SESSION['school_id'] ?? 1; // school_id'nin varsayılan 1 olması ayarını uyguladık
 
         // Formdan gelen veriler
@@ -5812,6 +5812,32 @@ ORDER BY msu.unit_order asc
             echo json_encode(['success' => false, 'message' => 'Geçersiz Test ID.']);
             exit;
         }
+        $sqlCntrl = "SELECT * FROM psikolojik_test_sonuc_lnp WHERE user_id = :user_id  AND is_free = 1";
+        $stmt2 = $pdo->prepare($sqlCntrl);
+        $stmt2->execute([
+            'user_id' => $_POST['student_id']
+        ]);
+        $isFreeControl = $stmt2->fetch(PDO::FETCH_ASSOC);
+
+        if ($isFreeControl) {
+            // Kullanıcının paket durumu kontrol ediliyor
+            $sqlPackage = "SELECT * FROM psikolojik_test_paketleri_user WHERE user_id = :user_id AND kullanim_durumu = 0";
+            $stmt3 = $pdo->prepare($sqlPackage);
+            $stmt3->execute([
+                'user_id' => $_POST['student_id']
+            ]);
+            $isPackageControl = $stmt3->fetch(PDO::FETCH_ASSOC);
+
+            if (!$isPackageControl) {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Paketiniz bulunmamaktadır. Lütfen paket alınız. Paket almak için <a href="ek-paket-satin-al" >buraya tıklayın</a>.'
+                ]);
+                exit;
+            }
+        }
+
+
 
         if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
             // Dosya yükleme hatası veya dosya yok
@@ -5870,8 +5896,7 @@ ORDER BY msu.unit_order asc
             // 5. Veritabanına Kaydetme
             try {
                 // Düz SQL/PDO Kullanımı (Örnek)
-                $db = new Dbh(); // DB Bağlantısı
-                $pdo = $db->connect();
+
 
                 // Konumsal parametre (?) kullanımı ile INSERT sorgusu
                 $sql = "INSERT INTO psikolojik_test_sonuc_lnp (test_id, user_id, school_id, file_path) 
@@ -5884,9 +5909,26 @@ ORDER BY msu.unit_order asc
 
                 // execute() metoduna değerleri bir dizi olarak gönderme
                 if ($stmt->execute([$testId, $userId, $schoolId, $dbFilePath])) {
+                    if (!$isFreeControl) {
+                        $stmt4 = $pdo->prepare("UPDATE psikolojik_test_sonuc_lnp SET is_free = 1 WHERE user_id = :user_id AND test_id = :test_id");
+                        $stmt4->execute(['user_id' => $userId, 'test_id' => $testId]);
+                    } else {
+                        // Sadece ilk uygun paketi güncelle
+                        $stmt5 = $pdo->prepare("
+                        UPDATE psikolojik_test_paketleri_user
+                        SET kullanim_durumu = 1
+                        WHERE id = (
+                            SELECT id FROM psikolojik_test_paketleri_user
+                            WHERE user_id = :user_id AND kullanim_durumu = 0
+                            ORDER BY id ASC
+                            LIMIT 1
+                        )
+                    ");
+                        $stmt5->execute(['user_id' => $userId]);
+                    }
+
                     echo json_encode(['success' => true, 'message' => 'Cevabınız başarıyla yüklendi ve kaydedildi.']);
                 } else {
-                    // Veritabanı kaydı başarısız olursa dosyayı sil (temizlik)
                     unlink($targetPath);
                     echo json_encode(['success' => false, 'message' => 'Dosya yüklendi ancak veritabanına kaydedilemedi.']);
                 }
@@ -5902,7 +5944,7 @@ ORDER BY msu.unit_order asc
         }
         break;
     case 'update_test_status':
-         $id = $_POST['id'] ?? null;
+        $id = $_POST['id'] ?? null;
         // Frontend'den gelen 'test_name', 'name' sütununa karşılık gelir.
         $status = trim($_POST['status'] ?? '');
         $description = trim($_POST['description'] ?? '');
@@ -5916,7 +5958,7 @@ ORDER BY msu.unit_order asc
         $stmt = $pdo->prepare($sql);
 
 
-        if ($stmt->execute([$status, $description,$id])) {
+        if ($stmt->execute([$status, $description, $id])) {
             echo json_encode(['status' => 'success', 'message' => 'Başarıyla güncellendi.']);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Güncelleme hatası: Veritabanı işlemi başarısız.']);
