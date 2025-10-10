@@ -219,6 +219,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         $weekId = $_GET['week_id'] ?? 1;
                                         $contentList = $dataList->getWeekBasedContentList($weekId);
 
+                                        
                                         // Sabit görsel URL'si
                                         $defaultImageUrl = 'uploads/contents/konuDefault.jpg';
 
