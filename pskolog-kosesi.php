@@ -116,7 +116,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                             <div class="col-8">
                                                 <div class="card custom-card card-psikoloji p-4">
-                                                    <a href="psikolojik-test-listesi.php" class="text-decoration-none text-dark text-hover-primary">
+                                                    <a href="psikolojik-test-listesi" class="text-decoration-none text-dark text-hover-primary">
                                                         <div class="d-flex align-items-center">
                                                             <span class="emoji-icon me-3">🧠✨</span>
                                                             <h2 class="custom-h2 mb-0">
@@ -131,10 +131,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                             <div class="col-8">
                                                 <div class="card custom-card card-tavsiye p-4">
+                                                    <a href="uzman-psikologdan-aileye-tavsiyeler" class="text-decoration-none text-dark text-hover-primary">
                                                     <div class="d-flex align-items-center">
                                                         <span class="emoji-icon">👨‍⚕️🗣️</span>
                                                         <h2 class="custom-h2 mb-0">Uzman Psikologtan Aileye Tavsiyeler</h2>
                                                     </div>
+                                                    </a>
                                                 </div>
                                             </div>
 
