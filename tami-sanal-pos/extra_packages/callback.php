@@ -134,7 +134,13 @@ $response = CheckoutForm::retrieve($request, $options); */
         'start_date' => $startDate1,
         'end_date' => $endDate1
     ]);
-
+if ($_SESSION['extra_package_type'] == 'Psikoloji') {
+        $stmt5 = $pdo->prepare("
+            INSERT INTO psikolojik_test_paketleri_user (user_id, kullanim_durumu)
+            VALUES (:user_id, 0)
+        ");
+        $stmt5->execute(['user_id' => $userId]);
+    }
 
     $_SESSION['payment_success'] = true;
     $to_email = $_SESSION['email'];

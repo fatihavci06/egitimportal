@@ -36,13 +36,20 @@ $error = $_SESSION['payment_error'] ?? null;
 unset($_SESSION['payment_success'], $_SESSION['payment_error']);
 
 // Kullanıcı rol kontrolü, kendi sisteminize göre düzenlemelisiniz
-if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 2)) {
+if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 2 || $_SESSION['role'] == 10005 || $_SESSION['role'] == 10002)) {
     // Veritabanı ve sınıf dahil etme
     include_once "classes/dbh.classes.php"; // Kendi Dbh sınıf dosyanız
     include "classes/classes.classes.php"; // Kendi Classes sınıf dosyanız
 
     $class = new Classes();
-    $tur = $_GET['tur'] ?? 'ozel-ders'; // Varsayılan olarak özel ders türü
+    
+    if($_SESSION['role']===10005){
+       $tur = 'psikoloji';
+    }   
+    else{
+        $tur = $_GET['tur'] ?? 'ozel-ders'; // Varsayılan olarak özel ders türü
+    }
+  
     $data = $class->getExtraPackageList($tur); // Paket listesini çeken fonksiyon
     $package_descriptions = [
         'rehberlik' => [
@@ -479,7 +486,11 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                         </div>
                                                     </div>
                                                 </header>
-                                                <?php foreach ($package_blocks as $block): ?>
+                                                
+
+                                                <?php 
+                                                  if($_SESSION['role']!=10005){
+                                                    foreach ($package_blocks as $block): ?>
                                                     <div class="package-block">
                                                         <i class="fas <?php echo htmlspecialchars($block[0]); ?> fa-icon"></i>
                                                         <div>
@@ -487,7 +498,9 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                             <p class="mb-0"><?php echo htmlspecialchars($current_descriptions[$block[2]]); ?></p>
                                                         </div>
                                                     </div>
-                                                <?php endforeach; ?>
+                                                <?php endforeach;
+                                                    }
+                                                ?>
 
                                             </div>
                                             <div id="packageSelectionAndPaymentContainer" class="main-card-container">
@@ -627,6 +640,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                             user_id: userId
                         },
                         success: function(response) {
+                           
                             if (response.oneTimeToken) {
                                 window.location.href = 'https://portal.tami.com.tr/hostedPaymentPage?token=' + response.oneTimeToken;
                             } else {

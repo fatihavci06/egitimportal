@@ -21,6 +21,14 @@ function getUserInfo($userId, $pdo)
   $user = $stmt4->fetch(PDO::FETCH_ASSOC);
   return $user;
 }
+
+function getPackageInfo($packageId, $pdo)
+{
+  $stmt4 = $pdo->prepare('SELECT * from extra_packages_lnp where id=?');
+  $stmt4->execute([$packageId]);
+  $package = $stmt4->fetch(PDO::FETCH_ASSOC);
+  return $package;
+}
 header('Content-Type: application/json');
 
 try {
@@ -40,6 +48,13 @@ try {
   $orderId = getGUID();
 
   $_SESSION['extra_package_id'] = $_POST['package_id'] ?? null;
+  $packageType=getPackageInfo($_POST['package_id'],$pdo)['type'];
+  
+  if( $packageType=='Psikoloji')
+  {
+      $_SESSION['extra_package_type']=$packageType;
+  }
+
   
   $_SESSION['paidPrice'] = $amount;
   
@@ -83,11 +98,13 @@ try {
   }
 
   $responseArray = json_decode($response, true);
+  
 
   if (!isset($responseArray['oneTimeToken'])) {
     echo json_encode([
       'success' => false,
-      'message' => 'Token alınamadı.'
+      'message' => 'Token alınamadı.',
+      'responseArray'=>$response
     ]);
     curl_close($ch);
     exit();

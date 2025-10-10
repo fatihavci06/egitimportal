@@ -3,7 +3,7 @@ session_start();
 define('GUARD', true);
 
 // Bu sayfa sadece adminler tarafından erişilebilir.
-if (isset($_SESSION['role']) && $_SESSION['role'] == 1 OR $_SESSION['role'] == 9 OR $_SESSION['role'] == 10) {
+if (isset($_SESSION['role']) && $_SESSION['role'] == 1 or $_SESSION['role'] == 9 or $_SESSION['role'] == 10  or $_SESSION['role'] == 20001) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php"; // Bu dosya içinde Classes sınıfınız olmalı
 
@@ -13,8 +13,13 @@ if (isset($_SESSION['role']) && $_SESSION['role'] == 1 OR $_SESSION['role'] == 9
 
     // Tüm kullanıcıları çekiyoruz (toplantı düzenleyici ve katılımcı seçimi için)
     // Lütfen classes/classes.classes.php içinde getAllUsers metodunu ekleyin.
-    $allUsers = $class->getCoachStudents($_SESSION['id']); // Yeni metodumuzu çağırıyoruz
-    
+    if ($_SESSION['role'] == 20001) {
+        $allUsers = $class->getPsikolojikUserList();
+    } else {
+        $allUsers = $class->getCoachStudents($_SESSION['id']); // Yeni metodumuzu çağırıyoruz
+    }
+
+
 ?>
     <!DOCTYPE html>
     <html lang="tr">
@@ -101,30 +106,40 @@ if (isset($_SESSION['role']) && $_SESSION['role'] == 1 OR $_SESSION['role'] == 9
                                     <div class="card">
                                         <div class="card-header border-0 pt-6">
                                             <div class="card-title">
-                                                <h3 class="fw-bold m-0">Yeni Toplantı Oluştur (Koç öğretmen öğrencilerine oluşturur.Öğrenci listesinde sadece kendi koçluk yaptığı öğrenciler bulunur.)</h3>
+                                                <h3 class="fw-bold m-0">Yeni Toplantı Oluştur </h3>
                                             </div>
                                             <div class="card-toolbar">
-                                                </div>
+                                            </div>
                                         </div>
                                         <div class="card-body pt-0">
                                             <form id="createMeetingForm" class="form">
-                                                
+
 
                                                 <div class="fv-row mb-7">
                                                     <label class="fw-semibold fs-6 mb-2">Katılımcı (Öğrenci)</label>
-                                                    <select name="participant_id" id="participant_id" class="form-select form-select-solid fw-bold" data-kt-select2="true" data-placeholder="Katılımcı Seçin" data-allow-clear="true" data-kt-user-table-filter="role" data-hide-search="false">
+                                                    <select name="participant_id" id="participant_id"
+                                                        class="form-select form-select-solid fw-bold"
+                                                        data-kt-select2="true"
+                                                        data-placeholder="Katılımcı Seçin"
+                                                        data-allow-clear="true"
+                                                        data-kt-user-table-filter="role"
+                                                        data-hide-search="false">
+
                                                         <option value=""></option>
                                                         <?php foreach ($allUsers as $user) : ?>
-                                                            <option value="<?= $user['id']; ?>">
+                                                            <option
+                                                                value="<?= htmlspecialchars($user['id']); ?>"
+                                                                <?= (isset($_GET['user_id']) && $_GET['user_id'] == $user['id']) ? 'selected' : ''; ?>>
                                                                 <?= htmlspecialchars($user['name'] . ' ' . $user['surname']); ?>
                                                             </option>
                                                         <?php endforeach; ?>
                                                     </select>
+
                                                 </div>
 
                                                 <div class="fv-row mb-7">
                                                     <label class="fw-semibold fs-6 mb-2">Toplantı Açıklaması</label>
-                                                    <textarea name="description" class="form-control form-control-solid mb-3 mb-lg-0" rows="3" placeholder="Örn: 2. Sınıf Matematik Özel Ders"></textarea>
+                                                    <textarea name="description" class="form-control form-control-solid mb-3 mb-lg-0" rows="3" placeholder="Örn:  Özel Ders"></textarea>
                                                 </div>
 
                                                 <div class="fv-row mb-7">
@@ -133,7 +148,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] == 1 OR $_SESSION['role'] == 9
                                                 </div>
 
                                                 <div class="d-flex justify-content-end">
-                                                    <a href="zoom/index.php"  target="_blank" class="btn btn-success mr-2" style="margin-right:20px;">Zoom Login</a>
+                                                    <a href="zoom/index.php" target="_blank" class="btn btn-success mr-2" style="margin-right:20px;">Zoom Login</a>
                                                     <button type="submit" id="submitButton" class="btn btn-primary">
                                                         <span class="indicator-label">Toplantı Oluştur</span>
                                                         <span class="indicator-progress">Lütfen bekleyin...
@@ -142,7 +157,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] == 1 OR $_SESSION['role'] == 9
                                                     </button>
                                                 </div>
                                             </form>
-                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

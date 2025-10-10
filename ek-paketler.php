@@ -145,6 +145,7 @@ $taxRate= $taxRate / 100 + 1;
                                                                         <option value="Koçluk">Koçluk</option>
                                                                         <option value="Rehberlik">Rehberlik</option>
                                                                         <option value="Özel Ders">Özel Ders</option>
+                                                                        <option value="Psikoloji">Psikoloji Köşesi</option>
                                                                     </select>
                                                                 </div>
                                                                 <div class="mb-3" id="addMonthsWrapper" style="display:none;">
@@ -202,6 +203,7 @@ $taxRate= $taxRate / 100 + 1;
                                                                         <option value="Koçluk">Koçluk</option>
                                                                         <option value="Rehberlik">Rehberlik</option>
                                                                         <option value="Özel Ders">Özel Ders</option>
+                                                                        <option value="Psikoloji">Psikoloji Köşesi</option>
                                                                     </select>
                                                                 </div>
 
@@ -325,7 +327,7 @@ $taxRate= $taxRate / 100 + 1;
                         $('#addMonthsWrapper').show();
                         $('#addCountWrapper').hide();
                         $('#addCount').val('');
-                    } else if (this.value === 'Özel Ders') {
+                    } else if (this.value === 'Özel Ders' || this.value === 'Psikoloji') {
                         $('#addCountWrapper').show();
                         $('#addMonthsWrapper').hide();
                         $('#addMonths').val('');
@@ -343,7 +345,8 @@ $taxRate= $taxRate / 100 + 1;
                         $('#updateMonthsWrapper').show();
                         $('#updateCountWrapper').hide();
                         $('#updateCount').val('');
-                    } else if (this.value === 'Özel Ders') {
+                    } else if (this.value === 'Özel Ders' || this.value === 'Psikoloji') {
+                        console.log(222);
                         $('#updateCountWrapper').show();
                         $('#updateMonthsWrapper').hide();
                         $('#updateMonths').val('');
@@ -422,7 +425,7 @@ $taxRate= $taxRate / 100 + 1;
                     $('#updatePackageType').val(type).trigger('change');
                     if (type === 'Koçluk' || type === 'Rehberlik') {
                         $('#updateMonths').val(months);
-                    } else if (type === 'Özel Ders') {
+                    } else if (type === 'Özel Ders' || type === 'Psikoloji' ) {
                         $('#updateCount').val(count);
                     }
                     $('#updatePackageDescription').val(description); // Açıklama alanını doldur
