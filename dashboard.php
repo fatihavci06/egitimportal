@@ -5,7 +5,7 @@
 
 session_start();
 
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 2 or $_SESSION['role'] == 3 or $_SESSION['role'] == 4 or $_SESSION['role'] == 5 or $_SESSION['role'] == 8 or $_SESSION['role'] == 9 or $_SESSION['role'] == 10 or $_SESSION['role'] == 10001 or $_SESSION['role'] == 10002 or $_SESSION['role'] == 10005)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 2 or $_SESSION['role'] == 3 or $_SESSION['role'] == 4 or $_SESSION['role'] == 5 or $_SESSION['role'] == 8 or $_SESSION['role'] == 9 or $_SESSION['role'] == 10 or $_SESSION['role'] == 10001 or $_SESSION['role'] == 10002 or $_SESSION['role'] == 10005 or $_SESSION['role'] == 20001)) {
 	define('GUARD', true);
 	include_once "views/pages-head.php";
 	?>
@@ -108,7 +108,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 									include_once "views/otheradmin-dash.php";
 								} elseif ($_SESSION['role'] == 5) {
 									include_once "views/guardian-dash.php";
-								} else { ?>
+								} elseif ($_SESSION['role'] == 20001) {
+									include_once "views/admin-dash.php";
+								}
+								else { 
+									
+									?>
 									<div id="kt_app_content_container" class="app-container container-fluid">
 										<!--begin::Row-->
 										<div class="row gx-5 gx-xl-10">
@@ -128,8 +133,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 														<!--end::Title-->
 														<!--begin::Toolbar-->
 														<div class="card-toolbar">
-															<?php echo 22;
-															die; ?>
+														
 															<ul class="nav" id="kt_chart_widget_8_tabs">
 																<li class="nav-item">
 																	<a class="nav-link btn btn-sm btn-color-muted btn-active btn-active-light fw-bold px-4 me-1"

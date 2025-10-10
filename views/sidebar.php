@@ -360,6 +360,8 @@ $menu1 = new ShowMenu();
                 $menu1->showMenuSuperAdminList();
             } elseif ($_SESSION['role'] == 10) {
                 $menu1->showMenuSuperAdminList();
+            }elseif ($_SESSION['role'] == 20001) {
+                $menu1->showMenuSuperAdminList();
             }
             ?>
             <!--end:Menu item-->

@@ -28,12 +28,14 @@ class LoginContr extends Login
 	{
 			
 		if ($this->emptyInput() == false) {
+		
 			// echo "Empty input!";
 			header("location: ../index.php?error=emptyinput");
 			exit();
 		}
 
 		$this->getUser($this->email, $this->password);
+				
 	}
 
 	private function emptyInput()

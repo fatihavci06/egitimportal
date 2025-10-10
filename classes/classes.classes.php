@@ -1646,50 +1646,55 @@ WHERE mc.school_id = 1
 		return $classData;
 	}
 	public function getTurkceImportanWeekDetail()
-	{
-		$stmt = $this->connect()->prepare('
+{
+    $stmt = $this->connect()->prepare('
         SELECT 
-            iw.id AS week_id,
-            iw.name AS week_name,
+            ct.id AS week_id,
+            ct.title AS week_name,
             msc.id AS content_id,
             msc.subject
-        FROM important_weeks_lnp iw
-        INNER JOIN main_school_content_lnp msc ON msc.week_id = iw.id
-		WHERE msc.lesson_id = 14
-        ORDER BY iw.id ASC, msc.id ASC
+        FROM category_titles_lnp ct
+        LEFT JOIN main_school_content_lnp msc 
+            ON msc.concept_title_id = ct.id 
+            AND msc.lesson_id = 14
+        WHERE ct.type = 2
+        ORDER BY ct.id ASC, msc.id ASC
     ');
 
-		if (!$stmt->execute()) {
-			$stmt = null;
-			exit();
-		}
+    if (!$stmt->execute()) {
+        $stmt = null;
+        exit();
+    }
 
-		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-		$weeks = [];
+    $weeks = [];
 
-		foreach ($rows as $row) {
-			$weekId = $row['week_id'];
+    foreach ($rows as $row) {
+        $weekId = $row['week_id'];
 
-			// Eğer bu hafta daha önce eklenmediyse, oluştur
-			if (!isset($weeks[$weekId])) {
-				$weeks[$weekId] = [
-					'week_id' => $weekId,
-					'week_name' => $row['week_name'],
-					'contents' => [],
-				];
-			}
+        // Eğer bu hafta daha önce eklenmediyse, oluştur
+        if (!isset($weeks[$weekId])) {
+            $weeks[$weekId] = [
+                'week_id' => $weekId,
+                'week_name' => $row['week_name'],
+                'contents' => [],
+            ];
+        }
 
-			// O haftanın içeriklerine ekle
-			$weeks[$weekId]['contents'][] = [
-				'content_id' => $row['content_id'],
-				'subject' => $row['subject'],
-			];
-		}
-		return $weeks;
-		// JSON uyumlu hale getir
-		return array_values($weeks);
-	}
+        // Eğer içerik varsa ekle (msc NULL olabilir)
+        if (!empty($row['content_id'])) {
+            $weeks[$weekId]['contents'][] = [
+                'content_id' => $row['content_id'],
+                'subject' => $row['subject'],
+            ];
+        }
+    }
+
+    // JSON uyumlu hale getir
+    return array_values($weeks);
+}
+
 	public function getMontBasedContentList($month)
 	{
 		// Ana içerikleri çek
@@ -1823,7 +1828,7 @@ WHERE mc.school_id = 1
 		return $contents;
 	}
 
-public function getEtkinlikBasedContentList($activityTitleId)
+	public function getEtkinlikBasedContentList($activityTitleId)
 	{
 		// Ana içerikleri çek
 		$stmt = $this->connect()->prepare('
