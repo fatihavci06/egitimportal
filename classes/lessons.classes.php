@@ -97,6 +97,13 @@ class Lessons extends Dbh
 				$stmt = null;
 				exit();
 			}
+		} elseif ($_SESSION['role'] == 10002) {
+			$stmt = $this->connect()->prepare('SELECT id, name, package_type FROM main_school_lessons_lnp');
+
+			if (!$stmt->execute()) {
+				$stmt = null;
+				exit();
+			}
 		} else{
 			$school_id = $_SESSION['school_id'];
 			$stmt = $this->connect()->prepare('SELECT id, name, class_id,package_type FROM lessons_lnp WHERE (school_id=? )');

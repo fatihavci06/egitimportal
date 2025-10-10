@@ -437,7 +437,7 @@ class Student extends Dbh
 	public function getStudentByIdAndRole($id)
 	{
 		try {
-			$stmt = $this->connect()->prepare('SELECT * FROM users_lnp WHERE id = ? AND role = 2');
+			$stmt = $this->connect()->prepare('SELECT * FROM users_lnp WHERE id = ? AND (role = 2 OR role = 10002)');
 
 			$stmt->execute(array($id));
 			$studentInfo = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -667,6 +667,23 @@ class Student extends Dbh
 		$stmt = null;
 	}
 
+	public function getPreschoolLessons()
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM main_school_lessons_lnp');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$lessonData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $lessonData;
+
+		$stmt = null;
+	}
+
 	public function getUnits($lesson_id, $class_id, $school_id)
 	{
 
@@ -684,12 +701,46 @@ class Student extends Dbh
 		$stmt = null;
 	}
 
+	public function getPreschoolUnits($lesson_id)
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM main_school_units_lnp WHERE lesson_id = ?');
+
+		if (!$stmt->execute(array($lesson_id))) {
+			$stmt = null;
+			exit();
+		}
+
+		$unitData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $unitData;
+
+		$stmt = null;
+	}
+
 	public function getTopics($lesson_id, $class_id, $school_id, $unit_id)
 	{
 
 		$stmt = $this->connect()->prepare('SELECT * FROM topics_lnp WHERE school_id = ? AND lesson_id = ? AND class_id = ? AND unit_id = ?');
 
 		if (!$stmt->execute(array($school_id, $lesson_id, $class_id, $unit_id))) {
+			$stmt = null;
+			exit();
+		}
+
+		$unitData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $unitData;
+
+		$stmt = null;
+	}
+
+	public function getPreschoolTopics($unit_id)
+	{
+
+		$stmt = $this->connect()->prepare('SELECT * FROM main_school_topics_lnp WHERE unit_id = ?');
+
+		if (!$stmt->execute(array($unit_id))) {
 			$stmt = null;
 			exit();
 		}

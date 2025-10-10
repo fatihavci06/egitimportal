@@ -6,7 +6,7 @@ define('GUARD', true);
 // ini_set('display_startup_errors', 1);
 // error_reporting(E_ALL);
 
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 2 or $_SESSION['role'] == 4 or $_SESSION['role'] == 5 or $_SESSION['role'] == 8)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 2 or $_SESSION['role'] == 4 or $_SESSION['role'] == 5 or $_SESSION['role'] == 8 or $_SESSION['role'] == 10002)) {
     include_once "classes/dbh.classes.php";
     include_once "classes/school.classes.php";
     include_once "classes/school-view.classes.php";
@@ -227,7 +227,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                             <?php } ?>
                                             <?php
-                                            if ($_SESSION['role'] == 2 or $_SESSION['role'] == 5) { ?>
+                                            if ($_SESSION['role'] == 2 or $_SESSION['role'] == 5 or $_SESSION['role'] == 10002) { ?>
                                                 <table class="table align-middle table-row-dashed fs-6 gy-5"
                                                     id="kt_customers_table">
                                                     <thead>
@@ -247,6 +247,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             $students->getStudentsProgressListForParent($_SESSION['id'], true);
                                                         } elseif($_SESSION['role'] == 2) {
                                                             $students->getStudentsProgressListForParent($_SESSION['id'] ,false);
+                                                        } elseif($_SESSION['role'] == 10002) {
+                                                            $students->getStudentsProgressListForParentPreschool($_SESSION['id'] ,false, $_SESSION['class_id']);
                                                         }
 
                                                         ?>

@@ -298,6 +298,7 @@ class ShowStudent extends Student
         }
         echo $studentList;
     }
+
     public function getStudentsProgressListForParent($childId, $isParent)
     {
 
@@ -348,6 +349,70 @@ class ShowStudent extends Student
                         </td>
                         <td class="text-end">
                             <span class="fw-bold fs-6">' . $scoreT . '%</span>
+                        </td>
+                        <td class="text-center">
+                            <a href="./icerik-ilerleme-takip/' . $childWithSchoolInfo['id'] . '" class="text-gray-800 text-hover-primary mb-1"> 
+                            <i class="ki-duotone ki-chart-line text-gray-900 fs-2tx">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i></a>
+                        </td>
+                    </tr>
+                ';
+        echo $studentList;
+    }
+    
+    public function getStudentsProgressListForParentPreschool($childId, $isParent, $class_id)
+    {
+
+        if ($isParent) {
+            $parent = $this->getUserById($childId);
+            $childWithSchoolInfo = $this->getUserById($parent['child_id']);
+        } else {
+            /* $childWithSchoolInfo = $this->getUserById($childId); */
+            $childWithSchoolInfo = $this->getUserById($childId);
+
+        }
+
+        $dateFormat = new DateFormat();
+        $studentList = '';
+        require_once "content-tracker.classes.php";
+        require_once "grade-result.classes.php";
+
+        $contentObj = new ContentTracker();
+        $gradeObj = new GradeResult();
+
+
+        $sinifArama = 'data-filter="' . $childWithSchoolInfo['classSlug'] . '"';
+
+
+
+        $alter_button = $childWithSchoolInfo['active'] ? "Pasif Yap" : "Aktif Yap";
+
+        $percentage = $contentObj->getPreschoolContentAnalyticsOverall($childWithSchoolInfo['id'], $class_id);
+        $percentageW = ($percentage == null) ? 0 : $percentage;
+        $percentageT = ($percentage === null) ? '-' : $percentage;
+/* 
+        $score = $gradeObj->getGradeOverall($childWithSchoolInfo['id'], );
+        $scoreW = ($score == null) ? 0 : $score;
+        $scoreT = ($score === null) ? '-' : $score; */
+
+        $studentList .= '
+                    <tr>
+                        <td>
+                            <a href="./ogrenci-detay/' . $childWithSchoolInfo['username'] . '" class="text-gray-800 text-hover-primary mb-1">' . $childWithSchoolInfo['name'] . ' ' . $childWithSchoolInfo['surname'] . '</a>
+                        </td>
+                        <td ' . $sinifArama . '>
+                            ' . $childWithSchoolInfo['className'] . '
+                        </td>
+                        <td data-filter="' . $childWithSchoolInfo['schoolName'] . '">
+                            ' . $childWithSchoolInfo['schoolName'] . '
+                        </td>
+                        <td class="text-end">
+                            <span class="fw-bold fs-6">' . $percentage . '%</span>
+                        </td>
+                        <td class="text-end">
+                            <span class="fw-bold fs-6">-%</span>
                         </td>
                         <td class="text-center">
                             <a href="./icerik-ilerleme-takip/' . $childWithSchoolInfo['id'] . '" class="text-gray-800 text-hover-primary mb-1"> 
@@ -541,6 +606,7 @@ class ShowStudent extends Student
         echo $view;
 
     }
+
     public function getStudentProgress($userId, $classId)
     {
         $schoolInfo = $this->getStudentsList();
@@ -575,13 +641,71 @@ class ShowStudent extends Student
             $studentList .= '
                     <tr>
                         <td>
-                            <a href="./icerik-detay/' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
+                            <a href="./icerik/' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
                         </td>
                         <td>
                             ' . $topic_name . '
                         </td>
                         <td>
                             ' . $subtopic_name . '
+                        </td>
+
+                        <td>
+                            ' . $content_visited . '
+                        </td>
+                        <td>
+                            <span class="fw-bold fs-6">' . $videos . '</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold fs-6">' . $files . '</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold fs-6">' . $wordwalls . '</span>
+                        </td>
+                    </tr>
+                ';
+        }
+        echo $studentList;
+    }
+    
+    public function getStudentProgressPreschool($userId, $classId)
+    {
+        $schoolInfo = $this->getStudentsList();
+
+        $dateFormat = new DateFormat();
+        $studentList = '';
+
+        require_once "content-tracker.classes.php";
+        $contentObj = new ContentTracker();
+
+        $items = $contentObj->getPreschoolContentAnalyticsListByUserId($userId, $classId);
+
+        //     echo "<pre>";
+        //     var_dump([$items]);
+        //     echo "</pre>";
+        // die();
+
+        foreach ($items as $key => $value) {
+
+
+            $placeholder = "placeholder";
+
+            $topic_name = $value['topic_name'] ?? '-';
+            $subtopic_name = $value['subtopic_name'] ?? '-';
+
+            $content_visited = ($value['content_visited'] == 0) ? '<span class="badge badge-light-danger">Hayır</span>' : '<span class="badge badge-light-success">Evet</span>';
+
+            $videos = ($value['total_videos'] == 0) ? '-' : $value['completed_videos'] . '/' . $value['total_videos'];
+            $files = ($value['total_files'] == 0) ? '-' : '' . $value['downloaded_files'] . '/' . $value['total_files'] . '';
+            $wordwalls = ($value['total_wordwalls'] == 0) ? '-' : '' . $value['viewed_wordwalls'] . '/' . $value['total_wordwalls'] . '';
+
+            $studentList .= '
+                    <tr>
+                        <td>
+                            <a href="./ana-okulu-icerikler-detay.php?id=' . $value['content_id'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['subject'] . '</a>
+                        </td>
+                        <td>
+                            ' . $topic_name . '
                         </td>
 
                         <td>
@@ -645,7 +769,80 @@ class ShowStudent extends Student
             $studentList .= '
                     <tr>
                         <td>
-                            <a href="./icerik-detay/' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
+                            <a href="./icerik/' . $value['slug'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['title'] . '</a>
+                        </td>
+                        <td>
+                            ' . $topic_name . '
+                        </td>
+                        <td>
+                            ' . $subtopic_name . '
+                        </td>
+
+                        <td>
+                            ' . $content_visited . '
+                        </td>
+                        <td>
+                            <span class="fw-bold fs-6">' . $videos . '</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold fs-6">' . $files . '</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold fs-6">' . $wordwalls . '</span>
+                        </td>
+                    </tr>
+                ';
+        }
+
+        $total = $completedVideos + $content_visitedNo + $downloaded_files + $viewed_wordwalls;
+
+        echo $total;
+    }
+
+    public function getStudentProgressForSidebarPreschool($userId, $classId)
+    {
+        $schoolInfo = $this->getStudentsList();
+
+        $dateFormat = new DateFormat();
+        $studentList = '';
+
+        require_once "content-tracker.classes.php";
+        $contentObj = new ContentTracker();
+
+        $items = $contentObj->getPreschoolContentAnalyticsListByUserId($userId, $classId);
+
+        //     echo "<pre>";
+        //     var_dump([$items]);
+        //     echo "</pre>";
+        // die();
+
+        $completedVideos = 0;
+        $content_visitedNo = 0;
+        $downloaded_files = 0;
+        $viewed_wordwalls = 0;
+
+        foreach ($items as $key => $value) {
+
+            $completedVideos += $value['completed_videos'];
+            $content_visitedNo += $value['content_visited'];
+            $downloaded_files += $value['downloaded_files'];
+            $viewed_wordwalls += $value['viewed_wordwalls'];
+
+            $placeholder = "placeholder";
+
+            $topic_name = $value['topic_name'] ?? '-';
+            $subtopic_name = $value['subtopic_name'] ?? '-';
+
+            $content_visited = ($value['content_visited'] == 0) ? '<span class="badge badge-light-danger">Hayır</span>' : '<span class="badge badge-light-success">Evet</span>';
+
+            $videos = ($value['total_videos'] == 0) ? '-' : $value['completed_videos'] . '/' . $value['total_videos'];
+            $files = ($value['total_files'] == 0) ? '-' : '' . $value['downloaded_files'] . '/' . $value['total_files'] . '';
+            $wordwalls = ($value['total_wordwalls'] == 0) ? '-' : '' . $value['viewed_wordwalls'] . '/' . $value['total_wordwalls'] . '';
+
+            $studentList .= '
+                    <tr>
+                        <td>
+                            <a href="./ana-okulu-icerikler-detay.php?id=' . $value['content_id'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['subject'] . '</a>
                         </td>
                         <td>
                             ' . $topic_name . '
@@ -1352,6 +1549,85 @@ class ShowStudent extends Student
         }
     }
 
+    // List of Lessons Preschool Student Details Page
+
+    public function showPreschoolLessonsListForStudentDetails($studentId, $class_id, $school_id)
+    {
+
+        $lessonsInfo = $this->getPreschoolLessons();
+
+        $styles = ["danger", "success", "primary", "warning", "info", "secondary", "light", "dark"];
+        $styleIndex = 0;
+
+        require_once "content-tracker.classes.php";
+        require_once "grade-result.classes.php";
+
+        $contentObj = new ContentTracker();
+        $gradeObj = new GradeResult();
+
+        foreach ($lessonsInfo as $value) {
+
+            $style = $styles[$styleIndex % count($styles)];
+
+            $lessonList = '';
+
+                $class_id = $class_id;
+                $school_id = $school_id;
+                $lesson_id = $value['id'];
+
+                $unitData = $this->getPreschoolUnits($lesson_id);
+                $unitCount = count($unitData);
+
+                $percentage = $contentObj->getPreschoolContentAnalyticsByLessonId($studentId, $class_id, $lesson_id);
+                $percentageW = ($percentage == null) ? 0 : $percentage;
+                $percentageT = ($percentage === null) ? '-' : $percentage;
+
+                if ($value['icons'] != NULL) {
+                    $ico = "<img src='assets/media/icons/dersler/" . $value['icons'] . "'>";
+                } else {
+                    $ico = "<div class='symbol-label fs-2 fw-semibold bg-$style text-inverse-$style'>" . mb_substr($value['name'], 0, 1, 'UTF-8') . "</div>";
+                }
+
+                $lessonList .= '
+                <!--begin::Item-->
+                    <div class="d-flex flex-stack">
+                        <!--begin::Symbol-->
+                        <div class="symbol symbol-40px me-4">
+                            ' . $ico . '
+                        </div>
+                        <!--end::Symbol-->
+                        <!--begin::Section-->
+                        <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                            <!--begin:Author-->
+                            <div class="flex-grow-1 me-2">
+                                <a  class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $value['name'] . '</a>
+                                <span class="text-muted fw-semibold d-block fs-7">' . $unitCount . ' Ünite</span>
+                            </div>
+                            <!--end:Author--><!--begin::Progress-->
+                            <div class="d-flex align-items-center w-100 flex-column mt-3">
+                                <div class="d-flex justify-content-between w-100 mt-auto mb-2">
+                                    <span class="fw-semibold fs-6 text-gray-500">Tamamlama Oranı</span>
+                                    <span class="fw-bold fs-6">%' . $percentageT . '</span>
+                                </div>
+                                <div class="h-5px mx-3 w-100 bg-light mb-3">
+                                    <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $percentageW . '%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                </div>
+                            <!--end::Progress-->
+                        </div>
+                        <!--end::Section-->
+                    </div>
+                <!--end::Item-->
+                <!--begin::Separator-->
+                    <div class="separator separator-dashed my-4"></div>
+                <!--end::Separator-->';
+
+            echo $lessonList;
+
+            $styleIndex++;
+        }
+    }
+
     // List of Lessons Student Dashboard Page
 
     public function showLessonsListForStudentDetailsDashboard($studentId, $class_id, $school_id)
@@ -1939,6 +2215,122 @@ $packagesList .= '<tr>
 
                 echo $leftUnits;
             }
+            // echo "<pre>";
+            // var_dump($lessonsInfo);
+            // echo "</pre>";
+
+        }
+    }
+
+    // List of Preschool Lessons For Student Details Page
+
+    public function showPreschoolLessonsListForStudentDetailsPage($getStudentId, $class_id, $school_id)
+    {
+        $lessonsInfo = $this->getPreschoolLessons();
+
+        $styles = ["danger", "success", "primary", "warning", "info", "secondary", "light", "dark"];
+        $styleIndex = 0;
+
+        require_once "content-tracker.classes.php";
+        require_once "grade-result.classes.php";
+
+        $contentObj = new ContentTracker();
+        $gradeObj = new GradeResult();
+
+        foreach ($lessonsInfo as $value) {
+
+            $style = $styles[$styleIndex % count($styles)];
+
+            $lessonList = '';
+
+                $lesson_id = $value['id'];
+
+                $unitData = $this->getPreschoolUnits($lesson_id);
+                $unitCount = count($unitData);
+
+                $units = '';
+
+
+                foreach ($unitData as $unit) {
+                    $topicCount = 0;
+                    $topicData = $this->getPreschoolTopics($unit['id']);
+                    $topicCount = count($topicData);
+
+                    $percentage = $contentObj->getPreschoolContentAnalyticsByUnitId($getStudentId, $class_id, $lesson_id, $unit['id']);
+                    $percentageW = ($percentage == null) ? 0 : $percentage;
+                    $percentageT = ($percentage === null) ? '-' : $percentage;
+                    
+                    $units .= '
+                            <!--begin::Item-->
+                                <div class="d-flex flex-stack">
+                                    <!--begin::Symbol-->
+                                    <div class="symbol symbol-40px me-4">
+                                        <div class="symbol-label fs-2 fw-semibold bg-' . $style . ' text-inverse-' . $style . '">' . mb_substr($unit['name'], 0, 1, 'UTF-8') . '</div>
+                                    </div>
+                                    <!--end::Symbol-->
+                                    <!--begin::Section-->
+                                    <div class="d-flex align-items-center flex-row-fluid ">
+                                        <!--begin:Author-->
+                                        <div class="flex-grow-1 me-2">
+                                            <a class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $unit['name'] . '</a>
+                                            <span class="text-muted fw-semibold d-block fs-7">' . $topicCount . ' Konu</span>
+                                        </div>
+                                        <!--end:Author-->
+                                        <!--begin::Progress-->
+                                        <div class="d-flex align-items-center w-100 flex-column mt-3">
+                                            <div class="d-flex justify-content-between w-100 mt-auto mb-2">
+                                                <span class="fw-semibold fs-6 text-gray-500">Tamamlama Oranı</span>
+                                                <span class="fw-bold fs-6">' . $percentageT . '%</span>
+                                                
+                                            </div>
+                                            <div class="h-5px mx-3 w-100 bg-light mb-3">
+                                                <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $percentageW . '%;" aria-valuenow="25"
+                                                    aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                        
+
+                                        
+                                        <!--end::Progress-->
+                                    </div>
+                                    <!--end::Section-->
+                                </div>
+                                <!--end::Item-->
+                                <!--begin::Separator-->
+                                <div class="separator separator-dashed my-4"></div>
+                            <!--end::Separator-->
+                    ';
+                }
+
+                $leftUnits = '
+                        <!--begin::Col-->
+                            <div class="col-xl-6">
+                                <!--begin::List widget 20-->
+                                    <div class="card mb-5 mb-xl-8">
+                                        <!--begin::Header-->
+                                        <div class="card-header border-0 pt-5">
+                                            <h3 class="card-title align-items-start flex-column">
+                                                <span class="card-label fw-bold text-gray-900">' . $value['name'] . '</span>
+                                                
+                                                <span class="text-muted fw-semibold d-block fs-7">' . $unitCount . ' Ünite</span>
+                                            </h3>
+                                        </div>
+                                        <!--end::Header-->
+                                        <!--begin::Body-->
+                                        <div class="card-body pt-6">
+                                            ' . $units . '
+                                        </div>
+                                        <!--end::Body-->
+                                    </div>
+                                    <!--end::List widget 20-->
+                                </div>
+                            <!--end::Col-->';
+
+
+                $styleIndex++;
+
+                echo $leftUnits;
+            
             // echo "<pre>";
             // var_dump($lessonsInfo);
             // echo "</pre>";

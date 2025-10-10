@@ -46,7 +46,7 @@ $menu1 = new ShowMenu();
                     <div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px;">
                         <i class="fa-solid fa-check fs-1 mb-3" style="color:black"></i>
                         <p class="mb-0"><?php echo $student->getStudentProgressForSidebar($_SESSION['id'], $_SESSION['class_id']); ?></p>
-                        <p class="mb-0" style="font-size: 11px;">mateyali tamamladın</p>
+                        <p class="mb-0" style="font-size: 11px;">materyali tamamladın</p>
                     </div>
                     <div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px;">
                         <i class="fa-solid fa-question fs-1 mb-3" style="color:black"></i>
@@ -77,6 +77,11 @@ $menu1 = new ShowMenu();
                         <i class="fa-solid fa-hourglass fs-1 mb-3" style="color:black"></i>
                         <p class="mb-0"><?php echo $timeSpend->dakikayaCevir($timeSpendInfo); ?></p>
                         <p class="mb-0" style="font-size: 11px;">dakika geçirdin</p>
+                    </div>
+                    <div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px;">
+                        <i class="fa-solid fa-check fs-1 mb-3" style="color:black"></i>
+                        <p class="mb-0"><?php echo $student->getStudentProgressForSidebarPreschool($_SESSION['id'], $_SESSION['class_id']); ?></p>
+                        <p class="mb-0" style="font-size: 11px;">materyali tamamladın</p>
                     </div>
                 </div>
             </div>
@@ -359,6 +364,8 @@ $menu1 = new ShowMenu();
             } elseif ($_SESSION['role'] == 9) {
                 $menu1->showMenuSuperAdminList();
             } elseif ($_SESSION['role'] == 10) {
+                $menu1->showMenuSuperAdminList();
+            }elseif ($_SESSION['role'] == 20001) {
                 $menu1->showMenuSuperAdminList();
             }
             ?>

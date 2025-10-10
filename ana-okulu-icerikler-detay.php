@@ -413,7 +413,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 
         <script src="https://player.vimeo.com/api/player.js"></script>
-        <script src="assets/js/custom/trackTimeOnVimeo.js"></script>
+        <script src="assets/js/custom/trackTimeOnVimeoPreschool.js"></script>
         <script src="assets/js/custom/contentTracker.js"></script>
 
 

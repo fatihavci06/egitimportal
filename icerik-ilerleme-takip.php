@@ -6,7 +6,7 @@ define('GUARD', true);
 // ini_set('display_startup_errors', 1);
 // error_reporting(E_ALL);
 
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 2 or $_SESSION['role'] == 3 or $_SESSION['role'] == 4 or $_SESSION['role'] == 5 or $_SESSION['role'] == 8)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 2 or $_SESSION['role'] == 3 or $_SESSION['role'] == 4 or $_SESSION['role'] == 5 or $_SESSION['role'] == 8 or $_SESSION['role'] == 10002)) {
     include_once "classes/dbh.classes.php";
     include_once "classes/student.classes.php";
     include_once "classes/student-view.classes.php";
@@ -33,12 +33,16 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
     } elseif ($_SESSION['role'] == 1 or $_SESSION['role'] == 3 or $_SESSION['role'] == 8 or $_SESSION['role'] == 8) {
         $studentModel = $studentObj->getStudentByIdAndRole($query_student_id);
+    } elseif (($_SESSION['id'] == $query_student_id) && ($_SESSION['role'] == 10002)) {
+        $studentModel = $studentObj->getStudentByIdAndRole($query_student_id);
+
+    }else{
+        $studentModel = $studentObj->getStudentByIdAndRole($query_student_id);
     }
 
-    $studentModel = $studentObj->getStudentByIdAndRole($query_student_id);
-    if (empty($studentModel)) {
+    if (empty($studentModel) OR $query_student_id != $_SESSION['id']) {
         header("HTTP/1.0 404 Not Found");
-        header("Location: 404.php");
+        header("Location: ../404.php");
         exit();
     }
     // $viewList = $student->getStudentProgress($studentModel['id'],$studentModel['class_id']);
@@ -164,7 +168,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                                                         <th class="min-w-120px">İçerik</th>
                                                         <th class="min-w-100px">Konu</th>
+                                                        <?php if($_SESSION['role'] != 10002){ ?>
                                                         <th class="min-w-100px">Altkonu</th>
+                                                        <?php } ?>
                                                         <th class="min-w-70px">İçerik ziyareti</th>
                                                         <th class="min-w-70px">Video izleme</th>
                                                         <th class="min-w-70px">Dosya indirme</th>
@@ -173,8 +179,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     </tr>
                                                 </thead>
                                                 <tbody class="fw-semibold text-gray-600">
-                                                    <?php
+                                                    <?php 
+                                                    if($_SESSION['role'] == 2){
                                                     $student->getStudentProgress($studentModel['id'], $studentModel['class_id']);
+                                                    }elseif($_SESSION['role'] == 10002){
+                                                    $student->getStudentProgressPreschool($studentModel['id'], $studentModel['class_id']);
+                                                    }else{
+                                                    $student->getStudentProgress($studentModel['id'], $studentModel['class_id']);  
+                                                    }
                                                     ?>
                                                 </tbody>
                                             </table>
