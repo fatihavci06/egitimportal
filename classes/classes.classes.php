@@ -1915,4 +1915,31 @@ public function getEtkinlikBasedContentList($activityTitleId)
 
 		return $data;
 	}
+	public function getPskTestList()
+	{
+		$stmt = $this->connect()->prepare('SELECT id,name FROM pskolojik_test_lnp ');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $data;
+	}
+	public function getPskTestById($testId)
+	{
+
+		$stmt = $this->connect()->prepare('SELECT id ,name,file_path FROM pskolojik_test_lnp WHERE id = ?');
+
+		if (!$stmt->execute(array($testId))) {
+			$stmt = null;
+			exit();
+		}
+
+		$data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return $data;
+	}
 }

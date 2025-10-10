@@ -5477,7 +5477,7 @@ ORDER BY msu.unit_order asc
                     exit;
                 }
             }
-            
+
             // Güncelleme işlemi
             $sql = "UPDATE doyouknow 
             SET 
@@ -5492,7 +5492,7 @@ ORDER BY msu.unit_order asc
             $stmt = $pdo->prepare($sql);
 
             $result = $stmt->execute([
-               
+
                 ':body' => $meaning,
                 ':class_id' => $class_ids,
                 ':start_date' => $start_date,
@@ -5542,7 +5542,7 @@ ORDER BY msu.unit_order asc
             }
 
             // Verileri al
-           
+
             $meaning = trim($_POST['meaning']);
             $classes = $_POST['classes']; // Array olarak gelecek
             $start_date = $_POST['start_date'];
@@ -5608,7 +5608,7 @@ ORDER BY msu.unit_order asc
             $stmt = $pdo->prepare($sql);
 
             $result = $stmt->execute([
-              
+
                 ':body' => $meaning,
                 ':school_id' => $school_id,
                 ':class_id' => $class_ids,
@@ -5645,6 +5645,263 @@ ORDER BY msu.unit_order asc
         }
 
         break;
+    case 'upload_test':
+        // Frontend'den gelen 'test_name' PHP'de 'name' sütununa karşılık gelir.
+        $testName = trim($_POST['test_name'] ?? '');
+
+        // 1. Veri Doğrulama
+        if (empty($testName)) {
+            echo json_encode(['status' => 'error', 'message' => 'Lütfen test adını girin.']);
+            exit();
+        }
+
+        if (!isset($_FILES['pdf_file']) || $_FILES['pdf_file']['error'] !== UPLOAD_ERR_OK) {
+            echo json_encode(['status' => 'error', 'message' => 'Lütfen bir PDF dosyası seçin veya dosya hatasını kontrol edin.']);
+            exit();
+        }
+
+        $file = $_FILES['pdf_file'];
+        $allowedMimeTypes = ['application/pdf'];
+        $maxFileSize = 5 * 1024 * 1024; // 5MB
+
+        if (!in_array($file['type'], $allowedMimeTypes)) {
+            echo json_encode(['status' => 'error', 'message' => 'Sadece PDF dosyaları yüklenebilir.']);
+            exit();
+        }
+
+        if ($file['size'] > $maxFileSize) {
+            echo json_encode(['status' => 'error', 'message' => 'Dosya boyutu 5MB\'ı geçemez.']);
+            exit();
+        }
+
+        // 2. Dosya Yükleme İşlemi
+        $uploadDir = '../uploads/tests/';
+
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $fileName = 'test_' . uniqid() . '_' . time() . '.pdf';
+        $filePath = $uploadDir . $fileName; // Sunucudaki tam yol
+        $dbFilePath = 'uploads/tests/' . $fileName; // Veritabanı için göreli yol
+
+        if (move_uploaded_file($file['tmp_name'], $filePath)) {
+
+            // 3. Veritabanı Kaydı (name ve file_path sütunları kullanıldı)
+            $sql = "INSERT INTO pskolojik_test_lnp (name, file_path) VALUES (?, ?)";
+            $stmt = $pdo->prepare($sql);
+
+
+            if ($stmt->execute([$testName, $dbFilePath])) {
+                echo json_encode(['status' => 'success', 'message' => 'Test başarıyla yüklendi ve veritabanına kaydedildi.']);
+            } else {
+                // Veritabanı hatası durumunda dosyayı sil
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+                echo json_encode(['status' => 'error', 'message' => 'Veritabanı kayıt hatası.']);
+            }
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Dosya sunucuya yüklenirken bir sorun oluştu.']);
+        }
+        break;
+
+    // --- LİSTELEME (FETCH) İŞLEMİ ---
+    case 'fetch_tests':
+        // Yeni sütun adları kullanıldı: id, name, file_path, created_at
+        $sql = "SELECT id, name, file_path, created_at FROM pskolojik_test_lnp ORDER BY created_at DESC";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        if ($stmt) {
+            $tests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            // Frontend JS'ye "id" ve "name" olarak gönderilecek
+            echo json_encode(['status' => 'success', 'data' => $tests]);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Test listesi çekilirken veritabanı hatası.']);
+        }
+        break;
+
+    // --- SİLME (DELETE) İŞLEMİ ---
+    case 'delete_test':
+        // Frontend'den gelen 'test_id', 'id' sütununa karşılık gelir.
+        $testId = $_POST['test_id'] ?? null;
+
+        if (empty($testId)) {
+            echo json_encode(['status' => 'error', 'message' => 'Silinecek test ID\'si eksik.']);
+            exit();
+        }
+
+        // 1. Dosya yolunu al (id kullanıldı)
+        $sql = "SELECT file_path FROM pskolojik_test_lnp WHERE id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$testId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$result) {
+            echo json_encode(['status' => 'error', 'message' => 'Silinecek test bulunamadı.']);
+            exit();
+        }
+
+        $filePath = $result['file_path'];
+
+        // 2. Veritabanından kaydı sil (id kullanıldı)
+        $sqlDelete = "DELETE FROM pskolojik_test_lnp WHERE id = ?";
+        $stmtDelete = $pdo->prepare($sqlDelete);
+
+        if ($stmtDelete->execute([$testId])) {
+
+            // 3. Dosyayı sil
+            // Bu kısım, includes.ajax.php'nin bulunduğu klasörden iki seviye yukarıdaki root dizinine ulaşmaya çalışır.
+            $rootPath = dirname(__DIR__, 2) . '/';
+            $fullPath = $rootPath . $filePath;
+            $message = "Test başarıyla silindi (Kayıt silindi).";
+
+            if (file_exists($fullPath) && strpos($fullPath, 'uploads/tests/') !== false) {
+                if (unlink($fullPath)) {
+                    $message = "Test başarıyla silindi (Kayıt ve dosya silindi).";
+                } else {
+                    $message = "Test başarıyla silindi (Kayıt silindi, **dosya silinemedi**).";
+                    error_log("Dosya silme hatası: {$fullPath}");
+                }
+            }
+
+            echo json_encode(['status' => 'success', 'message' => $message]);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Silme hatası: Veritabanı işlemi başarısız.']);
+        }
+        break;
+
+    // --- DÜZENLEME (UPDATE) İŞLEMİ ---
+    case 'update_test':
+        // Frontend'den gelen 'test_id', 'id' sütununa karşılık gelir.
+        $testId = $_POST['test_id'] ?? null;
+        // Frontend'den gelen 'test_name', 'name' sütununa karşılık gelir.
+        $newName = trim($_POST['test_name'] ?? '');
+
+        if (empty($testId) || empty($newName)) {
+            echo json_encode(['status' => 'error', 'message' => 'Test ID veya yeni ad boş olamaz.']);
+            exit();
+        }
+
+        // name ve id sütunları kullanıldı, updated_at otomatik güncellenecektir.
+        $sql = "UPDATE pskolojik_test_lnp SET name = ? WHERE id = ?";
+        $stmt = $pdo->prepare($sql);
+
+
+        if ($stmt->execute([$newName, $testId])) {
+            echo json_encode(['status' => 'success', 'message' => 'Test adı başarıyla güncellendi.']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Güncelleme hatası: Veritabanı işlemi başarısız.']);
+        }
+        break;
+    case 'pskTestUpload':
+        $userId = $_SESSION['id'] ?? 0;
+        $schoolId = $_SESSION['school_id'] ?? 1; // school_id'nin varsayılan 1 olması ayarını uyguladık
+
+        // Formdan gelen veriler
+        $testId = filter_input(INPUT_POST, 'test_id', FILTER_VALIDATE_INT);
+        $file = $_FILES['cevap_dosyasi'] ?? null;
+
+        // 2. Temel Geçerlilik Kontrolleri
+        if (!$userId || $userId === 0) {
+            echo json_encode(['success' => false, 'message' => 'Kullanıcı oturumu bulunamadı.']);
+            exit;
+        }
+
+        if (!$testId || $testId <= 0) {
+            echo json_encode(['success' => false, 'message' => 'Geçersiz Test ID.']);
+            exit;
+        }
+
+        if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
+            // Dosya yükleme hatası veya dosya yok
+            $errorMsg = match ($file['error'] ?? UPLOAD_ERR_NO_FILE) {
+                UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => 'Yüklenen dosya boyutu çok büyük.',
+                UPLOAD_ERR_PARTIAL => 'Dosya sadece kısmen yüklenebildi.',
+                UPLOAD_ERR_NO_FILE => 'Lütfen bir dosya seçin.',
+                default => 'Dosya yüklenirken bilinmeyen bir hata oluştu.'
+            };
+            echo json_encode(['success' => false, 'message' => $errorMsg]);
+            exit;
+        }
+
+        // 3. Dosya Tipi ve Boyut Kontrolü
+        $allowedMimeTypes = [
+            'application/pdf',
+            'image/jpeg',
+            'image/png',
+            'application/zip',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document' // .docx
+        ];
+        $maxFileSize = 10 * 1024 * 1024; // 10 MB
+
+        if (!in_array($file['type'], $allowedMimeTypes)) {
+            echo json_encode(['success' => false, 'message' => 'Desteklenmeyen dosya formatı. Sadece PDF, JPG, PNG, DOCX ve ZIP izinlidir.']);
+            exit;
+        }
+
+        if ($file['size'] > $maxFileSize) {
+            echo json_encode(['success' => false, 'message' => 'Dosya boyutu 10MB’dan büyük olamaz.']);
+            exit;
+        }
+
+        // 4. Dosyayı Güvenli Bir Şekilde Kaydetme
+        $uploadDir = '../uploads/psk_test_cevaplari/'; // Kök dizine göre göreceli yol
+
+        // Klasör yoksa oluştur
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+
+        // Benzersiz dosya adı oluşturma: user_id_test_id_zaman.uzantı
+        $fileExtension = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $fileName = sprintf(
+            '%d_%d_%s.%s',
+            $userId,
+            $testId,
+            time(),
+            $fileExtension
+        );
+
+        $targetPath = $uploadDir . $fileName;
+
+        if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+
+            // 5. Veritabanına Kaydetme
+            try {
+                // Düz SQL/PDO Kullanımı (Örnek)
+                $db = new Dbh(); // DB Bağlantısı
+                $pdo = $db->connect();
+
+                // Konumsal parametre (?) kullanımı ile INSERT sorgusu
+                $sql = "INSERT INTO psikolojik_test_sonuc_lnp (test_id, user_id, school_id, file_path) 
+                    VALUES (?, ?, ?, ?)";
+
+                $stmt = $pdo->prepare($sql);
+
+                // DB'ye kaydederken dosya yolundan '../' kısmını kaldırıyoruz
+                $dbFilePath = str_replace('../', '', $targetPath);
+
+                // execute() metoduna değerleri bir dizi olarak gönderme
+                if ($stmt->execute([$testId, $userId, $schoolId, $dbFilePath])) {
+                    echo json_encode(['success' => true, 'message' => 'Cevabınız başarıyla yüklendi ve kaydedildi.']);
+                } else {
+                    // Veritabanı kaydı başarısız olursa dosyayı sil (temizlik)
+                    unlink($targetPath);
+                    echo json_encode(['success' => false, 'message' => 'Dosya yüklendi ancak veritabanına kaydedilemedi.']);
+                }
+            } catch (PDOException $e) {
+                // Veritabanı hatası
+                unlink($targetPath);
+                // Hata ayıklama için: error_log("DB Hatası: " . $e->getMessage());
+                echo json_encode(['success' => false, 'message' => 'Veritabanı bağlantı hatası: ' . $e->getMessage()]);
+            }
+        } else {
+            // move_uploaded_file hatası
+            echo json_encode(['success' => false, 'message' => 'Dosya sunucuya taşınamadı. Klasör izinlerini kontrol edin.']);
+        }
+        break;
+
     default:
         echo json_encode(['status' => 'error', 'message' => 'Geçersiz servis']);
         break;
