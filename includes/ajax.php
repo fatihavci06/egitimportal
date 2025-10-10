@@ -5395,7 +5395,7 @@ ORDER BY msu.unit_order asc
                 ':content' => $content,
                 ':add_by' => $add_by,
                 ':image' => $image_path,
-                ':is_active' => $is_active
+                ':is_active' => $status
             ]);
 
             if ($result) {

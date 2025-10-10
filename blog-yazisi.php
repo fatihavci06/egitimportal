@@ -247,7 +247,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                             <?php
 
-                                            if (isset($data['image'])) { ?>
+                                            if (!empty($data['image'])) { ?>
                                                 <img src="<?= $data['image'] ?>" alt="Yüklenen Görsel"
                                                     class="rounded img-fluid"
                                                     style="object-fit: cover;  width: auto; height:200px">
