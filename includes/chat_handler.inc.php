@@ -108,6 +108,28 @@ switch ($action) {
         $users = $chat->getAllUsers($user_id);
         echo json_encode(['success' => true, 'users' => $users]);
         break;
+    case 'get_user_info':
+        $target_user_id = intval($_GET['user_id'] ?? 0);
+
+        if (!$target_user_id) {
+            echo json_encode(['success' => false, 'error' => 'Geçersiz Kullanıcı ID']);
+            break;
+        }
+
+        $user = (new User)->getUserById($target_user_id);
+
+        if ($user) {
+            echo json_encode(['success' => true, 'user' => [
+                'id' => $user['id'],
+                'name' => $user['name'],
+                'surname' => $user['surname'],
+                'photo' => $user['photo'] ?? 'default.jpg' // Eğer fotoğraf yoksa 'default.jpg' kullan.
+            ]]);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Kullanıcı bulunamadı.']);
+        }
+        break;
+
 
     default:
         echo json_encode(['error' => 'Invalid action']);

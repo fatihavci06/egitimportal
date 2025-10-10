@@ -14,7 +14,7 @@ if (isset($_SESSION['role'])) {
     $currentUserIdForJs = 'null';
     $currentUserRoleForJs = $_SESSION['role'] ?? 'null'; 
 
-    if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 10001)) {
+    if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 10001 || $_SESSION['role'] == 20001 || $_SESSION['role'] == 10005 )) {
         $currentUserIdForJs = 'null'; 
     } elseif (isset($_SESSION['user_id'])) {
         $currentUserIdForJs = (int)$_SESSION['user_id']; 

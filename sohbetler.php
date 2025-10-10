@@ -689,6 +689,11 @@ include_once "classes/dateformat.classes.php";
 
     <!-- <script src="assets/js/custom/apps/messages/list.js"></script> -->
 
+   <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
+    <script src="assets/js/widgets.bundle.js"></script>
+    <script src="assets/js/custom/widgets.js"></script>
+
+    <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
     <script src="assets/js/widgets.bundle.js"></script>
     <script src="assets/js/custom/widgets.js"></script>
 
@@ -698,7 +703,6 @@ include_once "classes/dateformat.classes.php";
         let conversations = [];
 
         const openContactsButton = document.getElementById('openContactsButton');
-
         const contactsModal = new bootstrap.Modal(document.getElementById('contactsModal'));
 
         function showContactsModal() {
@@ -713,15 +717,60 @@ include_once "classes/dateformat.classes.php";
 
         document.getElementById('openContactsButton').addEventListener('click', showContactsModal);
         document.getElementById('closeModalButton').addEventListener('click', hideContactsModal);
+
+
+        // 1. URL'den parametre okuma fonksiyonu
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        };
+
+        // 2. DOMContentLoaded'a URL kontrolü ve AJAX ile kullanıcı bilgisi çekme eklendi
         document.addEventListener('DOMContentLoaded', function () {
             loadConversations();
-
             setInterval(loadConversations, 30000);
 
             document.getElementById('conversationSearch').addEventListener('input', filterConversations);
             document.getElementById('contactSearch').addEventListener('input', filterContacts);
+
+            // --- Yönlendirme Kontrolü ---
+            const initialUserId = getUrlParameter('user_id');
+
+            if (initialUserId) {
+                // Sohbeti başlatmadan önce, AJAX ile kullanıcının adını ve fotoğrafını çek
+                fetchUserInfo(initialUserId)
+                    .then(userInfo => {
+                        // Bilgileri çektikten sonra sohbeti başlat
+                        startConversation(userInfo.id, `${userInfo.name} ${userInfo.surname}`, userInfo.photo);
+                    })
+                    .catch(error => {
+                        console.error('Kullanıcı bilgisi çekilemedi, sohbet başlatılamıyor:', error);
+                        // Hata durumunda varsayılan isimle başlatılabilir veya hiçbir şey yapılmayabilir.
+                        // Şu an hiçbir şey yapılmıyor.
+                    });
+            }
+            // --- Yönlendirme Kontrolü Sonu ---
         });
 
+        // YENİ FONKSİYON: Kullanıcı ID'si ile isim ve fotoğrafını çeker
+        function fetchUserInfo(userId) {
+            // Lütfen backend'de bu isteği karşılayan bir handler'ın (get_user_info) olduğundan emin olun.
+            // Örnek: includes/chat_handler.inc.php?action=get_user_info&user_id=...
+            return fetch(`includes/chat_handler.inc.php?action=get_user_info&user_id=${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.user) {
+                        return data.user;
+                    } else {
+                        throw new Error(data.error || 'Kullanıcı bilgisi bulunamadı');
+                    }
+                });
+        }
+        
+        // ... (Diğer fonksiyonlar: loadConversationsForUser, loadConversationsForParent, loadConversations, renderConversations)
+        
         function loadConversationsForUser() {
             return fetch('includes/chat_handler.inc.php?action=get_conversations')
                 .then(response => response.json())
@@ -807,7 +856,7 @@ include_once "classes/dateformat.classes.php";
             `
                 } else {
                     return `
-                <div class="conversation-item ${currentConversationId == conv.id ? 'active' : ''}" 
+                <div class="conversation-item ${currentConversationId == conv.id ? 'active' : ''}" conv-id="${conv.id}"
                      onclick="selectConversation(${conv.id}, '${conv.other_name} ${conv.other_surname} ${conv.childId ? (`(${conv.childName} ${conv.childSurname} ${conv.childSchoolName} ${conv.childClassName})`) : ''} ', ${conv.other_user_id},'${conv.other_photo}')">
                     <div class="d-flex align-items-center">
                         <div class="symbol symbol-45px me-3">
@@ -831,7 +880,11 @@ include_once "classes/dateformat.classes.php";
                 }
 
             }).join('');
-
+            
+            // Otomatik başlatılan sohbeti aktif hale getir
+            if (currentConversationId) {
+                document.querySelector(`.conversation-item[conv-id="${currentConversationId}"]`)?.classList.add('active');
+            }
         }
 
         function selectConversation(conversationId, userName, userId, photo, isChatable = true) {
@@ -846,10 +899,15 @@ include_once "classes/dateformat.classes.php";
             document.querySelectorAll('.conversation-item').forEach(item => {
                 item.classList.remove('active');
             });
-            if (event) {
-                event.target.closest('.conversation-item').classList.add('active');
-
+            
+            // Eğer bir tıklama olayı varsa (manuel seçim)
+            if (event && event.target.closest('.conversation-item')) {
+                 event.target.closest('.conversation-item').classList.add('active');
+            } else {
+                // URL'den otomatik açılma durumu için
+                document.querySelector(`.conversation-item[conv-id="${conversationId}"]`)?.classList.add('active');
             }
+
             if(isChatable){
                 loadMessages();
             }else{
@@ -902,10 +960,12 @@ include_once "classes/dateformat.classes.php";
                 `;
                 return;
             }
-            let selectedId = messages[0].sender_id;
+            
+            // Kendi mesaj ID'nizi kullanır.
+            const currentUserId = getCurrentUserId(); 
 
             container.innerHTML = messages.map(msg => {
-                const isOwn = msg.sender_id == selectedId;
+                const isOwn = msg.sender_id == currentUserId;
                 const messageTime = new Date(msg.created_at).toLocaleTimeString('tr-TR', {
                     hour: '2-digit',
                     minute: '2-digit'
@@ -913,11 +973,11 @@ include_once "classes/dateformat.classes.php";
 
                 return `
                     <div class="message-bubble ${isOwn ? 'own' : ''} d-flex flex-column">
-                        <span class="text-gray-500 fs-8 px-2 ${isOwn ? '' : ''}"> ${msg.name} ${msg.surname}</span>
+                        <span class="text-gray-500 fs-8 px-2 ${isOwn ? 'text-end' : 'text-start'}"> ${msg.name} ${msg.surname}</span>
                         <div class="message-content">
                             ${escapeHtml(msg.message)}
                         </div>
-                        <div class="message-time ${isOwn ? 'text-end' : ''}">${messageTime}</div>
+                        <div class="message-time ${isOwn ? 'text-end' : 'text-start'}">${messageTime}</div>
                     </div>
                 `;
             }).join('');
@@ -1004,7 +1064,7 @@ include_once "classes/dateformat.classes.php";
             }
 
             list.innerHTML = users.map(user => `
-                <li class="list-group-item contact-item" onclick="startConversation(${user.id}, '${user.username}','${user.photo}')">
+                <li class="list-group-item contact-item" onclick="startConversation(${user.id}, '${user.name} ${user.surname}','${user.photo}')">
                     <div class="d-flex align-items-center">
                         <img src="assets/media/profile/${user.photo}" alt="${user.username}" class="rounded-circle me-3" width="40">
                         <div>
@@ -1029,7 +1089,7 @@ include_once "classes/dateformat.classes.php";
                     if (data.success) {
                         const modal = bootstrap.Modal.getInstance(document.getElementById('contactsModal'));
 
-                        modal.hide();
+                        if (modal) modal.hide();
 
                         loadConversations();
                         setTimeout(() => {
@@ -1061,7 +1121,8 @@ include_once "classes/dateformat.classes.php";
 
             items.forEach(item => {
                 const userName = item.querySelector('.text-gray-900').textContent.toLowerCase();
-                const lastMessage = item.querySelector('.text-gray-500').textContent.toLowerCase();
+                const lastMessageElement = item.querySelector('.text-gray-500');
+                const lastMessage = lastMessageElement ? lastMessageElement.textContent.toLowerCase() : '';
 
                 if (userName.includes(searchTerm) || lastMessage.includes(searchTerm)) {
                     item.style.display = 'block';
@@ -1079,7 +1140,7 @@ include_once "classes/dateformat.classes.php";
                 const userName = item.querySelector('.fw-bold').textContent.toLowerCase();
 
                 if (userName.includes(searchTerm)) {
-                    item.style.display = 'block';
+                    item.style.display = 'flex';
                 } else {
                     item.style.display = 'none';
                 }
@@ -1096,6 +1157,11 @@ include_once "classes/dateformat.classes.php";
             return <?php echo $_SESSION['id'] ?? 0; ?>;
         }
     </script>
+    ```
+
+
+
+    ```
     <!--end::Custom Javascript-->
     <!--end::Javascript-->
 </body>

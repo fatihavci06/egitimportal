@@ -5901,7 +5901,28 @@ ORDER BY msu.unit_order asc
             echo json_encode(['success' => false, 'message' => 'Dosya sunucuya taşınamadı. Klasör izinlerini kontrol edin.']);
         }
         break;
+    case 'update_test_status':
+         $id = $_POST['id'] ?? null;
+        // Frontend'den gelen 'test_name', 'name' sütununa karşılık gelir.
+        $status = trim($_POST['status'] ?? '');
+        $description = trim($_POST['description'] ?? '');
+        if (empty($id) || !isset($status)) {
+            echo json_encode(['status' => 'error', 'message' => ' ID veya durum ad boş olamaz.']);
+            exit();
+        }
 
+        // name ve id sütunları kullanıldı, updated_at otomatik güncellenecektir.
+        $sql = "UPDATE psikolojik_test_sonuc_lnp SET status = ?,description=?  WHERE id = ?";
+        $stmt = $pdo->prepare($sql);
+
+
+        if ($stmt->execute([$status, $description,$id])) {
+            echo json_encode(['status' => 'success', 'message' => 'Başarıyla güncellendi.']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Güncelleme hatası: Veritabanı işlemi başarısız.']);
+        }
+        break;
+        break;
     default:
         echo json_encode(['status' => 'error', 'message' => 'Geçersiz servis']);
         break;

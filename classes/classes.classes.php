@@ -1646,8 +1646,8 @@ WHERE mc.school_id = 1
 		return $classData;
 	}
 	public function getTurkceImportanWeekDetail()
-{
-    $stmt = $this->connect()->prepare('
+	{
+		$stmt = $this->connect()->prepare('
         SELECT 
             ct.id AS week_id,
             ct.title AS week_name,
@@ -1661,39 +1661,39 @@ WHERE mc.school_id = 1
         ORDER BY ct.id ASC, msc.id ASC
     ');
 
-    if (!$stmt->execute()) {
-        $stmt = null;
-        exit();
-    }
+		if (!$stmt->execute()) {
+			$stmt = null;
+			exit();
+		}
 
-    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $weeks = [];
+		$weeks = [];
 
-    foreach ($rows as $row) {
-        $weekId = $row['week_id'];
+		foreach ($rows as $row) {
+			$weekId = $row['week_id'];
 
-        // Eğer bu hafta daha önce eklenmediyse, oluştur
-        if (!isset($weeks[$weekId])) {
-            $weeks[$weekId] = [
-                'week_id' => $weekId,
-                'week_name' => $row['week_name'],
-                'contents' => [],
-            ];
-        }
+			// Eğer bu hafta daha önce eklenmediyse, oluştur
+			if (!isset($weeks[$weekId])) {
+				$weeks[$weekId] = [
+					'week_id' => $weekId,
+					'week_name' => $row['week_name'],
+					'contents' => [],
+				];
+			}
 
-        // Eğer içerik varsa ekle (msc NULL olabilir)
-        if (!empty($row['content_id'])) {
-            $weeks[$weekId]['contents'][] = [
-                'content_id' => $row['content_id'],
-                'subject' => $row['subject'],
-            ];
-        }
-    }
+			// Eğer içerik varsa ekle (msc NULL olabilir)
+			if (!empty($row['content_id'])) {
+				$weeks[$weekId]['contents'][] = [
+					'content_id' => $row['content_id'],
+					'subject' => $row['subject'],
+				];
+			}
+		}
 
-    // JSON uyumlu hale getir
-    return array_values($weeks);
-}
+		// JSON uyumlu hale getir
+		return array_values($weeks);
+	}
 
 	public function getMontBasedContentList($month)
 	{
@@ -1944,6 +1944,49 @@ WHERE mc.school_id = 1
 		}
 
 		$data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return $data;
+	}
+	public function getPskTestListSonuc()
+	{
+		$stmt = $this->connect()->prepare("SELECT 
+	
+    pts.id AS id,
+    pt.name AS test_name,
+	pts.user_id,
+    CONCAT(u.name, ' ', u.surname) AS full_name,
+    pts.file_path,
+    pts.description,
+    pts.status,
+    DATE_FORMAT(pts.created_at, '%d-%m-%Y %H:%i') AS created_at
+FROM psikolojik_test_sonuc_lnp AS pts
+INNER JOIN pskolojik_test_lnp AS pt ON pts.test_id = pt.id
+INNER JOIN users_lnp AS u ON u.id = pts.user_id");
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $data;
+	}
+	public function getPsikolojikUserList()
+	{
+		$stmt = $this->connect()->prepare('SELECT DISTINCT 
+    u.id AS id,
+    u.name AS name,
+    u.surname AS surname
+FROM psikolojik_test_sonuc_lnp AS pst
+INNER JOIN users_lnp AS u ON u.id = pst.user_id;');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 		return $data;
 	}
