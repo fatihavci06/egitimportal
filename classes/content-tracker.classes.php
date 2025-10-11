@@ -606,6 +606,108 @@ class ContentTracker
         }
     }
 
+    public function getPreschoolContentAnalyticsOverall($user_id, $class_id)
+    {
+        $sql = "
+            SELECT 
+                sc.id as content_id,
+                sc.subject,
+                sc.school_id,
+                sc.week_id,
+                sc.main_school_class_id,
+                sc.lesson_id,
+                sc.unit_id,
+                sc.topic_id,
+                sc.content_description,
+                sc.status,
+                
+                CASE WHEN cv.user_id IS NOT NULL THEN 1 ELSE 0 END as content_visited,
+                
+                COUNT(DISTINCT sc.main_school_class_id) as total_videos,
+                
+                SUM(
+                    CASE 
+                        WHEN vd.duration > 0 AND vt.max_timestamp >= (vd.duration * 0.9) THEN 1 
+                        ELSE 0 
+                    END
+                ) as completed_videos,
+                
+                COUNT(DISTINCT scf.id) as total_files,
+                
+                SUM(CASE WHEN fd.user_id IS NOT NULL THEN 1 ELSE 0 END) as downloaded_files,
+                
+                COUNT(DISTINCT scw.id) as total_wordwalls,
+
+                ts.name AS topic_name,
+                
+                SUM(CASE WHEN wv.user_id IS NOT NULL THEN 1 ELSE 0 END) as viewed_wordwalls
+
+            FROM main_school_content_lnp sc
+
+            LEFT JOIN content_visits cv ON sc.id = cv.content_id AND cv.user_id = ?
+
+            LEFT JOIN video_durations_preschool vd ON sc.id = vd.video_id
+            LEFT JOIN video_timestamp_preschool_lnp vt ON sc.id = vt.video_id AND vt.user_id = ?
+
+            LEFT JOIN mainschool_content_file_lnp scf ON sc.id = scf.main_id
+            LEFT JOIN file_downloads fd ON scf.id = fd.file_id AND fd.user_id = ?
+
+            LEFT JOIN school_content_wordwall_lnp scw ON sc.id = scw.school_content_id
+            LEFT JOIN wordwall_views wv ON scw.id = wv.wordwall_id AND wv.user_id = ?
+
+            LEFT JOIN topics_lnp ts ON sc.topic_id = ts.id AND sc.lesson_id = ts.lesson_id 
+
+            WHERE sc.status = 1 AND sc.main_school_class_id = ?
+
+            GROUP BY 
+                sc.id, sc.subject, sc.school_id, sc.week_id, 
+                sc.main_school_class_id, sc.lesson_id, sc.unit_id, sc.topic_id, 
+                sc.content_description, sc.status, cv.user_id, ts.name
+
+            ORDER BY sc.id ASC
+        ";
+
+        try {
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$user_id, $user_id, $user_id, $user_id, $class_id]);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $sums = [];
+            $percentage = 0;
+            if (empty($results)) {
+                return null;
+            }
+
+            $sums = [
+                'content_visits' => 0,
+                'total_content_visits' => 0,
+            ];
+
+            foreach ($results as $item) {
+                if (($item['total_wordwalls'] == 0) && ($item['total_files'] == 0) && ($item['total_videos'] == 0)) {
+                    $sums['total_content_visits'] += 1;
+                    $sums['content_visits'] += $item['content_visited'];
+                }
+
+                foreach ($item as $key => $value) {
+                    if (is_numeric($value)) {
+                        $sums[$key] = ($sums[$key] ?? 0) + (int) $value;
+                    }
+                }
+            }
+            if (!empty($sums)) {
+                $total_points = $sums['total_wordwalls'] + $sums['total_files'] + $sums['total_videos'] + $sums['total_content_visits'];
+                $result_points = $sums['viewed_wordwalls'] + $sums['downloaded_files'] + $sums['completed_videos'] + $sums['content_visits'];
+                if ($total_points > 0) {
+                    $percentage = $this->getFirstThreeDecimalDigits(($result_points / $total_points) * 100);
+                }
+            }
+            return $percentage;
+        } catch (PDOException $e) {
+            return null;
+        }
+    }
+
 
     public function getSchoolContentAnalyticsByLessonId($user_id, $class_id, $lesson_id)
     {
@@ -713,6 +815,110 @@ class ContentTracker
             return null;
         }
     }
+
+    public function getPreschoolContentAnalyticsByLessonId($user_id, $class_id, $lesson_id)
+    {
+        $sql = "
+            SELECT 
+                sc.id as content_id,
+                sc.subject,
+                sc.school_id,
+                sc.week_id,
+                sc.main_school_class_id,
+                sc.lesson_id,
+                sc.unit_id,
+                sc.topic_id,
+                sc.content_description,
+                sc.status,
+                
+                CASE WHEN cv.user_id IS NOT NULL THEN 1 ELSE 0 END as content_visited,
+                
+                COUNT(DISTINCT sc.main_school_class_id) as total_videos,
+                
+                SUM(
+                    CASE 
+                        WHEN vd.duration > 0 AND vt.max_timestamp >= (vd.duration * 0.9) THEN 1 
+                        ELSE 0 
+                    END
+                ) as completed_videos,
+                
+                COUNT(DISTINCT scf.id) as total_files,
+                
+                SUM(CASE WHEN fd.user_id IS NOT NULL THEN 1 ELSE 0 END) as downloaded_files,
+                
+                COUNT(DISTINCT scw.id) as total_wordwalls,
+
+                ts.name AS topic_name,
+                
+                SUM(CASE WHEN wv.user_id IS NOT NULL THEN 1 ELSE 0 END) as viewed_wordwalls
+
+            FROM main_school_content_lnp sc
+
+            LEFT JOIN content_visits cv ON sc.id = cv.content_id AND cv.user_id = ?
+
+            LEFT JOIN video_durations_preschool vd ON sc.id = vd.video_id
+            LEFT JOIN video_timestamp_preschool_lnp vt ON sc.id = vt.video_id AND vt.user_id = ?
+
+            LEFT JOIN mainschool_content_file_lnp scf ON sc.id = scf.main_id
+            LEFT JOIN file_downloads fd ON scf.id = fd.file_id AND fd.user_id = ?
+
+            LEFT JOIN school_content_wordwall_lnp scw ON sc.id = scw.school_content_id
+            LEFT JOIN wordwall_views wv ON scw.id = wv.wordwall_id AND wv.user_id = ?
+
+            LEFT JOIN topics_lnp ts ON sc.topic_id = ts.id AND sc.lesson_id = ts.lesson_id 
+
+            WHERE sc.status = 1 AND sc.main_school_class_id = ? AND sc.lesson_id = ? 
+
+            GROUP BY 
+                sc.id, sc.subject, sc.school_id, sc.week_id, 
+                sc.main_school_class_id, sc.lesson_id, sc.unit_id, sc.topic_id, 
+                sc.content_description, sc.status, cv.user_id, ts.name
+
+            ORDER BY sc.id ASC
+        ";
+
+
+        try {
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$user_id, $user_id, $user_id, $user_id, $class_id, $lesson_id]);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $sums = [];
+            $percentage = 0;
+            if (empty($results)) {
+                return null;
+            }
+
+            $sums = [
+                'content_visits' => 0,
+                'total_content_visits' => 0,
+            ];
+
+            foreach ($results as $item) {
+                if (($item['total_wordwalls'] == 0) && ($item['total_files'] == 0) && ($item['total_videos'] == 0)) {
+                    $sums['total_content_visits'] += 1;
+                    $sums['content_visits'] += $item['content_visited'];
+                }
+
+                foreach ($item as $key => $value) {
+                    if (is_numeric($value)) {
+                        $sums[$key] = ($sums[$key] ?? 0) + (int) $value;
+                    }
+                }
+            }
+            if (!empty($sums)) {
+                $total_points = $sums['total_wordwalls'] + $sums['total_files'] + $sums['total_videos'] + $sums['total_content_visits'];
+                $result_points = $sums['viewed_wordwalls'] + $sums['downloaded_files'] + $sums['completed_videos'] + $sums['content_visits'];
+                if ($total_points > 0) {
+                    $percentage = $this->getFirstThreeDecimalDigits(($result_points / $total_points) * 100);
+                }
+            }
+            return $percentage;
+        } catch (PDOException $e) {
+            return null;
+        }
+    }
+
     public function getSchoolContentAnalyticsByUnitId($user_id, $class_id, $lesson_id, $unit_id)
     {
         $sql = "
@@ -817,6 +1023,108 @@ class ContentTracker
             return null;
         }
     }
+
+    public function getPreschoolContentAnalyticsByUnitId($user_id, $class_id, $lesson_id, $unit_id)
+    {
+        $sql = "
+            SELECT 
+                sc.id as content_id,
+                sc.subject,
+                sc.school_id,
+                sc.week_id,
+                sc.main_school_class_id,
+                sc.lesson_id,
+                sc.unit_id,
+                sc.topic_id,
+                sc.content_description,
+                sc.status,
+                
+                CASE WHEN cv.user_id IS NOT NULL THEN 1 ELSE 0 END as content_visited,
+                
+                COUNT(DISTINCT sc.main_school_class_id) as total_videos,
+                
+                SUM(
+                    CASE 
+                        WHEN vd.duration > 0 AND vt.max_timestamp >= (vd.duration * 0.9) THEN 1 
+                        ELSE 0 
+                    END
+                ) as completed_videos,
+                
+                COUNT(DISTINCT scf.id) as total_files,
+                
+                SUM(CASE WHEN fd.user_id IS NOT NULL THEN 1 ELSE 0 END) as downloaded_files,
+                
+                COUNT(DISTINCT scw.id) as total_wordwalls,
+
+                ts.name AS topic_name,
+                
+                SUM(CASE WHEN wv.user_id IS NOT NULL THEN 1 ELSE 0 END) as viewed_wordwalls
+
+            FROM main_school_content_lnp sc
+
+            LEFT JOIN content_visits cv ON sc.id = cv.content_id AND cv.user_id = ?
+
+            LEFT JOIN video_durations_preschool vd ON sc.id = vd.video_id
+            LEFT JOIN video_timestamp_preschool_lnp vt ON sc.id = vt.video_id AND vt.user_id = ?
+
+            LEFT JOIN mainschool_content_file_lnp scf ON sc.id = scf.main_id
+            LEFT JOIN file_downloads fd ON scf.id = fd.file_id AND fd.user_id = ?
+
+            LEFT JOIN school_content_wordwall_lnp scw ON sc.id = scw.school_content_id
+            LEFT JOIN wordwall_views wv ON scw.id = wv.wordwall_id AND wv.user_id = ?
+
+            LEFT JOIN topics_lnp ts ON sc.topic_id = ts.id AND sc.lesson_id = ts.lesson_id 
+
+            WHERE sc.status = 1 AND sc.main_school_class_id = ? AND sc.lesson_id = ? AND sc.unit_id = ? 
+
+            GROUP BY 
+                sc.id, sc.subject, sc.school_id, sc.week_id, 
+                sc.main_school_class_id, sc.lesson_id, sc.unit_id, sc.topic_id, 
+                sc.content_description, sc.status, cv.user_id, ts.name
+
+            ORDER BY sc.id ASC
+        ";
+
+        try {
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$user_id, $user_id, $user_id, $user_id, $class_id, $lesson_id, $unit_id]);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $sums = [];
+            $percentage = 0;
+            if (empty($results)) {
+                return null;
+            }
+            $sums = [
+                'content_visits' => 0,
+                'total_content_visits' => 0,
+            ];
+
+            foreach ($results as $item) {
+                if (($item['total_wordwalls'] == 0) && ($item['total_files'] == 0) && ($item['total_videos'] == 0)) {
+                    $sums['total_content_visits'] += 1;
+                    $sums['content_visits'] += $item['content_visited'];
+                }
+
+                foreach ($item as $key => $value) {
+                    if (is_numeric($value)) {
+                        $sums[$key] = ($sums[$key] ?? 0) + (int) $value;
+                    }
+                }
+            }
+            if (!empty($sums)) {
+                $total_points = $sums['total_wordwalls'] + $sums['total_files'] + $sums['total_videos'] + $sums['total_content_visits'];
+                $result_points = $sums['viewed_wordwalls'] + $sums['downloaded_files'] + $sums['completed_videos'] + $sums['content_visits'];
+                if ($total_points > 0) {
+                    $percentage = $this->getFirstThreeDecimalDigits(($result_points / $total_points) * 100);
+                }
+            }
+            return $percentage;
+        } catch (PDOException $e) {
+            return null;
+        }
+    }
+
     public function getSchoolContentAnalyticsByTopicId($user_id, $class_id, $lesson_id, $unit_id, $topic_id)
     {
         $sql = "
@@ -1101,6 +1409,79 @@ class ContentTracker
                 sc.cover_img, sc.text_content, sc.order_no, sc.active, cv.user_id, ts.name, sts.name
 
             ORDER BY sc.order_no ASC, sc.id ASC
+        ";
+
+        try {
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['user_id' => $user_id, 'class_id' => $class_id]);
+            $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($items as $key => $item) {
+            }
+            return $items;
+        } catch (PDOException $e) {
+            return null;
+        }
+    }
+
+    public function getPreschoolContentAnalyticsListByUserId($user_id, $class_id)
+    {
+        $sql = "
+            SELECT 
+                sc.id as content_id,
+                sc.subject,
+                sc.school_id,
+                sc.week_id,
+                sc.main_school_class_id,
+                sc.lesson_id,
+                sc.unit_id,
+                sc.topic_id,
+                sc.content_description,
+                sc.status,
+                
+                CASE WHEN cv.user_id IS NOT NULL THEN 1 ELSE 0 END as content_visited,
+                
+                COUNT(DISTINCT sc.main_school_class_id) as total_videos,
+                
+                SUM(
+                    CASE 
+                        WHEN vd.duration > 0 AND vt.max_timestamp >= (vd.duration * 0.9) THEN 1 
+                        ELSE 0 
+                    END
+                ) as completed_videos,
+                
+                COUNT(DISTINCT scf.id) as total_files,
+                
+                SUM(CASE WHEN fd.user_id IS NOT NULL THEN 1 ELSE 0 END) as downloaded_files,
+                
+                COUNT(DISTINCT scw.id) as total_wordwalls,
+
+                ts.name AS topic_name,
+                
+                SUM(CASE WHEN wv.user_id IS NOT NULL THEN 1 ELSE 0 END) as viewed_wordwalls
+
+            FROM main_school_content_lnp sc
+
+            LEFT JOIN content_visits cv ON sc.id = cv.content_id AND cv.user_id = :user_id
+
+            LEFT JOIN video_durations_preschool vd ON sc.id = vd.video_id
+            LEFT JOIN video_timestamp_preschool_lnp vt ON sc.id = vt.video_id AND vt.user_id = :user_id
+
+            LEFT JOIN mainschool_content_file_lnp scf ON sc.id = scf.main_id
+            LEFT JOIN file_downloads fd ON scf.id = fd.file_id AND fd.user_id = :user_id
+
+            LEFT JOIN school_content_wordwall_lnp scw ON sc.id = scw.school_content_id
+            LEFT JOIN wordwall_views wv ON scw.id = wv.wordwall_id AND wv.user_id = :user_id
+
+            LEFT JOIN topics_lnp ts ON sc.topic_id = ts.id AND sc.lesson_id = ts.lesson_id 
+            
+            WHERE sc.status = 1 AND sc.main_school_class_id = :class_id
+
+            GROUP BY 
+                sc.id, sc.subject, sc.school_id, sc.week_id, 
+                sc.main_school_class_id, sc.lesson_id, sc.unit_id, sc.topic_id, 
+                sc.content_description, sc.status, cv.user_id, ts.name
+
+            ORDER BY sc.id ASC
         ";
 
         try {

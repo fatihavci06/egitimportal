@@ -102,8 +102,27 @@ $timeSpendInfo = $timeSpend->getTimeSpend($userInfo["id"]);
         require_once "views/profile/profilim-okul-admin.php";
 
     } elseif ($_SESSION["role"] == 10002) {
+        require_once "classes/student.classes.php";
+        require_once "classes/student-view.classes.php";
+        require_once "classes/school.classes.php";
+        require_once "classes/classes.classes.php";
+        require_once "classes/classes-view.classes.php";
+        require_once "classes/lessons.classes.php";
+        require_once "classes/lessons-view.classes.php";
 
-        require_once "views/profile/profilim-anaokul-ogrenci.php";
+        $student = new ShowStudent();
+        $school = new School();
+
+        $schoolInfo = $school->getOneSchoolById($userInfo['school_id']);
+
+        $studentPackages = $student->getStudentPackages($userInfo["id"]);
+
+        $studentAdditionalPackages = $student->getStudentAdditionalPackages($userInfo["id"]);
+
+        $studentClassName = $student->getStudentClass($userInfo['class_id']);
+        require_once "views/profile/profilim-preschool-ogrenci.php";
+
+       // require_once "views/profile/profilim-anaokul-ogrenci.php";
 
     } else {
         header("HTTP/1.0 404 Not Found");

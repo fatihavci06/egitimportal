@@ -690,4 +690,20 @@ class ShowLesson extends Lessons
 
         return $units;
     }
+
+    public function getPreschoolLessonByClassId()
+    {
+
+        $unitInfo = $this->getLessonForUnitList();
+
+        $units = array();
+
+        foreach ($unitInfo as $unit) {
+
+            $units[] = array("id" => $unit["id"], "text" => $unit["name"]);
+
+                }
+
+        return $units;
+    }
 }

@@ -5317,6 +5317,319 @@ ORDER BY msu.unit_order asc
         }
         break;
 
+    /* Blog */
+
+    
+    case 'addBlog':
+        try {
+            // Gerekli alanları kontrol et
+            $required_fields = ['title', 'content'];
+            foreach ($required_fields as $field) {
+                if (empty($_POST[$field])) {
+                    echo json_encode(['success' => false, 'message' => 'Tüm zorunlu alanları doldurunuz!']);
+                    exit;
+                }
+            }
+
+            // Verileri al
+            $title = trim($_POST['title']);
+            $content = trim($_POST['content']);
+            $status = $_POST['status'];
+            $add_by = $_SESSION['id']; 
+            // Görsel yükleme işlemi
+            $image_path = '';
+            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                $upload_dir = '../uploads/blog/';
+
+                // Upload dizini yoksa oluştur
+                if (!is_dir($upload_dir)) {
+                    mkdir($upload_dir, 0755, true);
+                }
+
+                // Dosya bilgilerini al
+                $file_name = $_FILES['image']['name'];
+                $file_tmp = $_FILES['image']['tmp_name'];
+                $file_size = $_FILES['image']['size'];
+                $file_error = $_FILES['image']['error'];
+
+                // Dosya uzantısı kontrolü
+                $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+                $allowed_ext = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+                if (!in_array($file_ext, $allowed_ext)) {
+                    echo json_encode(['success' => false, 'message' => 'Sadece JPG, JPEG, PNG, GIF ve WEBP formatları kabul edilir!']);
+                    exit;
+                }
+
+                // Dosya boyutu kontrolü (max 5MB)
+                if ($file_size > 5 * 1024 * 1024) {
+                    echo json_encode(['success' => false, 'message' => 'Dosya boyutu 5MB\'dan küçük olmalıdır!']);
+                    exit;
+                }
+
+                // Benzersiz dosya adı oluştur
+                $new_file_name = uniqid('word_', true) . '.' . $file_ext;
+                $upload_path = $upload_dir . $new_file_name;
+
+                // Dosyayı yükle
+                if (move_uploaded_file($file_tmp, $upload_path)) {
+                    $image_path = 'uploads/blog/' . $new_file_name;
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'Dosya yüklenirken hata oluştu!']);
+                    exit;
+                }
+            }
+
+            // Veritabanına ekleme işlemi
+
+
+            $sql = "INSERT INTO psikoloji_blog_lnp 
+            (title, content, add_by, image, is_active) 
+            VALUES 
+            (:title, :content, :add_by, :image, :is_active)";
+
+            $stmt = $pdo->prepare($sql);
+
+            $result = $stmt->execute([
+                ':title' => $title,
+                ':content' => $content,
+                ':add_by' => $add_by,
+                ':image' => $image_path,
+                ':is_active' => $status
+            ]);
+
+            if ($result) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Yazı başarıyla eklendi!',
+                    'id' => $pdo->lastInsertId()
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Yazı eklenirken bir hata oluştu!'
+                ]);
+            }
+        } catch (PDOException $e) {
+            error_log("Database error in add-word.php: " . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Veritabanı hatası: ' . $e->getMessage()
+            ]);
+        } catch (Exception $e) {
+            error_log("General error in add-word.php: " . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Bir hata oluştu: ' . $e->getMessage()
+            ]);
+        }
+
+        break;
+
+    case 'deleteBlog':
+        $blog_id = (int)$_POST['id'];
+
+        try {
+
+
+            // Önce başlığın var olup olmadığını kontrol et
+            $check_sql = "SELECT id, image FROM psikoloji_blog_lnp WHERE id = :id";
+            $check_stmt = $pdo->prepare($check_sql);
+            $check_stmt->execute([':id' => $blog_id]);
+            $word = $check_stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$word) {
+                echo json_encode(['success' => false, 'message' => 'Yazı bulunamadı!']);
+                exit;
+            }
+
+            // Yazıyı sil
+            $delete_sql = "DELETE FROM psikoloji_blog_lnp WHERE id = :id";
+            $delete_stmt = $pdo->prepare($delete_sql);
+            $result = $delete_stmt->execute([':id' => $blog_id]);
+
+            if ($result) {
+                // Eğer yazının görseli varsa, dosyayı da sil
+                if (!empty($word['image'])) {
+                    $image_path = '../' . $word['image'];
+                    if (file_exists($image_path)) {
+                        unlink($image_path);
+                    }
+                }
+
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Yazı başarıyla silindi!'
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Yazı silinirken bir hata oluştu!'
+                ]);
+            }
+        } catch (PDOException $e) {
+            error_log("Database error in delete-word.php: " . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Veritabanı hatası: ' . $e->getMessage()
+            ]);
+        } catch (Exception $e) {
+            error_log("General error in delete-word.php: " . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Bir hata oluştu: ' . $e->getMessage()
+            ]);
+        }
+        break;
+
+
+    case 'updateBlog':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'message' => 'Geçersiz istek methodu!']);
+            exit;
+        }
+
+        // Yetki kontrolü
+        if (!isset($_SESSION['role']) && ($_SESSION['role'] != 1  || $_SESSION['role'] != 20001)) {
+            echo json_encode(['success' => false, 'message' => 'Yetkiniz bulunmamaktadır!']);
+            exit;
+        }
+
+        // Gerekli alanları kontrol et
+        if (empty($_POST['id'])) {
+            echo json_encode(['success' => false, 'message' => 'Kelime ID belirtilmedi!']);
+            exit;
+        }
+
+        $required_fields = ['title', 'content'];
+        foreach ($required_fields as $field) {
+            if (empty($_POST[$field])) {
+                echo json_encode(['success' => false, 'message' => 'Tüm zorunlu alanları doldurunuz!']);
+                exit;
+            }
+        }
+
+        try {
+            // Verileri al
+            $id = (int)$_POST['id'];
+            $title = trim($_POST['title']);
+            $content = trim($_POST['content']);
+            $status = $_POST['status'];
+
+            $dbh = new Dbh();
+            $pdo = $dbh->connect();
+
+            // Önce yazının var olup olmadığını kontrol et
+            $check_sql = "SELECT id, image FROM psikoloji_blog_lnp WHERE id = :id";
+            $check_stmt = $pdo->prepare($check_sql);
+            $check_stmt->execute([':id' => $id]);
+            $existing_word = $check_stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$existing_word) {
+                echo json_encode(['success' => false, 'message' => 'Güncellenecek kelime bulunamadı!']);
+                exit;
+            }
+
+            // Görsel yükleme işlemi
+            $image_path = $existing_word['image']; // Mevcut görseli koru
+
+            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                $upload_dir = '../uploads/words/';
+
+                // Upload dizini yoksa oluştur
+                if (!is_dir($upload_dir)) {
+                    mkdir($upload_dir, 0755, true);
+                }
+
+                // Dosya bilgilerini al
+                $file_name = $_FILES['image']['name'];
+                $file_tmp = $_FILES['image']['tmp_name'];
+                $file_size = $_FILES['image']['size'];
+                $file_error = $_FILES['image']['error'];
+
+                // Dosya uzantısı kontrolü
+                $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+                $allowed_ext = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+                if (!in_array($file_ext, $allowed_ext)) {
+                    echo json_encode(['success' => false, 'message' => 'Sadece JPG, JPEG, PNG, GIF ve WEBP formatları kabul edilir!']);
+                    exit;
+                }
+
+                // Dosya boyutu kontrolü (max 5MB)
+                if ($file_size > 5 * 1024 * 1024) {
+                    echo json_encode(['success' => false, 'message' => 'Dosya boyutu 5MB\'dan küçük olmalıdır!']);
+                    exit;
+                }
+
+                // Eski görsel varsa sil
+                if (!empty($existing_word['image'])) {
+                    $old_image_path = '../' . $existing_word['image'];
+                    if (file_exists($old_image_path)) {
+                        unlink($old_image_path);
+                    }
+                }
+
+                // Benzersiz dosya adı oluştur
+                $new_file_name = uniqid('word_', true) . '.' . $file_ext;
+                $upload_path = $upload_dir . $new_file_name;
+
+                // Dosyayı yükle
+                if (move_uploaded_file($file_tmp, $upload_path)) {
+                    $image_path = 'uploads/words/' . $new_file_name;
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'Dosya yüklenirken hata oluştu!']);
+                    exit;
+                }
+            }
+
+            // Güncelleme işlemi
+            $sql = "UPDATE psikoloji_blog_lnp 
+            SET title = :title, 
+                content = :content, 
+                is_active = :is_active, 
+                image = :image 
+            WHERE id = :id";
+
+            $stmt = $pdo->prepare($sql);
+
+            $result = $stmt->execute([
+                ':title' => $title,
+                ':content' => $content,
+                ':is_active' => $status,
+                ':image' => $image_path,
+                ':id' => $id
+            ]);
+
+            if ($result) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Kelime başarıyla güncellendi!'
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Kelime güncellenirken bir hata oluştu!'
+                ]);
+            }
+        } catch (PDOException $e) {
+            error_log("Database error in update-word.php: " . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Veritabanı hatası: ' . $e->getMessage()
+            ]);
+        } catch (Exception $e) {
+            error_log("General error in update-word.php: " . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Bir hata oluştu: ' . $e->getMessage()
+            ]);
+        }
+        break;
+
+    
+        /* Blog Son */
+
 
     case 'deleteDoyouKnow':
         $word_id = (int)$_POST['id'];
