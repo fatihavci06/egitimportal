@@ -53,7 +53,7 @@ $response = CheckoutForm::retrieve($request, $options); */
 /* if ($response->getStatus() === 'success' && $response->getPaymentStatus() === 'SUCCESS') { */
     $userId = $_SESSION['id'] ?? null;
     $packageId = $_SESSION['extra_package_id'] ?? null;  // Burayı tek yap
-
+    
     $paymentId = $_SESSION['orderId'];
     $price = $_SESSION['paidPrice']; // KDV dahil toplam
 
@@ -61,7 +61,7 @@ $response = CheckoutForm::retrieve($request, $options); */
     $stmt->execute();
     $settings = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $kdvRatio = $settings && isset($settings['tax_rate']) ? (float)$settings['tax_rate'] : 10.0;
+    $kdvRatio = $settings && isset($settings['tax_rate']) ? (float)$settings['tax_rate'] : 20.0;
     $kdvRateDecimal = $kdvRatio / 100;
 
     $priceExclKdv = $price / (1 + $kdvRateDecimal);  // KDV hariç fiyat
