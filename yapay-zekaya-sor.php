@@ -196,7 +196,7 @@ if (isset($_SESSION['role'])) {
     let recognition;
 
     // ===================================================================
-    // YENİ FONKSİYON: Sesli Okuma (Text-to-Speech) - DİL TESPİT MANTIKLI
+    // FONKSİYON: Sesli Okuma (Text-to-Speech) - DİL TESPİT MANTIKLI
     // ===================================================================
     function speakResponse(text) {
         if ('speechSynthesis' in window) {
@@ -213,11 +213,10 @@ if (isset($_SESSION['role'])) {
 
             const utterance = new SpeechSynthesisUtterance(text);
 
-            // --- YENİ DİL TESPİT MANTIĞI ---
+            // --- DİL TESPİT MANTIĞI ---
             let languageCode = 'tr-TR'; // Varsayılan: Türkçe
 
             // Basit kelime bazlı dil tespiti: Metin İngilizce kelimeler içeriyorsa dili İngilizce yap
-            // Daha kapsamlı kontrol için metin küçük harfe çevrilir.
             const englishKeywords = /\b(the|a|is|are|you|what|how|it|and|or|in|of|my|your|will|can|do|have|not|this|that|for|with)\b/i;
 
             if (englishKeywords.test(text.toLowerCase())) {
@@ -231,7 +230,7 @@ if (isset($_SESSION['role'])) {
             if (selectedVoice) {
                 utterance.voice = selectedVoice;
             } else {
-                // Sesi bulamazsa, sadece dil kodunu ayarla (Tarayıcı varsayılan sesi kullanır)
+                // Sesi bulamazsa, sadece dil kodunu ayarla
                 utterance.lang = languageCode;
             }
             // --- DİL TESPİT MANTIĞI SONU ---
@@ -244,11 +243,8 @@ if (isset($_SESSION['role'])) {
                 voiceBtn.prop('disabled', true);
             };
 
-            // Konuşma bittiğinde mikrofonu resetle ve butonu serbest bırak
+            // Konuşma bittiğinde butonu serbest bırak
             utterance.onend = function() {
-                if ('webkitSpeechRecognition' in window && isRecording) {
-                    recognition.stop();
-                }
                 voiceBtn.prop('disabled', false);
             };
 
@@ -264,6 +260,7 @@ if (isset($_SESSION['role'])) {
         if (message === '') return;
 
         // GÖNDERİM KONTROLÜ: Sesli giriş yapılıp yapılmadığını kontrol et
+        // Sesli butona tıklayarak metin girildiyse, cevabı sesli oku
         const shouldSpeak = userInput.attr('data-voice') === 'true';
 
         // Kullanıcı mesajını kutuya ekle
@@ -294,9 +291,9 @@ if (isset($_SESSION['role'])) {
                 chatBox.append('<div class="bot-msg"><strong>Lineup:</strong> ' + content + '</div>');
                 chatBox.scrollTop(chatBox[0].scrollHeight);
 
-                // YENİ MANTIK: Eğer shouldSpeak doğruysa cevabı DİL TESPİTİ yaparak sesli oku
+                // Eğer sesli giriş yapılmışsa cevabı sesli oku (Dil tespiti yapılmış olarak)
                 if (shouldSpeak) {
-                    speakResponse(content); // Güncellenmiş fonksiyon artık dil tespiti yapıyor
+                    speakResponse(content);
                 }
             },
             error: function() {
@@ -310,7 +307,8 @@ if (isset($_SESSION['role'])) {
     // Enter tuşuna basınca gönder
     userInput.keypress(function(e) {
         if (e.which === 13) {
-            userInput.removeAttr('data-voice'); // Klavye girişi için işareti kaldır
+            // Enter'a basıldığında, bu klavye girişidir. data-voice etiketini kaldır.
+            userInput.removeAttr('data-voice');
             sendBtn.click();
         }
     });
@@ -318,8 +316,8 @@ if (isset($_SESSION['role'])) {
     // 2. Sesli Soru Sorma İşlevi (Web Speech API)
     if ('webkitSpeechRecognition' in window) {
         recognition = new webkitSpeechRecognition();
-        recognition.continuous = false; // Tek bir komut için yeterli
-        recognition.lang = 'tr-TR'; // Sesli giriş dilini TR olarak sabit tutuyoruz
+        recognition.continuous = false;
+        recognition.lang = 'tr-TR';
         recognition.interimResults = false;
 
         // Hata durumları
@@ -344,10 +342,9 @@ if (isset($_SESSION['role'])) {
             voiceBtn.removeClass('btn-secondary').addClass('btn-danger'); // Kırmızı yap: KAYITTA
             userInput.val('');
             userInput.attr('placeholder', 'Dinleniyor...');
-            // Konuşma tanıma sırasında sesli okumayı iptal et
+            // Konuşma tanıma sırasında aktif sesli okumayı iptal et
             if (window.speechSynthesis.speaking) {
                 window.speechSynthesis.cancel();
-                voiceBtn.prop('disabled', false);
             }
         };
 
@@ -357,16 +354,13 @@ if (isset($_SESSION['role'])) {
             voiceBtn.removeClass('btn-danger').addClass('btn-secondary');
             userInput.attr('placeholder', 'Mesajınızı yazın...');
 
-            // Eğer metin girilmişse, otomatik olarak gönder
-            if (userInput.val().trim() !== '') {
-                sendBtn.click();
-            }
+            // *** BURADAN OTOMATİK GÖNDERME KALDIRILDI ***
+            // Kullanıcı metni kontrol edip manuel olarak gönderecek.
         };
 
         // Sonuç geldiğinde: Metni giriş alanına yazar
         recognition.onresult = function(event) {
             let finalTranscript = '';
-            // Sonuçları topla (Normalde onend'den önce tetiklenir)
             for (let i = event.resultIndex; i < event.results.length; ++i) {
                 if (event.results[i].isFinal) {
                     finalTranscript += event.results[i][0].transcript;
@@ -375,9 +369,9 @@ if (isset($_SESSION['role'])) {
 
             if (finalTranscript) {
                 userInput.val(finalTranscript.trim());
-                // ÖNEMLİ: Sesli giriş yapıldığını işaretle! Cevap sesli okunacak
+                // ÖNEMLİ: Sesli giriş yapıldığını işaretle! Cevap sesli okunacak.
                 userInput.attr('data-voice', 'true');
-                recognition.stop(); // Konuşma bittiğinde kaydı durdurur, onend tetiklenir ve gönderir.
+                recognition.stop(); // Konuşma bittiğinde kaydı durdurur, onend tetiklenir.
             }
         };
 
