@@ -188,199 +188,222 @@ if (isset($_SESSION['role'])) {
         <script src="assets/js/custom/utilities/modals/users-search.js"></script>
         
         <script>
-            const userInput = $('#userInput');
-            const sendBtn = $('#sendBtn');
-            const chatBox = $('#chat-box');
-            
-            // YENİ FONKSİYON: Sesli Okuma (Text-to-Speech)
-            function speakResponse(text) {
-                if ('speechSynthesis' in window) {
-                    const synthesis = window.speechSynthesis;
-                    if (synthesis.speaking) {
-                        synthesis.cancel();
-                    }
-                    
-                    // Sesli giriş zaten aktifse durdur (Gereksiz ses alımını engeller)
-                    if ('webkitSpeechRecognition' in window && isRecording) {
-                        recognition.stop(); 
-                    }
+    const userInput = $('#userInput');
+    const sendBtn = $('#sendBtn');
+    const chatBox = $('#chat-box');
+    const voiceBtn = $('#voiceBtn');
+    let isRecording = false;
+    let recognition;
 
-                    const utterance = new SpeechSynthesisUtterance(text);
-                    
-                    const voices = synthesis.getVoices();
-                    const turkishVoice = voices.find(voice => voice.lang.startsWith('tr'));
-
-                    if (turkishVoice) {
-                        utterance.voice = turkishVoice;
-                    } else {
-                        utterance.lang = 'tr-TR'; 
-                    }
-                    
-                    utterance.pitch = 1.0; 
-                    utterance.rate = 1.0;  
-                    
-                    // Konuşma başlarken sesli girişi devre dışı bırak
-                    utterance.onstart = function() {
-                        voiceBtn.prop('disabled', true); 
-                    };
-                    
-                    // ÖNEMLİ EK: Konuşma bittiğinde mikrofonu resetle ve butonu serbest bırak
-                    utterance.onend = function() {
-                        // Eğer kayıt hala aktif görünüyorsa, manuel olarak durdururuz
-                        if ('webkitSpeechRecognition' in window && isRecording) {
-                            recognition.stop(); 
-                        }
-                        voiceBtn.prop('disabled', false); 
-                    };
-
-                    synthesis.speak(utterance);
-                } else {
-                    console.warn('Tarayıcınız sesli okuma özelliğini desteklemiyor.');
-                }
+    // ===================================================================
+    // YENİ FONKSİYON: Sesli Okuma (Text-to-Speech) - DİL TESPİT MANTIKLI
+    // ===================================================================
+    function speakResponse(text) {
+        if ('speechSynthesis' in window) {
+            const synthesis = window.speechSynthesis;
+            // Aktif bir konuşma varsa iptal et
+            if (synthesis.speaking) {
+                synthesis.cancel();
             }
 
+            // Sesli giriş zaten aktifse durdur (Gereksiz ses alımını engeller)
+            if ('webkitSpeechRecognition' in window && isRecording) {
+                recognition.stop();
+            }
 
-            // 1. ChatGPT Mesaj Gönderme İşlevi
-            sendBtn.click(function() {
-                let message = userInput.val().trim();
-                if (message === '') return;
-                
-                // GÖNDERİM KONTROLÜ: Sesli giriş yapılıp yapılmadığını kontrol et
-                const shouldSpeak = userInput.attr('data-voice') === 'true';
+            const utterance = new SpeechSynthesisUtterance(text);
 
-                // Kullanıcı mesajını kutuya ekle
-                chatBox.append('<div class="user-msg"><strong>Sen:</strong> ' + message + '</div>');
-                userInput.val('');
-                chatBox.scrollTop(chatBox[0].scrollHeight);
+            // --- YENİ DİL TESPİT MANTIĞI ---
+            let languageCode = 'tr-TR'; // Varsayılan: Türkçe
 
-                // İşareti temizle, sonraki mesaj klavye mesajı olabilir
-                userInput.removeAttr('data-voice');
+            // Basit kelime bazlı dil tespiti: Metin İngilizce kelimeler içeriyorsa dili İngilizce yap
+            // Daha kapsamlı kontrol için metin küçük harfe çevrilir.
+            const englishKeywords = /\b(the|a|is|are|you|what|how|it|and|or|in|of|my|your|will|can|do|have|not|this|that|for|with)\b/i;
 
-                // Yazıyor... mesajını ekle
-                chatBox.append('<div class="bot-msg typing-msg" id="typingMsg"><em>Lineup yazıyor...</em></div>');
-                chatBox.scrollTop(chatBox[0].scrollHeight);
+            if (englishKeywords.test(text.toLowerCase())) {
+                languageCode = 'en-US';
+            }
 
-                // AJAX ile PHP dosyasına gönder
-                $.ajax({
-                    url: 'chatgpt.php',
-                    method: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({
-                        message: message
-                    }),
-                    success: function(res) {
-                        // Yazıyor... mesajını kaldır
-                        $('#typingMsg').remove();
+            const voices = synthesis.getVoices();
+            // İstenen dildeki (ilk iki karakter: tr veya en) sesi bulmaya çalış
+            const selectedVoice = voices.find(voice => voice.lang.startsWith(languageCode.substring(0, 2)));
 
-                        let content = res.choices[0].message.content;
-                        chatBox.append('<div class="bot-msg"><strong>Lineup:</strong> ' + content + '</div>');
-                        chatBox.scrollTop(chatBox[0].scrollHeight);
-
-                        // YENİ MANTIK: Eğer shouldSpeak doğruysa cevabı sesli oku
-                        if (shouldSpeak) {
-                            speakResponse(content);
-                        }
-                    },
-                    error: function() {
-                        $('#typingMsg').remove();
-                        chatBox.append('<div class="bot-msg text-danger">Bir hata oluştu.</div>');
-                    }
-                });
-            });
-
-
-            // Enter tuşuna basınca gönder
-            userInput.keypress(function(e) {
-                if (e.which === 13) {
-                    userInput.removeAttr('data-voice');
-                    sendBtn.click();
-                }
-            });
-
-            // 2. Sesli Soru Sorma İşlevi (Web Speech API) - BAŞLAT/DURDUR TOGGLE MANTIĞI
-            const voiceBtn = $('#voiceBtn'); // jQuery objesi olarak tanımlandı
-            let isRecording = false; // Kayıt durumunu tutan değişken
-            let recognition; // recognition değişkenini dışarıda tanımlıyoruz
-
-            if ('webkitSpeechRecognition' in window) {
-                recognition = new webkitSpeechRecognition();
-                recognition.continuous = true; // Sürekli dinleme modu
-                recognition.lang = 'tr-TR'; 
-                recognition.interimResults = false; 
-
-                // Hata durumları
-                recognition.onerror = function(event) {
-                    console.error('Konuşma Tanıma Hatası:', event.error);
-                    
-                    // Hata olduğunda durumu sıfırla
-                    isRecording = false;
-                    voiceBtn.removeClass('btn-danger').addClass('btn-secondary');
-                    
-                    let errMsg = "Mesajınızı yazın...";
-                    if (event.error === 'no-speech') {
-                         errMsg = "Ses algılanamadı, tekrar deneyin.";
-                    } else if (event.error === 'not-allowed') {
-                         errMsg = "Mikrofon izni verilmedi.";
-                    } 
-                    userInput.attr('placeholder', errMsg);
-                    setTimeout(() => userInput.attr('placeholder', "Mesajınızı yazın..."), 3000);
-                };
-
-                // Tanıma başladığında
-                recognition.onstart = function() {
-                    isRecording = true;
-                    voiceBtn.removeClass('btn-secondary').addClass('btn-danger'); // Butonu kırmızı yap: KAYITTA
-                    userInput.val(''); // Yeni kayıtta eski metni temizle
-                };
-
-                // Tanıma bittiğinde (Manuel stop ile biter veya konuşma durur)
-                recognition.onend = function() {
-                    isRecording = false;
-                    voiceBtn.removeClass('btn-danger').addClass('btn-secondary'); // Butonu normale döndür
-                };
-
-                // Sonuç geldikçe: Metni giriş alanına yazar
-                recognition.onresult = function(event) {
-                    // Continuous modu açık olduğu için tüm sonuçları birleştir
-                    let finalTranscript = '';
-                    for (let i = event.resultIndex; i < event.results.length; ++i) {
-                        if (event.results[i].isFinal) {
-                            finalTranscript += event.results[i][0].transcript + ' ';
-                        }
-                    }
-                    
-                    // Metni giriş alanına yaz
-                    if (finalTranscript) {
-                        userInput.val(finalTranscript.trim());
-                        // ÖNEMLİ EK: Sesli giriş yapıldığını işaretle!
-                        userInput.attr('data-voice', 'true');
-                    }
-                };
-
-                // Mikrofon butonuna tıklandığında kaydı başlat/durdur
-                voiceBtn.on('click', function() {
-                    if (isRecording) {
-                        // Kayıt aktifse: DURDUR
-                        recognition.stop();
-                    } else {
-                        // Kayıt pasifse: BAŞLAT
-                        try {
-                            recognition.start();
-                        } catch (e) {
-                            console.warn('Tanıma başlatılamadı, muhtemelen zaten çalışıyor. Durduruluyor...', e.message);
-                            recognition.stop();
-                        }
-                    }
-                });
-
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
             } else {
-                // Tarayıcı desteklemiyorsa
-                voiceBtn.prop('disabled', true);
-                voiceBtn.attr('title', "Sesli komut bu tarayıcıda desteklenmiyor.");
-                console.warn("Web Speech API desteklenmiyor. Lütfen Chrome gibi modern bir tarayıcı kullanın.");
+                // Sesi bulamazsa, sadece dil kodunu ayarla (Tarayıcı varsayılan sesi kullanır)
+                utterance.lang = languageCode;
             }
-        </script>
+            // --- DİL TESPİT MANTIĞI SONU ---
 
+            utterance.pitch = 1.0;
+            utterance.rate = 1.0;
+
+            // Konuşma başlarken butonu devre dışı bırak
+            utterance.onstart = function() {
+                voiceBtn.prop('disabled', true);
+            };
+
+            // Konuşma bittiğinde mikrofonu resetle ve butonu serbest bırak
+            utterance.onend = function() {
+                if ('webkitSpeechRecognition' in window && isRecording) {
+                    recognition.stop();
+                }
+                voiceBtn.prop('disabled', false);
+            };
+
+            synthesis.speak(utterance);
+        } else {
+            console.warn('Tarayıcınız sesli okuma özelliğini desteklemiyor.');
+        }
+    }
+
+    // 1. ChatGPT Mesaj Gönderme İşlevi
+    sendBtn.click(function() {
+        let message = userInput.val().trim();
+        if (message === '') return;
+
+        // GÖNDERİM KONTROLÜ: Sesli giriş yapılıp yapılmadığını kontrol et
+        const shouldSpeak = userInput.attr('data-voice') === 'true';
+
+        // Kullanıcı mesajını kutuya ekle
+        chatBox.append('<div class="user-msg"><strong>Sen:</strong> ' + message + '</div>');
+        userInput.val('');
+        chatBox.scrollTop(chatBox[0].scrollHeight);
+
+        // İşareti temizle, sonraki mesaj klavye mesajı olabilir
+        userInput.removeAttr('data-voice');
+
+        // Yazıyor... mesajını ekle
+        chatBox.append('<div class="bot-msg typing-msg" id="typingMsg"><em>Lineup yazıyor...</em></div>');
+        chatBox.scrollTop(chatBox[0].scrollHeight);
+
+        // AJAX ile PHP dosyasına gönder
+        $.ajax({
+            url: 'chatgpt.php',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                message: message
+            }),
+            success: function(res) {
+                // Yazıyor... mesajını kaldır
+                $('#typingMsg').remove();
+
+                let content = res.choices[0].message.content;
+                chatBox.append('<div class="bot-msg"><strong>Lineup:</strong> ' + content + '</div>');
+                chatBox.scrollTop(chatBox[0].scrollHeight);
+
+                // YENİ MANTIK: Eğer shouldSpeak doğruysa cevabı DİL TESPİTİ yaparak sesli oku
+                if (shouldSpeak) {
+                    speakResponse(content); // Güncellenmiş fonksiyon artık dil tespiti yapıyor
+                }
+            },
+            error: function() {
+                $('#typingMsg').remove();
+                chatBox.append('<div class="bot-msg text-danger">Bir hata oluştu.</div>');
+            }
+        });
+    });
+
+
+    // Enter tuşuna basınca gönder
+    userInput.keypress(function(e) {
+        if (e.which === 13) {
+            userInput.removeAttr('data-voice'); // Klavye girişi için işareti kaldır
+            sendBtn.click();
+        }
+    });
+
+    // 2. Sesli Soru Sorma İşlevi (Web Speech API)
+    if ('webkitSpeechRecognition' in window) {
+        recognition = new webkitSpeechRecognition();
+        recognition.continuous = false; // Tek bir komut için yeterli
+        recognition.lang = 'tr-TR'; // Sesli giriş dilini TR olarak sabit tutuyoruz
+        recognition.interimResults = false;
+
+        // Hata durumları
+        recognition.onerror = function(event) {
+            console.error('Konuşma Tanıma Hatası:', event.error);
+            isRecording = false;
+            voiceBtn.removeClass('btn-danger').addClass('btn-secondary');
+
+            let errMsg = "Mesajınızı yazın...";
+            if (event.error === 'no-speech') {
+                errMsg = "Ses algılanamadı, tekrar deneyin.";
+            } else if (event.error === 'not-allowed') {
+                errMsg = "Mikrofon izni verilmedi.";
+            }
+            userInput.attr('placeholder', errMsg);
+            setTimeout(() => userInput.attr('placeholder', "Mesajınızı yazın..."), 3000);
+        };
+
+        // Tanıma başladığında
+        recognition.onstart = function() {
+            isRecording = true;
+            voiceBtn.removeClass('btn-secondary').addClass('btn-danger'); // Kırmızı yap: KAYITTA
+            userInput.val('');
+            userInput.attr('placeholder', 'Dinleniyor...');
+            // Konuşma tanıma sırasında sesli okumayı iptal et
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+                voiceBtn.prop('disabled', false);
+            }
+        };
+
+        // Tanıma bittiğinde
+        recognition.onend = function() {
+            isRecording = false;
+            voiceBtn.removeClass('btn-danger').addClass('btn-secondary');
+            userInput.attr('placeholder', 'Mesajınızı yazın...');
+
+            // Eğer metin girilmişse, otomatik olarak gönder
+            if (userInput.val().trim() !== '') {
+                sendBtn.click();
+            }
+        };
+
+        // Sonuç geldiğinde: Metni giriş alanına yazar
+        recognition.onresult = function(event) {
+            let finalTranscript = '';
+            // Sonuçları topla (Normalde onend'den önce tetiklenir)
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    finalTranscript += event.results[i][0].transcript;
+                }
+            }
+
+            if (finalTranscript) {
+                userInput.val(finalTranscript.trim());
+                // ÖNEMLİ: Sesli giriş yapıldığını işaretle! Cevap sesli okunacak
+                userInput.attr('data-voice', 'true');
+                recognition.stop(); // Konuşma bittiğinde kaydı durdurur, onend tetiklenir ve gönderir.
+            }
+        };
+
+        // Mikrofon butonuna tıklandığında kaydı başlat/durdur
+        voiceBtn.on('click', function() {
+            if (isRecording) {
+                // Kayıt aktifse: DURDUR
+                recognition.stop();
+            } else {
+                // Kayıt pasifse: BAŞLAT
+                try {
+                    recognition.start();
+                } catch (e) {
+                    console.warn('Tanıma başlatılamadı, muhtemelen zaten çalışıyor. Durduruluyor...', e.message);
+                    recognition.stop();
+                }
+            }
+        });
+
+    } else {
+        // Tarayıcı desteklemiyorsa
+        voiceBtn.prop('disabled', true);
+        voiceBtn.attr('title', "Sesli komut bu tarayıcıda desteklenmiyor.");
+        console.warn("Web Speech API desteklenmiyor. Lütfen Chrome gibi modern bir tarayıcı kullanın.");
+    }
+</script>
         </body>
     </html>
 <?php } else {
