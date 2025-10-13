@@ -196,54 +196,74 @@ if (isset($_SESSION['role'])) {
     let recognition;
 
     // ===================================================================
-    // FONKSİYON: Sesli Okuma (Text-to-Speech) - DİL TESPİT MANTIKLI
+    // FONKSİYON: Sesli Okuma (Text-to-Speech) - GELİŞMİŞ DİL TESPİT MANTIĞI
     // ===================================================================
     function speakResponse(text) {
         if ('speechSynthesis' in window) {
             const synthesis = window.speechSynthesis;
-            // Aktif bir konuşma varsa iptal et
             if (synthesis.speaking) {
                 synthesis.cancel();
             }
 
-            // Sesli giriş zaten aktifse durdur (Gereksiz ses alımını engeller)
             if ('webkitSpeechRecognition' in window && isRecording) {
                 recognition.stop();
             }
 
             const utterance = new SpeechSynthesisUtterance(text);
 
-            // --- DİL TESPİT MANTIĞI ---
+            // --- GELİŞMİŞ DİL TESPİT MANTIĞI ---
             let languageCode = 'tr-TR'; // Varsayılan: Türkçe
+            
+            // Sık kullanılan İngilizce kelimelerin listesi (Daha genişletilmiş)
+            const englishKeywords = [
+                'the', 'a', 'an', 'is', 'are', 'was', 'were', 'you', 'what', 
+                'how', 'it', 'and', 'or', 'in', 'of', 'my', 'your', 'will', 
+                'can', 'do', 'have', 'not', 'this', 'that', 'for', 'with',
+                'hello', 'hi', 'why', 'when', 'where', 'i\'m', 'i am', 'to', 'from',
+                'me', 'we', 'they', 'our', 'their', 'them', 'say', 'know', 'if', 
+                'at', 'by', 'as', 'but', 'so', 'get', 'make', 'go', 'just', 'look',
+                'new', 'only', 'out', 'up', 'all', 'any', 'back', 'because', 'come',
+                'good', 'like', 'much', 'see', 'think', 'time', 'way', 'who', 'world',
+                'would', 'could', 'should'
+            ];
 
-            // Basit kelime bazlı dil tespiti: Metin İngilizce kelimeler içeriyorsa dili İngilizce yap
-            const englishKeywords = /\b(the|a|is|are|you|what|how|it|and|or|in|of|my|your|will|can|do|have|not|this|that|for|with)\b/i;
+            const words = text.toLowerCase().match(/\b\w+\b/g) || [];
+            let englishWordCount = 0;
 
-            if (englishKeywords.test(text.toLowerCase())) {
+            // Metindeki her kelimeyi kontrol et
+            words.forEach(word => {
+                if (englishKeywords.includes(word)) {
+                    englishWordCount++;
+                }
+            });
+
+            // İngilizceye karar verme eşiği: Toplam kelimelerin en az %20'si (veya minimum 3 kelime) İngilizce olmalı.
+            const totalWords = words.length;
+            const englishThreshold = Math.max(3, Math.ceil(totalWords * 0.20)); 
+
+            if (englishWordCount >= englishThreshold && totalWords >= 5) {
                 languageCode = 'en-US';
             }
+            // --- DİL TESPİT MANTIĞI SONU ---
+
 
             const voices = synthesis.getVoices();
-            // İstenen dildeki (ilk iki karakter: tr veya en) sesi bulmaya çalış
+            // İstenen dildeki sesi bulmaya çalış
             const selectedVoice = voices.find(voice => voice.lang.startsWith(languageCode.substring(0, 2)));
 
             if (selectedVoice) {
                 utterance.voice = selectedVoice;
             } else {
-                // Sesi bulamazsa, sadece dil kodunu ayarla
                 utterance.lang = languageCode;
             }
-            // --- DİL TESPİT MANTIĞI SONU ---
-
+            
             utterance.pitch = 1.0;
             utterance.rate = 1.0;
 
-            // Konuşma başlarken butonu devre dışı bırak
             utterance.onstart = function() {
                 voiceBtn.prop('disabled', true);
             };
 
-            // Konuşma bittiğinde butonu serbest bırak
             utterance.onend = function() {
                 voiceBtn.prop('disabled', false);
             };
@@ -259,19 +279,14 @@ if (isset($_SESSION['role'])) {
         let message = userInput.val().trim();
         if (message === '') return;
 
-        // GÖNDERİM KONTROLÜ: Sesli giriş yapılıp yapılmadığını kontrol et
-        // Sesli butona tıklayarak metin girildiyse, cevabı sesli oku
         const shouldSpeak = userInput.attr('data-voice') === 'true';
 
-        // Kullanıcı mesajını kutuya ekle
         chatBox.append('<div class="user-msg"><strong>Sen:</strong> ' + message + '</div>');
         userInput.val('');
         chatBox.scrollTop(chatBox[0].scrollHeight);
 
-        // İşareti temizle, sonraki mesaj klavye mesajı olabilir
         userInput.removeAttr('data-voice');
 
-        // Yazıyor... mesajını ekle
         chatBox.append('<div class="bot-msg typing-msg" id="typingMsg"><em>Lineup yazıyor...</em></div>');
         chatBox.scrollTop(chatBox[0].scrollHeight);
 
@@ -284,7 +299,6 @@ if (isset($_SESSION['role'])) {
                 message: message
             }),
             success: function(res) {
-                // Yazıyor... mesajını kaldır
                 $('#typingMsg').remove();
 
                 let content = res.choices[0].message.content;
@@ -307,7 +321,6 @@ if (isset($_SESSION['role'])) {
     // Enter tuşuna basınca gönder
     userInput.keypress(function(e) {
         if (e.which === 13) {
-            // Enter'a basıldığında, bu klavye girişidir. data-voice etiketini kaldır.
             userInput.removeAttr('data-voice');
             sendBtn.click();
         }
@@ -317,10 +330,9 @@ if (isset($_SESSION['role'])) {
     if ('webkitSpeechRecognition' in window) {
         recognition = new webkitSpeechRecognition();
         recognition.continuous = false;
-        recognition.lang = 'tr-TR';
+        recognition.lang = 'tr-TR'; 
         recognition.interimResults = false;
 
-        // Hata durumları
         recognition.onerror = function(event) {
             console.error('Konuşma Tanıma Hatası:', event.error);
             isRecording = false;
@@ -336,29 +348,22 @@ if (isset($_SESSION['role'])) {
             setTimeout(() => userInput.attr('placeholder', "Mesajınızı yazın..."), 3000);
         };
 
-        // Tanıma başladığında
         recognition.onstart = function() {
             isRecording = true;
-            voiceBtn.removeClass('btn-secondary').addClass('btn-danger'); // Kırmızı yap: KAYITTA
+            voiceBtn.removeClass('btn-secondary').addClass('btn-danger'); 
             userInput.val('');
             userInput.attr('placeholder', 'Dinleniyor...');
-            // Konuşma tanıma sırasında aktif sesli okumayı iptal et
             if (window.speechSynthesis.speaking) {
                 window.speechSynthesis.cancel();
             }
         };
 
-        // Tanıma bittiğinde
         recognition.onend = function() {
             isRecording = false;
             voiceBtn.removeClass('btn-danger').addClass('btn-secondary');
             userInput.attr('placeholder', 'Mesajınızı yazın...');
-
-            // *** BURADAN OTOMATİK GÖNDERME KALDIRILDI ***
-            // Kullanıcı metni kontrol edip manuel olarak gönderecek.
         };
 
-        // Sonuç geldiğinde: Metni giriş alanına yazar
         recognition.onresult = function(event) {
             let finalTranscript = '';
             for (let i = event.resultIndex; i < event.results.length; ++i) {
@@ -369,19 +374,15 @@ if (isset($_SESSION['role'])) {
 
             if (finalTranscript) {
                 userInput.val(finalTranscript.trim());
-                // ÖNEMLİ: Sesli giriş yapıldığını işaretle! Cevap sesli okunacak.
                 userInput.attr('data-voice', 'true');
-                recognition.stop(); // Konuşma bittiğinde kaydı durdurur, onend tetiklenir.
+                recognition.stop(); 
             }
         };
 
-        // Mikrofon butonuna tıklandığında kaydı başlat/durdur
         voiceBtn.on('click', function() {
             if (isRecording) {
-                // Kayıt aktifse: DURDUR
                 recognition.stop();
             } else {
-                // Kayıt pasifse: BAŞLAT
                 try {
                     recognition.start();
                 } catch (e) {
@@ -392,7 +393,6 @@ if (isset($_SESSION['role'])) {
         });
 
     } else {
-        // Tarayıcı desteklemiyorsa
         voiceBtn.prop('disabled', true);
         voiceBtn.attr('title', "Sesli komut bu tarayıcıda desteklenmiyor.");
         console.warn("Web Speech API desteklenmiyor. Lütfen Chrome gibi modern bir tarayıcı kullanın.");
