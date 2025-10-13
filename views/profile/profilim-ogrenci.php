@@ -145,7 +145,7 @@ $resultProfileT = ($resultProfile == null) ? '-' : $resultProfile;
                                                 <div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px;">
                                                     <i class="fa-solid fa-check fs-1 mb-3" style="color:black"></i>
                                                     <p class="mb-0"><?php echo $student->getStudentProgressForSidebar($_SESSION['id'], $_SESSION['class_id']); ?></p>
-                                                    <p class="mb-0" style="font-size: 11px;">mateyali tamamladın</p>
+                                                    <p class="mb-0" style="font-size: 11px;">materyali tamamladın</p>
                                                 </div>
                                                 <div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px;">
                                                     <i class="fa-solid fa-question fs-1 mb-3" style="color:black"></i>

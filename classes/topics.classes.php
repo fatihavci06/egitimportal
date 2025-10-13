@@ -1134,6 +1134,14 @@ class SubTopics extends Dbh
 				$stmt = null;
 				exit();
 			}
+		} elseif ($_SESSION['role'] == 10002 or $_SESSION['role'] == 10005) {
+			$school = $_SESSION['school_id'];
+			$stmt = $this->connect()->prepare('SELECT id, name FROM main_school_topics_lnp WHERE unit_id = ?');
+
+			if (!$stmt->execute(array($units))) {
+				$stmt = null;
+				exit();
+			}
 		} else {
 			return [];
 		}

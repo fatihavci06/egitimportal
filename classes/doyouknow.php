@@ -211,7 +211,7 @@ function getTodaysOrRandomKnow(int $school_id, ?int $class_id): ?array
         // Önce bugünün tarihine uygun ve aktif kelimeleri ara
         $queryToday = "
     SELECT tw.* 
-    FROM todays_word tw
+    FROM doyouknow tw
     WHERE tw.is_active = 1
         AND tw.school_id = :school_id
         AND (tw.class_id LIKE CONCAT('%', :class_id, '%') OR tw.class_id IS NULL OR tw.class_id = '')
