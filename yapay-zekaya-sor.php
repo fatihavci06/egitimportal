@@ -195,86 +195,98 @@ if (isset($_SESSION['role'])) {
     let isRecording = false;
     let recognition;
 
-    // ===================================================================
-    // FONKSİYON: Sesli Okuma (Text-to-Speech) - GELİŞMİŞ DİL TESPİT MANTIĞI
-    // ===================================================================
-    function speakResponse(text) {
-        if ('speechSynthesis' in window) {
-            const synthesis = window.speechSynthesis;
-            if (synthesis.speaking) {
-                synthesis.cancel();
-            }
-
-            if ('webkitSpeechRecognition' in window && isRecording) {
-                recognition.stop();
-            }
-
-            const utterance = new SpeechSynthesisUtterance(text);
-
-            // --- GELİŞMİŞ DİL TESPİT MANTIĞI ---
-            let languageCode = 'tr-TR'; // Varsayılan: Türkçe
-            
-            // Sık kullanılan İngilizce kelimelerin listesi (Daha genişletilmiş)
-            const englishKeywords = [
-                'the', 'a', 'an', 'is', 'are', 'was', 'were', 'you', 'what', 
-                'how', 'it', 'and', 'or', 'in', 'of', 'my', 'your', 'will', 
-                'can', 'do', 'have', 'not', 'this', 'that', 'for', 'with',
-                'hello', 'hi', 'why', 'when', 'where', 'i\'m', 'i am', 'to', 'from',
-                'me', 'we', 'they', 'our', 'their', 'them', 'say', 'know', 'if', 
-                'at', 'by', 'as', 'but', 'so', 'get', 'make', 'go', 'just', 'look',
-                'new', 'only', 'out', 'up', 'all', 'any', 'back', 'because', 'come',
-                'good', 'like', 'much', 'see', 'think', 'time', 'way', 'who', 'world',
-                'would', 'could', 'should'
-            ];
-
-            const words = text.toLowerCase().match(/\b\w+\b/g) || [];
-            let englishWordCount = 0;
-
-            // Metindeki her kelimeyi kontrol et
-            words.forEach(word => {
-                if (englishKeywords.includes(word)) {
-                    englishWordCount++;
-                }
-            });
-
-            // İngilizceye karar verme eşiği: Toplam kelimelerin en az %20'si (veya minimum 3 kelime) İngilizce olmalı.
-            const totalWords = words.length;
-            const englishThreshold = Math.max(3, Math.ceil(totalWords * 0.20)); 
-
-            if (englishWordCount >= englishThreshold && totalWords >= 5) {
-                languageCode = 'en-US';
-            }
-            // --- DİL TESPİT MANTIĞI SONU ---
-
-
-            const voices = synthesis.getVoices();
-            // İstenen dildeki sesi bulmaya çalış
-            const selectedVoice = voices.find(voice => voice.lang.startsWith(languageCode.substring(0, 2)));
-
-            if (selectedVoice) {
-                utterance.voice = selectedVoice;
-            } else {
-                utterance.lang = languageCode;
-            }
-            
-            utterance.pitch = 1.0;
-            utterance.rate = 1.0;
-
-            utterance.onstart = function() {
-                voiceBtn.prop('disabled', true);
-            };
-
-            utterance.onend = function() {
-                voiceBtn.prop('disabled', false);
-            };
-
-            synthesis.speak(utterance);
-        } else {
-            console.warn('Tarayıcınız sesli okuma özelliğini desteklemiyor.');
+    // Ses listesini globalde tutalım. Tarayıcıların sesleri yüklemesi biraz zaman alabilir.
+    let availableVoices = [];
+    
+    // Sesler yüklendiğinde listeyi güncelleyen fonksiyon
+    function populateVoiceList() {
+        availableVoices = window.speechSynthesis.getVoices();
+    }
+    
+    // Tarayıcının sesleri yüklemesini bekle (Gecikmeyi önlemek için)
+    if ('speechSynthesis' in window) {
+        populateVoiceList();
+        if (window.speechSynthesis.onvoiceschanged !== undefined) {
+            window.speechSynthesis.onvoiceschanged = populateVoiceList;
         }
     }
 
-    // 1. ChatGPT Mesaj Gönderme İşlevi
+
+    // ===================================================================
+    // FONKSİYON: Sesli Okuma (Text-to-Speech) - Agresif DİL TESPİT MANTIĞI
+    // ===================================================================
+    function speakResponse(text) {
+        if (!('speechSynthesis' in window)) {
+            console.warn('Tarayıcınız sesli okuma özelliğini desteklemiyor.');
+            return;
+        }
+
+        const synthesis = window.speechSynthesis;
+        if (synthesis.speaking) {
+            synthesis.cancel();
+        }
+        if ('webkitSpeechRecognition' in window && isRecording) {
+            recognition.stop();
+        }
+
+        const utterance = new SpeechSynthesisUtterance(text);
+
+        // --- AGRESİF DİL TESPİT MANTIĞI ---
+        let languageCode = 'tr-TR'; // Varsayılan: Türkçe
+        
+        // Çok sık kullanılan İngilizce kelimeler. Eğer bunlardan en az 3 tane varsa, İngilizce kabul et.
+        // Bu, Türkçe cümleler içine serpiştirilmiş birkaç İngilizce kelimeyi tolere etmesini sağlar.
+        const englishKeywords = /\b(the|a|is|are|you|what|how|it|and|or|in|of|my|your|will|can|do|have|not|this|that|for|with|hello|hi|why|when|where)\b/gi;
+        
+        // İngilizce kelime sayısını bulma
+        const englishMatches = text.match(englishKeywords);
+        
+        // Eğer metnin büyük bir kısmı (örn. %30'dan fazlası) İngilizce kelimelerden oluşuyorsa VEYA 
+        // 5'ten fazla İngilizce anahtar kelime bulunuyorsa, İngilizce olarak kabul et.
+        if (englishMatches && englishMatches.length >= 3 && text.length > 20) {
+            // Cümlenin tamamına yakınını Türkçe dışı kabul eden çok basit bir RegEx de ekleyelim
+             const nonTurkishChars = text.match(/[^a-zA-ZğüşıöçĞÜŞİÖÇ\s]/g);
+             if (nonTurkishChars && nonTurkishChars.length / text.length < 0.8) {
+                 languageCode = 'en-US';
+             }
+        }
+        
+        // Ekstra kontrol: Metin Türkçe karşılama ifadeleri içermiyorsa ve uzunsa İngilizce kabul et.
+        const turkishGreets = /(merhaba|selam|günaydın|iyi günler|nasılsın|ne haber|teşekkürler|rica ederim)/i;
+        if (languageCode === 'tr-TR' && !turkishGreets.test(text.toLowerCase()) && englishMatches && englishMatches.length > 5) {
+             languageCode = 'en-US';
+        }
+        
+        // Sesi Bulma ve Atama
+        let selectedVoice = null;
+        const targetLangPrefix = languageCode.substring(0, 2); // 'tr' veya 'en'
+        
+        // İstenen dildeki bir sesi bul
+        selectedVoice = availableVoices.find(voice => voice.lang.startsWith(targetLangPrefix));
+
+        if (selectedVoice) {
+            utterance.voice = selectedVoice;
+        } else {
+            // Belirlenen dili ayarla, tarayıcı varsayılan sesi kullanacak
+            utterance.lang = languageCode;
+        }
+        // --- DİL TESPİT MANTIĞI SONU ---
+
+        utterance.pitch = 1.0;
+        utterance.rate = 1.0;
+
+        utterance.onstart = function() {
+            voiceBtn.prop('disabled', true);
+        };
+
+        utterance.onend = function() {
+            voiceBtn.prop('disabled', false);
+        };
+
+        synthesis.speak(utterance);
+    }
+
+    // 1. ChatGPT Mesaj Gönderme İşlevi (Bu kısım aynı kalabilir)
     sendBtn.click(function() {
         let message = userInput.val().trim();
         if (message === '') return;
@@ -305,9 +317,8 @@ if (isset($_SESSION['role'])) {
                 chatBox.append('<div class="bot-msg"><strong>Lineup:</strong> ' + content + '</div>');
                 chatBox.scrollTop(chatBox[0].scrollHeight);
 
-                // Eğer sesli giriş yapılmışsa cevabı sesli oku (Dil tespiti yapılmış olarak)
                 if (shouldSpeak) {
-                    speakResponse(content);
+                    speakResponse(content); // Yeni fonksiyon çağrılıyor
                 }
             },
             error: function() {
@@ -326,7 +337,7 @@ if (isset($_SESSION['role'])) {
         }
     });
 
-    // 2. Sesli Soru Sorma İşlevi (Web Speech API)
+    // 2. Sesli Soru Sorma İşlevi (Bu kısım aynı kalabilir)
     if ('webkitSpeechRecognition' in window) {
         recognition = new webkitSpeechRecognition();
         recognition.continuous = false;
