@@ -365,10 +365,6 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
                                                     style="max-height: 250px; width: 250px; object-fit: cover; cursor: pointer;"
                                                     loading="lazy"
                                                     onerror="this.style.display='none';">
-
-                                                <div class="position-absolute top-50 start-50 translate-middle text-white bg-dark bg-opacity-50 p-2 rounded-circle" style="opacity: 0.8; transition: opacity 0.3s;">
-                                                    <i class="fa-solid fa-magnifying-glass-plus fs-4"></i>
-                                                </div>
                                             </a>
                                         </div>
                                     <?php else: ?>
@@ -404,28 +400,24 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
                                 <div class="col-lg-4 col-md-5 text-center order-md-1 order-1 mb-4 mb-md-0">
                                     <?php
                                     $imagePath = !empty($todaysKnow['image']) ? "assets/media/tdo-you-know/" . $todaysKnow['image'] : null;
-                                    if ($imagePath && file_exists($imagePath)):
+                                    if (!empty($todaysWord['image'])):
                                     ?>
                                         <div class="image-container mx-auto">
                                             <a
                                                 href="#"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#knowImageModal"
-                                                data-image-url="<?php echo htmlspecialchars($imagePath) ?>"
+                                                data-image-url="<?php echo htmlspecialchars($todaysKnow['image']) ?>"
                                                 class="d-inline-block position-relative"
                                                 title="Görseli büyütmek için tıklayın">
 
                                                 <img
-                                                    src="<?php echo htmlspecialchars($imagePath) ?>"
+                                                    src="<?php echo htmlspecialchars($todaysKnow['image']) ?>"
                                                     alt="İlginç Bilgi Görseli"
                                                     class="img-fluid rounded-3 shadow border border-3 border-light-info"
                                                     style="max-height: 220px; width: auto; object-fit: contain; cursor: pointer;"
                                                     loading="lazy"
                                                     onerror="this.style.display='none';">
-
-                                                <div class="position-absolute top-50 start-50 translate-middle text-white bg-dark bg-opacity-50 p-2 rounded-circle" style="opacity: 0.8; transition: opacity 0.3s;">
-                                                    <i class="fa-solid fa-magnifying-glass-plus fs-4"></i>
-                                                </div>
                                             </a>
                                         </div>
                                     <?php else: ?>
