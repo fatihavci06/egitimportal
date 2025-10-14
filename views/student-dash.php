@@ -632,34 +632,6 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
             .push-pin.top-left { top: -12px; left: -12px; }
             .push-pin.top-right { top: -12px; right: -12px; }
 
-<<<<<<< HEAD
-                                <div class="col-lg-4 col-md-5 text-center order-md-1 order-1 mb-4 mb-md-0" >
-                                    <?php
-                                    $imagePath = !empty($todaysKnow['image']) ? "assets/media/tdo-you-know/" . $todaysKnow['image'] : null;
-                                    if (!empty($todaysKnow['image'])):
-                                    ?>
-                                        <div class="image-container mx-auto">
-                                            <a
-                                                href="#"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#knowImageModal"
-                                                data-image-url="<?php echo htmlspecialchars($todaysKnow['image']) ?>"
-                                                class="d-inline-block position-relative"
-                                                title="Görseli büyütmek için tıklayın">
-
-                                                <img
-                                                    src="<?php echo htmlspecialchars($todaysKnow['image']) ?>"
-                                                    alt="İlginç Bilgi Görseli"
-                                                    class="img-fluid rounded-3 shadow border border-3 border-light-info"
-                                                    style="max-height: 220px; width: auto; object-fit: contain; cursor: pointer;"
-                                                    loading="lazy"
-                                                    onerror="this.style.display='none';">
-                                            </a>
-                                        </div>
-                                    <?php else: ?>
-                                        <div class="p-4 bg-light-secondary rounded-3">
-                                            <i class="fa-solid fa-image fs-1 text-secondary mb-2"></i>
-=======
             .fact-content-area {
                 position: relative;
                 z-index: 5;
@@ -709,7 +681,6 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                      style="width: 100%; max-height: 250px; object-fit: cover;">
             </div>
         </div>
->>>>>>> e5762a3c8916a7cc705af955048553fcfb80258c
 
         <div class="fact-content-area">
             <div class="fact-box position-relative">

@@ -557,45 +557,6 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
 
                                 <p class="mb-3">
                                     <?php
-<<<<<<< HEAD
-                                    $imagePath = !empty($todaysKnow['image']) ? "assets/media/tdo-you-know/" . $todaysKnow['image'] : null;
-                                    if (!empty($todaysWord['image'])):
-                                    ?>
-                                        <div class="image-container mx-auto">
-                                            <a
-                                                href="#"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#knowImageModal"
-                                                data-image-url="<?php echo htmlspecialchars($todaysKnow['image']) ?>"
-                                                class="d-inline-block position-relative"
-                                                title="Görseli büyütmek için tıklayın">
-
-                                                <img
-                                                    src="<?php echo htmlspecialchars($todaysKnow['image']) ?>"
-                                                    alt="İlginç Bilgi Görseli"
-                                                    class="img-fluid rounded-3 shadow border border-3 border-light-info"
-                                                    style="max-height: 220px; width: auto; object-fit: contain; cursor: pointer;"
-                                                    loading="lazy"
-                                                    onerror="this.style.display='none';">
-                                            </a>
-                                        </div>
-                                    <?php else: ?>
-                                        <div class="p-4 bg-light-secondary rounded-3">
-                                            <i class="fa-solid fa-image fs-1 text-secondary mb-2"></i>
-
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-
-                                <div class="col-lg-8 col-md-7 order-md-2 order-2">
-
-                                    <div class="bg-light-primary rounded-3 p-4 border-start border-4 border-primary">
-                                        <p class="text-gray-700 fw-normal fs-5 lh-base mb-0" style="font-size:12px!important">
-                                            <i class="fa-solid fa-check-circle text-primary me-2"></i>
-                                            <?php echo nl2br($todaysKnow['body']) ?>
-                                        </p>
-                                    </div>
-=======
                                     // PHP'den gelen içerik, eğer boşsa varsayılan metin
                                     $content = $todaysKnow['body'] ?? 'Ahtapotların üç kalbi vardır. İki tanesi solungaçlarına kan pompalarken, bir tanesi vücudunun geri kalanına kan gönderir.';
                                     echo nl2br(htmlspecialchars($content));
@@ -604,7 +565,6 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
 
                                 <div class="text-end mt-2">
                                     <span style="font-size: 30px; line-height: 1; display: inline-block;">💡</span>
->>>>>>> e5762a3c8916a7cc705af955048553fcfb80258c
                                 </div>
                             </div>
                         </div>
