@@ -119,6 +119,7 @@ class ShowHomeworkContents extends GetStudentHomework
         $contentId = $this->getHomeworkContentIdBySlug($slug);
 
         $contentInfo = $this->getAllHomeworkContentDetailsById($contentId['id']);
+     
 
         $dateFormat = new DateFormat();
 
@@ -138,27 +139,30 @@ class ShowHomeworkContents extends GetStudentHomework
             $content = $contentInfo['text_content'];
         } else {
             $contentFiles = $this->getHomeworkContentFilesById($contentId['id']);
+             
             $wordwallFiles = $this->getHomeworkContentWordwallsById($contentId['id']);
             $videoFiles = $this->getHomeworkContentVideosById($contentId['id']);
 
             $content = '';
 
             // Check if there are any files
-            if (count($contentFiles) > 0) {
-                $content = '';
-                foreach ($contentFiles as $file) {
-                    $dosyaUzantisi = pathinfo($file['file_path'], PATHINFO_EXTENSION);
-                    $dosyaUzantisi = strtolower($dosyaUzantisi);
-                    $izinVerilenUzantilar = ['pdf', 'pptx', 'xlsx', 'xls', 'csv'];
-                    if (in_array($dosyaUzantisi, $izinVerilenUzantilar)) {
-                        $content .= '<div class="mb-3"><h3>' . $file['description'] . '</h3></div>';
-                        $content .= '<div class="mb-10"><a href="' . $file['file_path'] . '" download class="btn btn-primary btn-sm" target="_blank"> <i class="bi bi-download"></i> Dosyayı İndir </a></div>';
-                    } else {
-                        $content .= '<div class="mb-3"><h3>' . $file['description'] . '</h3></div>';
-                        $content .= '<div class="mb-10"><img src="' . $file['file_path'] . '" class="img-fluid"></div>';
-                    }
-                }
-            }
+           if (count($contentFiles) > 0) {
+    $content = '';
+    foreach ($contentFiles as $file) {
+        // Normal dosya yolu
+        if (!empty($file['file_path'])) {
+            $content .= '<div class="mb-3"><h3>' . htmlspecialchars($file['description']) . '</h3></div>';
+            $content .= '<div class="mb-10"><a href="' . htmlspecialchars($file['file_path']) . '" download class="btn btn-primary btn-sm" target="_blank"> <i class="bi bi-download"></i> Dosyayı İndir </a></div>';
+        }
+
+        // Eğer role 5 ise veli dosyası
+        if ($_SESSION['role'] == 5 && !empty($file['fileVeli_path'])) {
+            $content .= '<div class="mb-3"><h3>' . htmlspecialchars($file['description']) . ' (Cevap Anahtarı)</h3></div>';
+            $content .= '<div class="mb-10"><a href="' . htmlspecialchars($file['fileVeli_path']) . '" download class="btn btn-primary btn-sm" target="_blank"> <i class="bi bi-download"></i> Dosyayı İndir (Veli)</a></div>';
+        }
+    }
+}
+
 
             // Check if there are any wordwall files
             if (count($wordwallFiles) > 0) {
