@@ -460,7 +460,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
                             border-radius: 10px;
                             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
                             padding: 25px;
-                            padding-left: 90px;
+                            padding-left: 20px;
                             /* Karakterin yerleşimi için daha fazla boşluk */
                             min-height: 160px;
                             /* Kutu yüksekliği */
