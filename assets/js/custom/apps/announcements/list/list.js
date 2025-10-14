@@ -3,27 +3,29 @@
 var KTCustomersList = function () {
 
     var datatable;
-    var table
+    var table;
 
     var initCustomerList = function () {
         const tableRows = table.querySelectorAll('tbody tr');
 
+        // Tarih kolonu 6 yerine artık 5. indexte (0’dan başladığı için)
         tableRows.forEach(row => {
             const dateRow = row.querySelectorAll('td');
-            if (dateRow.length >= 7 && dateRow[6].innerHTML.trim() !== '') {
-                const realDate = moment(dateRow[6].innerHTML, "DD MMM YYYY, LT").format();
-                dateRow[6].setAttribute('data-order', realDate);
+            if (dateRow.length >= 6 && dateRow[5].innerHTML.trim() !== '') {
+                const realDate = moment(dateRow[5].innerHTML, "DD MMM YYYY, LT").format();
+                dateRow[5].setAttribute('data-order', realDate);
             }
         });
 
+        // DataTable başlatma
         datatable = $(table).DataTable({
             "info": false,
             'order': [
-                [6, 'asc']
+                [5, 'asc'] // Artık 5. kolona göre sıralanıyor
             ],
             'columnDefs': [
-                { orderable: false, targets: 0 },
-                { orderable: false, targets: 7 },
+                { orderable: false, targets: 0 }, // Checkbox kolonu
+                { orderable: false, targets: 6 }, // Son (işlem) kolonu
             ]
         });
 
@@ -50,10 +52,9 @@ var KTCustomersList = function () {
                 e.preventDefault();
 
                 const parent = e.target.closest('tr');
-
                 const customerName = parent.querySelectorAll('td')[1].innerText;
                 const announceId = parent.getAttribute('id');
-                var activeStatus = parent.querySelectorAll('td')[2].innerText;
+                var activeStatus = parent.querySelectorAll('td')[2].innerText; // Gerekiyorsa bu da tabloya göre değiştirilebilir
 
                 if (activeStatus === "Aktif") {
                     activeStatus = "pasif";
@@ -74,12 +75,11 @@ var KTCustomersList = function () {
                     }
                 }).then(function (result) {
                     if (result.value) {
-
                         sendAlterRequest(
                             { id: announceId },
                             `İşlem tamamlandı.`,
                             function () {
-                               // datatable.row($(parent)).remove().draw();
+                                // datatable.row($(parent)).remove().draw();
                             }
                         );
                     } else if (result.dismiss === 'cancel') {
@@ -94,12 +94,11 @@ var KTCustomersList = function () {
                         });
                     }
                 });
-            })
+            });
         });
     }
 
     var initToggleToolbar = () => {
-
         const checkboxes = table.querySelectorAll('[type="checkbox"]');
         const deactivateSelected = document.querySelector('[data-kt-customer-table-select="delete_selected"]');
 
@@ -122,6 +121,7 @@ var KTCustomersList = function () {
                     selectedIds.push(rowId);
                 }
             });
+
             if (selectedIds.length === 0) {
                 Swal.fire({
                     text: "Lütfen en az bir duyuru seçin.",
@@ -163,11 +163,9 @@ var KTCustomersList = function () {
                 }
             });
         });
-
     }
 
     const toggleToolbars = () => {
-
         const toolbarBase = document.querySelector('[data-kt-customer-table-toolbar="base"]');
         const toolbarSelected = document.querySelector('[data-kt-customer-table-toolbar="selected"]');
         const selectedCount = document.querySelector('[data-kt-customer-table-select="selected_count"]');
@@ -193,6 +191,7 @@ var KTCustomersList = function () {
             toolbarSelected.classList.add('d-none');
         }
     }
+
     function sendAlterRequest(payload, successMsg, onSuccess) {
         $.ajax({
             type: "POST",
@@ -245,7 +244,6 @@ var KTCustomersList = function () {
     return {
         init: function () {
             table = document.querySelector('#kt_customers_table');
-
             if (!table) {
                 return;
             }

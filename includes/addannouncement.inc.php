@@ -21,7 +21,7 @@ try {
 	if (!isset($input)) {
 		$input = $_POST;
 	}
-	$requiredFields = ['title', 'content', 'start_date', 'expire_date'];
+	$requiredFields = ['title', 'content', 'start_date'];
 	$missingFields = [];
 
 	foreach ($requiredFields as $field) {
@@ -29,6 +29,9 @@ try {
 			$missingFields[] = $field;
 		}
 	}
+if (empty($input['expire_date'])) {
+    $input['expire_date'] = date('Y-m-d', strtotime('+1 month'));
+}
 
 	if (!empty($missingFields)) {
 		http_response_code(400);

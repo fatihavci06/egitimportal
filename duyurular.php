@@ -133,7 +133,6 @@ if (isset($_SESSION['role'])) {
                                                             <th class="min-w-125px">İçerik</th>
                                                             <th class="min-w-125px">Kime</th>
                                                             <th class="min-w-125px">Başlangıç Tarihi</th>
-                                                            <th class="min-w-125px">Bitiş Tarihi</th>
                                                             <th class="text-end min-w-70px">İşlemler</th>
                                                             <?php
                                                         } else {

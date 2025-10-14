@@ -8,7 +8,7 @@ if (session_status() == PHP_SESSION_NONE) {
 class AddHomework extends Dbh
 {
 
-    protected function setHomeworkContent($imgName, $slug, $name, $classes, $lessons, $units, $short_desc, $topics, $sub_topics, $text_content, $video_url, $file_urls, $imageFiles, $descriptions, $titles, $urls, $start_date, $end_date)
+    protected function setHomeworkContent($imgName, $slug, $name, $classes, $lessons, $units, $short_desc, $topics, $sub_topics, $text_content, $video_url, $file_urls, $imageFiles, $descriptions, $titles, $urls, $start_date, $end_date,$fileVeli_url)
     {
         $school_id = $_SESSION['school_id'];
         if ($_SESSION['role'] != 4) {
@@ -90,6 +90,22 @@ class AddHomework extends Dbh
                     $stmtFile->execute([
                         ':homework_content_id' => $mainId,
                         ':file_path' => $url,
+                        ':description' => $description
+                    ]);
+                }
+            }
+             if (!empty($fileVeli_url)) {
+
+                //$descriptions = $_POST['descriptions'] ?? null;
+
+
+                foreach ($fileVeli_url as $index => $url) {
+                    $description = isset($descriptions[$index]) ? $descriptions[$index] : '';
+                    
+                    $stmtFile = $pdo->prepare("INSERT INTO homework_content_files_lnp (homework_content_id, fileVeli_path, description) VALUES (:homework_content_id, :fileVeli_path, :description)");
+                    $stmtFile->execute([
+                        ':homework_content_id' => $mainId,
+                        ':fileVeli_path' => $url,
                         ':description' => $description
                     ]);
                 }

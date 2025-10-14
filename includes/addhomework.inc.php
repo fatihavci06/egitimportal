@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $text_content = $_POST["icerik"] ?? '';
     $video_url = trim($_POST["video_url"]) ?? '';
     $files = $_FILES['file_path'] ?? '';
+    $filesVeli = $_FILES['answer_key_pdf'] ?? '';
     $imageFiles = $_FILES['images'] ?? '';
     $descriptions = $_POST['descriptions'] ?? null;
     $startDate = $_POST['start_date'] ?? null;
@@ -34,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     include_once "../classes/addimage.classes.php";
 
 
-    $addHomework = new AddHomeworkContr($name, $classes, $lessons, $units, $topics, $sub_topics, $short_desc, $text_content, $video_url, $files, $imageFiles, $photoSize, $photoName, $fileTmpName, $descriptions, $titles, $urls, $startDate, $endDate);
+    $addHomework = new AddHomeworkContr($name, $classes, $lessons, $units, $topics, $sub_topics, $short_desc, $text_content, $video_url, $files, $imageFiles, $photoSize, $photoName, $fileTmpName, $descriptions, $titles, $urls, $startDate, $endDate,$filesVeli);
 
     // Running error handlers and addContent
     $addHomework->addHomeworkDb();

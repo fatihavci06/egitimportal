@@ -19,8 +19,17 @@ class ShowNotification extends NotificationManager
             if ($value['target_type'] == "all") {
                 $toWhom = "Herkese";
             } elseif ($value['target_type'] == "roles") {
-                $toWhom = $this->getnotificationsRole($value['targets'][0]['value']);
-            }
+    // Kontrol ekliyoruz: targets dolu mu, value var mı
+    if (!empty($value['targets']) && isset($value['targets'][0]['value']) && $value['targets'][0]['value'] != '') {
+        $toWhom = $this->getnotificationsRole($value['targets'][0]['value']);
+    } else {
+        // Hedef rol yoksa boş array dönebilir veya default bir değer atayabilirsin
+        $toWhom = [];
+        // İstersen log atabilirsin
+        // error_log("Dikkat: roles target boş veya geçersiz!");
+    }
+}
+
 
             if ($value['target_type'] == "classes") {
                 $toWhom = $this->getnotificationsClass($value['targets'][0]['value']);
@@ -59,9 +68,9 @@ class ShowNotification extends NotificationManager
                         <td>
                         ' . (strlen($value['content']) > 40 ? substr($value['content'], 0, 40) . '...' : $value['content']) . '
                         </td>
-                        <td>
-                            ' . $toWhom . '
-                        </td>
+                     <td>
+    ' . (!empty($toWhom) ? (is_array($toWhom) ? implode(', ', $toWhom) : $toWhom) : '-') . '
+</td>
                         <td>' . $dateFormat->changeDate($value['start_date']) . '</td>
                         <td>' . $dateFormat->changeDate($value['expire_date']) . '</td>
 

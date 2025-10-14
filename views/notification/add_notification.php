@@ -73,27 +73,7 @@ $classShow = new ShowClass();
                                 <option value="">Sınıf Seçin</option>
                                 <?php echo $classShow->getClassSelectListWithPreschool(); ?>
                             </select>
-                            <div class="fv-row mb-7">
-
-                                <label class=" fs-6 fw-semibold mb-2">Ders</label>
-
-                                <select id="lessons" name="lessons" aria-label="Ders Seçiniz" data-control="select2"
-                                    data-placeholder="Ders Seçiniz..." class="form-select form-select-solid fw-bold">
-                                </select>
-                            </div>
-                            <div class="fv-row mb-7">
-                                <label class=" fs-6 fw-semibold mb-2">Ünite</label>
-                                <select id="units" name="units" aria-label="Ünite Seçiniz" data-control="select2"
-                                    data-placeholder="Ünite Seçiniz..." class="form-select form-select-solid fw-bold">
-                                </select>
-                            </div>
-                            <div class="fv-row mb-7">
-                                <label class=" fs-6 fw-semibold mb-2">Konu</label>
-
-                                <select id="topics" name="topics" aria-label="Konu Seçiniz" data-control="select2"
-                                    data-placeholder="Konu Seçiniz..." class="form-select form-select-solid fw-bold">
-                                </select>
-                            </div>
+                       
                             <!-- <div class="fv-row mb-7">
                                 <label class=" fs-6 fw-semibold mb-2">Altkonu</label>
                                 <select id="subtopics" name="subtopics" aria-label="Altkonu Seçiniz"

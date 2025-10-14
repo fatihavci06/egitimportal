@@ -50,7 +50,7 @@ class ShowAnnouncement extends AnnouncementManager
                             ' . $toWhom . '
                         </td>
                         <td>' . $dateFormat->changeDate($value['start_date']) . '</td>
-                        <td>' . $dateFormat->changeDate($value['expire_date']) . '</td>
+                        
 
                         <td class="text-end">
                             <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"

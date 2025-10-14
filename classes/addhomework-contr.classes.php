@@ -18,13 +18,14 @@ class AddHomeworkContr extends AddHomework
     private $sub_topics;
     private $imageFiles;
     private $files;
+    private $filesVeli;
     private $descriptions;
     private $titles;
     private $urls;
     private $start_date;
     private $end_date;
 
-    public function __construct($name, $classes, $lessons, $units, $topics, $sub_topics, $short_desc, $text_content, $video_url, $files, $imageFiles, $photoSize, $photoName, $fileTmpName, $descriptions, $titles, $urls, $start_date, $end_date)
+    public function __construct($name, $classes, $lessons, $units, $topics, $sub_topics, $short_desc, $text_content, $video_url, $files, $imageFiles, $photoSize, $photoName, $fileTmpName, $descriptions, $titles, $urls, $start_date, $end_date,$filesVeli)
     {
         $this->photoSize = $photoSize;
         $this->photoName = $photoName;
@@ -40,6 +41,7 @@ class AddHomeworkContr extends AddHomework
         $this->sub_topics = $sub_topics;
         $this->imageFiles = $imageFiles;
         $this->files = $files;
+        $this->filesVeli = $filesVeli;
         $this->descriptions = $descriptions;
         $this->titles = $titles;
         $this->urls = $urls;
@@ -101,8 +103,29 @@ class AddHomeworkContr extends AddHomework
                 }
             }
         }
+         if (isset($this->filesVeli)) {
+            $uploadDir = __DIR__ . '/../uploads/homeworks/veli/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+
+            foreach ($this->filesVeli['tmp_name'] as $index => $tmpName) {
+
+                if ($this->filesVeli['error'][$index] === UPLOAD_ERR_OK) {
+                    $fileName = basename($this->filesVeli['name'][$index]);
+                    $targetFile = $uploadDir . $fileName;
+
+                    if (move_uploaded_file($tmpName, $targetFile)) {
+                        $fileVeli_urls[] = 'uploads/homeworks/veli/' . $fileName;
+                    } else {
+                        echo json_encode(['status' => 'error', 'message' => 'Dosya yüklenemedi: ' . $fileName]);
+                        exit;
+                    }
+                }
+            }
+        }
 
 
-        $this->setHomeworkContent($imgName, $slug, $this->name, $this->classes, $this->lessons, $this->units, $this->short_desc, $this->topics, $this->sub_topics, $this->text_content, $this->video_url, $file_urls, $this->imageFiles, $this->descriptions, $this->titles, $this->urls, $this->start_date, $this->end_date);
+        $this->setHomeworkContent($imgName, $slug, $this->name, $this->classes, $this->lessons, $this->units, $this->short_desc, $this->topics, $this->sub_topics, $this->text_content, $this->video_url, $file_urls, $this->imageFiles, $this->descriptions, $this->titles, $this->urls, $this->start_date, $this->end_date,$fileVeli_urls);
     }
 }
