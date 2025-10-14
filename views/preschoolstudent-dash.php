@@ -526,7 +526,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
 
                         /* Paragraf metni stili */
                         .fact-box p {
-                            font-size: 17px;
+                            font-size: 13px;
                             font-weight: 500;
                             line-height: 1.5;
                             color: #444;
