@@ -4,7 +4,11 @@ session_start();
 
 include_once '../classes/dbh.classes.php';
 header('Content-Type: application/json');
-
+session_start();
+if (!$_SESSION['role']) {
+    echo json_encode(['status' => 'error', 'message' => 'Yetkisiz erişim.']);
+    exit();
+}
 
 // Sadece POST isteğini kabul et
 

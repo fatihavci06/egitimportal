@@ -5,6 +5,10 @@ include_once '../classes/Mailer.php';
 $mailer = new Mailer();
 header('Content-Type: application/json');
 session_start();
+if (!$_SESSION['role']) {
+    echo json_encode(['status' => 'error', 'message' => 'Yetkisiz erişim.']);
+    exit();
+}
 
 // Sadece POST isteğini kabul et
 

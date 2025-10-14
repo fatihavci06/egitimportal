@@ -216,6 +216,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         <!--begin::Card body-->
                                         <div class="card-body pt-0 table-responsive">
                                             <!--begin::Table-->
+                                             <?php if($_SESSION['role']!=5){ ?>
                                             <div class="row">
                                                 <div class="col-3 col-lg-2">
                                                     <div class="row g-10 ">
@@ -232,7 +233,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <?php endforeach; ?>
                                                     </div>
                                                 </div>
-
+                                                                 <?php } ?>
                                                 <div class="col-9 col-lg-10">
                                                     <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_customers_table">
                                                         <thead>
