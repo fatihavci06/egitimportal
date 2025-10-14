@@ -365,10 +365,6 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
                                                     style="max-height: 250px; width: 250px; object-fit: cover; cursor: pointer;"
                                                     loading="lazy"
                                                     onerror="this.style.display='none';">
-
-                                                <div class="position-absolute top-50 start-50 translate-middle text-white bg-dark bg-opacity-50 p-2 rounded-circle" style="opacity: 0.8; transition: opacity 0.3s;">
-                                                    <i class="fa-solid fa-magnifying-glass-plus fs-4"></i>
-                                                </div>
                                             </a>
                                         </div>
                                     <?php else: ?>
