@@ -556,14 +556,23 @@ class Units extends Dbh
 				$stmt = null;
 				exit();
 			}
-		}
+		} elseif ($_SESSION['role'] == 10002 or $_SESSION['role'] == 10005) {
+			// $school = $_SESSION['school_id'];
 
+			$stmt = $this->connect()->prepare('SELECT id, name FROM main_school_units_lnp WHERE class_id = ? AND lesson_id=?');
+
+			if (!$stmt->execute(array($class, $lesson))) {
+				$stmt = null;
+				exit();
+			}
+	}
+			
 		$unitData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 		return $unitData;
 
 		$stmt = null;
-	}
+}
 
 	public function getSameUnits($active_slug)
 	{

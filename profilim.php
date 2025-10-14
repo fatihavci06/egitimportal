@@ -169,7 +169,7 @@ $timeSpendInfo = $timeSpend->getTimeSpend($userInfo["id"]);
     <script src="assets/js/custom/utilities/modals/offer-a-deal/complete.js"></script>
     <script src="assets/js/custom/utilities/modals/offer-a-deal/main.js"></script>
     <script src="assets/js/custom/utilities/modals/users-search.js"></script> -->
-
+    
     <script src="assets/js/custom/apps/profile/trackprogress.js"></script>
     <?php
     if ($_SESSION["role"] == 4 || $_SESSION["role"] == 10001 || $_SESSION["role"] == 9 || $_SESSION["role"] == 10) {

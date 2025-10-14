@@ -145,7 +145,7 @@ $resultProfileT = ($resultProfile == null) ? '-' : $resultProfile;
                                                 <div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px;">
                                                     <i class="fa-solid fa-check fs-1 mb-3" style="color:black"></i>
                                                     <p class="mb-0"><?php echo $student->getStudentProgressForSidebarPreschool($_SESSION['id'], $_SESSION['class_id']); ?></p>
-                                                    <p class="mb-0" style="font-size: 11px;">mateyali tamamladın</p>
+                                                    <p class="mb-0" style="font-size: 11px;">materyali tamamladın</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -1220,29 +1220,6 @@ $resultProfileT = ($resultProfile == null) ? '-' : $resultProfile;
                                                                         </select>
                                                                     </div>
                                                                 </div>
-                                                                <div class="row mt-4">
-
-                                                                    <div class="col-lg-10">
-                                                                        <label class="fs-6 fw-semibold mb-2" for="topics">Konu
-                                                                        </label>
-                                                                        <select class="form-select" id="topics" name="topics"
-                                                                            aria-label="Konu Seçiniz">
-                                                                            <option value="">Seçiniz</option>
-                                                                        </select>
-                                                                    </div>
-                                                                </div>
-                                                                <!-- <div class="row mt-4">
-
-                                                            <div class="col-lg-10">
-                                                                <label class="fs-6 fw-semibold mb-2"
-                                                                    for="subtopics">Altkonu
-                                                                </label>
-                                                                <select class="form-select" id="subtopics"
-                                                                    name="subtopics" aria-label="Altkonu Seçiniz">
-                                                                    <option value="">Seçiniz</option>
-                                                                </select>
-                                                            </div>
-                                                        </div> -->
                                                                 <div class=" mt-4">
 
                                                                     <button type="submit" id="kt_form_student_progress_submit"

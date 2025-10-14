@@ -1,6 +1,8 @@
 <?php
 header('Content-Type: application/json');
 
+session_start();
+
 // ini_set('display_errors', 1);
 // ini_set('display_startup_errors', 1);
 // error_reporting(E_ALL);
@@ -55,14 +57,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
     echo json_encode(['status' => 'fail', 'message' => 'Invalid request method']);
     exit;
-
 }
 
 function doLessons($school_id, $class_id, $lesson_id, $unit_id, $student_id)
 {
-    $itemModel = getLessonById($lesson_id);
-    $items = getUnitsByLessonId($school_id, $class_id, $lesson_id);
-    $itemsCount = count($items) ?? 0;
 
     $styles = ["danger", "success", "primary", "warning", "info", "secondary", "light", "dark"];
     $styleIndex = 0;
@@ -78,23 +76,69 @@ function doLessons($school_id, $class_id, $lesson_id, $unit_id, $student_id)
 
     $style = $styles[$styleIndex % count($styles)];
 
+    if ($_SESSION['role'] == 10002 or $_SESSION['role'] == 10005) {
+
+        $itemModel = getLessonByIdPreschool($lesson_id);
+        $items = getUnitsByLessonIdPreschool($school_id, $class_id, $lesson_id);
+        $itemsCount = count($items) ?? 0;
+
+        foreach ($items as $item) {
+
+            $subItems = getTopicsByUnitIdPreschool($item['id']);
+            $subItemsCount = 0;
+            $subItemsCount = count($subItems);
+            $percentage = $contentObj->getPreschoolContentAnalyticsByUnitId($student_id, $class_id, $lesson_id, $item['id']);
+            $percentageW = ($percentage == null) ? 0 : $percentage;
+            $percentageT = ($percentage === null) ? '-' : $percentage;
+
+            $score = $gradeObj->getGradeByUnitId($student_id, $item['id']);
+            $scoreW = ($score == null) ? 0 : $score;
+            $scoreT = ($score ===  null) ? '-' : $score;
+
+            $view .= '<div class="d-flex flex-stack">
+                            <div class="symbol symbol-40px me-4">
+                                <div class="symbol-label fs-2 fw-semibold bg-' . $style . ' text-inverse-' . $style . '">' . mb_substr($item['name'], 0, 1, 'UTF-8') . '</div>
+                            </div>
+                            <div class="d-flex align-items-center flex-row-fluid ">
+                                <div class="flex-grow-1 me-2">
+                                    <a class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $item['name'] . '</a>
+                                    <span class="text-muted fw-semibold d-block fs-7">' . $subItemsCount . ' Konu </span>
+                                </div>
+                                <div class="d-flex align-items-center w-100px w-sm-200px flex-column mt-3">
+                                    <div class="d-flex justify-content-between w-100 mt-auto mb-2">
+                                        <span class="fw-semibold fs-6 text-gray-500">Tamamlama Oranı</span>
+                                        <span class="fw-bold fs-6">' . $percentageT . '%</span>
+                                    </div>
+                                    <div class="h-5px mx-3 w-100 bg-light mb-3">  
+                                        <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $percentageW . '%;" aria-valuenow="25"
+                                            aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="separator separator-dashed my-4"></div>';
+        }
+    } else {
+
+        $itemModel = getLessonById($lesson_id);
+        $items = getUnitsByLessonId($school_id, $class_id, $lesson_id);
+        $itemsCount = count($items) ?? 0;
+
+        foreach ($items as $item) {
 
 
-    foreach ($items as $item) {
+            $subItems = getTopicsByUnitId($school_id, $class_id, $lesson_id, $item['id']);
+            $subItemsCount = 0;
+            $subItemsCount = count($subItems);
+            $percentage = $contentObj->getSchoolContentAnalyticsByUnitId($student_id, $class_id, $lesson_id, $item['id']);
+            $percentageW = ($percentage == null) ? 0 : $percentage;
+            $percentageT = ($percentage === null) ? '-' : $percentage;
 
+            $score = $gradeObj->getGradeByUnitId($student_id, $item['id']);
+            $scoreW = ($score == null) ? 0 : $score;
+            $scoreT = ($score ===  null) ? '-' : $score;
 
-        $subItems = getTopicsByUnitId($school_id, $class_id, $lesson_id, $item['id']);
-        $subItemsCount = 0;
-        $subItemsCount = count($subItems);
-        $percentage = $contentObj->getSchoolContentAnalyticsByUnitId($student_id, $class_id, $lesson_id, $item['id']);
-        $percentageW = ($percentage == null) ? 0 : $percentage;
-        $percentageT = ($percentage === null) ? '-' : $percentage;
-
-        $score = $gradeObj->getGradeByUnitId($student_id, $item['id']);
-        $scoreW = ($score == null) ? 0 : $score;
-        $scoreT = ($score ===  null) ? '-' : $score;
-
-        $view .= '<div class="d-flex flex-stack">
+            $view .= '<div class="d-flex flex-stack">
                             <div class="symbol symbol-40px me-4">
                                 <div class="symbol-label fs-2 fw-semibold bg-' . $style . ' text-inverse-' . $style . '">' . mb_substr($item['name'], 0, 1, 'UTF-8') . '</div>
                             </div>
@@ -124,7 +168,9 @@ function doLessons($school_id, $class_id, $lesson_id, $unit_id, $student_id)
                             </div>
                         </div>
                         <div class="separator separator-dashed my-4"></div>';
+        }
     }
+
 
     $FinalView = '
                         <div class="card mb-5 mb-xl-8">
@@ -145,16 +191,10 @@ function doLessons($school_id, $class_id, $lesson_id, $unit_id, $student_id)
     $styleIndex++;
 
     return $FinalView;
-
-
-
 }
 
 function doUnits($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $student_id)
 {
-    $itemModel = getUnitById($unit_id);
-    $items = getTopicsByUnitId($school_id, $class_id, $lesson_id, $unit_id);
-    $itemsCount = count($items) ?? 0;
 
     $styles = ["danger", "success", "primary", "warning", "info", "secondary", "light", "dark"];
     $styleIndex = 0;
@@ -169,21 +209,63 @@ function doUnits($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $studen
 
     $style = $styles[$styleIndex % count($styles)];
 
-    foreach ($items as $item) {
+    if ($_SESSION['role'] == 10002 or $_SESSION['role'] == 10005) {
 
+        $itemModel = getUnitByIdPreschool($unit_id);
+        $items = getTopicsByUnitIdPreschool($unit_id);
+        $itemsCount = count($items) ?? 0;
 
-        $subItems = getSubtopicsByTopicId($school_id, $class_id, $lesson_id, $unit_id, $item['id']);
-        $subItemsCount = 0;
-        $subItemsCount = count($subItems);
-        $percentage = $contentObj->getSchoolContentAnalyticsByTopicId($student_id, $class_id, $lesson_id, $unit_id, $item['id']);
-        $percentageW = ($percentage == null) ? 0 : $percentage;
-        $percentageT = ($percentage === null) ? '-' : $percentage;
+        foreach ($items as $item) {
 
-        $score = $gradeObj->getGradeByTopicId($student_id, $item['id']);
-        $scoreW = ($score == null) ? 0 : $score;
-        $scoreT = ($score ===  null) ? '-' : $score;
+            $subItems = getSubtopicsByTopicId($school_id, $class_id, $lesson_id, $unit_id, $item['id']);
+            $subItemsCount = 0;
+            $subItemsCount = count($subItems);
+            $percentage = $contentObj->getPreschoolContentAnalyticsByTopicId($student_id, $class_id, $lesson_id, $unit_id, $item['id']);
+            $percentageW = ($percentage == null) ? 0 : $percentage;
+            $percentageT = ($percentage === null) ? '-' : $percentage;
 
-        $view .= '<div class="d-flex flex-stack">
+            $view .= '<div class="d-flex flex-stack">
+                            <div class="symbol symbol-40px me-4">
+                                <div class="symbol-label fs-2 fw-semibold bg-' . $style . ' text-inverse-' . $style . '">' . mb_substr($item['name'], 0, 1, 'UTF-8') . '</div>
+                            </div>
+                            <div class="d-flex align-items-center flex-row-fluid ">
+                                <div class="flex-grow-1 me-2">
+                                    <a href="' . $student_id . '" class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $item['name'] . '</a>
+                                </div>
+                                <div class="d-flex align-items-center w-100px w-sm-200px flex-column mt-3">
+                                    <div class="d-flex justify-content-between w-100 mt-auto mb-2">
+                                        <span class="fw-semibold fs-6 text-gray-500">Tamamlama Oranı</span>
+                                        <span class="fw-bold fs-6">' . $percentageT . '%</span>
+                                    </div>
+                                    <div class="h-5px mx-3 w-100 bg-light mb-3">  
+                                        <div class="bg-success rounded h-5px" role="progressbar" style="width: ' . $percentageW . '%;" aria-valuenow="25"
+                                            aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="separator separator-dashed my-4"></div>';
+        }
+    } else {
+
+        $itemModel = getUnitById($unit_id);
+        $items = getTopicsByUnitId($school_id, $class_id, $lesson_id, $unit_id);
+        $itemsCount = count($items) ?? 0;
+
+        foreach ($items as $item) {
+
+            $subItems = getSubtopicsByTopicId($school_id, $class_id, $lesson_id, $unit_id, $item['id']);
+            $subItemsCount = 0;
+            $subItemsCount = count($subItems);
+            $percentage = $contentObj->getSchoolContentAnalyticsByTopicId($student_id, $class_id, $lesson_id, $unit_id, $item['id']);
+            $percentageW = ($percentage == null) ? 0 : $percentage;
+            $percentageT = ($percentage === null) ? '-' : $percentage;
+
+            $score = $gradeObj->getGradeByTopicId($student_id, $item['id']);
+            $scoreW = ($score == null) ? 0 : $score;
+            $scoreT = ($score ===  null) ? '-' : $score;
+
+            $view .= '<div class="d-flex flex-stack">
                             <div class="symbol symbol-40px me-4">
                                 <div class="symbol-label fs-2 fw-semibold bg-' . $style . ' text-inverse-' . $style . '">' . mb_substr($item['name'], 0, 1, 'UTF-8') . '</div>
                             </div>
@@ -213,6 +295,7 @@ function doUnits($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $studen
                             </div>
                         </div>
                         <div class="separator separator-dashed my-4"></div>';
+        }
     }
 
     $FinalView = '
@@ -234,9 +317,6 @@ function doUnits($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $studen
     $styleIndex++;
 
     return $FinalView;
-
-
-
 }
 
 function doTopics($school_id, $class_id, $lesson_id, $unit_id, $topic_id, $subtopic_id, $student_id)
@@ -412,13 +492,25 @@ function getLessonById($id)
         $stmt = $db->prepare($sql);
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
-
     } catch (PDOException $e) {
         return false;
     }
-
-
 }
+
+function getLessonByIdPreschool($id)
+{
+    $db = (new dbh())->connect();
+    $sql = 'SELECT * FROM main_school_lessons_lnp WHERE id=?';
+
+    try {
+        $stmt = $db->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        return false;
+    }
+}
+
 function getUnitById($id)
 {
     $db = (new dbh())->connect();
@@ -428,11 +520,25 @@ function getUnitById($id)
         $stmt = $db->prepare($sql);
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
-
     } catch (PDOException $e) {
         return false;
     }
 }
+
+function getUnitByIdPreschool($id)
+{
+    $db = (new dbh())->connect();
+    $sql = 'SELECT * FROM main_school_units_lnp WHERE id=?';
+
+    try {
+        $stmt = $db->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        return false;
+    }
+}
+
 function getTopicById($id)
 {
     $db = (new dbh())->connect();
@@ -442,7 +548,6 @@ function getTopicById($id)
         $stmt = $db->prepare($sql);
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
-
     } catch (PDOException $e) {
         return false;
     }
@@ -456,7 +561,6 @@ function getSubtopicById($id)
         $stmt = $db->prepare($sql);
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
-
     } catch (PDOException $e) {
         return false;
     }
@@ -473,11 +577,25 @@ function getUnitsByLessonId($school_id, $class_id, $lesson_id)
         $stmt->execute([$school_id, $class_id, $lesson_id]);
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $result;
-
     } catch (PDOException $e) {
         return false;
     }
 }
+function getUnitsByLessonIdPreschool($school_id, $class_id, $lesson_id)
+{
+    $db = (new dbh())->connect();
+    $sql = 'SELECT * FROM main_school_units_lnp WHERE class_id=? AND lesson_id=?';
+
+    try {
+        $stmt = $db->prepare($sql);
+        $stmt->execute([$class_id, $lesson_id]);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    } catch (PDOException $e) {
+        return false;
+    }
+}
+
 function getTopicsByUnitId($school_id, $class_id, $lesson_id, $unit_id)
 {
     $db = (new dbh())->connect();
@@ -486,6 +604,20 @@ function getTopicsByUnitId($school_id, $class_id, $lesson_id, $unit_id)
     try {
         $stmt = $db->prepare($sql);
         $stmt->execute([$school_id, $class_id, $lesson_id, $unit_id]);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    } catch (PDOException $e) {
+        return false;
+    }
+}
+function getTopicsByUnitIdPreschool($unit_id)
+{
+    $db = (new dbh())->connect();
+    $sql = 'SELECT * FROM main_school_topics_lnp WHERE unit_id=?';
+
+    try {
+        $stmt = $db->prepare($sql);
+        $stmt->execute([$unit_id]);
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     } catch (PDOException $e) {
@@ -502,7 +634,6 @@ function getSubtopicsByTopicId($school_id, $class_id, $lesson_id, $unit_id, $top
         $stmt->execute([$school_id, $class_id, $lesson_id, $unit_id, $topic_id]);
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $result;
-
     } catch (PDOException $e) {
         return false;
     }
