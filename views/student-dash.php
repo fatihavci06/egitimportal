@@ -592,117 +592,135 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
             </div>
 
             <div class="col-xxl-12 mb-5 mb-xl-10">
-    <div class="fact-wrapper p-4 mb-5" style="
+                <div class="fact-wrapper p-4 mb-5" style="
         background: linear-gradient(135deg, #a8ff78 0%, #ffeb4d 100%);
         border-radius: 10px;
         position: relative;
         overflow: hidden;
         box-shadow: 0 10px 20px rgba(0,0,0,0.2);
     ">
-        <style>
-            .fact-wrapper::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-image: radial-gradient(circle, rgba(0,0,0,0.15) 1px, transparent 1px);
-                background-size: 20px 20px;
-                z-index: 1;
-                opacity: 0.8;
-            }
-            .image-frame-wrapper {
-                position: relative;
-                z-index: 3;
-                padding: 5px; 
-                background-color: white;
-                border-radius: 10px;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            }
-            .push-pin {
-                position: absolute;
-                width: 25px;
-                height: 25px;
-                background-color: #4CAF50; 
-                border-radius: 50%;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.4);
-                z-index: 10;
-            }
-            .push-pin.top-left { top: -12px; left: -12px; }
-            .push-pin.top-right { top: -12px; right: -12px; }
+                    <style>
+                        .fact-wrapper::before {
+                            content: '';
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            background-image: radial-gradient(circle, rgba(0, 0, 0, 0.15) 1px, transparent 1px);
+                            background-size: 20px 20px;
+                            z-index: 1;
+                            opacity: 0.8;
+                        }
 
-            .fact-content-area {
-                position: relative;
-                z-index: 5;
-                margin-top: -35px; /* Görselle çakışma (overlap) */
-            }
+                        .image-frame-wrapper {
+                            position: relative;
+                            z-index: 3;
+                            padding: 5px;
+                            background-color: white;
+                            border-radius: 10px;
+                            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                        }
 
-            .fact-box {
-                background: linear-gradient(180deg, #ffffff 0%, #ffefe6 100%);
-                border-radius: 10px;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-                padding: 20px;
-                padding-left: 80px; /* Karakterin kapladığı alan */
-                min-height: 150px;
-            }
-            .character-img {
-                position: absolute;
-                bottom: -5px; /* Karakterin biraz dışarı taşması */
-                left: -35px; /* Sol dışarı taşması */
-                height: 160px; /* Görseldeki boyuta uygun ayar */
-                width: auto;
-                z-index: 6;
-            }
+                        .push-pin {
+                            position: absolute;
+                            width: 25px;
+                            height: 25px;
+                            background-color: #4CAF50;
+                            border-radius: 50%;
+                            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+                            z-index: 10;
+                        }
 
-            .fact-box h2 {
-                font-size: 26px;
-                font-weight: 900;
-                color: #663300; /* Koyu kahve/kırmızımsı ton */
-                line-height: 1.1;
-            }
-            .fact-box p {
-                font-size: 16px;
-                font-weight: 500;
-                line-height: 1.5;
-            }
-        </style>
-        
-        <div class="image-frame-wrapper mb-3" style="position: relative;">
-            <div class="push-pin top-left"></div>
-            <div class="push-pin top-right"></div>
-            <div class="image-frame-inner">
-                <?php
-                $imagePath = $todaysKnow['image'] ?? 'image_fba94a.jpg'; 
-                ?>
-                <img src="<?php echo htmlspecialchars($imagePath) ?>" 
-                     alt="Deniz Yıldızı" 
-                     class="img-fluid rounded-2" 
-                     style="width: 100%; max-height: 250px; object-fit: cover;">
-            </div>
-        </div>
+                        .push-pin.top-left {
+                            top: -12px;
+                            left: -12px;
+                        }
 
-        <div class="fact-content-area">
-            <div class="fact-box position-relative">
-                
-                
+                        .push-pin.top-right {
+                            top: -12px;
+                            right: -12px;
+                        }
 
-                <div class="d-flex flex-column">
-                    <h3 class="mt-0">Bunu Biliyor musunuz?</h3>
-                    
-                    <p class="mb-3">
-                        <?php 
-                            $content = $todaysKnow['body'] ?? 'Bir deniz yıldızının beyni yoktur. Ancak, kolları sayesinde yönünü bulabilir.';
-                            echo nl2br(htmlspecialchars($content));
-                        ?>
-                    </p>
-                    
-                  
+                        .fact-content-area {
+                            position: relative;
+                            z-index: 5;
+                            margin-top: -35px;
+                            /* Görselle çakışma (overlap) */
+                        }
+
+                        .fact-box {
+                            background: linear-gradient(180deg, #ffffff 0%, #ffefe6 100%);
+                            border-radius: 10px;
+                            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                            padding: 20px;
+                            padding-left: 20px;
+                            /* Karakterin kapladığı alan */
+                            min-height: 150px;
+                        }
+
+                        .character-img {
+                            position: absolute;
+                            bottom: -5px;
+                            /* Karakterin biraz dışarı taşması */
+                            left: -35px;
+                            /* Sol dışarı taşması */
+                            height: 160px;
+                            /* Görseldeki boyuta uygun ayar */
+                            width: auto;
+                            z-index: 6;
+                        }
+
+                        .fact-box h2 {
+                            font-size: 26px;
+                            font-weight: 900;
+                            color: #663300;
+                            /* Koyu kahve/kırmızımsı ton */
+                            line-height: 1.1;
+                        }
+
+                        .fact-box p {
+                            font-size: 16px;
+                            font-weight: 500;
+                            line-height: 1.5;
+                        }
+                    </style>
+
+                    <div class="image-frame-wrapper mb-3" style="position: relative;">
+                        <div class="push-pin top-left"></div>
+                        <div class="push-pin top-right"></div>
+                        <div class="image-frame-inner">
+                            <?php
+                            $imagePath = $todaysKnow['image'] ?? 'image_fba94a.jpg';
+                            ?>
+                            <img src="<?php echo htmlspecialchars($imagePath) ?>"
+                                alt="Deniz Yıldızı"
+                                class="img-fluid rounded-2"
+                                style="width: 100%; max-height: 250px; object-fit: cover;">
+                        </div>
+                    </div>
+
+                    <div class="fact-content-area">
+                        <div class="fact-box position-relative">
+
+
+
+                            <div class="d-flex flex-column">
+                                <h3 class="mt-0">Bunu Biliyor musunuz?</h3>
+
+                                <p class="mb-3">
+                                    <?php
+                                    $content = $todaysKnow['body'] ?? 'Bir deniz yıldızının beyni yoktur. Ancak, kolları sayesinde yönünü bulabilir.';
+                                    echo nl2br(htmlspecialchars($content));
+                                    ?>
+                                </p>
+
+
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
 
             <div class="modal fade" id="wordImageModal" tabindex="-1" aria-labelledby="wordImageModalLabel" aria-hidden="true"
                 data-bs-backdrop="true"
