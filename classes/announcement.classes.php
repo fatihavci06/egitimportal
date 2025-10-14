@@ -15,6 +15,7 @@ class AnnouncementManager extends Dbh
                 INSERT INTO announcements_lnp (title, content, start_date, expire_date, created_by, slug ,target_type)
                 VALUES (:title, :content, :start_date, :expire_date, :created_by, :slug, :target_type)
             ");
+			$data['expire_date'] = date('Y-m-d', strtotime('+1 month'));
 
 
 			$stmt->execute([
@@ -402,7 +403,7 @@ class AnnouncementManager extends Dbh
 			WHERE 
 				a.is_active = 1
 				AND a.start_date <= :current_date
-				AND a.expire_date >= :current_date
+				
 				AND (
 					a.target_type = 'all'
 					OR (a.target_type = 'roles' AND EXISTS (

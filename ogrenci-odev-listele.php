@@ -3,7 +3,8 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 2 or $_SESSION['role'] == 10002)) {
+if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 2 or $_SESSION['role'] == 10002 or $_SESSION['role'] == 5)) {
+  
     include_once "classes/dbh.classes.php";
     include "classes/addhomework-std.classes.php";
     include "classes/homework-std-view.classes.php";
@@ -20,7 +21,16 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     $lessons = new ShowLesson();
     include_once "views/pages-head.php";
     $lessonData = new Classes();
+    if($_SESSION['role']==5)
+    {
+        $getChildClassId=$lessonData->setChildClassIdSession($_SESSION['role']==5);
+        $_SESSION['class_id']=$getChildClassId;
+      
+      
+
+    }
     $lessonList = $lessonData->getLessonsList($_SESSION['class_id']);
+
 ?>
     <!--end::Head-->
     <!--begin::Body-->
@@ -81,7 +91,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <i class="fas fa-calendar-check fa-2x text-white"></i>
                                                 </div>
 
-                                                <h1 class="fs-3 fw-bold text-dark mb-0">Ödev Listesi</h1>
+                                                <h1 class="fs-3 fw-bold text-dark mb-0">Ödev Listesi </h1>
                                             </div>
 
                                         </header>
@@ -105,7 +115,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <!--begin::Toolbar-->
                                                 <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
                                                     <!--begin::Filter-->
-                                                    <?php if ($_SESSION['role'] == 1 or $_SESSION['role'] == 2 or $_SESSION['role'] == 10002) : ?>
+                                                    <?php if ($_SESSION['role'] == 1 or $_SESSION['role'] == 2 or $_SESSION['role'] == 10002 or $_SESSION['role'] == 5) : ?>
                                                         <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
                                                             <i class="ki-duotone ki-filter fs-2">
                                                                 <span class="path1"></span>
@@ -113,21 +123,22 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             </i>Filtre</button>
                                                     <?php endif; ?>
                                                     <!--begin::Menu 1-->
+                                                    <?php if($_SESSION['role']!=5){ ?>
                                                     <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true" id="kt-toolbar-filter">
                                                         <!--begin::Header-->
                                                         <div class="px-7 py-5">
-                                                            <div class="fs-4 text-gray-900 fw-bold">Filtreleme</div>
+                                                            <div class="fs-4 text-gray-900 fw-bold">Filtreleme </div>
                                                         </div>
                                                         <!--end::Header-->
                                                         <!--begin::Separator-->
                                                         <div class="separator border-gray-200"></div>
                                                         <!--end::Separator-->
                                                         <!--begin::Content-->
-                                                        <div class="px-7 py-5">
+                                                        <div class="px-7 py-5"> 
                                                             <!--begin::Input group-->
                                                             <div class="mb-10">
                                                                 <!--begin::Label-->
-                                                                <label class="form-label fs-5 fw-semibold mb-3">Ders:</label>
+                                                                <label class="form-label fs-5 fw-semibold mb-3">Ders: </label>
                                                                 <!--end::Label-->
                                                                 <!--begin::Input-->
                                                                 <select class="form-select form-select-solid fw-bold" id="lessons" data-kt-select2="true" data-placeholder="Ders Seçin" data-allow-clear="true" data-kt-customer-table-filter="lesson" data-dropdown-parent="#kt-toolbar-filter">
@@ -185,6 +196,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         </div>
                                                         <!--end::Content-->
                                                     </div>
+                                                    <?php }?>
                                                     <!--end::Menu 1-->
                                                     <!--end::Filter-->
                                                 </div>
@@ -207,7 +219,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             <div class="row">
                                                 <div class="col-3 col-lg-2">
                                                     <div class="row g-10 ">
-                                                        <?php foreach ($lessonList as $l): ?>
+                                                        <?php     foreach ($lessonList as $l): ?>
                                                             <?php if ($l['name'] !== 'Robotik Kodlama' && $l['name'] !== 'Ders Deneme'): ?>
                                                                 <div class="col-12 mb-1 text-center">
                                                                     <a href="ders/<?= urlencode($l['slug']) ?>">
@@ -236,6 +248,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             </tr>
                                                         </thead>
                                                         <tbody class="fw-semibold text-gray-600">
+                                                          
                                                             <?php $contents->getHomeworkListForStudent(); ?>
                                                         </tbody>
                                                     </table>

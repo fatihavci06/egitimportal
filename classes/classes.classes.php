@@ -1990,4 +1990,27 @@ INNER JOIN users_lnp AS u ON u.id = pst.user_id;');
 
 		return $data;
 	}
+	public function setChildClassIdSession($role)
+	{
+		if ($role == 5) {
+    // Önce veli ID ile child_id al
+    $stmt = $this->connect()->prepare('SELECT child_id FROM users_lnp WHERE id = ?');
+    if (!$stmt->execute(array($_SESSION['id']))) {
+        $stmt = null;
+        exit();
+    }
+    $data = $stmt->fetch(PDO::FETCH_ASSOC);
+    $childId = $data['child_id'];
+
+    // Şimdi child_id ile çocuğun class_id'sini al
+    $stmt2 = $this->connect()->prepare('SELECT class_id FROM users_lnp WHERE id = ?');
+    if (!$stmt2->execute(array($childId))) {
+        $stmt2 = null;
+        exit();
+    }
+    $childData = $stmt2->fetch(PDO::FETCH_ASSOC);
+
+    return $childData['class_id']; // child_id yerine class_id döndür
+}
+	}
 }

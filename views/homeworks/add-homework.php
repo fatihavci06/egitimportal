@@ -109,46 +109,46 @@ $chooseClass = new ShowClass();
         if ($_SESSION['role'] != 4) {
         ?>
 
-        <!--begin::Input group-->
-        <div class="fv-row mb-7 mt-7">
-            <!--begin::Label-->
-            <label class="required fs-6 fw-semibold mb-2">Sınıf</label>
-            <!--end::Label-->
-            <!--begin::Input-->
-            <select id="classes" name="classes" aria-label="Sehir Seçiniz" data-control="select2" data-placeholder="Sınıf Seçiniz..." class="form-select form-select-solid fw-bold">
-                <option value="">Sınıf Seçin</option>
-                <?php echo $chooseClass->getClassSelectList(); ?>
-            </select>
-            <!--end::Input-->
-        </div>
-        <!--end::Input group-->
+            <!--begin::Input group-->
+            <div class="fv-row mb-7 mt-7">
+                <!--begin::Label-->
+                <label class="required fs-6 fw-semibold mb-2">Sınıf</label>
+                <!--end::Label-->
+                <!--begin::Input-->
+                <select id="classes" name="classes" aria-label="Sehir Seçiniz" data-control="select2" data-placeholder="Sınıf Seçiniz..." class="form-select form-select-solid fw-bold">
+                    <option value="">Sınıf Seçin</option>
+                    <?php echo $chooseClass->getClassSelectList(); ?>
+                </select>
+                <!--end::Input-->
+            </div>
+            <!--end::Input group-->
 
-        <!--begin::Input group-->
-        <div class="fv-row mb-7">
-            <!--begin::Label-->
-            <label class="required fs-6 fw-semibold mb-2">Ders</label>
-            <!--end::Label-->
-            <!--begin::Input-->
-            <select id="lessons" name="lessons" aria-label="Ders Seçiniz" data-control="select2" data-placeholder="Ders Seçiniz..." class="form-select form-select-solid fw-bold">
-                <option value="">Ders Seçiniz...</option>
-            </select>
-            </select>
-            <!--end::Input-->
-        </div>
-        <!--end::Input group-->
+            <!--begin::Input group-->
+            <div class="fv-row mb-7">
+                <!--begin::Label-->
+                <label class="required fs-6 fw-semibold mb-2">Ders</label>
+                <!--end::Label-->
+                <!--begin::Input-->
+                <select id="lessons" name="lessons" aria-label="Ders Seçiniz" data-control="select2" data-placeholder="Ders Seçiniz..." class="form-select form-select-solid fw-bold">
+                    <option value="">Ders Seçiniz...</option>
+                </select>
+                </select>
+                <!--end::Input-->
+            </div>
+            <!--end::Input group-->
 
-        <!--begin::Input group-->
-        <div class="fv-row mb-7">
-            <!--begin::Label-->
-            <label class="required fs-6 fw-semibold mb-2">Ünite</label>
-            <!--end::Label-->
-            <!--begin::Input-->
-            <select id="units" name="units" aria-label="Ünite Seçiniz" data-control="select2" data-placeholder="Ünite Seçiniz..." class="form-select form-select-solid fw-bold">
-                <option value="">Ünite Seçiniz...</option>
-            </select>
-            <!--end::Input-->
-        </div>
-        <!--end::Input group-->
+            <!--begin::Input group-->
+            <div class="fv-row mb-7">
+                <!--begin::Label-->
+                <label class="required fs-6 fw-semibold mb-2">Ünite</label>
+                <!--end::Label-->
+                <!--begin::Input-->
+                <select id="units" name="units" aria-label="Ünite Seçiniz" data-control="select2" data-placeholder="Ünite Seçiniz..." class="form-select form-select-solid fw-bold">
+                    <option value="">Ünite Seçiniz...</option>
+                </select>
+                <!--end::Input-->
+            </div>
+            <!--end::Input group-->
 
         <?php
         } else {
@@ -157,10 +157,10 @@ $chooseClass = new ShowClass();
         ?>
 
             <div class="fv-row">
-            <input class="form-select form-select-solid fw-bold" type="hidden" name="classes" id="classes" value="<?php echo $class_id; ?>">
+                <input class="form-select form-select-solid fw-bold" type="hidden" name="classes" id="classes" value="<?php echo $class_id; ?>">
             </div>
             <div class="fv-row">
-            <input class="form-select form-select-solid fw-bold" type="hidden" name="lessons" id="lessons" value="<?php echo $lesson_id; ?>">
+                <input class="form-select form-select-solid fw-bold" type="hidden" name="lessons" id="lessons" value="<?php echo $lesson_id; ?>">
             </div>
 
             <!--begin::Input group-->
@@ -224,7 +224,7 @@ $chooseClass = new ShowClass();
             <label class="fs-6 fw-semibold mb-2">Bitiş Tarihi</label>
             <!--end::Label-->
             <!--begin::Input-->
-           <input type="date" name="end_date" id="end_date" class="form-control form-control-solid">
+            <input type="date" name="end_date" id="end_date" class="form-control form-control-solid">
             <!--end::Input-->
         </div>
         <!--end::Input group-->
@@ -258,6 +258,11 @@ $chooseClass = new ShowClass();
                 <label for="file_path">Dosya Yükle:</label>
                 <input type="file" class="form-control" name="file_path[]" id="files" multiple accept=".xls,.xlsx,.doc,.docx,.ppt,.pptx,.png,.jpeg,.jpg,.svg,.pdf">
                 <div id="fileDescriptions"></div>
+            </div>
+            <div id="answerKeyInput" class="fv-row mb-10">
+                <label class="fs-6 fw-semibold mb-2">Doğru Cevap Anahtarı PDF'i (Sadece Veliye Özel)</label>
+                <input type="file" name="answer_key_pdf[]" id="answer_key_pdf" class="form-control form-control-solid" accept=".pdf" />
+                <div class="text-muted fs-7 mt-2">Bu dosya, ödevin doğru cevaplarını içerir ve sadece ilgili sınıf velilerine gösterilir.</div>
             </div>
             <!-- Video URL input -->
             <div id="wordwallInputs" class="mb-4" style="display:none;">

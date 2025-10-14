@@ -6,6 +6,14 @@ if (!defined('GUARD')) {
 $current_uri = $_SERVER['REQUEST_URI'];
 
 ?>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CJ093GJRRN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-CJ093GJRRN');
+</script>
 <div id="kt_app_header" class="app-header d-flex flex-column flex-stack">
     <!--begin::Header main-->
     <div class="d-flex align-items-center flex-stack flex-grow-1">

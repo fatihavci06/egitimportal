@@ -536,12 +536,12 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                         <?php if (!empty($todaysWord['word'])): ?>
                             <div class="row g-5 align-items-center">
 
-                                <div class="col-lg-8 order-lg-1 order-2" style="margin-top: -16px;">
+                                <div class="col-lg-12 order-lg-1 order-2" style="margin-top: -16px;">
                                     <div class="mb-2">
-                                        <h3 style="font-size:16px; background-color:orange; padding:6px 12px; border-radius:8px; display:inline-block;" 
-    class="display-3 fw-bolder text-dark mb-2">
-    🔸 <?php echo htmlspecialchars($todaysWord['word']) ?> 🔸
-</h3>
+                                        <h3 style="font-size:13px; background-color:#ed5606; padding:6px 12px; border-radius:8px; display:inline-block;color: #fff!important;"
+                                            class="display-3 fw-bolder  mb-2">
+                                            <?php echo htmlspecialchars($todaysWord['word']) ?>
+                                        </h3>
                                     </div>
                                     <?php if (!empty($todaysWord['body'])): ?>
                                         <div class="bg-light-primary rounded-3 p-4">
@@ -553,7 +553,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                     <?php endif; ?>
                                 </div>
 
-                                <div class="col-lg-4 text-center order-lg-2 order-1">
+                                <div class="col-lg-12 text-center order-lg-2 order-1">
                                     <?php if (!empty($todaysWord['image'])): ?>
                                         <div class="image-container mx-auto">
                                             <a
@@ -592,17 +592,47 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
             </div>
 
             <div class="col-xxl-12 mb-5 mb-xl-10">
-                <div class="card card-flush shadow border-2  h-100">
-                    <div class="card-header  border-bottom border-info border-3">
-                        <h2 class="card-title d-flex align-items-center flex-wrap">
-                            <i class="fa-solid fa-lightbulb me-3 fs-3 text-warning"></i>
-                            <span class="card-label fw-bolder text-gray-800">Bunu Biliyor Musunuz?</span>
-                        </h2>
-                    </div>
-                    <div class="card-body p-5">
-                        <?php if (!empty($todaysKnow['body'])): ?>
-                            <div class="row g-5 align-items-center" style="margin-top:-45px;">
+    <div class="fact-wrapper p-4 mb-5" style="
+        background: linear-gradient(135deg, #a8ff78 0%, #ffeb4d 100%);
+        border-radius: 10px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    ">
+        <style>
+            .fact-wrapper::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: radial-gradient(circle, rgba(0,0,0,0.15) 1px, transparent 1px);
+                background-size: 20px 20px;
+                z-index: 1;
+                opacity: 0.8;
+            }
+            .image-frame-wrapper {
+                position: relative;
+                z-index: 3;
+                padding: 5px; 
+                background-color: white;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            }
+            .push-pin {
+                position: absolute;
+                width: 25px;
+                height: 25px;
+                background-color: #4CAF50; 
+                border-radius: 50%;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+                z-index: 10;
+            }
+            .push-pin.top-left { top: -12px; left: -12px; }
+            .push-pin.top-right { top: -12px; right: -12px; }
 
+<<<<<<< HEAD
                                 <div class="col-lg-4 col-md-5 text-center order-md-1 order-1 mb-4 mb-md-0" >
                                     <?php
                                     $imagePath = !empty($todaysKnow['image']) ? "assets/media/tdo-you-know/" . $todaysKnow['image'] : null;
@@ -629,30 +659,79 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                     <?php else: ?>
                                         <div class="p-4 bg-light-secondary rounded-3">
                                             <i class="fa-solid fa-image fs-1 text-secondary mb-2"></i>
+=======
+            .fact-content-area {
+                position: relative;
+                z-index: 5;
+                margin-top: -35px; /* Görselle çakışma (overlap) */
+            }
 
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
+            .fact-box {
+                background: linear-gradient(180deg, #ffffff 0%, #ffefe6 100%);
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                padding: 20px;
+                padding-left: 80px; /* Karakterin kapladığı alan */
+                min-height: 150px;
+            }
+            .character-img {
+                position: absolute;
+                bottom: -5px; /* Karakterin biraz dışarı taşması */
+                left: -35px; /* Sol dışarı taşması */
+                height: 160px; /* Görseldeki boyuta uygun ayar */
+                width: auto;
+                z-index: 6;
+            }
 
-                                <div class="col-lg-8 col-md-7 order-md-2 order-2" >
-                                    
-                                    <div class="bg-light-primary rounded-3 p-4 border-start border-4 border-primary">
-                                        <p class="text-gray-700 fw-normal fs-5 lh-base mb-0" style="font-size:12px!important">
-                                            <i class="fa-solid fa-check-circle text-primary me-2"></i>
-                                            <?php echo nl2br($todaysKnow['body']) ?>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php else: ?>
-                            <div class="text-center p-5 bg-light-danger rounded">
-                                <i class="fa-solid fa-triangle-exclamation fs-2 text-danger mb-3"></i>
-                                <p class="text-danger fs-5 mb-0">Bugüne ait ilginç bir bilgi bulunmamaktadır.</p>
-                            </div>
-                        <?php endif; ?>
-                    </div>
+            .fact-box h2 {
+                font-size: 26px;
+                font-weight: 900;
+                color: #663300; /* Koyu kahve/kırmızımsı ton */
+                line-height: 1.1;
+            }
+            .fact-box p {
+                font-size: 16px;
+                font-weight: 500;
+                line-height: 1.5;
+            }
+        </style>
+        
+        <div class="image-frame-wrapper mb-3" style="position: relative;">
+            <div class="push-pin top-left"></div>
+            <div class="push-pin top-right"></div>
+            <div class="image-frame-inner">
+                <?php
+                $imagePath = $todaysKnow['image'] ?? 'image_fba94a.jpg'; 
+                ?>
+                <img src="<?php echo htmlspecialchars($imagePath) ?>" 
+                     alt="Deniz Yıldızı" 
+                     class="img-fluid rounded-2" 
+                     style="width: 100%; max-height: 250px; object-fit: cover;">
+            </div>
+        </div>
+>>>>>>> e5762a3c8916a7cc705af955048553fcfb80258c
+
+        <div class="fact-content-area">
+            <div class="fact-box position-relative">
+                
+                
+
+                <div class="d-flex flex-column">
+                    <h3 class="mt-0">Bunu Biliyor musunuz?</h3>
+                    
+                    <p class="mb-3">
+                        <?php 
+                            $content = $todaysKnow['body'] ?? 'Bir deniz yıldızının beyni yoktur. Ancak, kolları sayesinde yönünü bulabilir.';
+                            echo nl2br(htmlspecialchars($content));
+                        ?>
+                    </p>
+                    
+                  
                 </div>
             </div>
+        </div>
+    </div>
+</div>
 
             <div class="modal fade" id="wordImageModal" tabindex="-1" aria-labelledby="wordImageModalLabel" aria-hidden="true"
                 data-bs-backdrop="true"

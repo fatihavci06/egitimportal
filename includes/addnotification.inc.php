@@ -20,7 +20,8 @@ try {
 	if (!isset($input)) {
 		$input = $_POST;
 	}
-	$requiredFields = ['title', 'content', 'start_date', 'expire_date'];
+
+	$requiredFields = ['title', 'content', 'start_date'];
 	$missingFields = [];
 
 	foreach ($requiredFields as $field) {
@@ -37,6 +38,7 @@ try {
 		]);
 		exit;
 	}
+	$input['expire_date']=date('Y-m-d', strtotime('+1 month'));
 	$notificationtData = [
 		'title' => trim($input['title']),
 		'content' => trim($input['content']),
@@ -55,19 +57,19 @@ try {
 	}
 	$inputDate = new DateTime($input['start_date']);
 	$today = new DateTime(date('Y-m-d'));
-
+	
 	if ($inputDate < $today) {
-		$notificationtData['start_date'] = date('Y-m-d H:i:s');
+		$notificationtData['start_date'] = date('Y-m-d ');
 	}
-
-	$startDate = DateTime::createFromFormat('d-m-Y', $notificationtData['start_date']);
-	$expireDate = DateTime::createFromFormat('d-m-Y', $notificationtData['expire_date']);
+	
+	$startDate = $notificationtData['start_date'];
+	$expireDate = $notificationtData['expire_date'];
 
 	if (!$startDate) {
 		http_response_code(400);
 		echo json_encode([
 			'success' => false,
-			'message' => 'Invalid start date format. Use Y-m-d H:i:s'
+			'message' => 'Invalid start date format. Use Y-m-d '
 		]);
 		exit;
 	}
@@ -76,7 +78,7 @@ try {
 		http_response_code(400);
 		echo json_encode([
 			'success' => false,
-			'message' => 'Invalid expire date format. Use Y-m-d H:i:s'
+			'message' => 'Invalid expire date format. Use Y-m-d '
 		]);
 		exit;
 	}

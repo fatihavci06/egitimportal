@@ -29,7 +29,11 @@ class GetStudentHomework extends Dbh
                 $stmt = null;
                 exit();
             }
-        } elseif ($_SESSION['role'] == 2 or $_SESSION['role'] == 10002) {
+        } elseif ($_SESSION['role'] == 2 or $_SESSION['role'] == 10002 or $_SESSION['role'] == 5) {
+            
+            if($_SESSION['role'] == 5){
+                $class_id=6;
+            }
             $class_id = $_SESSION['class_id'];
             $stmt = $this->connect()->prepare('SELECT homework_content_lnp.*, 
             classes_lnp.name AS className, 

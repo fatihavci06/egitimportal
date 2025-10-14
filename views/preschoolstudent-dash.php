@@ -330,11 +330,11 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
                         <?php if (!empty($todaysWord['word'])): ?>
                             <div class="row g-5 align-items-center">
 
-                                <div class="col-lg-8 order-lg-1 order-2" style="margin-top: -16px;">
+                                <div class="col-lg-12 order-lg-1 order-2" style="margin-top: -16px;">
                                     <div class="mb-2">
-                                        <h3 style="font-size:16px; background-color:orange; padding:6px 12px; border-radius:8px; display:inline-block;"
-                                            class="display-3 fw-bolder text-dark mb-2">
-                                            🔸 <?php echo htmlspecialchars($todaysWord['word']) ?> 🔸
+                                        <h3 style="font-size:13px; background-color:#ed5606; padding:6px 12px; border-radius:8px; display:inline-block;color: #fff!important;"
+                                            class="display-3 fw-bolder  mb-2">
+                                            <?php echo htmlspecialchars($todaysWord['word']) ?>
                                         </h3>
                                     </div>
                                     <?php if (!empty($todaysWord['body'])): ?>
@@ -347,7 +347,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
                                     <?php endif; ?>
                                 </div>
 
-                                <div class="col-lg-4 text-center order-lg-2 order-1">
+                                <div class="col-lg-12 text-center order-lg-2 order-1">
                                     <?php if (!empty($todaysWord['image'])): ?>
                                         <div class="image-container mx-auto">
                                             <a
@@ -386,19 +386,178 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
             </div>
 
             <div class="col-xxl-12 mb-5 mb-xl-10">
-                <div class="card card-flush shadow border-2  h-100">
-                    <div class="card-header  border-bottom border-info border-3">
-                        <h2 class="card-title d-flex align-items-center flex-wrap">
-                            <i class="fa-solid fa-lightbulb me-3 fs-3 text-warning"></i>
-                            <span class="card-label fw-bolder text-gray-800">Bunu Biliyor Musunuz?</span>
-                        </h2>
-                    </div>
-                    <div class="card-body p-5">
-                        <?php if (!empty($todaysKnow['body'])): ?>
-                            <div class="row g-5 align-items-center" style="margin-top:-45px;">
+                <div class="fact-wrapper p-4 mb-5" style="
+        background: linear-gradient(135deg, #af5fbf 0%, #ff69b4 100%); /* Mor-Pembe Gradyan */
+        border-radius: 10px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+    ">
+                    <style>
+                        /* Arka plan noktalı deseni */
+                        .fact-wrapper::before {
+                            content: '';
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            background-image: radial-gradient(circle, rgba(255, 255, 255, 0.2) 1px, transparent 1px);
+                            background-size: 25px 25px;
+                            /* Noktalar arası mesafe */
+                            z-index: 1;
+                            opacity: 0.9;
+                        }
 
-                                <div class="col-lg-4 col-md-5 text-center order-md-1 order-1 mb-4 mb-md-0">
+                        /* Resim çerçevesi */
+                        .image-frame-wrapper {
+                            position: relative;
+                            z-index: 3;
+                            padding: 6px;
+                            /* Beyaz çerçeve kalınlığı */
+                            background-color: white;
+                            border-radius: 10px;
+                            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.4);
+                        }
+
+                        /* Raptiye (Push Pin) stili */
+                        .push-pin {
+                            position: absolute;
+                            width: 28px;
+                            /* Raptiye boyutu */
+                            height: 28px;
+                            background-color: #32CD32;
+                            /* Canlı yeşil renk */
+                            border-radius: 50%;
+                            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+                            z-index: 10;
+                            transform: rotate(20deg);
+                            /* Hafif açılı duruş */
+                        }
+
+                        .push-pin.top-left {
+                            top: -14px;
+                            left: -14px;
+                        }
+
+                        .push-pin.top-right {
+                            top: -14px;
+                            right: -14px;
+                        }
+
+                        /* Bilgi içeriği alanı ve karakter-kutu çakışması */
+                        .fact-content-area {
+                            position: relative;
+                            z-index: 5;
+                            margin-top: -40px;
+                            /* Resimle çakışma miktarını artırdım */
+                        }
+
+                        /* Bilgi kutusu (konuşma balonu) */
+                        .fact-box {
+                            background: linear-gradient(180deg, #ffffff 0%, #fff8e1 100%);
+                            /* Hafif sarımsı beyaz gradyan */
+                            border-radius: 10px;
+                            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                            padding: 25px;
+                            padding-left: 90px;
+                            /* Karakterin yerleşimi için daha fazla boşluk */
+                            min-height: 160px;
+                            /* Kutu yüksekliği */
+                            border: 1px solid #e0e0e0;
+                        }
+
+                        /* Bilgi kutusunun "kuyruk" kısmı */
+                        .fact-box::before {
+                            content: '';
+                            position: absolute;
+                            bottom: 100%;
+                            /* Kutunun üzerine yerleştir */
+                            left: 100px;
+                            /* Görseldeki gibi sola kaydır */
+                            width: 0;
+                            height: 0;
+                            border-left: 18px solid transparent;
+                            border-right: 18px solid transparent;
+                            border-bottom: 25px solid #fff8e1;
+                            /* Kutunun alt gradyan rengiyle eşleşmeli */
+                            z-index: 4;
+                        }
+
+                        .fact-box::after {
+                            /* Kutunun kuyruğuna ince bir çizgi efekti */
+                            content: '';
+                            position: absolute;
+                            bottom: 100%;
+                            left: 100px;
+                            width: 0;
+                            height: 0;
+                            border-left: 18px solid transparent;
+                            border-right: 18px solid transparent;
+                            border-bottom: 26px solid #e0e0e0;
+                            /* Kutu kenarlık rengi */
+                            z-index: 3;
+                        }
+
+
+                        /* Karakter görseli */
+                        .character-img {
+                            position: absolute;
+                            bottom: -15px;
+                            /* Kutunun altından biraz dışarıda */
+                            left: -40px;
+                            /* Sol kenardan dışarıda */
+                            height: 170px;
+                            /* Karakterin boyutu */
+                            width: auto;
+                            z-index: 6;
+                        }
+
+                        /* Başlık stili */
+                        .fact-box h2 {
+                            font-size: 28px;
+                            font-weight: 900;
+                            color: #8B0000;
+                            /* Koyu kırmızı/bordo tonu */
+                            line-height: 1.1;
+                            margin-top: 0;
+                            margin-bottom: 10px;
+                        }
+
+                        /* Paragraf metni stili */
+                        .fact-box p {
+                            font-size: 17px;
+                            font-weight: 500;
+                            line-height: 1.5;
+                            color: #444;
+                        }
+                    </style>
+
+                    <div class="image-frame-wrapper">
+                        <div class="push-pin top-left"></div>
+                        <div class="push-pin top-right"></div>
+                        <div>
+                            <?php
+                            // Resim yolu, eğer boşsa varsayılan veya bir placeholder kullanabilirsiniz
+                            $imagePath = $todaysKnow['image'] ?? 'ahtapot.jpg'; // Lütfen bu path'i kendi ahtapot resminizle değiştirin
+                            ?>
+                            <img src="<?php echo htmlspecialchars($imagePath) ?>"
+                                alt="Ahtapot"
+                                class="img-fluid rounded-2"
+                                style="width: 100%; max-height: 250px; object-fit: cover;">
+                        </div>
+                    </div>
+
+                    <div class="fact-content-area">
+                        <div class="fact-box position-relative">
+
+
+                            <div class="d-flex flex-column">
+                                <h3>Bunu Biliyor musunuz?</h3>
+
+                                <p class="mb-3">
                                     <?php
+<<<<<<< HEAD
                                     $imagePath = !empty($todaysKnow['image']) ? "assets/media/tdo-you-know/" . $todaysKnow['image'] : null;
                                     if (!empty($todaysWord['image'])):
                                     ?>
@@ -436,14 +595,19 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
                                             <?php echo nl2br($todaysKnow['body']) ?>
                                         </p>
                                     </div>
+=======
+                                    // PHP'den gelen içerik, eğer boşsa varsayılan metin
+                                    $content = $todaysKnow['body'] ?? 'Ahtapotların üç kalbi vardır. İki tanesi solungaçlarına kan pompalarken, bir tanesi vücudunun geri kalanına kan gönderir.';
+                                    echo nl2br(htmlspecialchars($content));
+                                    ?>
+                                </p>
+
+                                <div class="text-end mt-2">
+                                    <span style="font-size: 30px; line-height: 1; display: inline-block;">💡</span>
+>>>>>>> e5762a3c8916a7cc705af955048553fcfb80258c
                                 </div>
                             </div>
-                        <?php else: ?>
-                            <div class="text-center p-5 bg-light-danger rounded">
-                                <i class="fa-solid fa-triangle-exclamation fs-2 text-danger mb-3"></i>
-                                <p class="text-danger fs-5 mb-0">Bugüne ait ilginç bir bilgi bulunmamaktadır.</p>
-                            </div>
-                        <?php endif; ?>
+                        </div>
                     </div>
                 </div>
             </div>

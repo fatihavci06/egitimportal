@@ -3,13 +3,13 @@
 <?php
 session_start();
 define('GUARD', true);
-if (isset($_SESSION['role']) and $_SESSION['role'] == 1  or $_SESSION['role'] == 2 or $_SESSION['role'] == 10002) {
+if (isset($_SESSION['role']) and $_SESSION['role'] == 1  or $_SESSION['role'] == 2 or $_SESSION['role'] == 10002 or $_SESSION['role'] == 5) {
     include_once "classes/dbh.classes.php";
     include_once "classes/addhomework-std.classes.php";
     include_once "classes/homework-std-view.classes.php";
     $contents = new ShowHomeworkContents();
     $slug = $_GET['q'];
-
+    
     include_once "views/pages-head.php";
 ?>
     <!--end::Head-->

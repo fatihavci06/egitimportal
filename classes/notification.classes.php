@@ -247,7 +247,7 @@ class NotificationManager extends Dbh
 			WHERE 
 				n.is_active = 1 
 				AND n.start_date <= :current_date 
-				AND (n.expire_date IS NULL OR n.expire_date >= :current_date) 
+				
 				AND ( 
 					n.target_type = 'all' 
 					
