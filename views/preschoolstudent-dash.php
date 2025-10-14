@@ -330,11 +330,11 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
                         <?php if (!empty($todaysWord['word'])): ?>
                             <div class="row g-5 align-items-center">
 
-                                <div class="col-lg-8 order-lg-1 order-2" style="margin-top: -16px;">
+                                <div class="col-lg-12 order-lg-1 order-2" style="margin-top: -16px;">
                                     <div class="mb-2">
-                                        <h3 style="font-size:16px; background-color:orange; padding:6px 12px; border-radius:8px; display:inline-block;"
-                                            class="display-3 fw-bolder text-dark mb-2">
-                                            🔸 <?php echo htmlspecialchars($todaysWord['word']) ?> 🔸
+                                        <h3 style="font-size:13px; background-color:#ed5606; padding:6px 12px; border-radius:8px; display:inline-block;color: #fff!important;"
+                                            class="display-3 fw-bolder  mb-2" >
+                                             <?php echo htmlspecialchars($todaysWord['word']) ?> 
                                         </h3>
                                     </div>
                                     <?php if (!empty($todaysWord['body'])): ?>
@@ -347,7 +347,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
                                     <?php endif; ?>
                                 </div>
 
-                                <div class="col-lg-4 text-center order-lg-2 order-1">
+                                <div class="col-lg-12 text-center order-lg-2 order-1">
                                     <?php if (!empty($todaysWord['image'])): ?>
                                         <div class="image-container mx-auto">
                                             <a
@@ -400,8 +400,16 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
                     <div class="card-body p-5">
                         <?php if (!empty($todaysKnow['body'])): ?>
                             <div class="row g-5 align-items-center" style="margin-top:-45px;">
+                                <div class="col-lg-12 col-md-7 order-md-2 order-2">
 
-                                <div class="col-lg-4 col-md-5 text-center order-md-1 order-1 mb-4 mb-md-0">
+                                    <div class="bg-light-primary rounded-3 p-4 border-start border-4 border-primary">
+                                        <p class="text-gray-700 fw-normal fs-5 lh-base mb-0" style="font-size:12px!important">
+                                            <i class="fa-solid fa-check-circle text-primary me-2"></i>
+                                            <?php echo nl2br($todaysKnow['body']) ?>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-5 text-center order-md-1 order-1 mb-4 mb-md-0">
                                     <?php
                                     $imagePath = !empty($todaysKnow['image']) ? "assets/media/tdo-you-know/" . $todaysKnow['image'] : null;
                                     if ($imagePath && file_exists($imagePath)):
@@ -436,15 +444,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
                                     <?php endif; ?>
                                 </div>
 
-                                <div class="col-lg-8 col-md-7 order-md-2 order-2">
-
-                                    <div class="bg-light-primary rounded-3 p-4 border-start border-4 border-primary">
-                                        <p class="text-gray-700 fw-normal fs-5 lh-base mb-0" style="font-size:12px!important">
-                                            <i class="fa-solid fa-check-circle text-primary me-2"></i>
-                                            <?php echo nl2br($todaysKnow['body']) ?>
-                                        </p>
-                                    </div>
-                                </div>
+                                
                             </div>
                         <?php else: ?>
                             <div class="text-center p-5 bg-light-danger rounded">

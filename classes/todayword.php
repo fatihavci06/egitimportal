@@ -229,7 +229,7 @@ class TodayWord extends Dbh
     WHERE tw.is_active = 1
         AND tw.school_id = :school_id
         AND (tw.class_id LIKE CONCAT('%', :class_id, '%') OR tw.class_id IS NULL OR tw.class_id = '')
-        AND CURDATE() BETWEEN tw.start_date AND tw.end_date
+        AND NOW() BETWEEN tw.start_date AND tw.end_date
     LIMIT 1;
     ";
 
