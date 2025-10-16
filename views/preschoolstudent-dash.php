@@ -362,7 +362,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
                                                     src="<?php echo htmlspecialchars($todaysWord['image']) ?>"
                                                     alt="<?php echo htmlspecialchars($todaysWord['word']) ?> görseli"
                                                     class="img-fluid rounded-circle shadow-lg border border-5 border-light"
-                                                    style="max-height: 250px; width: 250px; object-fit: cover; cursor: pointer;"
+                                                    style="max-height: 250px; width: 200px; object-fit: cover; cursor: pointer;"
                                                     loading="lazy"
                                                     onerror="this.style.display='none';">
                                             </a>
@@ -534,8 +534,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
                     </style>
 
                     <div class="image-frame-wrapper">
-                        <div class="push-pin top-left"></div>
-                        <div class="push-pin top-right"></div>
+                        
                         <div>
                             <?php
                             // Resim yolu, eğer boşsa varsayılan veya bir placeholder kullanabilirsiniz

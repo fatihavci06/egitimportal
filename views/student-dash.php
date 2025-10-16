@@ -687,8 +687,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                     </style>
 
                     <div class="image-frame-wrapper mb-3" style="position: relative;">
-                        <div class="push-pin top-left"></div>
-                        <div class="push-pin top-right"></div>
+                      
                         <div class="image-frame-inner">
                             <?php
                             $imagePath = $todaysKnow['image'] ?? 'image_fba94a.jpg';
@@ -696,7 +695,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                             <img src="<?php echo htmlspecialchars($imagePath) ?>"
                                 alt="Deniz Yıldızı"
                                 class="img-fluid rounded-2"
-                                style="width: 100%; max-height: 250px; object-fit: cover;">
+                                style="width: 100%; max-height: 200px; object-fit: cover;">
                         </div>
                     </div>
 
