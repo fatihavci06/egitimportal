@@ -5959,65 +5959,105 @@ ORDER BY msu.unit_order asc
 
         break;
     case 'upload_test':
-        // Frontend'den gelen 'test_name' PHP'de 'name' sütununa karşılık gelir.
-        $testName = trim($_POST['test_name'] ?? '');
+    // Frontend'den gelen 'test_name' PHP'de 'name' sütununa karşılık gelir.
+    $testName = trim($_POST['test_name'] ?? '');
+    $coverImagePath = null; // Kapak resmi yolu için başlangıç değeri
 
-        // 1. Veri Doğrulama
-        if (empty($testName)) {
-            echo json_encode(['status' => 'error', 'message' => 'Lütfen test adını girin.']);
+    // 1. Veri Doğrulama (Test Adı)
+    if (empty($testName)) {
+        echo json_encode(['status' => 'error', 'message' => 'Lütfen test adını girin.']);
+        exit();
+    }
+
+    // 2. PDF Dosyası Doğrulama
+    if (!isset($_FILES['pdf_file']) || $_FILES['pdf_file']['error'] !== UPLOAD_ERR_OK) {
+        echo json_encode(['status' => 'error', 'message' => 'Lütfen bir PDF dosyası seçin veya dosya hatasını kontrol edin.']);
+        exit();
+    }
+
+    $pdfFile = $_FILES['pdf_file'];
+    $allowedMimeTypes = ['application/pdf'];
+    $maxFileSize = 5 * 1024 * 1024; // 5MB
+
+    if (!in_array($pdfFile['type'], $allowedMimeTypes)) {
+        echo json_encode(['status' => 'error', 'message' => 'Sadece PDF dosyaları yüklenebilir.']);
+        exit();
+    }
+
+    if ($pdfFile['size'] > $maxFileSize) {
+        echo json_encode(['status' => 'error', 'message' => 'PDF dosya boyutu 5MB\'ı geçemez.']);
+        exit();
+    }
+
+    // 3. Kapak Resmi (cover_img) İşlemi (Opsiyonel)
+    if (isset($_FILES['cover_img']) && $_FILES['cover_img']['error'] === UPLOAD_ERR_OK) {
+        $imgFile = $_FILES['cover_img'];
+        $allowedImgMimeTypes = ['image/jpeg', 'image/png', 'image/webp']; // Desteklenen resim formatları
+
+        // Resim dosyası doğrulaması
+        if (!in_array($imgFile['type'], $allowedImgMimeTypes) && !empty($imgFile['type'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Kapak resmi için sadece JPEG, PNG veya WEBP dosyaları yüklenebilir.']);
             exit();
         }
 
-        if (!isset($_FILES['pdf_file']) || $_FILES['pdf_file']['error'] !== UPLOAD_ERR_OK) {
-            echo json_encode(['status' => 'error', 'message' => 'Lütfen bir PDF dosyası seçin veya dosya hatasını kontrol edin.']);
-            exit();
+        // Resim Yükleme İşlemi
+        $imgUploadDir = '../uploads/tests/covers/';
+        if (!is_dir($imgUploadDir)) {
+            mkdir($imgUploadDir, 0755, true);
         }
+        
+        // Dosya uzantısını al
+        $imgExtension = pathinfo($imgFile['name'], PATHINFO_EXTENSION);
+        $imgFileName = 'cover_' . uniqid() . '_' . time() . '.' . $imgExtension;
+        $imgFilePath = $imgUploadDir . $imgFileName; // Sunucudaki tam yol
+        $dbCoverPath = 'uploads/tests/covers/' . $imgFileName; // Veritabanı için göreli yol
 
-        $file = $_FILES['pdf_file'];
-        $allowedMimeTypes = ['application/pdf'];
-        $maxFileSize = 5 * 1024 * 1024; // 5MB
-
-        if (!in_array($file['type'], $allowedMimeTypes)) {
-            echo json_encode(['status' => 'error', 'message' => 'Sadece PDF dosyaları yüklenebilir.']);
-            exit();
-        }
-
-        if ($file['size'] > $maxFileSize) {
-            echo json_encode(['status' => 'error', 'message' => 'Dosya boyutu 5MB\'ı geçemez.']);
-            exit();
-        }
-
-        // 2. Dosya Yükleme İşlemi
-        $uploadDir = '../uploads/tests/';
-
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
-        }
-
-        $fileName = 'test_' . uniqid() . '_' . time() . '.pdf';
-        $filePath = $uploadDir . $fileName; // Sunucudaki tam yol
-        $dbFilePath = 'uploads/tests/' . $fileName; // Veritabanı için göreli yol
-
-        if (move_uploaded_file($file['tmp_name'], $filePath)) {
-
-            // 3. Veritabanı Kaydı (name ve file_path sütunları kullanıldı)
-            $sql = "INSERT INTO pskolojik_test_lnp (name, file_path) VALUES (?, ?)";
-            $stmt = $pdo->prepare($sql);
-
-
-            if ($stmt->execute([$testName, $dbFilePath])) {
-                echo json_encode(['status' => 'success', 'message' => 'Test başarıyla yüklendi ve veritabanına kaydedildi.']);
-            } else {
-                // Veritabanı hatası durumunda dosyayı sil
-                if (file_exists($filePath)) {
-                    unlink($filePath);
-                }
-                echo json_encode(['status' => 'error', 'message' => 'Veritabanı kayıt hatası.']);
-            }
+        if (move_uploaded_file($imgFile['tmp_name'], $imgFilePath)) {
+            $coverImagePath = $dbCoverPath;
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Dosya sunucuya yüklenirken bir sorun oluştu.']);
+            // Resim yüklenemezse PDF'i etkilemeden sadece uyarı verilebilir veya hata döndürülebilir.
+            // Burada hata döndürmeyip, sadece resmi null bırakmayı tercih ediyoruz.
+            // Eğer resim yükleme ZORUNLU ise, bu bloğu hata verecek şekilde düzenlemelisiniz.
+            error_log("Kapak resmi yüklenirken bir sorun oluştu: " . $imgFile['name']);
         }
-        break;
+    }
+
+
+    // 4. PDF Dosya Yükleme İşlemi
+    $pdfUploadDir = '../uploads/tests/';
+    if (!is_dir($pdfUploadDir)) {
+        mkdir($pdfUploadDir, 0755, true);
+    }
+
+    $pdfFileName = 'test_' . uniqid() . '_' . time() . '.pdf';
+    $filePath = $pdfUploadDir . $pdfFileName; // Sunucudaki tam yol
+    $dbFilePath = 'uploads/tests/' . $pdfFileName; // Veritabanı için göreli yol
+
+    if (move_uploaded_file($pdfFile['tmp_name'], $filePath)) {
+
+        // 5. Veritabanı Kaydı (name, file_path ve YENİ EKLENEN cover_img_path sütunları kullanıldı)
+        // NOT: Veritabanı tablonuzda 'cover_img_path' adında bir sütun olduğundan emin olun!
+        $sql = "INSERT INTO pskolojik_test_lnp (name, file_path, cover_img_path) VALUES (?, ?, ?)";
+        $stmt = $pdo->prepare($sql);
+
+
+        if ($stmt->execute([$testName, $dbFilePath, $coverImagePath])) {
+            echo json_encode(['status' => 'success', 'message' => 'Test başarıyla yüklendi ve veritabanına kaydedildi.']);
+        } else {
+            // Veritabanı hatası durumunda PDF ve resmi sil
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+            if ($coverImagePath && file_exists('../' . $coverImagePath)) {
+                 unlink('../' . $coverImagePath);
+            }
+            
+            echo json_encode(['status' => 'error', 'message' => 'Veritabanı kayıt hatası.']);
+        }
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'PDF dosyası sunucuya yüklenirken bir sorun oluştu.']);
+    }
+    break;
 
     // --- LİSTELEME (FETCH) İŞLEMİ ---
     case 'fetch_tests':

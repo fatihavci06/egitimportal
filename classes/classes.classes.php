@@ -1922,7 +1922,7 @@ WHERE mc.school_id = 1
 	}
 	public function getPskTestList()
 	{
-		$stmt = $this->connect()->prepare('SELECT id,name FROM pskolojik_test_lnp ');
+		$stmt = $this->connect()->prepare('SELECT id,name,cover_img_path FROM pskolojik_test_lnp ');
 
 		if (!$stmt->execute(array())) {
 			$stmt = null;

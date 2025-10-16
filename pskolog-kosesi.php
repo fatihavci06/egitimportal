@@ -73,57 +73,15 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </header>
                                         </div>
 
-                                        <style>
-                                            /* ... (Mevcut CSS Kodları) ... */
-                                            .card-psikoloji {
-                                                background-color: #ff9933;
-                                                color: white;
-                                            }
-
-                                            .card-tavsiye {
-                                                background-color: #3cb371;
-                                                color: white;
-                                            }
-
-                                            .card-atolye {
-                                                background-color: #9966cc;
-                                                color: white;
-                                            }
-
-                                            .custom-card {
-                                                border: none;
-                                                border-radius: 15px;
-                                                margin-bottom: 30px;
-                                                /* Boşluğu biraz artırdım */
-                                                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-                                                /* Gölgeyi biraz belirginleştirdim */
-                                            }
-
-                                            .emoji-icon {
-                                                font-size: 2.5rem;
-                                                /* Emoji boyutunu daha da büyüttüm */
-                                                margin-right: 20px;
-                                            }
-
-                                            .custom-h2 {
-                                                font-size: 1.75rem;
-                                                /* Başlık metnini daha da büyüttüm */
-                                                font-weight: 700;
-                                            }
-                                        </style>
-
+                                        
                                         <div class="row justify-content-start">
 
                                             <div class="col-8">
                                                 <div class="card custom-card card-psikoloji p-4">
                                                     <a href="psikolojik-test-listesi" class="text-decoration-none text-dark text-hover-primary">
                                                         <div class="d-flex align-items-center">
-                                                            <span class="emoji-icon me-3">🧠✨</span>
-                                                            <h2 class="custom-h2 mb-0">
+                                                            <img src="includes/uploads/psikologkosesi/psikolojik-testler.jpg" alt="Aile Atölyeleri Görseli" style="width: 90%; height: auto; object-fit: contain;">
 
-                                                                Psikolojik Testler
-
-                                                            </h2>
                                                         </div>
                                                     </a>
                                                 </div>
@@ -132,19 +90,17 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             <div class="col-8">
                                                 <div class="card custom-card card-tavsiye p-4">
                                                     <a href="uzman-psikologdan-aileye-tavsiyeler" class="text-decoration-none text-dark text-hover-primary">
-                                                    <div class="d-flex align-items-center">
-                                                        <span class="emoji-icon">👨‍⚕️🗣️</span>
-                                                        <h2 class="custom-h2 mb-0">Uzman Psikologtan Aileye Tavsiyeler</h2>
-                                                    </div>
+                                                        <div class="d-flex align-items-center">
+                                                            <img src="includes/uploads/psikologkosesi/uzman-psikologdan-aileye-tavsiyeler.jpg" alt="Aile Atölyeleri Görseli" style="width: 90%; height: auto; object-fit: contain;">
+                                                        </div>
                                                     </a>
                                                 </div>
                                             </div>
 
                                             <div class="col-8">
-                                                <div class="card custom-card card-atolye p-4">
+                                                <div class="card custom-card  p-4">
                                                     <div class="d-flex align-items-center">
-                                                        <span class="emoji-icon">👨‍👩‍👧‍👦🎨</span>
-                                                        <h2 class="custom-h2 mb-0">Aile Atölyeleri</h2>
+                                                        <img src="includes/uploads/psikologkosesi/aile-atolyeleri.jpg" alt="Aile Atölyeleri Görseli" style="width: 90%; height: auto; object-fit: contain;">
                                                     </div>
                                                 </div>
                                             </div>

@@ -45,7 +45,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <div class="card-body">
 
-                                        <!-- Psikolojik Test Yükleme Formu Başlangıcı -->
                                         <div class="card mb-2 mb-xl-10">
                                             <div class="card-header border-0">
                                                 <div class="card-title m-0">
@@ -67,6 +66,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <div class="form-text mt-1">Sadece .pdf uzantılı dosyalar, maksimum 5MB.</div>
                                                     </div>
 
+                                                    <div class="mb-5 fv-row">
+                                                        <label for="cover_img" class="form-label fw-semibold fs-6">Test Kapak Resmi (Opsiyonel)</label>
+                                                        <input type="file" id="cover_img" name="cover_img" class="form-control form-control-solid" accept="image/*">
+                                                        <div class="form-text mt-1">Kapak resmi için sadece resim dosyaları (.jpg, .png, vb.).</div>
+                                                    </div>
                                                     <div id="upload_message" class="mt-4" style="display: none;"></div>
 
                                                 </div>
@@ -82,9 +86,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 </div>
                                             </form>
                                         </div>
-                                        <!-- Psikolojik Test Yükleme Formu Sonu -->
-
-                                        <!-- Test Listesi ve Yönetimi Başlangıcı (DataTable) -->
                                         <div class="card">
                                             <div class="card-header border-0 pt-6">
                                                 <div class="card-title">
@@ -102,15 +103,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             </tr>
                                                         </thead>
                                                         <tbody class="text-gray-600 fw-semibold">
-                                                            <!-- Veriler buraya AJAX ile doldurulacak -->
-                                                        </tbody>
+                                                            </tbody>
                                                     </table>
                                                 </div>
                                             </div>
                                         </div>
-                                        <!-- Test Listesi ve Yönetimi Sonu -->
-
-                                        <!-- Düzenleme Modalı (Modal) -->
                                         <div class="modal fade" id="edit_test_modal" tabindex="-1" aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered mw-650px">
                                                 <div class="modal-content">
@@ -143,9 +140,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 </div>
                                             </div>
                                         </div>
-                                        <!-- Düzenleme Modalı Sonu -->
-
-                                        <!-- AJAX JavaScript Kodu Başlangıcı -->
                                         <script>
                                             // DataTable (Liste) değişkeni
                                             let testDataTable;
@@ -257,7 +251,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
             </td>
             <td>${formattedDate}</td>
             <td class="text-end">
-                <!-- Edit Button -->
                 <button class="btn btn-icon btn-light-primary btn-sm me-1" 
                         onclick="openEditModal(${testId}, '${safeTestNameForJS}')"
                         data-bs-toggle="modal" data-bs-target="#edit_test_modal">
@@ -265,7 +258,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         <span class="path1"></span><span class="path2"></span>
                     </i>
                 </button>
-                <!-- Delete Button -->
                 <button class="btn btn-icon btn-light-danger btn-sm" 
                         onclick="deleteTest(${testId}, '${safeTestNameForJS}')">
                     <i class="ki-duotone ki-trash fs-2">
@@ -296,6 +288,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 const form = document.getElementById('test_upload_form');
                                                 const submitButton = document.getElementById('submit_button');
                                                 const formData = new FormData(form);
+                                                // formData, formdaki 'test_name', 'pdf_file' ve YENİ EKLENEN 'cover_img' alanlarını otomatik olarak içerir.
                                                 formData.append('action', 'upload_test');
 
 
@@ -451,9 +444,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 fetchTests();
                                             });
                                         </script>
-                                        <!-- AJAX JavaScript Kodu Sonu -->
-
-                                    </div>
+                                        </div>
                                 </div>
                             </div>
                         </div>

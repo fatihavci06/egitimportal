@@ -231,49 +231,41 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         </div>
 
                                         <div class="row container-fluid d-flex">
-
-                                            <?php
-
-                                            if (empty($blogPost)) {  ?>
-
+                                            <?php if (empty($blogPost)) { ?>
                                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-15 d-flex justify-content-center">
                                                     <div class="card shadow-lg h-100 border-0" style="border-radius: 15px; background-color: #e6ffe6;">
                                                         <div class="p-4" style="background-color: #198754; border-radius: 15px 15px 0 0;">
                                                             <h3 class="text-white fw-bolder text-center m-0 fs-5">Blog Yazısı Mevcut Değildir</h3>
                                                         </div>
-                                                        <!-- <div class="card-body d-flex flex-column align-items-center justify-content-between text-center">
-                                                            <i class="fas fa-palette fa-3x mb-3 text-success"></i>
-                                                            <p class="card-text text-muted mb-4">El işi, sanat, müzik ve motor becerilerini geliştiren uygulamalı etkinlikler.</p>
-                                                            <a href="ana-okulu-icerikler-turkce-detail.php?title=Etkinlikler&type=4" class="btn btn-success btn-lg mt-auto w-100" style="border-radius: 20px;">
-                                                                İçerikleri Gör <i class="fas fa-chevron-right ms-2"></i>
-                                                            </a>
-                                                        </div> -->
                                                     </div>
                                                 </div>
-
                                                 <?php } else {
                                                 foreach ($blogPost as $value) { ?>
-                                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 mb-15 d-flex justify-content-center">
-                                                        <div class="card shadow-lg h-100 border-0" style="min-width: 450px; border-radius: 15px; background-color: #e6ffe6;">
-                                                            <div class="p-4" style="background-color: #198754; border-radius: 15px 15px 0 0;">
-                                                                <h3 class="text-white fw-bolder text-center m-0 fs-15"><?= $value['title']; ?></h3>
+                                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 mb-4 d-flex justify-content-start">
+                                                        <div class="blog-card position-relative"
+                                                            style="width: 530px; height: 215px;
+                           background-image: url('includes/uploads/psikologkosesi/blog-bg.png');
+                           background-size: cover;
+                           background-position: center;
+                           border-radius: 15px;
+                           
+                           transition: transform 0.3s ease;">
+
+                                                            <a href="blog-yazisi?id=<?= $value['id']; ?>" class="stretched-link"></a>
+
+                                                            <div class="card-overlay d-flex align-items-center justify-content-center position-absolute top-50 start-50 translate-middle"
+                                                                style="background-color: white; border-radius: 10px; padding: 10px 20px; text-align: center; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2); width: 65%; min-height: 50px; margin-left:40px;
+            max-width: 90%; /* mobil uyumlu */">
+                                                                <h5 class="mb-0 fw-bold text-dark"><?= htmlspecialchars($value['title'], ENT_QUOTES, 'UTF-8'); ?></h5>
                                                             </div>
-                                                            <div class="p-10 d-flex flex-column align-items-center justify-content-between text-center">
-                                                                <p class="card-text mb-4">
-                                                                    <?= kisalt_kelime($value['content'], 8); ?>
-                                                                </p>
-                                                                <a href="blog-yazisi?id=<?= $value['id']; ?>" class="btn btn-success btn-lg mt-auto w-100" style="border-radius: 20px;">
-                                                                    Yazıyı Oku <i class="fas fa-chevron-right ms-2"></i>
-                                                                </a>
-                                                            </div>
+
                                                         </div>
                                                     </div>
-                                            <?php     }
-                                            }
-
-                                            ?>
-
+                                            <?php }
+                                            } ?>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>

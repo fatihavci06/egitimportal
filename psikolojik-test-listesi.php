@@ -79,50 +79,36 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 
                                         <div class="row g-4 justify-content-center">
-
                                             <?php if (!empty($pskTestList) && is_array($pskTestList)): ?>
                                                 <?php foreach ($pskTestList as $test):
-                                                    // Test verilerini güvenli bir şekilde al
                                                     $testId = htmlspecialchars($test['id'] ?? '');
                                                     $testName = htmlspecialchars($test['name'] ?? 'İsimsiz Psikolojik Test');
-                                                    // İstenen link yapısı: abc.php?id=TEST_ID
-                                                    $testLink = 'pskolojik-test-detail?id=' . $testId.'&test_name='.$testName;
-                                                    // Mevcut değişkenlerin varsayılan değerlerini daha modern bir görünüme uygun olarak ayarla
-                                                    $kart_arka_plan_sinif = $kart_arka_plan_sinif ?? 'bg-white'; // Varsayılan beyaz kart
-                                                    $ikon_renk_sinif = $ikon_renk_sinif ?? 'text-primary'; // Varsayılan ikon rengi
-                                                    $buton_renk_sinif = $buton_renk_sinif ?? 'btn-primary'; // Varsayılan buton rengi
+                                                    $coverImagePath = htmlspecialchars($test['cover_img_path'] ?? '');
+                                                    $testLink = 'pskolojik-test-detail?id=' . $testId . '&test_name=' . $testName;
+                                                    $imageUrl = !empty($coverImagePath) ? $coverImagePath : 'includes/uploads/psikologkosesi/defaultpsktest.png';
+                                                    $kart_arka_plan_sinif = $kart_arka_plan_sinif ?? 'bg-white';
+                                                    $buton_renk_sinif = $buton_renk_sinif ?? 'btn-primary';
                                                 ?>
+                                                    <div class="col-12 col-md-6 col-lg-6 col-xl-6">
+                                                        <a href="<?= $testLink ?>" class="card h-100 <?= $kart_arka_plan_sinif ?> shadow-lg border-0 transition-300 transform-scale-hover text-decoration-none d-flex flex-row p-0">
 
-                                                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-3">
-                                                        <a href="<?php echo $testLink; ?>"
-                                                            class="card h-100 <?php echo $kart_arka_plan_sinif; ?> shadow-lg border-0 transition-300 transform-scale-hover text-decoration-none">
-                                                            <div class="card-header border-0 pt-6 pb-2 d-flex justify-content-center">
-                                                                <div class="symbol symbol-80px symbol-circle bg-light-primary mb-3">
-                                                                    <span class="symbol-label fs-1 fw-bold <?php echo $ikon_renk_sinif; ?> text-primary">
-                                                                        <i class="ki-duotone ki-flask fs-2x">
-                                                                            <span class="path1"></span>
-                                                                            <span class="path2"></span>
-                                                                        </i>
-                                                                    </span>
-                                                                </div>
+                                                            <!-- Sol taraf: Resim -->
+                                                            <div class="test-card-image-wrapper flex-shrink-0">
+                                                                <img src="<?= $imageUrl ?>" alt="<?= $testName ?> Kapak Resmi" class="test-cover-img" />
                                                             </div>
 
-                                                            <div class="card-body d-flex flex-column align-items-center justify-content-start text-center p-5 pt-0">
-                                                                <h4 class="fw-bolder text-gray-800 mb-2 mt-4 fs-5 text-truncate w-100 px-3"
-                                                                    title="<?php echo $testName; ?>">
-                                                                    <?php echo $testName; ?>
+                                                            <!-- Sağ taraf: Başlık + Açıklama + Buton -->
+                                                            <div class="d-flex flex-column justify-content-center flex-grow-1 p-4">
+                                                                <h4 class="fw-bolder text-gray-800 mb-2 fs-5 text-truncate" title="<?= $testName ?>">
+                                                                    <?= $testName ?>
                                                                 </h4>
-                                                                <p class="text-muted fs-7 mb-4">Kendini keşfetmeye hemen başla.</p>
-                                                            </div>
-
-                                                            <div class="card-footer border-0 p-4 pt-0 text-center">
-                                                                <span class="btn btn-sm <?php echo $buton_renk_sinif; ?> fw-bolder px-5 py-3 text-uppercase shadow-sm">
+                                                                <p class="text-muted fs-7 mb-3">Seviyenizi hemen belirleyin.</p>
+                                                                <span class="btn btn-sm <?= $buton_renk_sinif ?> fw-bolder px-5 py-3 text-uppercase shadow-sm">
                                                                     HEMEN BAŞLA
                                                                 </span>
                                                             </div>
                                                         </a>
                                                     </div>
-
                                                 <?php endforeach; ?>
                                             <?php else: ?>
                                                 <div class="col-12">
@@ -134,38 +120,55 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             <?php endif; ?>
                                         </div>
 
-                                        <style>
-                                            /* Kullanıcı Dostu Geliştirmeler için Özel CSS Stilleri */
 
-                                            /* Kartların daha canlı görünmesi ve etkileşimli olması için geçişler */
+                                        <style>
+                                            /* Kart geçişleri ve hover */
                                             .transition-300 {
                                                 transition: all 0.3s ease-in-out;
                                             }
 
-                                            /* Hover efekti ile kartı hafifçe büyütme ve gölgeyi artırma */
                                             .transform-scale-hover:hover {
                                                 transform: translateY(-5px);
-                                                /* Hafif yukarı kaydırma */
                                                 box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
-                                                /* Daha belirgin gölge */
                                             }
 
-                                            /* Karttaki linkin alt çizgiyi ve rengi kaldırması */
+                                            /* Kart link görünümü */
                                             .text-decoration-none {
                                                 text-decoration: none !important;
                                             }
 
-                                            /* Başlıkların tek satırda kalması için zorlama */
-                                            .text-truncate {
-                                                white-space: nowrap;
+                                            /* Kart içi resim ve içerik */
+                                            .test-card-image-wrapper {
+                                                width: 40%;
+                                                /* Kartın yarısı resim */
+                                                height: 100%;
                                                 overflow: hidden;
-                                                text-overflow: ellipsis;
                                             }
 
-                                            /* İkon arka planı için daha yumuşak bir renk (varsayılan primary renkten açılmış) */
-                                            .bg-light-primary {
-                                                background-color: #f3f6f9 !important;
-                                                /* veya tema renginize uygun açık bir ton */
+                                            .test-card-image-wrapper img.test-cover-img {
+                                                width: 100%;
+                                                height: 100%;
+                                                object-fit: cover;
+                                                object-position: center;
+                                                display: block;
+                                            }
+
+                                            /* Sağ taraf içerik */
+                                            .card>.d-flex.flex-column {
+                                                width: 50%;
+                                                /* Kartın yarısı içerik */
+                                            }
+
+                                            /* Kart responsive ayar */
+                                            @media (max-width: 768px) {
+                                                .card.d-flex.flex-row {
+                                                    flex-direction: column;
+                                                }
+
+                                                .test-card-image-wrapper,
+                                                .card>.d-flex.flex-column {
+                                                    width: 100%;
+                                                }
                                             }
                                         </style>
                                     </div>

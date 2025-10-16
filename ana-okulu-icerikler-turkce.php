@@ -211,67 +211,119 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </header>
                                         </div>
 
+                                        <style>
+                                            /* Fotoğraftaki ana turuncu arka plan rengi */
+                                            .orange-bg-main {
+                                                background-color: #ffb84d;
+                                            }
+
+                                            /* Fotoğraftaki vurgu kırmızı/turuncu renk */
+                                            .red-orange-accent-bg {
+                                                background-color: #e65c00;
+                                                border-radius: 5px;
+                                                padding: 10px 20px;
+                                                color: #fff;
+                                                text-align: center;
+                                            }
+
+                                            /* Kartın içindeki turuncu zemin */
+                                            .orange-border-box {
+                                                background-color: #ffb84d;
+                                                border-radius: 15px;
+                                                min-height: 150px;
+                                                display: flex;
+                                                justify-content: center;
+                                                align-items: center;
+                                                position: relative;
+                                                padding: 15px;
+                                            }
+
+                                            /* concept-wrapper ve kavramlar-container dış çizgilerini kaldırdık */
+                                            .concept-wrapper,
+                                            .kavramlar-container {
+                                                border: none;
+                                                /* artık dış çerçeve yok */
+                                                box-shadow: none;
+                                                /* gölgeyi kaldırmak istersen */
+                                                padding: 0;
+                                                position: relative;
+                                            }
+
+                                            /* Dış kırmızı yayları ve üst şeritleri kaldırdık */
+                                            .concept-wrapper:before,
+                                            .concept-wrapper .kavramlar-container:before,
+                                            .concept-wrapper .kavramlar-container:after {
+                                                content: none;
+                                            }
+                                        </style>
+
                                         <div class="row container-fluid d-flex justify-content-center">
+
                                             <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-5 d-flex justify-content-center">
-                                                <div class="card shadow-lg h-100 border-0" style="max-width: 300px; border-radius: 15px; background-color: #fce6e6;">
-                                                    <div class="p-4" style="background-color: #dc3545; border-radius: 15px 15px 0 0;">
-                                                        <h3 class="text-white fw-bolder text-center m-0 fs-5">Kavramlar</h3>
-                                                    </div>
-                                                    <div class="card-body d-flex flex-column align-items-center justify-content-between text-center">
-                                                        <i class="fas fa-lightbulb fa-3x mb-3 text-danger"></i>
-                                                        <p class="card-text text-muted mb-4">Zıtlıklar, yönler, büyüklükler ve temel bilişsel gelişim kavramları.</p>
-                                                        <a href="ana-okulu-icerikler-turkce-detail.php?title=Kavramlar&type=1" class="btn btn-danger btn-lg mt-auto w-100" style="border-radius: 20px;">
-                                                            İçerikleri Gör <i class="fas fa-chevron-right ms-2"></i>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-5 d-flex justify-content-center">
-                                                <div class="card shadow-lg h-100 border-0" style="max-width: 300px; border-radius: 15px; background-color: #e6f7ff;">
-                                                    <div class="p-4" style="background-color: #007bff; border-radius: 15px 15px 0 0;">
-                                                        <h3 class="text-white fw-bolder text-center m-0 fs-5">Aylar</h3>
-                                                    </div>
-                                                    <div class="card-body d-flex flex-column align-items-center justify-content-between text-center">
-                                                        <i class="fas fa-calendar-alt fa-3x mb-3 text-primary"></i>
-                                                        <p class="card-text text-muted mb-4">Takvim, zaman kavramı ve ayların döngüleri ile ilgili aktiviteler.</p>
-                                                        <a href="ana-okulu-icerikler-turkce-detail.php?title=Aylar&type=2" class="btn btn-primary btn-lg mt-auto w-100" style="border-radius: 20px;">
-                                                            İçerikleri Gör <i class="fas fa-chevron-right ms-2"></i>
-                                                        </a>
-                                                    </div>
+                                                <div class="card shadow-lg w-100 border-0" style="max-width: 300px; border-radius: 15px;">
+                                                    <a href="ana-okulu-icerikler-turkce-detail.php?title=Kavramlar&type=1" class="text-decoration-none w-100">
+                                                        <div class="concept-wrapper">
+                                                            <div class="kavramlar-container">
+                                                                <div class="orange-border-box">
+                                                                    <div class="red-orange-accent-bg">
+                                                                        <h3 class="text-white fw-bolder text-center m-0 fs-3">KAVRAMLAR</h3>
+                                                                    </div>
+                                                                    <div style="position: absolute; right: 0; top: 0; height: 100%; width: 30%;"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </a>
                                                 </div>
                                             </div>
 
                                             <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-5 d-flex justify-content-center">
-                                                <div class="card shadow-lg h-100 border-0" style="max-width: 300px; border-radius: 15px; background-color: #fff4e6;">
-                                                    <div class="p-4" style="background-color: #ffc107; border-radius: 15px 15px 0 0;">
-                                                        <h3 class="text-dark fw-bolder text-center m-0 fs-5">Belirli Günler ve Haftalar</h3>
-                                                    </div>
-                                                    <div class="card-body d-flex flex-column align-items-center justify-content-between text-center">
-                                                        <i class="fas fa-gifts fa-3x mb-3 text-warning"></i>
-                                                        <p class="card-text text-muted mb-4">Ulusal bayramlar, özel günler ve kültürel etkinlikler hakkında bilgiler.</p>
-                                                        <a href="ana-okulu-icerikler-turkce-detail.php?title=Belirli Günler ve Haftalar&type=3" class="btn btn-warning btn-lg mt-auto w-100" style="border-radius: 20px;">
-                                                            İçerikleri Gör <i class="fas fa-chevron-right ms-2"></i>
-                                                        </a>
-                                                    </div>
+                                                <div class="card shadow-lg w-100 border-0" style="max-width: 300px; border-radius: 15px;">
+                                                    <a href="ana-okulu-icerikler-turkce-detail.php?title=Aylar&type=2" class="text-decoration-none w-100">
+                                                        <div class="concept-wrapper">
+                                                            <div class="kavramlar-container">
+                                                                <div class="orange-border-box">
+                                                                    <div class="red-orange-accent-bg">
+                                                                        <h3 class="text-white fw-bolder text-center m-0 fs-3">AYLAR</h3>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </a>
                                                 </div>
                                             </div>
 
                                             <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-5 d-flex justify-content-center">
-                                                <div class="card shadow-lg h-100 border-0" style="max-width: 300px; border-radius: 15px; background-color: #e6ffe6;">
-                                                    <div class="p-4" style="background-color: #198754; border-radius: 15px 15px 0 0;">
-                                                        <h3 class="text-white fw-bolder text-center m-0 fs-5">Etkinlikler</h3>
-                                                    </div>
-                                                    <div class="card-body d-flex flex-column align-items-center justify-content-between text-center">
-                                                        <i class="fas fa-palette fa-3x mb-3 text-success"></i>
-                                                        <p class="card-text text-muted mb-4">El işi, sanat, müzik ve motor becerilerini geliştiren uygulamalı etkinlikler.</p>
-                                                        <a href="ana-okulu-icerikler-turkce-detail.php?title=Etkinlikler&type=4" class="btn btn-success btn-lg mt-auto w-100" style="border-radius: 20px;">
-                                                            İçerikleri Gör <i class="fas fa-chevron-right ms-2"></i>
-                                                        </a>
-                                                    </div>
+                                                <div class="card shadow-lg w-100 border-0" style="max-width: 300px; border-radius: 15px;">
+                                                    <a href="ana-okulu-icerikler-turkce-detail.php?title=Belirli Günler ve Haftalar&type=3" class="text-decoration-none w-100">
+                                                        <div class="concept-wrapper">
+                                                            <div class="kavramlar-container">
+                                                                <div class="orange-border-box">
+                                                                    <div class="red-orange-accent-bg">
+                                                                        <h3 class="text-white fw-bolder text-center m-0 fs-5">BELİRLİ GÜNLER VE HAFTALAR</h3>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-5 d-flex justify-content-center">
+                                                <div class="card shadow-lg w-100 border-0" style="max-width: 300px; border-radius: 15px;">
+                                                    <a href="ana-okulu-icerikler-turkce-detail.php?title=Etkinlikler&type=4" class="text-decoration-none w-100">
+                                                        <div class="concept-wrapper">
+                                                            <div class="kavramlar-container">
+                                                                <div class="orange-border-box">
+                                                                    <div class="red-orange-accent-bg">
+                                                                        <h3 class="text-white fw-bolder text-center m-0 fs-5">ETKİNLİKLER</h3>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </a>
                                                 </div>
                                             </div>
 
-                                            
+
                                         </div>
                                     </div>
                                 </div>
