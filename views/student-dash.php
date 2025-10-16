@@ -568,7 +568,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                                                     src="<?php echo htmlspecialchars($todaysWord['image']) ?>"
                                                     alt="<?php echo htmlspecialchars($todaysWord['word']) ?> görseli"
                                                     class="img-fluid rounded-circle shadow-lg border border-5 border-light"
-                                                    style="max-height: 250px; width: 250px; object-fit: cover; cursor: pointer;"
+                                                    style="max-height: 200px; width: 200px; object-fit: cover; cursor: pointer;"
                                                     loading="lazy"
                                                     onerror="this.style.display='none';">
                                             </a>
