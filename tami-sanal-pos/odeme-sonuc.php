@@ -39,7 +39,8 @@ if ($coupon) {
 }
 foreach ($packInfo as $key => $value) {
 	$packageName = $value['name'];
-	$price = $value['monthly_fee'] * $value['subscription_period'];
+	//$price = $value['monthly_fee'] * $value['subscription_period'];
+	$price = $value['credit_card_fee'];
 	if ($discount_type === 'amount') {
 		$price -= $discount_value;
 	} else if ($discount_type === 'percentage') {
@@ -52,9 +53,11 @@ $vat = $package->getVat();
 
 $paidPrice = $_SESSION['paidPrice'];
 
-$vat = $vat['tax_rate'];  // %10 KDV oranı
-$price += $price * ($vat / 100); // KDV'yi ekle
-$vatAmount = $price * ($vat / 100); // KDV tutarını hesapla
+$vat = $vat['tax_rate'];  // KDV oranı
+$priceWithoutVat = $price / (1 + ($vat / 100)); // KDV'siz Fiyatı Bulma
+// $price += $price * ($vat / 100); // KDV'yi ekle
+// $vatAmount = $price * ($vat / 100); // KDV tutarını hesapla
+$vatAmount = $price - $priceWithoutVat; // KDV tutarın
 
 
 $_SESSION['vatAmount'] = $vatAmount;

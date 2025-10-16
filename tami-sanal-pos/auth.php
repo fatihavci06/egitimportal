@@ -9,10 +9,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 require 'securityHashV2.php';
 require 'lib/common_lib.php';
 require_once './../classes/dbh.classes.php';
+include_once('./../classes/packages.classes.php');
 
 $db = new Dbh();
 $pdo = $db->connect();
 session_start();
+$package = new Packages();
 
 function getUserInfo($userId, $pdo)
 {
@@ -50,7 +52,25 @@ try {
 
   if ($packageType == 'Psikoloji') {
     $_SESSION['extra_package_type'] = $packageType;
-   
+  }
+
+  if (isset($_POST['islem']) AND $_POST['islem'] == "hesap-olustur") {
+    $packInfo = $package->getPackagePrice(htmlspecialchars(trim($_POST['packageId'])));
+    $coupon = $package->checkCoupon($_SESSION['couponCode']);
+    if ($coupon) {
+      $discount_value = $coupon['discount_value'];
+      $discount_type = $coupon['discount_type'];
+    }
+    foreach ($packInfo as $key => $value) {
+      $packageName = $value['name'];
+      //$price = $value['monthly_fee'] * $value['subscription_period'];
+      $amount = $value['credit_card_fee'];
+      if ($discount_type === 'amount') {
+        $amount -= $discount_value;
+      } else if ($discount_type === 'percentage') {
+        $amount -= $amount * ($discount_value / 100);
+      }
+    }
   }
 
 
