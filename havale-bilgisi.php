@@ -31,8 +31,9 @@ if ($coupon) {
     $discount_type = $coupon['discount_type'];
 }
 foreach ($packInfo as $key => $value) {
-    $price = $value['monthly_fee'] * $value['subscription_period'];
+    //$price = $value['monthly_fee'] * $value['subscription_period'];
     $packName = $value['name'];
+	$price = $value['bank_transfer_fee'];
     if ($discount_type === 'amount') {
         $price -= $discount_value;
     } else if ($discount_type === 'percentage') {
@@ -44,17 +45,19 @@ foreach ($packInfo as $key => $value) {
 
 $price -= $price * ($cashDiscount / 100); */
 
-$moneyTransferDiscount = $package->getTransferDiscount();
+/* $moneyTransferDiscount = $package->getTransferDiscount();
 $moneyTransferDiscount = $moneyTransferDiscount['discount_rate'];
 
 $price -= $price * ($moneyTransferDiscount / 100); // Havale indirimini uygula
-$price = number_format($price, 2, '.', ''); // İki ondalık basamakla formatla
+$price = number_format($price, 2, '.', ''); // İki ondalık basamakla formatla */
 
 $vat = $package->getVat();
 
-$vat = $vat['tax_rate'];  // %10 KDV oranı
-$price += $price * ($vat / 100); // KDV'yi ekle
-$vatAmount = $price * ($vat / 100); // KDV tutarını hesapla
+$vat = $vat['tax_rate'];  // KDV oranı
+$priceWithoutVat = $price / (1 + ($vat / 100)); // KDV'siz Fiyatı Bulma
+/* $price += $price * ($vat / 100); // KDV'yi ekle
+$vatAmount = $price * ($vat / 100); // KDV tutarını hesapla */
+$vatAmount = $price - $priceWithoutVat; // KDV tutarın
 $price = number_format($price, 2, '.', ''); // İki ondalık basamakla formatla
 
 function gucluSifreUret($uzunluk = 12)

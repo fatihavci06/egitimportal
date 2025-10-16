@@ -308,6 +308,8 @@ var KTSignupGeneral = function () {
                         const form = document.getElementById('kt_sign_up_form');
 
                         var formData = new FormData(form);
+                        const checkedRadio = document.querySelector(`input[name="payment_type"]:checked`);
+                        formData.set("payment_type", checkedRadio.value);
 
                         // Enable button
                         submitButton.disabled = false;
@@ -325,6 +327,7 @@ var KTSignupGeneral = function () {
                                     var packageId = $('input[name="pack"]:checked').val();
                                     var telephone = $("#telephone").val();
                                     var PriceWVat = $("#PriceWVat").attr('value');
+                                    var islem = "hesap-olustur";
 
                                     var type = response.type;
                                     if (type === "credit_card") {
@@ -336,6 +339,8 @@ var KTSignupGeneral = function () {
                                                 success_callback_url: "https://lineupcampus.com/online/tami-sanal-pos/odeme-sonuc",
                                                 telephone: '9' + telephone,
                                                 amount: PriceWVat,
+                                                packageId: packageId,
+                                                islem: islem,
                                             },
                                             dataType: "json",
                                             success: function (response) {
@@ -509,6 +514,19 @@ var KTSignupGeneral = function () {
 
                     couponButton.addEventListener('click', function (e) {
                         // submitButton.disabled = true;
+
+                        const secenekler = document.getElementsByName('payment_type');
+
+                        if (secenekler.length > 0) {
+                            // Koleksiyon üzerinde döngü yapma
+                            secenekler.forEach(element => {
+                                element.disabled = true; // Hata oluşmaz
+                            });
+                        } else {
+                            // Yükleme zamanlaması hatası
+                            console.warn("Hata: 'secenek' adına sahip öğeler bulunamadı.");
+                        }
+
                         const inputElementi = document.getElementById('coupon_code');
                         const couponVal = inputElementi.value;
                         $.ajax({
@@ -559,6 +577,16 @@ var KTSignupGeneral = function () {
                                     $('#iscash').html("");
 
                                     $('#delete_coupon').click(function () {
+
+                                        if (secenekler.length > 0) {
+                                            // Koleksiyon üzerinde döngü yapma
+                                            secenekler.forEach(element => {
+                                                element.disabled = false; // Hata oluşmaz
+                                            });
+                                        } else {
+                                            // Yükleme zamanlaması hatası
+                                            console.warn("Hata: 'secenek' adına sahip öğeler bulunamadı.");
+                                        }
 
                                         // submitButton.disabled = true;
 
@@ -628,7 +656,7 @@ var KTSignupGeneral = function () {
             var oldPrice = Number(document.getElementById("priceWoDiscount").innerHTML);
             var priceWCoupon = Number(document.getElementById("priceWCoupon").innerHTML);
             var packageId = $('input[name="pack"]:checked').val();
-            console.log(packageId);
+            //console.log(packageId);
             /* var subscription_month = document.getElementById("subscription_month").innerHTML; */
             if ($(this).val() === '2') {
                 // Kredi kartı seçili
