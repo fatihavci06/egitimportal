@@ -1436,7 +1436,7 @@ WHERE t.id = :id";
 	public function permissionControl($contentId, $userId)
 	{
 
-		$stmt = $this->connect()->prepare('
+		/* $stmt = $this->connect()->prepare('
         SELECT 1
         FROM users_lnp u
         WHERE u.id = ?
@@ -1446,12 +1446,28 @@ WHERE t.id = :id";
             WHERE mc.main_school_class_id = u.class_id
             AND mc.id = ?
         )
-    ');
+    '); */
 
-		if (!$stmt->execute([$userId, $contentId])) {
+		$stmt = $this->connect()->prepare('
+			SELECT 1
+			FROM users_lnp u
+			WHERE u.id = ?
+			AND EXISTS (
+				SELECT 1
+				FROM main_school_content_lnp mc
+				WHERE mc.main_school_class_id = u.class_id
+			)
+		');
+
+		if (!$stmt->execute([$userId])) {
 			$stmt = null;
 			return false;
 		}
+
+		/* if (!$stmt->execute([$userId, $contentId])) {
+			$stmt = null;
+			return false;
+		} */
 
 		// Sonuç varsa true, yoksa false döndür
 		return $stmt->fetch() ? true : false;
@@ -1657,7 +1673,7 @@ WHERE mc.school_id = 1
         LEFT JOIN main_school_content_lnp msc 
             ON msc.concept_title_id = ct.id 
             AND msc.lesson_id = 14
-        WHERE ct.type = 2
+        WHERE ct.type = 2 AND msc.status = 1
         ORDER BY ct.id ASC, msc.id ASC
     ');
 
