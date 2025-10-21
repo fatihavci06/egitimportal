@@ -1443,7 +1443,7 @@ WHERE t.id = :id";
         AND EXISTS (
             SELECT 1
             FROM main_school_content_lnp mc
-            WHERE mc.main_school_class_id = u.class_id
+            WHERE mc.main_school_class_id = u.class_id AND status = 1
             AND mc.id = ?
         )
     '); 
@@ -1717,7 +1717,7 @@ WHERE mc.school_id = 1
 		$stmt = $this->connect()->prepare('
         SELECT * 
         FROM main_school_content_lnp
-        WHERE lesson_id = :lesson_id AND month = :month AND main_school_class_id = :class_id
+        WHERE lesson_id = :lesson_id AND month = :month AND main_school_class_id = :class_id AND status = 1
         ORDER BY id ASC
     ');
 
@@ -1784,7 +1784,7 @@ WHERE mc.school_id = 1
 		$stmt = $this->connect()->prepare('
         SELECT * 
         FROM main_school_content_lnp
-        WHERE lesson_id = :lesson_id AND week_id = :week_id AND main_school_class_id = :class_id
+        WHERE lesson_id = :lesson_id AND week_id = :week_id AND main_school_class_id = :class_id AND status = 1
         ORDER BY id ASC
    		 ');
 
@@ -1852,7 +1852,7 @@ WHERE mc.school_id = 1
 		$stmt = $this->connect()->prepare('
         SELECT * 
         FROM main_school_content_lnp
-        WHERE lesson_id = :lesson_id AND activity_title_id = :activity_title_id AND main_school_class_id = :class_id
+        WHERE lesson_id = :lesson_id AND activity_title_id = :activity_title_id AND main_school_class_id = :class_id AND status = 1
         ORDER BY id ASC
    		 ');
 
