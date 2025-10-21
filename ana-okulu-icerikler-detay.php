@@ -31,7 +31,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         $exists = $data->permissionControl($contentId, $studentidsi);
         if (!$exists) {
             // Kullanıcının yetkisi yoksa login sayfasına yönlendir
-            header("Location: ana-okulu-icerikler");
+            header("Location: dashboard");
             exit;
         }
     }

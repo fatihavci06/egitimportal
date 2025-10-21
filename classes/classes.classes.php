@@ -1436,7 +1436,7 @@ WHERE t.id = :id";
 	public function permissionControl($contentId, $userId)
 	{
 
-		/* $stmt = $this->connect()->prepare('
+		$stmt = $this->connect()->prepare('
         SELECT 1
         FROM users_lnp u
         WHERE u.id = ?
@@ -1446,9 +1446,9 @@ WHERE t.id = :id";
             WHERE mc.main_school_class_id = u.class_id
             AND mc.id = ?
         )
-    '); */
+    '); 
 
-		$stmt = $this->connect()->prepare('
+	/*	$stmt = $this->connect()->prepare('
 			SELECT 1
 			FROM users_lnp u
 			WHERE u.id = ?
@@ -1462,12 +1462,12 @@ WHERE t.id = :id";
 		if (!$stmt->execute([$userId])) {
 			$stmt = null;
 			return false;
-		}
+		} */
 
-		/* if (!$stmt->execute([$userId, $contentId])) {
+		if (!$stmt->execute([$userId, $contentId])) {
 			$stmt = null;
 			return false;
-		} */
+		}
 
 		// Sonuç varsa true, yoksa false döndür
 		return $stmt->fetch() ? true : false;
@@ -1673,11 +1673,11 @@ WHERE mc.school_id = 1
         LEFT JOIN main_school_content_lnp msc 
             ON msc.concept_title_id = ct.id 
             AND msc.lesson_id = 14
-        WHERE ct.type = 2 AND msc.status = 1
+        WHERE ct.type = 2 AND msc.status = 1 AND msc.main_school_class_id = ?
         ORDER BY ct.id ASC, msc.id ASC
     ');
 
-		if (!$stmt->execute()) {
+		if (!$stmt->execute(array($_SESSION['class_id']))) {
 			$stmt = null;
 			exit();
 		}
@@ -1717,7 +1717,7 @@ WHERE mc.school_id = 1
 		$stmt = $this->connect()->prepare('
         SELECT * 
         FROM main_school_content_lnp
-        WHERE lesson_id = :lesson_id AND month = :month
+        WHERE lesson_id = :lesson_id AND month = :month AND main_school_class_id = :class_id
         ORDER BY id ASC
     ');
 
@@ -1725,7 +1725,8 @@ WHERE mc.school_id = 1
 
 		if (!$stmt->execute([
 			':lesson_id' => $lessonId,
-			':month' => $month
+			':month' => $month,
+			':class_id' => $_SESSION['class_id']
 		])) {
 			$stmt = null;
 			exit();
@@ -1783,7 +1784,7 @@ WHERE mc.school_id = 1
 		$stmt = $this->connect()->prepare('
         SELECT * 
         FROM main_school_content_lnp
-        WHERE lesson_id = :lesson_id AND week_id = :week_id
+        WHERE lesson_id = :lesson_id AND week_id = :week_id AND main_school_class_id = :class_id
         ORDER BY id ASC
    		 ');
 
@@ -1791,7 +1792,8 @@ WHERE mc.school_id = 1
 
 		if (!$stmt->execute([
 			':lesson_id' => $lessonId,
-			':week_id' => $weekId
+			':week_id' => $weekId,
+			':class_id' => $_SESSION['class_id']
 		])) {
 			$stmt = null;
 			exit();
@@ -1850,7 +1852,7 @@ WHERE mc.school_id = 1
 		$stmt = $this->connect()->prepare('
         SELECT * 
         FROM main_school_content_lnp
-        WHERE lesson_id = :lesson_id AND activity_title_id = :activity_title_id
+        WHERE lesson_id = :lesson_id AND activity_title_id = :activity_title_id AND main_school_class_id = :class_id
         ORDER BY id ASC
    		 ');
 
@@ -1858,7 +1860,8 @@ WHERE mc.school_id = 1
 
 		if (!$stmt->execute([
 			':lesson_id' => $lessonId,
-			':activity_title_id' => $activityTitleId
+			':activity_title_id' => $activityTitleId,
+			':class_id' => $_SESSION['class_id']
 		])) {
 			$stmt = null;
 			exit();
