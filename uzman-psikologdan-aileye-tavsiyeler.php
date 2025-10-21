@@ -245,7 +245,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <div class="blog-card position-relative"
                                                             style="width: 530px; height: 215px;
                            background-image: url('includes/uploads/psikologkosesi/blog-bg.png');
-                           background-size: cover;
+                           background-size: contain;
+                           background-repeat: no-repeat;
                            background-position: center;
                            border-radius: 15px;
                            

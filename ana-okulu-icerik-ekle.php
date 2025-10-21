@@ -108,7 +108,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <option value="Eylül">Eylül</option>
                                                         <option value="Ekim">Ekim</option>
                                                         <option value="Kasım">Kasım</option>
-                                                        <option value="Aralık">Aralık2</option>
+                                                        <option value="Aralık">Aralık</option>
 
                                                     </select>
                                                 </div>
