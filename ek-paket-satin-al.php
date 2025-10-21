@@ -43,7 +43,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
 
     $class = new Classes();
     
-    if($_SESSION['role']===10005){
+    if($_SESSION['role']===10005 || $_SESSION['role']===10002){
        $tur = 'psikoloji';
     }   
     else{
@@ -489,7 +489,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                 
 
                                                 <?php 
-                                                  if($_SESSION['role']!=10005){
+                                                  if($_SESSION['role']!=10005 || $_SESSION['role']!=10002){
                                                     foreach ($package_blocks as $block): ?>
                                                     <div class="package-block">
                                                         <i class="fas <?php echo htmlspecialchars($block[0]); ?> fa-icon"></i>

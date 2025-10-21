@@ -2,17 +2,35 @@
 session_start();
 define('GUARD', true);
 
-// Bu sayfa sadece adminler tarafından erişilebilir.
-if (isset($_SESSION['role']) && $_SESSION['role'] == 1 or $_SESSION['role'] == 9 or $_SESSION['role'] == 10  or $_SESSION['role'] == 20001) {
+// Bu sayfa sadece yetkili roller tarafından erişilebilir.
+if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 9 || $_SESSION['role'] == 10 || $_SESSION['role'] == 20001)) {
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php"; // Bu dosya içinde Classes sınıfınız olmalı
 
-    include_once "views/pages-head.php";
+    // URL'den gelen parametreleri yakala
+    $preselected_user_id = $_GET['client_id'] ?? null;
+    $preselected_datetime = $_GET['date'] ?? null; // Format: YYYY-MM-DD, Saat bilgisi randevu yönetiminden gelmediği için şimdilik sadece tarihi alacağız.
 
     $class = new Classes();
 
+    // Eğer randevu onaylama işlemi sırasında tam tarih ve saat (YYYY-MM-DD HH:MM:SS) formatında geliyorsa:
+    // Örneğin: date=2025-10-30 10:00:00
+    $meeting_datetime_value = '';
+    if ($preselected_datetime) {
+        // datetime-local formatı: YYYY-MM-DDTHH:MM
+        try {
+            // Gelen string'i DateTime objesine dönüştür
+            $dt = new DateTime($preselected_datetime);
+            // datetime-local input'u için uygun formata dönüştür
+            $meeting_datetime_value = $dt->format('Y-m-d\TH:i');
+        } catch (Exception $e) {
+            // Geçersiz tarih formatı gelirse boş bırak
+            $meeting_datetime_value = '';
+        }
+    }
+
+
     // Tüm kullanıcıları çekiyoruz (toplantı düzenleyici ve katılımcı seçimi için)
-    // Lütfen classes/classes.classes.php içinde getAllUsers metodunu ekleyin.
     if ($_SESSION['role'] == 20001) {
         $allUsers = $class->getPsikolojikUserList();
     } else {
@@ -31,6 +49,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] == 1 or $_SESSION['role'] == 9
 
         <style>
             /* Metronic Theme ile uyumlu temel stil ayarlamaları */
+            /* ... (Mevcut CSS Kodları) ... */
             body {
                 font-family: "Inter", sans-serif;
             }
@@ -129,22 +148,21 @@ if (isset($_SESSION['role']) && $_SESSION['role'] == 1 or $_SESSION['role'] == 9
                                                         <?php foreach ($allUsers as $user) : ?>
                                                             <option
                                                                 value="<?= htmlspecialchars($user['id']); ?>"
-                                                                <?= (isset($_GET['user_id']) && $_GET['user_id'] == $user['id']) ? 'selected' : ''; ?>>
+                                                                <?= ($preselected_user_id == $user['id']) ? 'selected' : ''; ?>>
                                                                 <?= htmlspecialchars($user['name'] . ' ' . $user['surname']); ?>
                                                             </option>
                                                         <?php endforeach; ?>
                                                     </select>
-
                                                 </div>
 
                                                 <div class="fv-row mb-7">
                                                     <label class="fw-semibold fs-6 mb-2">Toplantı Açıklaması</label>
-                                                    <textarea name="description" class="form-control form-control-solid mb-3 mb-lg-0" rows="3" placeholder="Örn:  Özel Ders"></textarea>
+                                                    <textarea name="description" class="form-control form-control-solid mb-3 mb-lg-0" rows="3" placeholder="Örn: Özel Ders"></textarea>
                                                 </div>
 
                                                 <div class="fv-row mb-7">
                                                     <label class="fw-semibold fs-6 mb-2">Toplantı Tarih ve Saati</label>
-                                                    <input type="datetime-local" name="meeting_date" class="form-control form-control-solid" required />
+                                                    <input type="datetime-local" name="meeting_date" class="form-control form-control-solid" value="<?= $meeting_datetime_value; ?>" required />
                                                 </div>
 
                                                 <div class="d-flex justify-content-end">
@@ -188,6 +206,13 @@ if (isset($_SESSION['role']) && $_SESSION['role'] == 1 or $_SESSION['role'] == 9
             $(document).ready(function() {
                 // Select2'yi başlatma
                 $('[data-kt-select2="true"]').select2();
+
+                // Eğer URL'den kullanıcı ID'si geldiyse, Select2'nin görünümünü güncelle
+                // Bu, PHP tarafında 'selected' işaretlense bile, Select2'nin bunu görmesini sağlar.
+                const preselectedUserId = "<?= $preselected_user_id ?>";
+                if (preselectedUserId) {
+                    $('#participant_id').val(preselectedUserId).trigger('change');
+                }
 
                 $('#createMeetingForm').on('submit', function(e) {
                     e.preventDefault(); // Formun normal submit işlemini engelle

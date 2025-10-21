@@ -2,9 +2,14 @@
 session_start();
 define('GUARD', true);
 if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001 or $_SESSION['role'] == 10002 or $_SESSION['role'] == 10005)) {
+    // Veritabanı bağlantısı ve Sınıf yüklemeleri
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
     require_once "classes/student.classes.php";
+    
+    // DB Bağlantısı (PDO'nun burada tanımlı olması gerekir)
+    // $pdo = DBH::connect(); // DBH sınıfınızın bağlantı metodunu kullanın
+
     $test = new Classes();
     $studentInfo = new Student();
     
@@ -16,17 +21,19 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     
     // Gelen veriyi güvenli bir şekilde değişkenlere ata
     $testName = htmlspecialchars($testDetail['name'] ?? 'Bilinmeyen Test');
-    $filePath = htmlspecialchars($testDetail['file_path'] ?? '');
+    // Dosya yolundaki '../' kısmını temizleyerek kullanmalıyız. 
+    // Ancak indirme butonu doğrudan dosya yoluna gideceği için, burada tam yolu tutalım.
+    $filePath = htmlspecialchars($testDetail['file_path'] ?? ''); 
     $downloadLink = !empty($filePath) ? $filePath : '#';
 
     // Oturum Rolüne göre öğrenci bilgileri alınıyor
     if ($_SESSION['role'] == 10005) {
         $getPreSchoolStudent = $studentInfo->getPreSchoolStudentsInfoForParents($_SESSION['id']);
         $class_idsi = $getPreSchoolStudent[0]['class_id'] ?? null;
-        $studentidsi = $getPreSchoolStudent[0]['id'] ?? null;
+        $studentidsi = $getPreSchoolStudent[0]['id'] ?? null; // Parent rolü için öğrencinin ID'si
     } else {
         $class_idsi = $_SESSION['class_id'] ?? null;
-        $studentidsi = $_SESSION['id'] ?? null;
+        $studentidsi = $_SESSION['id'] ?? null; // Öğrenci rolü için kendi ID'si
     }
 
     include_once "views/pages-head.php";
@@ -67,30 +74,27 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                     <div class="card-body pt-5 ">
                                         <div class="row container-fluid" style="margin-top:-25px;">
                                             <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
-                                                    border-top border-bottom border-custom-red mb-2" style="border-width: 5px !important; height:85px;margin-bottom: 26px !important;">
+                                                         border-top border-bottom border-custom-red mb-2" style="border-width: 5px !important; height:85px;margin-bottom: 26px !important;">
 
                                                 <div class="d-flex align-items-center">
                                                     <div class="rounded-circle bg-danger me-3 shadow icon-circle-lg d-flex justify-content-center align-items-center"
-                                                        style="width: 65px; height: 65px;">
+                                                         style="width: 65px; height: 65px;">
                                                         <i class="fas fa-bullseye fa-2x text-white"></i>
                                                     </div>
 
-                                                    <!-- Test Adını Dinamik Olarak Kullanıyoruz -->
                                                     <h1 class="fs-3 fw-bold text-dark mb-0"><?php echo $testName; ?></h1>
                                                 </div>
                                             </header>
                                         </div>
 
-                                        <!-- YENİ EKLENEN KARTLAR VE AJAX FORMU BURADAN BAŞLIYOR -->
                                         <div class="container py-3">
                                             <div class="row justify-content-center">
                                                 <div class="col-lg-8">
                                                     
                                                     <p class="text-center text-muted mb-5">
-                                                        Lütfen testi indirip uygulayın. Ardından sonuç dosyasını yükleyerek değerlendirmeye gönderin.
+                                                        Lütfen testi indirip uygulayın. Ardından sonuç dosyasını yükleyerek değerlendirmeye gönderin. İlk indirme hakkınız ücretsizdir.
                                                     </p>
 
-                                                    <!-- Adım 1: Test Dosyasını İndir Kartı -->
                                                     <div class="card shadow-lg mb-5 border-primary border-3 border-bottom-0 border-end-0 border-top-0 transition-300 transform-scale-hover">
                                                         <div class="card-body p-6">
                                                             <div class="d-flex align-items-center">
@@ -104,18 +108,24 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                 </span>
                                                                 <div>
                                                                     <h3 class="fw-bold mb-1">1. Test Dosyasını İndir</h3>
-                                                                    <p class="text-muted mb-0">Testi PDF formatında indirmek için butona tıklayın.</p>
+                                                                    <p class="text-muted mb-0">Testi indirmek için butona tıklayın. İkinci indirme paketinizi kullanır.</p>
                                                                 </div>
                                                             </div>
 
                                                             <div class="mt-4 text-center">
-                                                                <?php if (!empty($filePath)): ?>
-                                                                    <a href="<?php echo $downloadLink; ?>"
-                                                                       target="_blank"
-                                                                       class="btn btn-primary fw-bolder py-3 px-8 transition-300"
-                                                                       download>
-                                                                        <i class="ki-duotone ki-file-pdf me-2"></i> Testi İndir (PDF)
-                                                                    </a>
+                                                                <?php if (!empty($filePath) && $downloadLink !== '#'): ?>
+                                                                    <button id="downloadButton" 
+                                                                            class="btn btn-primary fw-bolder py-3 px-8 transition-300"
+                                                                            data-test-id="<?php echo htmlspecialchars($testId); ?>"
+                                                                            data-student-id="<?php echo htmlspecialchars($studentidsi); ?>"
+                                                                            data-file-path="<?php echo htmlspecialchars($downloadLink); ?>"
+                                                                            data-kt-indicator="off">
+                                                                        <span class="indicator-label"><i class="ki-duotone ki-file-pdf me-2"></i> Testi İndir (PDF)</span>
+                                                                        <span class="indicator-progress">Kontrol ediliyor...
+                                                                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                                                        </span>
+                                                                    </button>
+                                                                    <div id="downloadMessage" class="mt-3 text-center"></div>
                                                                 <?php else: ?>
                                                                     <div class="alert alert-warning mb-0">Test dosyası bulunamadı.</div>
                                                                 <?php endif; ?>
@@ -123,7 +133,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         </div>
                                                     </div>
 
-                                                    <!-- Adım 2: Cevap Dosyasını Yükle Kartı -->
                                                     <div class="card shadow-lg border-success border-3 border-bottom-0 border-end-0 border-top-0">
                                                         <div class="card-body p-6">
                                                             <div class="d-flex align-items-center">
@@ -142,18 +151,15 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             </div>
 
                                                             <form id="pskTestUploadForm" class="mt-4">
-                                                                <!-- Güvenlik ve test ID'si için gizli alan -->
-                                                                <input type="hidden" name="test_id" value="<?php echo $testId; ?>">
-                                                                <input type="hidden" name="student_id" value="<?php echo $studentidsi; ?>">
+                                                                <input type="hidden" name="test_id" value="<?php echo htmlspecialchars($testId); ?>">
+                                                                <input type="hidden" name="student_id" value="<?php echo htmlspecialchars($studentidsi); ?>">
 
-                                                                <!-- Dosya Yükleme Alanı -->
                                                                 <div class="mb-5">
                                                                     <label for="cevapDosyasi" class="form-label fw-bold">Yüklenecek Dosya:</label>
                                                                     <input type="file" class="form-control form-control-lg" id="cevapDosyasi" name="cevap_dosyasi" required>
-                                                                    <div class="form-text">Desteklenen formatlar: PDF, JPG, PNG, ZIP.</div>
+                                                                    <div class="form-text">Desteklenen formatlar: PDF, JPG, PNG, DOCX, ZIP. (Maks. 10MB)</div>
                                                                 </div>
 
-                                                                <!-- Yükleme Butonu -->
                                                                 <div class="text-center">
                                                                     <button type="submit" id="uploadButton" class="btn btn-success fw-bolder py-3 px-8" data-kt-indicator="off">
                                                                         <span class="indicator-label">Cevabı Yükle</span>
@@ -163,7 +169,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                     </button>
                                                                 </div>
 
-                                                                <!-- Sonuç Mesajı Alanı -->
                                                                 <div id="uploadMessage" class="mt-3 text-center"></div>
                                                             </form>
 
@@ -172,9 +177,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 </div>
                                             </div>
                                         </div>
-                                        <!-- YENİ EKLENEN KARTLAR VE AJAX FORMU BURADA BİTİYOR -->
-                                        
-                                    </div>
+                                        </div>
                                 </div>
                             </div>
                         </div>
@@ -205,94 +208,164 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/js/custom/utilities/modals/create-app.js"></script>
         <script src="assets/js/custom/utilities/modals/users-search.js"></script>
         
-        <!-- CUSTOM TEST UPLOAD SCRIPT -->
         <script>
-            // AJAX ile dosya yükleme
             document.addEventListener('DOMContentLoaded', function() {
                 const form = document.getElementById('pskTestUploadForm');
                 const uploadButton = document.getElementById('uploadButton');
                 const uploadMessage = document.getElementById('uploadMessage');
+                
+                // YENİ İNDİRME İŞLEMİ TANIMLAMALARI
+                const downloadButton = document.getElementById('downloadButton');
+                const downloadMessage = document.getElementById('downloadMessage');
+                
+                // ADIM 1: TEST İNDİRME AJAX İŞLEMİ
+                if (downloadButton) {
+                    downloadButton.addEventListener('click', function() {
+                        const testId = this.getAttribute('data-test-id');
+                        const studentId = this.getAttribute('data-student-id');
+                        // Backend'e göndereceğimiz dosya yolunu alıyoruz
+                        const filePath = this.getAttribute('data-file-path'); 
+                        
+                        // Buton durumunu ayarla
+                        this.setAttribute('data-kt-indicator', 'on');
+                        this.disabled = true;
+                        downloadMessage.innerHTML = ''; // Mesajı temizle
+                        
+                        const formData = new FormData();
+                        formData.append('test_id', testId);
+                        formData.append('student_id', studentId);
+                        formData.append('file_path', filePath); // Dosya yolu, paketten düşme başarılı olursa indirme için kullanılacak.
 
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();
-
-                    // Form verilerini al
-                    const formData = new FormData(form);
-
-                    // Buton durumunu yükleniyor olarak ayarla
-                    uploadButton.setAttribute('data-kt-indicator', 'on');
-                    uploadButton.disabled = true;
-                    uploadMessage.innerHTML = ''; // Önceki mesajı temizle
-
-                    fetch('includes/ajax.php?service=pskTestUpload', {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => {
-                        // Sunucudan gelen JSON cevabını işle
-                        if (response.ok) {
+                        fetch('includes/ajax.php?service=pskTestDownload', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                // HTTP hatası durumunda
+                                throw new Error(`HTTP hatası: ${response.status}`);
+                            }
                             return response.json();
-                        }
-                        // Başarısız HTTP durumlarını yakala
-                        // 200 olmayan yanıtları da json olarak okumaya çalış
-                        return response.json().then(error => { throw new Error(error.message || `Sunucu HTTP Hatası: ${response.status}`); });
-                    })
-                    .then(data => {
-                        uploadButton.removeAttribute('data-kt-indicator');
-                        uploadButton.disabled = false;
-
-                        // Backend'den gelen cevaba göre mesajı göster
-                        if (data.success) {
-                            uploadMessage.innerHTML = '<div class="alert alert-success fw-bold">✅ Yükleme başarılı! Cevabınız değerlendirmeye alındı.</div>';
-                            form.reset(); // Formu temizle
-                        } else {
-                            const errorMessage = data.message || 'Dosya yüklenirken beklenen bir hata oluştu.';
-                            uploadMessage.innerHTML = `<div class="alert alert-danger fw-bold">❌ Hata: ${errorMessage}</div>`;
-                        }
-                    })
-                    .catch(error => {
-                        uploadButton.removeAttribute('data-kt-indicator');
-                        uploadButton.disabled = false;
-                        console.error('Yükleme/Bağlantı hatası:', error);
-                        uploadMessage.innerHTML = `<div class="alert alert-danger fw-bold">Bağlantı hatası oluştu. Lütfen ağ bağlantınızı kontrol edin. (${error.message})</div>`;
+                        })
+                        .then(data => {
+                            downloadButton.removeAttribute('data-kt-indicator');
+                            downloadButton.disabled = false;
+                            
+                            if (data.success) {
+                                // Başarı mesajını göster
+                                downloadMessage.innerHTML = `<div class="alert alert-success fw-bold">✅ ${data.message}</div>`;
+                                
+                                // İndirmeyi başlatmak için geçici bir bağlantı oluştur
+                                if (data.download_link) {
+                                    const link = document.createElement('a');
+                                    link.href = data.download_link;
+                                    link.target = '_blank';
+                                    link.download = ''; 
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                }
+                                
+                            } else {
+                                // Hata mesajını göster
+                                const errorMessage = data.message || 'İndirme izni kontrol edilirken bir hata oluştu.';
+                                downloadMessage.innerHTML = `<div class="alert alert-danger fw-bold">❌ Hata: ${errorMessage}</div>`;
+                            }
+                        })
+                        .catch(error => {
+                            downloadButton.removeAttribute('data-kt-indicator');
+                            downloadButton.disabled = false;
+                            console.error('İndirme/Bağlantı hatası:', error);
+                            downloadMessage.innerHTML = `<div class="alert alert-danger fw-bold">Bağlantı hatası oluştu. Lütfen ağ bağlantınızı kontrol edin.</div>`;
+                        });
                     });
-                });
-            });
-        </script>
-        <!-- CUSTOM STYLES -->
-        <style>
-            .transition-300 {
-                transition: all 0.3s ease-in-out;
-            }
-            /* Hover efekti ile kartı hafifçe büyütme (opsiyonel) */
-            .transform-scale-hover:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-            }
-            /* Yükleme butonu indicator görünümleri (Metronic stili) */
-            #uploadButton .indicator-progress {
-                display: none;
-            }
-            #uploadButton[data-kt-indicator="on"] .indicator-label {
-                display: none;
-            }
-            #uploadButton[data-kt-indicator="on"] .indicator-progress {
-                display: inline-block;
-            }
-            /* Sembol arka plan renkleri (tema renklerinize göre) */
-            .bg-light-primary {
-                background-color: #f3f6f9 !important;
-            }
-            .bg-light-success {
-                background-color: #e8fff3 !important;
-            }
-        </style>
-        <!-- END CUSTOM STYLES & SCRIPT -->
+                }
 
-    </body>
+
+        // ADIM 2: DOSYA YÜKLEME AJAX İŞLEMİ (Aynı Kalsın)
+       // ADIM 2: DOSYA YÜKLEME AJAX İŞLEMİ (Güncellenmiş Kısım)
+form.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+
+    uploadButton.setAttribute('data-kt-indicator', 'on');
+    uploadButton.disabled = true;
+    uploadMessage.innerHTML = '';
+
+    fetch('includes/ajax.php?service=pskTestUpload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        }
+        // Sunucudan gelen hata JSON'unu yakalamaya çalış
+        return response.json().then(error => { throw new Error(error.message || `Sunucu HTTP Hatası: ${response.status}`); });
+    })
+    .then(data => {
+        uploadButton.removeAttribute('data-kt-indicator');
+        uploadButton.disabled = false;
+
+        if (data.success) {
+            // BAŞARILI DURUM: Mesajı göster ve YÖNLENDİRME YAP
+            uploadMessage.innerHTML = '<div class="alert alert-success fw-bold">✅ Yükleme başarılı! Cevabınız değerlendirmeye alındı. Randevu talep sayfasına yönlendiriliyorsunuz...</div>';
+            form.reset(); 
+            
+            // *** YÖNLENDİRME KISMI BURASI ***
+            setTimeout(() => {
+                window.location.href = 'psikolog-randevu-talep-formu.php';
+            }, 1500); // Kullanıcının başarı mesajını görmesi için 1.5 saniye bekle
+            
+        } else {
+            // HATA DURUMU
+            const errorMessage = data.message || 'Dosya yüklenirken beklenen bir hata oluştu.';
+            uploadMessage.innerHTML = `<div class="alert alert-danger fw-bold">❌ Hata: ${errorMessage}</div>`;
+        }
+    })
+    .catch(error => {
+        uploadButton.removeAttribute('data-kt-indicator');
+        uploadButton.disabled = false;
+        console.error('Yükleme/Bağlantı hatası:', error);
+        uploadMessage.innerHTML = `<div class="alert alert-danger fw-bold">Bağlantı hatası oluştu. Lütfen ağ bağlantınızı kontrol edin. (${error.message})</div>`;
+    });
+});
+      });
+    </script>
+        <style>
+      .transition-300 {
+        transition: all 0.3s ease-in-out;
+      }
+      /* Hover efekti ile kartı hafifçe büyütme (opsiyonel) */
+      .transform-scale-hover:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+      }
+      /* Yükleme butonu indicator görünümleri (Metronic stili) */
+            /* İndirme butonu için de geçerli olmasını sağlayalım */
+      #uploadButton .indicator-progress, #downloadButton .indicator-progress {
+        display: none;
+      }
+      #uploadButton[data-kt-indicator="on"] .indicator-label, #downloadButton[data-kt-indicator="on"] .indicator-label {
+        display: none;
+      }
+      #uploadButton[data-kt-indicator="on"] .indicator-progress, #downloadButton[data-kt-indicator="on"] .indicator-progress {
+        display: inline-block;
+      }
+      /* Sembol arka plan renkleri (tema renklerinize göre) */
+      .bg-light-primary {
+        background-color: #f3f6f9 !important;
+      }
+      .bg-light-success {
+        background-color: #e8fff3 !important;
+      }
+    </style>
+      </body>
 
 </html>
 <?php } else {
-    header("location: index");
+    // Oturum veya yetki yoksa yönlendir
+  header("location: index");
 }
 ?>

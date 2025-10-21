@@ -1993,24 +1993,53 @@ INNER JOIN users_lnp AS u ON u.id = pst.user_id;');
 	public function setChildClassIdSession($role)
 	{
 		if ($role == 5) {
-    // Önce veli ID ile child_id al
-    $stmt = $this->connect()->prepare('SELECT child_id FROM users_lnp WHERE id = ?');
-    if (!$stmt->execute(array($_SESSION['id']))) {
-        $stmt = null;
-        exit();
-    }
-    $data = $stmt->fetch(PDO::FETCH_ASSOC);
-    $childId = $data['child_id'];
+			// Önce veli ID ile child_id al
+			$stmt = $this->connect()->prepare('SELECT child_id FROM users_lnp WHERE id = ?');
+			if (!$stmt->execute(array($_SESSION['id']))) {
+				$stmt = null;
+				exit();
+			}
+			$data = $stmt->fetch(PDO::FETCH_ASSOC);
+			$childId = $data['child_id'];
 
-    // Şimdi child_id ile çocuğun class_id'sini al
-    $stmt2 = $this->connect()->prepare('SELECT class_id FROM users_lnp WHERE id = ?');
-    if (!$stmt2->execute(array($childId))) {
-        $stmt2 = null;
-        exit();
-    }
-    $childData = $stmt2->fetch(PDO::FETCH_ASSOC);
+			// Şimdi child_id ile çocuğun class_id'sini al
+			$stmt2 = $this->connect()->prepare('SELECT class_id FROM users_lnp WHERE id = ?');
+			if (!$stmt2->execute(array($childId))) {
+				$stmt2 = null;
+				exit();
+			}
+			$childData = $stmt2->fetch(PDO::FETCH_ASSOC);
 
-    return $childData['class_id']; // child_id yerine class_id döndür
-}
+			return $childData['class_id']; // child_id yerine class_id döndür
+		}
+	}
+	public function getPsikologAyarlariDb($psikologId)
+	{
+		// SQL sorgusunu hazırlama
+		$sql = "
+            SELECT 
+                pcg.day, 
+                pcg.is_active, 
+                pcs.start_time, 
+                pcs.end_time,
+                pcs.appointment_duration
+            FROM psikolog_calisma_gunleri pcg
+            LEFT JOIN psikolog_calisma_saatleri pcs ON pcg.id = pcs.working_day_id
+            WHERE pcg.user_id = :user_id
+        ";
+
+		try {
+			// Dbh sınıfından gelen connect() metodu ile PDO bağlantısını al
+			$pdo = $this->connect();
+			$stmt = $pdo->prepare($sql);
+			$stmt->execute([':user_id' => $psikologId]);
+
+			$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			return $results;
+		} catch (PDOException $e) {
+			// Hata durumunda boş bir dizi döndür
+			error_log("Psikolog Ayarları Çekme Hatası: " . $e->getMessage());
+			return [];
+		}
 	}
 }

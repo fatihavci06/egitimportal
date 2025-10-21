@@ -9,6 +9,21 @@ if (!$_SESSION['role']) {
     echo json_encode(['status' => 'error', 'message' => 'Yetkisiz erişim.']);
     exit();
 }
+function getTurkishDayName($date)
+{
+    $timestamp = strtotime($date);
+    $day = date('N', $timestamp); // 1 (Pazartesi) ile 7 (Pazar) arası
+    $days = [
+        1 => 'Pazartesi',
+        2 => 'Salı',
+        3 => 'Çarşamba',
+        4 => 'Perşembe',
+        5 => 'Cuma',
+        6 => 'Cumartesi',
+        7 => 'Pazar'
+    ];
+    return $days[$day];
+}
 // Sadece POST isteğini kabul et
 function cleanInput(string $data): string
 {
@@ -5319,7 +5334,7 @@ ORDER BY msu.unit_order asc
 
     /* Blog */
 
-    
+
     case 'addBlog':
         try {
             // Gerekli alanları kontrol et
@@ -5335,7 +5350,7 @@ ORDER BY msu.unit_order asc
             $title = trim($_POST['title']);
             $content = trim($_POST['content']);
             $status = $_POST['status'];
-            $add_by = $_SESSION['id']; 
+            $add_by = $_SESSION['id'];
             // Görsel yükleme işlemi
             $image_path = '';
             if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
@@ -5627,8 +5642,8 @@ ORDER BY msu.unit_order asc
         }
         break;
 
-    
-        /* Blog Son */
+
+    /* Blog Son */
 
 
     case 'deleteDoyouKnow':
@@ -5959,105 +5974,105 @@ ORDER BY msu.unit_order asc
 
         break;
     case 'upload_test':
-    // Frontend'den gelen 'test_name' PHP'de 'name' sütununa karşılık gelir.
-    $testName = trim($_POST['test_name'] ?? '');
-    $coverImagePath = null; // Kapak resmi yolu için başlangıç değeri
+        // Frontend'den gelen 'test_name' PHP'de 'name' sütununa karşılık gelir.
+        $testName = trim($_POST['test_name'] ?? '');
+        $coverImagePath = null; // Kapak resmi yolu için başlangıç değeri
 
-    // 1. Veri Doğrulama (Test Adı)
-    if (empty($testName)) {
-        echo json_encode(['status' => 'error', 'message' => 'Lütfen test adını girin.']);
-        exit();
-    }
-
-    // 2. PDF Dosyası Doğrulama
-    if (!isset($_FILES['pdf_file']) || $_FILES['pdf_file']['error'] !== UPLOAD_ERR_OK) {
-        echo json_encode(['status' => 'error', 'message' => 'Lütfen bir PDF dosyası seçin veya dosya hatasını kontrol edin.']);
-        exit();
-    }
-
-    $pdfFile = $_FILES['pdf_file'];
-    $allowedMimeTypes = ['application/pdf'];
-    $maxFileSize = 5 * 1024 * 1024; // 5MB
-
-    if (!in_array($pdfFile['type'], $allowedMimeTypes)) {
-        echo json_encode(['status' => 'error', 'message' => 'Sadece PDF dosyaları yüklenebilir.']);
-        exit();
-    }
-
-    if ($pdfFile['size'] > $maxFileSize) {
-        echo json_encode(['status' => 'error', 'message' => 'PDF dosya boyutu 5MB\'ı geçemez.']);
-        exit();
-    }
-
-    // 3. Kapak Resmi (cover_img) İşlemi (Opsiyonel)
-    if (isset($_FILES['cover_img']) && $_FILES['cover_img']['error'] === UPLOAD_ERR_OK) {
-        $imgFile = $_FILES['cover_img'];
-        $allowedImgMimeTypes = ['image/jpeg', 'image/png', 'image/webp']; // Desteklenen resim formatları
-
-        // Resim dosyası doğrulaması
-        if (!in_array($imgFile['type'], $allowedImgMimeTypes) && !empty($imgFile['type'])) {
-            echo json_encode(['status' => 'error', 'message' => 'Kapak resmi için sadece JPEG, PNG veya WEBP dosyaları yüklenebilir.']);
+        // 1. Veri Doğrulama (Test Adı)
+        if (empty($testName)) {
+            echo json_encode(['status' => 'error', 'message' => 'Lütfen test adını girin.']);
             exit();
         }
 
-        // Resim Yükleme İşlemi
-        $imgUploadDir = '../uploads/tests/covers/';
-        if (!is_dir($imgUploadDir)) {
-            mkdir($imgUploadDir, 0755, true);
+        // 2. PDF Dosyası Doğrulama
+        if (!isset($_FILES['pdf_file']) || $_FILES['pdf_file']['error'] !== UPLOAD_ERR_OK) {
+            echo json_encode(['status' => 'error', 'message' => 'Lütfen bir PDF dosyası seçin veya dosya hatasını kontrol edin.']);
+            exit();
         }
-        
-        // Dosya uzantısını al
-        $imgExtension = pathinfo($imgFile['name'], PATHINFO_EXTENSION);
-        $imgFileName = 'cover_' . uniqid() . '_' . time() . '.' . $imgExtension;
-        $imgFilePath = $imgUploadDir . $imgFileName; // Sunucudaki tam yol
-        $dbCoverPath = 'uploads/tests/covers/' . $imgFileName; // Veritabanı için göreli yol
 
-        if (move_uploaded_file($imgFile['tmp_name'], $imgFilePath)) {
-            $coverImagePath = $dbCoverPath;
-        } else {
-            // Resim yüklenemezse PDF'i etkilemeden sadece uyarı verilebilir veya hata döndürülebilir.
-            // Burada hata döndürmeyip, sadece resmi null bırakmayı tercih ediyoruz.
-            // Eğer resim yükleme ZORUNLU ise, bu bloğu hata verecek şekilde düzenlemelisiniz.
-            error_log("Kapak resmi yüklenirken bir sorun oluştu: " . $imgFile['name']);
+        $pdfFile = $_FILES['pdf_file'];
+        $allowedMimeTypes = ['application/pdf'];
+        $maxFileSize = 5 * 1024 * 1024; // 5MB
+
+        if (!in_array($pdfFile['type'], $allowedMimeTypes)) {
+            echo json_encode(['status' => 'error', 'message' => 'Sadece PDF dosyaları yüklenebilir.']);
+            exit();
         }
-    }
 
+        if ($pdfFile['size'] > $maxFileSize) {
+            echo json_encode(['status' => 'error', 'message' => 'PDF dosya boyutu 5MB\'ı geçemez.']);
+            exit();
+        }
 
-    // 4. PDF Dosya Yükleme İşlemi
-    $pdfUploadDir = '../uploads/tests/';
-    if (!is_dir($pdfUploadDir)) {
-        mkdir($pdfUploadDir, 0755, true);
-    }
+        // 3. Kapak Resmi (cover_img) İşlemi (Opsiyonel)
+        if (isset($_FILES['cover_img']) && $_FILES['cover_img']['error'] === UPLOAD_ERR_OK) {
+            $imgFile = $_FILES['cover_img'];
+            $allowedImgMimeTypes = ['image/jpeg', 'image/png', 'image/webp']; // Desteklenen resim formatları
 
-    $pdfFileName = 'test_' . uniqid() . '_' . time() . '.pdf';
-    $filePath = $pdfUploadDir . $pdfFileName; // Sunucudaki tam yol
-    $dbFilePath = 'uploads/tests/' . $pdfFileName; // Veritabanı için göreli yol
-
-    if (move_uploaded_file($pdfFile['tmp_name'], $filePath)) {
-
-        // 5. Veritabanı Kaydı (name, file_path ve YENİ EKLENEN cover_img_path sütunları kullanıldı)
-        // NOT: Veritabanı tablonuzda 'cover_img_path' adında bir sütun olduğundan emin olun!
-        $sql = "INSERT INTO pskolojik_test_lnp (name, file_path, cover_img_path) VALUES (?, ?, ?)";
-        $stmt = $pdo->prepare($sql);
-
-
-        if ($stmt->execute([$testName, $dbFilePath, $coverImagePath])) {
-            echo json_encode(['status' => 'success', 'message' => 'Test başarıyla yüklendi ve veritabanına kaydedildi.']);
-        } else {
-            // Veritabanı hatası durumunda PDF ve resmi sil
-            if (file_exists($filePath)) {
-                unlink($filePath);
+            // Resim dosyası doğrulaması
+            if (!in_array($imgFile['type'], $allowedImgMimeTypes) && !empty($imgFile['type'])) {
+                echo json_encode(['status' => 'error', 'message' => 'Kapak resmi için sadece JPEG, PNG veya WEBP dosyaları yüklenebilir.']);
+                exit();
             }
-            if ($coverImagePath && file_exists('../' . $coverImagePath)) {
-                 unlink('../' . $coverImagePath);
+
+            // Resim Yükleme İşlemi
+            $imgUploadDir = '../uploads/tests/covers/';
+            if (!is_dir($imgUploadDir)) {
+                mkdir($imgUploadDir, 0755, true);
             }
-            
-            echo json_encode(['status' => 'error', 'message' => 'Veritabanı kayıt hatası.']);
+
+            // Dosya uzantısını al
+            $imgExtension = pathinfo($imgFile['name'], PATHINFO_EXTENSION);
+            $imgFileName = 'cover_' . uniqid() . '_' . time() . '.' . $imgExtension;
+            $imgFilePath = $imgUploadDir . $imgFileName; // Sunucudaki tam yol
+            $dbCoverPath = 'uploads/tests/covers/' . $imgFileName; // Veritabanı için göreli yol
+
+            if (move_uploaded_file($imgFile['tmp_name'], $imgFilePath)) {
+                $coverImagePath = $dbCoverPath;
+            } else {
+                // Resim yüklenemezse PDF'i etkilemeden sadece uyarı verilebilir veya hata döndürülebilir.
+                // Burada hata döndürmeyip, sadece resmi null bırakmayı tercih ediyoruz.
+                // Eğer resim yükleme ZORUNLU ise, bu bloğu hata verecek şekilde düzenlemelisiniz.
+                error_log("Kapak resmi yüklenirken bir sorun oluştu: " . $imgFile['name']);
+            }
         }
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'PDF dosyası sunucuya yüklenirken bir sorun oluştu.']);
-    }
-    break;
+
+
+        // 4. PDF Dosya Yükleme İşlemi
+        $pdfUploadDir = '../uploads/tests/';
+        if (!is_dir($pdfUploadDir)) {
+            mkdir($pdfUploadDir, 0755, true);
+        }
+
+        $pdfFileName = 'test_' . uniqid() . '_' . time() . '.pdf';
+        $filePath = $pdfUploadDir . $pdfFileName; // Sunucudaki tam yol
+        $dbFilePath = 'uploads/tests/' . $pdfFileName; // Veritabanı için göreli yol
+
+        if (move_uploaded_file($pdfFile['tmp_name'], $filePath)) {
+
+            // 5. Veritabanı Kaydı (name, file_path ve YENİ EKLENEN cover_img_path sütunları kullanıldı)
+            // NOT: Veritabanı tablonuzda 'cover_img_path' adında bir sütun olduğundan emin olun!
+            $sql = "INSERT INTO pskolojik_test_lnp (name, file_path, cover_img_path) VALUES (?, ?, ?)";
+            $stmt = $pdo->prepare($sql);
+
+
+            if ($stmt->execute([$testName, $dbFilePath, $coverImagePath])) {
+                echo json_encode(['status' => 'success', 'message' => 'Test başarıyla yüklendi ve veritabanına kaydedildi.']);
+            } else {
+                // Veritabanı hatası durumunda PDF ve resmi sil
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+                if ($coverImagePath && file_exists('../' . $coverImagePath)) {
+                    unlink('../' . $coverImagePath);
+                }
+
+                echo json_encode(['status' => 'error', 'message' => 'Veritabanı kayıt hatası.']);
+            }
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'PDF dosyası sunucuya yüklenirken bir sorun oluştu.']);
+        }
+        break;
 
     // --- LİSTELEME (FETCH) İŞLEMİ ---
     case 'fetch_tests':
@@ -6147,7 +6162,123 @@ ORDER BY msu.unit_order asc
             echo json_encode(['status' => 'error', 'message' => 'Güncelleme hatası: Veritabanı işlemi başarısız.']);
         }
         break;
+        case 'pskTestDownload':
+        // Gerekli verileri al
+        $userId = $_POST['student_id'] ?? 0;
+        // Varsayılan school_id (pskTestUpload'daki gibi)
+        $schoolId = $_SESSION['school_id'] ?? 1; 
+        $testId = filter_input(INPUT_POST, 'test_id', FILTER_VALIDATE_INT);
+        $filePath = $_POST['file_path'] ?? '';
+
+        // Temel Geçerlilik Kontrolleri
+        if (!$userId || $userId === 0) {
+            echo json_encode(['success' => false, 'message' => 'Kullanıcı oturumu bulunamadı.']);
+            exit;
+        }
+
+        if (!$testId || $testId <= 0) {
+            echo json_encode(['success' => false, 'message' => 'Geçersiz Test ID.']);
+            exit;
+        }
+
+        if (empty($filePath) || $filePath === '#') {
+            echo json_encode(['success' => false, 'message' => 'Test dosya yolu bulunamadı.']);
+            exit;
+        }
+
+        // 1. Kullanıcının bu test için daha önce ücretsiz indirme hakkını KULLANIP KULLANMADIĞINI KONTROL ET
+        // (psikolojik_test_sonuc_lnp tablosunda user_id ve test_id'ye ait is_free=1 kaydı var mı?)
+        $sqlCntrl = "SELECT * FROM psikolojik_test_sonuc_lnp WHERE user_id = :user_id AND test_id = :test_id AND is_free = 1";
+        $stmt2 = $pdo->prepare($sqlCntrl);
+        $stmt2->execute([
+            'user_id' => $userId,
+            'test_id' => $testId
+        ]);
+        $isFreeUsed = $stmt2->fetch(PDO::FETCH_ASSOC);
+
+        if ($isFreeUsed) {
+            // Ücretsiz hak kullanılmış, ikinci indirme talebi: paket kontrolü yap
+            $sqlPackage = "SELECT id FROM psikolojik_test_paketleri_user WHERE user_id = :user_id AND kullanim_durumu = 0 ORDER BY id ASC LIMIT 1";
+            $stmt3 = $pdo->prepare($sqlPackage);
+            $stmt3->execute([
+                'user_id' => $userId
+            ]);
+            $package = $stmt3->fetch(PDO::FETCH_ASSOC);
+
+            if (!$package) {
+                // Paket yoksa indirmeye izin verme
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Bu testi daha önce indirdiğiniz için ikinci kez paket gereklidir. Lütfen paket alınız. Paket almak için <a href="ek-paket-satin-al" >buraya tıklayın</a>.'
+                ]);
+                exit;
+            }
+
+            // Paket varsa, Transaction (İşlem Grubu) başlat
+            try {
+                $pdo->beginTransaction();
+                
+                // 1. Paketi kullanıldı olarak işaretle
+                $stmt5 = $pdo->prepare("
+                    UPDATE psikolojik_test_paketleri_user
+                    SET kullanim_durumu = 1, kullanilan_tarih = NOW(), kullanilan_test_id = :test_id
+                    WHERE id = :package_id
+                ");
+                $stmt5->execute([
+                    'package_id' => $package['id'],
+                    'test_id' => $testId
+                ]);
+                
+                // 2. İşlemi onayla
+                $pdo->commit();
+                
+                // İndirme işlemi için başarı mesajı gönder (ve indirme yolunu döndür)
+                echo json_encode(['success' => true, 'message' => 'Paketiniz kullanıldı, indirme başlatılıyor.', 'download_link' => $filePath]);
+                exit;
+            } catch (PDOException $e) {
+                $pdo->rollBack();
+                // Hata durumunda
+                // Hata ayıklama için: error_log("DB Hatası: " . $e->getMessage());
+                echo json_encode(['success' => false, 'message' => 'Paket güncelleme hatası. Lütfen tekrar deneyin.']);
+                exit;
+            }
+        } else {
+            // Ücretsiz hak KULLANILMAMIŞ (İlk indirme), indirme izni ver ve is_free=1 olarak KAYDET
+            try {
+                // Kayıt var mı diye kontrol edelim (Yani, kullanıcı daha önce yükleme yapmış olabilir, ama indirme yapmamış olabilir)
+                $sqlCheckExisting = "SELECT id FROM psikolojik_test_sonuc_lnp WHERE user_id = :user_id AND test_id = :test_id";
+                $stmtCheck = $pdo->prepare($sqlCheckExisting);
+                $stmtCheck->execute(['user_id' => $userId, 'test_id' => $testId]);
+                $existingRecord = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+
+                if ($existingRecord) {
+                    // Kayıt zaten var, is_free'yi 1 yap ve indirme tarihini güncelle
+                    $stmt4 = $pdo->prepare("UPDATE psikolojik_test_sonuc_lnp SET is_free = 1 WHERE id = :id");
+                    $stmt4->execute(['id' => $existingRecord['id']]);
+                } else {
+                    // İlk defa indirme yapılıyor, is_free=1 olarak yeni bir sonuç kaydı oluştur
+                    $sql = "INSERT INTO psikolojik_test_sonuc_lnp (test_id, user_id, school_id, is_free) 
+                            VALUES (?, ?, ?, 1)";
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->execute([$testId, $userId, $schoolId]);
+                }
+
+                // İndirme işlemi için başarı mesajı gönder (ve indirme yolunu döndür)
+                echo json_encode(['success' => true, 'message' => 'İlk ücretsiz indirme hakkınız kullanıldı, indirme başlatılıyor.', 'download_link' => $filePath]);
+                exit;
+            } catch (PDOException $e) {
+                // Hata durumunda
+                // error_log("DB Hatası: " . $e->getMessage());
+                echo json_encode(['success' => false, 'message' => 'Veritabanı bağlantı hatası: ' . $e->getMessage()]);
+                exit;
+            }
+        }
+        
+        break;
+
+    // ESKİ İŞLEMİN YENİ VERSİYONU: CEVAP YÜKLEME (PAKET KONTROLÜ VE KULLANIMI KALDIRILDI)
     case 'pskTestUpload':
+        // 1. Değişkenler
         $userId = $_POST['student_id'] ?? 0;
         $schoolId = $_SESSION['school_id'] ?? 1; // school_id'nin varsayılan 1 olması ayarını uyguladık
 
@@ -6165,31 +6296,9 @@ ORDER BY msu.unit_order asc
             echo json_encode(['success' => false, 'message' => 'Geçersiz Test ID.']);
             exit;
         }
-        $sqlCntrl = "SELECT * FROM psikolojik_test_sonuc_lnp WHERE user_id = :user_id  AND is_free = 1";
-        $stmt2 = $pdo->prepare($sqlCntrl);
-        $stmt2->execute([
-            'user_id' => $_POST['student_id']
-        ]);
-        $isFreeControl = $stmt2->fetch(PDO::FETCH_ASSOC);
-
-        if ($isFreeControl) {
-            // Kullanıcının paket durumu kontrol ediliyor
-            $sqlPackage = "SELECT * FROM psikolojik_test_paketleri_user WHERE user_id = :user_id AND kullanim_durumu = 0";
-            $stmt3 = $pdo->prepare($sqlPackage);
-            $stmt3->execute([
-                'user_id' => $_POST['student_id']
-            ]);
-            $isPackageControl = $stmt3->fetch(PDO::FETCH_ASSOC);
-
-            if (!$isPackageControl) {
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Paketiniz bulunmamaktadır. Lütfen paket alınız. Paket almak için <a href="ek-paket-satin-al" >buraya tıklayın</a>.'
-                ]);
-                exit;
-            }
-        }
-
+        
+        // **ÖNEMLİ:** Buradaki paket kontrol mantığı KALDIRILMIŞTIR!
+        // Paket kontrolü artık 'pskTestDownload' case'inde yapılmaktadır.
 
 
         if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
@@ -6212,7 +6321,7 @@ ORDER BY msu.unit_order asc
             'application/zip',
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document' // .docx
         ];
-        $maxFileSize = 10 * 1024 * 1024; // 10 MB
+        $maxFileSize = 10 * 1024 * 1024; // 10 MB (Aynı kalsın)
 
         if (!in_array($file['type'], $allowedMimeTypes)) {
             echo json_encode(['success' => false, 'message' => 'Desteklenmeyen dosya formatı. Sadece PDF, JPG, PNG, DOCX ve ZIP izinlidir.']);
@@ -6225,14 +6334,14 @@ ORDER BY msu.unit_order asc
         }
 
         // 4. Dosyayı Güvenli Bir Şekilde Kaydetme
-        $uploadDir = '../uploads/psk_test_cevaplari/'; // Kök dizine göre göreceli yol
+        $uploadDir = '../uploads/psk_test_cevaplari/'; // Kök dizine göre göreceli yol (Aynı kalsın)
 
         // Klasör yoksa oluştur
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0777, true);
         }
 
-        // Benzersiz dosya adı oluşturma: user_id_test_id_zaman.uzantı
+        // Benzersiz dosya adı oluşturma: user_id_test_id_zaman.uzantı (Aynı kalsın)
         $fileExtension = pathinfo($file['name'], PATHINFO_EXTENSION);
         $fileName = sprintf(
             '%d_%d_%s.%s',
@@ -6246,38 +6355,32 @@ ORDER BY msu.unit_order asc
 
         if (move_uploaded_file($file['tmp_name'], $targetPath)) {
 
-            // 5. Veritabanına Kaydetme
+            // 5. Veritabanına Kaydetme (Sadece dosya yolunu güncelliyoruz)
             try {
-                // Düz SQL/PDO Kullanımı (Örnek)
-
-
-                // Konumsal parametre (?) kullanımı ile INSERT sorgusu
-                $sql = "INSERT INTO psikolojik_test_sonuc_lnp (test_id, user_id, school_id, file_path) 
-                    VALUES (?, ?, ?, ?)";
-
-                $stmt = $pdo->prepare($sql);
-
                 // DB'ye kaydederken dosya yolundan '../' kısmını kaldırıyoruz
                 $dbFilePath = str_replace('../', '', $targetPath);
 
-                // execute() metoduna değerleri bir dizi olarak gönderme
-                if ($stmt->execute([$testId, $userId, $schoolId, $dbFilePath])) {
-                    if (!$isFreeControl) {
-                        $stmt4 = $pdo->prepare("UPDATE psikolojik_test_sonuc_lnp SET is_free = 1 WHERE user_id = :user_id AND test_id = :test_id");
-                        $stmt4->execute(['user_id' => $userId, 'test_id' => $testId]);
-                    } else {
-                        // Sadece ilk uygun paketi güncelle
-                        $stmt5 = $pdo->prepare("
-                        UPDATE psikolojik_test_paketleri_user
-                        SET kullanim_durumu = 1
-                        WHERE id = (
-                            SELECT id FROM psikolojik_test_paketleri_user
-                            WHERE user_id = :user_id AND kullanim_durumu = 0
-                            ORDER BY id ASC
-                            LIMIT 1
-                        )
-                    ");
-                        $stmt5->execute(['user_id' => $userId]);
+                // Varolan kaydı (indirme sırasında oluşturulanı veya daha öncekini) güncelle
+                // SADECE file_path ve upload_date güncellenir. is_free'ye dokunulmaz.
+                $sqlUpdate = "UPDATE psikolojik_test_sonuc_lnp 
+                              SET file_path = :file_path, school_id = :school_id
+                              WHERE test_id = :test_id AND user_id = :user_id";
+                $stmt = $pdo->prepare($sqlUpdate);
+
+                if ($stmt->execute([
+                    'file_path' => $dbFilePath, 
+                    'school_id' => $schoolId,
+                    'test_id' => $testId, 
+                    'user_id' => $userId
+                ])) {
+                    // Güncelleme başarısız ise (0 satır etkilenmişse), 
+                    // indirme yapmadan direkt yükleme yapmış olabilir. 
+                    // Bu durumda yeni kayıt ekliyoruz (is_free=0)
+                    if ($stmt->rowCount() == 0) {
+                        $sqlInsert = "INSERT INTO psikolojik_test_sonuc_lnp (test_id, user_id, school_id, file_path, upload_date, is_free) 
+                                      VALUES (?, ?, ?, ?, NOW(), 0)";
+                        $stmtInsert = $pdo->prepare($sqlInsert);
+                        $stmtInsert->execute([$testId, $userId, $schoolId, $dbFilePath]);
                     }
 
                     echo json_encode(['success' => true, 'message' => 'Cevabınız başarıyla yüklendi ve kaydedildi.']);
@@ -6288,15 +6391,14 @@ ORDER BY msu.unit_order asc
             } catch (PDOException $e) {
                 // Veritabanı hatası
                 unlink($targetPath);
-                // Hata ayıklama için: error_log("DB Hatası: " . $e->getMessage());
+                // error_log("DB Hatası: " . $e->getMessage());
                 echo json_encode(['success' => false, 'message' => 'Veritabanı bağlantı hatası: ' . $e->getMessage()]);
             }
         } else {
             // move_uploaded_file hatası
             echo json_encode(['success' => false, 'message' => 'Dosya sunucuya taşınamadı. Klasör izinlerini kontrol edin.']);
         }
-        break;
-    case 'update_test_status':
+        break;case 'update_test_status':
         $id = $_POST['id'] ?? null;
         // Frontend'den gelen 'test_name', 'name' sütununa karşılık gelir.
         $status = trim($_POST['status'] ?? '');
@@ -6317,6 +6419,735 @@ ORDER BY msu.unit_order asc
             echo json_encode(['status' => 'error', 'message' => 'Güncelleme hatası: Veritabanı işlemi başarısız.']);
         }
         break;
+    case 'psikologAyarlar':
+        // 1. Gerekli Kontroller
+        if (!isset($_SESSION['id'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Kullanıcı oturumu bulunamadı. Lütfen giriş yapın.']);
+            exit;
+        }
+
+        $psikologId = $_SESSION['id'];
+        $appointmentDuration = $_POST['appointment_duration'] ?? 30;
+
+        // POST verilerini normalize etmek için yardımcı fonksiyon
+        $normalizePostArray = function ($array) {
+            $normalized = [];
+            if (is_array($array)) {
+                foreach ($array as $key => $value) {
+                    // Anahtarı küçük harfe çevir ve Türkçe karakterlerden arındır
+                    $safe_key = strtolower(str_replace(['İ', 'I', 'Ş', 'Ü', 'Ç', 'Ö', 'Ğ', 'i', 'ı', 'ş', 'ü', 'ç', 'ö', 'ğ'], ['i', 'i', 's', 'u', 'c', 'o', 'g', 'i', 'i', 's', 'u', 'c', 'o', 'g'], $key));
+                    $normalized[$safe_key] = $value;
+                }
+            }
+            return $normalized;
+        };
+
+        // Gelen veriyi normalize et
+        $activeDays = $normalizePostArray($_POST['is_active'] ?? []);
+        $startTimes = $normalizePostArray($_POST['start_time'] ?? []);
+        $endTimes = $normalizePostArray($_POST['end_time'] ?? []);
+
+        // Randevu süresi kontrolü
+        if (!is_numeric($appointmentDuration) || $appointmentDuration < 15) {
+            echo json_encode(['status' => 'error', 'message' => 'Randevu süresi minimum 15 dakika olmalıdır.']);
+            exit;
+        }
+
+        // Geçerli günler listesi (Servis kodunda beklenen anahtarlar)
+        $allDays = [
+            'pazartesi' => 'Pazartesi',
+            'sali' => 'Salı',
+            'carsamba' => 'Çarşamba', // Burası artık normalize edilmiş anahtarla eşleşecek
+            'persembe' => 'Perşembe',
+            'cuma' => 'Cuma',
+            'cumartesi' => 'Cumartesi',
+            'pazar' => 'Pazar'
+        ];
+
+        try {
+            if (!isset($pdo)) {
+                $dbh = new Dbh();
+                $pdo = $dbh->connect();
+            }
+
+            $pdo->beginTransaction();
+
+            // 2. Çalışma Günlerini ve Saatlerini İşleme Döngüsü
+            foreach ($allDays as $safeDay => $turkishDay) {
+                // Normalize edilmiş dizide 'carsamba' anahtarı kontrol edilecek
+                $isActive = isset($activeDays[$safeDay]) ? 1 : 0;
+
+                // A. psikolog_calisma_gunleri tablosunu güncelle/oluştur (UPSERT)
+                $stmt = $pdo->prepare("SELECT id FROM psikolog_calisma_gunleri WHERE user_id = :user_id AND day = :day");
+                $stmt->execute([':user_id' => $psikologId, ':day' => $turkishDay]);
+                $workingDayId = $stmt->fetchColumn();
+
+                if ($workingDayId) {
+                    $stmt = $pdo->prepare("UPDATE psikolog_calisma_gunleri SET is_active = :is_active, updated_at = CURRENT_TIMESTAMP WHERE id = :id");
+                    $stmt->execute([':is_active' => $isActive, ':id' => $workingDayId]);
+                } else {
+                    $stmt = $pdo->prepare("INSERT INTO psikolog_calisma_gunleri (user_id, day, is_active) VALUES (:user_id, :day, :is_active)");
+                    $stmt->execute([':user_id' => $psikologId, ':day' => $turkishDay, ':is_active' => $isActive]);
+                    $workingDayId = $pdo->lastInsertId();
+                }
+
+                // B. Çalışma Saatlerini İşleme (Sadece Gün Aktifse)
+                // Mevcut saat kayıtlarını temizle
+                $stmt = $pdo->prepare("DELETE FROM psikolog_calisma_saatleri WHERE working_day_id = :working_day_id");
+                $stmt->execute([':working_day_id' => $workingDayId]);
+
+                if ($isActive == 1 && !empty($startTimes[$safeDay]) && !empty($endTimes[$safeDay])) {
+                    $startTime = $startTimes[$safeDay];
+                    $endTime = $endTimes[$safeDay];
+
+                    // Saat formatı ve geçerlilik kontrolü (önerilir)
+                    if (strtotime($endTime) <= strtotime($startTime)) {
+                        $pdo->rollBack();
+                        echo json_encode(['status' => 'error', 'message' => $turkishDay . ' için geçersiz saat aralığı. Bitiş saati başlangıçtan sonra olmalıdır.']);
+                        exit;
+                    }
+
+                    // Yeni Saat Kaydını Oluştur
+                    $stmt = $pdo->prepare("
+                    INSERT INTO psikolog_calisma_saatleri 
+                        (working_day_id, start_time, end_time, appointment_duration) 
+                    VALUES 
+                        (:working_day_id, :start_time, :end_time, :appointment_duration)
+                ");
+                    $stmt->execute([
+                        ':working_day_id' => $workingDayId,
+                        ':start_time' => $startTime,
+                        ':end_time' => $endTime,
+                        ':appointment_duration' => $appointmentDuration
+                    ]);
+                }
+            }
+
+            $pdo->commit();
+            echo json_encode(['status' => 'success', 'message' => 'Çalışma ayarları başarıyla güncellendi.']);
+        } catch (PDOException $e) {
+            if (isset($pdo) && $pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            echo json_encode(['status' => 'error', 'message' => 'Veritabanı işlemi sırasında bir hata oluştu: ' . $e->getMessage()]);
+        }
+        break;
+        // =========================================================================================
+        // YARDIMCI FONKSİYONLAR (Gerektiğinde Ajax dosyası dışında bir Utility sınıfına taşınabilir)
+        // =========================================================================================
+
+        /**
+         * Belirtilen tarihin haftanın hangi günü olduğunu Türkçe döndürür.
+         * @param string $date YYYY-MM-DD formatında tarih
+         * @return string Haftanın Günü (Pazartesi, Salı, ...)
+         */
+        function getTurkishDayName($date)
+        {
+            $timestamp = strtotime($date);
+            $day = date('N', $timestamp); // 1 (Pazartesi) ile 7 (Pazar) arası
+            $days = [
+                1 => 'Pazartesi',
+                2 => 'Salı',
+                3 => 'Çarşamba',
+                4 => 'Perşembe',
+                5 => 'Cuma',
+                6 => 'Cumartesi',
+                7 => 'Pazar'
+            ];
+            return $days[$day];
+        }
+
+
+        // =========================================================================================
+        // AJAX SERVİSLERİ
+        // =========================================================================================
+
+        // ... switch($service) {
+
+    case 'getAvailableSlots':
+        // 1. Giriş Kontrolü
+        if (empty($_POST['psikolog_id']) || empty($_POST['appointment_date'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Psikolog ve randevu tarihi zorunludur.']);
+            exit;
+        }
+
+        $psikologId = (int)$_POST['psikolog_id'];
+        $appointmentDate = $_POST['appointment_date'];
+        $dayName = getTurkishDayName($appointmentDate);
+        $availableSlots = [];
+
+        try {
+            if (!isset($pdo)) {
+                $dbh = new Dbh();
+                $pdo = $dbh->connect();
+            }
+
+            // A. Çalışma Saatini Çek
+            $stmt = $pdo->prepare("
+            SELECT 
+                pcs.start_time, 
+                pcs.end_time, 
+                pcs.appointment_duration,
+                pcg.is_active
+            FROM psikolog_calisma_gunleri pcg
+            JOIN psikolog_calisma_saatleri pcs ON pcg.id = pcs.working_day_id
+            WHERE pcg.user_id = :user_id AND pcg.day = :day_name AND pcg.is_active = 1
+        ");
+            $stmt->execute([':user_id' => $psikologId, ':day_name' => $dayName]);
+            $workingHours = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$workingHours) {
+                echo json_encode(['status' => 'success', 'message' => 'Psikolog bu gün çalışmamaktadır.', 'slots' => []]);
+                exit;
+            }
+
+            $calismaBaslangic = strtotime($workingHours['start_time']);
+            $calismaBitis = strtotime($workingHours['end_time']);
+            $duration = (int)$workingHours['appointment_duration'];
+            $durationSeconds = $duration * 60;
+
+            // B. Mevcut Randevuları Çek
+            // 'İptal' olmayan tüm randevuları çeker
+            $stmt = $pdo->prepare("
+            SELECT start_time, end_time 
+            FROM psikolog_randevular 
+            WHERE user_id = :user_id 
+              AND appointment_date = :appointment_date 
+              AND status != 'İptal'
+        ");
+            $stmt->execute([':user_id' => $psikologId, ':appointment_date' => $appointmentDate]);
+            $bookedSlots = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // C. Boş Slotları Hesapla
+            $currentTime = $calismaBaslangic;
+
+            while (($currentTime + $durationSeconds) <= $calismaBitis) {
+                $slotStart = date('H:i', $currentTime);
+                $slotEnd = date('H:i', $currentTime + $durationSeconds);
+                $isBooked = false;
+
+                // Her yeni slotu mevcut randevularla kontrol et
+                foreach ($bookedSlots as $booked) {
+                    $bookedStart = strtotime($booked['start_time']);
+                    $bookedEnd = strtotime($booked['end_time']);
+
+                    // Slot, mevcut randevu ile çakışıyorsa (Çakışma: Slot Başlangıcı < Randevu Bitişi VE Slot Bitişi > Randevu Başlangıcı)
+                    if ($currentTime < $bookedEnd && ($currentTime + $durationSeconds) > $bookedStart) {
+                        $isBooked = true;
+                        break;
+                    }
+                }
+
+                // Çakışma yoksa listeye ekle
+                if (!$isBooked) {
+                    $availableSlots[] = [
+                        'start' => $slotStart,
+                        'end' => $slotEnd,
+                        'display' => $slotStart . ' - ' . $slotEnd
+                    ];
+                }
+
+                // Sonraki slota geç
+                $currentTime += $durationSeconds;
+            }
+
+            echo json_encode(['status' => 'success', 'slots' => $availableSlots]);
+        } catch (PDOException $e) {
+            error_log("Slot Hesaplama Hatası: " . $e->getMessage());
+            echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası: Saatler çekilemedi.']);
+        }
+        break;
+
+    case 'createAppointment':
+        // 1. Giriş Kontrolü
+        if (empty($_POST['psikolog_id']) || empty($_POST['appointment_date']) || empty($_POST['start_time']) || empty($_POST['end_time']) || empty($_POST['client_name'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Tüm randevu bilgileri zorunludur.']);
+            exit;
+        }
+        if (!isset($_SESSION['id'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Oturum bilgisi bulunamadı. Lütfen tekrar giriş yapın.']);
+            exit;
+        }
+
+        $psikologId = (int)$_POST['psikolog_id'];
+        $clientUserId = (int)$_SESSION['id']; // Randevu talep eden kullanıcı ID'si
+        $clientName = trim($_POST['client_name']);
+        $clientPhone = trim($_POST['client_phone'] ?? '');
+        $appointmentDate = $_POST['appointment_date'];
+        $startTime = $_POST['start_time'];
+        $endTime = $_POST['end_time'];
+        $notes = trim($_POST['notes'] ?? '');
+
+        // try {
+        if (!isset($pdo)) {
+            $dbh = new Dbh();
+            $pdo = $dbh->connect();
+        }
+
+        // 2. Randevu Çakışma Kontrolü (Aynı psikolog, tarih ve saat dilimi için)
+        $stmt = $pdo->prepare("
+            SELECT id FROM psikolog_randevular 
+            WHERE user_id = :user_id 
+              AND appointment_date = :appointment_date 
+              AND status != 'İptal' 
+              AND (
+                  (start_time <= :start_time AND end_time > :start_time) OR  -- Başlangıç saatimiz, mevcut randevunun içinde
+                  (start_time < :end_time AND end_time >= :end_time) OR      -- Bitiş saatimiz, mevcut randevunun içinde
+                  (start_time >= :start_time AND end_time <= :end_time)      -- Mevcut randevu, bizim randevumuzun içinde
+              )
+        ");
+        $stmt->execute([
+            ':user_id' => $psikologId,
+            ':appointment_date' => $appointmentDate,
+            ':start_time' => $startTime,
+            ':end_time' => $endTime
+        ]);
+
+        if ($stmt->fetch(PDO::FETCH_ASSOC)) {
+            echo json_encode(['status' => 'error', 'message' => 'Seçtiğiniz saat dilimi maalesef doludur. Lütfen başka bir saat seçin.']);
+            exit;
+        }
+
+        // 3. Randevuyu Kaydet
+        $stmt = $pdo->prepare("
+            INSERT INTO psikolog_randevular 
+                (user_id, client_user_id, client_name, client_phone, appointment_date, start_time, end_time, status, notes) 
+            VALUES 
+                (:psikolog_id, :client_user_id, :client_name, :client_phone, :appointment_date, :start_time, :end_time, 'Beklemede', :notes)
+        ");
+        $stmt->execute([
+            ':psikolog_id' => $psikologId,
+            ':client_user_id' => $clientUserId, // Yeni eklenen alan: Randevu talep eden kullanıcı
+            ':client_name' => $clientName,
+            ':client_phone' => $clientPhone,
+            ':appointment_date' => $appointmentDate,
+            ':start_time' => $startTime,
+            ':end_time' => $endTime,
+            ':notes' => $notes
+        ]);
+
+        echo json_encode(['status' => 'success', 'message' => 'Randevunuz başarıyla talep edildi ve onay bekliyor.']);
+        // } catch (PDOException $e) {
+        //     error_log("Randevu Kayıt Hatası: " . $e->getMessage());
+        //     echo json_encode(['status' => 'error', 'message' => 'Randevu kaydedilirken bir veritabanı hatası oluştu.']);
+        // }
+        break;
+    case 'getAppointmentsByClient':
+        // Danışanın (client_user_id) kendi randevularını listeler
+        if (!isset($_SESSION['id'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Oturum hatası.']);
+            exit;
+        }
+        $clientUserId = (int)$_SESSION['id'];
+        $appointments = [];
+
+        try {
+            if (!isset($pdo)) {
+                $dbh = new Dbh();
+                $pdo = $dbh->connect();
+            }
+
+            $stmt = $pdo->prepare("
+            SELECT 
+                pr.id, 
+                pr.appointment_date, 
+                pr.start_time, 
+                pr.end_time, 
+                pr.status,
+                pr.user_id as psikolog_id,
+                u.name AS psikolog_name, 
+                u.surname AS psikolog_surname
+            FROM psikolog_randevular pr
+            JOIN users_lnp u ON pr.user_id = u.id -- Psikologun adını çekmek için JOIN
+            WHERE pr.client_user_id = :client_user_id
+            ORDER BY pr.appointment_date DESC, pr.start_time DESC
+        ");
+            $stmt->execute([':client_user_id' => $clientUserId]);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Psikolog adını birleştirme
+            foreach ($results as $row) {
+                $row['psikolog_name'] = $row['psikolog_name'] . ' ' . $row['psikolog_surname'];
+                unset($row['psikolog_surname']);
+                $appointments[] = $row;
+            }
+
+            echo json_encode(['status' => 'success', 'appointments' => $appointments]);
+        } catch (PDOException $e) {
+            error_log("Randevu Listeleme Hatası: " . $e->getMessage());
+            echo json_encode(['status' => 'error', 'message' => 'Randevular listelenirken bir hata oluştu.']);
+        }
+        break;
+
+    case 'updatePendingAppointment':
+        // Beklemedeki randevunun tarih ve saatini günceller
+        if (empty($_POST['appointment_id']) || empty($_POST['appointment_date']) || empty($_POST['start_time']) || empty($_POST['end_time'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Tüm alanlar zorunludur.']);
+            exit;
+        }
+        if (!isset($_SESSION['id'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Oturum bilgisi bulunamadı.']);
+            exit;
+        }
+
+        $appointmentId = (int)$_POST['appointment_id'];
+        $clientUserId = (int)$_SESSION['id'];
+        $appointmentDate = $_POST['appointment_date'];
+        $startTime = $_POST['start_time'];
+        $endTime = $_POST['end_time'];
+        $psikologId = (int)$_POST['psikolog_id']; // Yeni çakışma kontrolü için gerekli
+
+        try {
+            if (!isset($pdo)) {
+                $dbh = new Dbh();
+                $pdo = $dbh->connect();
+            }
+
+            $pdo->beginTransaction();
+
+            // 1. Yetki ve Durum Kontrolü (Randevu beklemede mi ve bu kullanıcıya mı ait?)
+            $stmt = $pdo->prepare("
+            SELECT status FROM psikolog_randevular 
+            WHERE id = :id AND client_user_id = :client_user_id
+        ");
+            $stmt->execute([':id' => $appointmentId, ':client_user_id' => $clientUserId]);
+            $currentStatus = $stmt->fetchColumn();
+
+            if ($currentStatus !== 'Beklemede') {
+                $pdo->rollBack();
+                echo json_encode(['status' => 'error', 'message' => 'Sadece "Beklemede" durumundaki randevular güncellenebilir. Mevcut durum: ' . $currentStatus]);
+                exit;
+            }
+
+            // 2. Randevu Çakışma Kontrolü (Yeni saat dilimi için, KENDİ randevusu hariç)
+            $stmt = $pdo->prepare("
+            SELECT id FROM psikolog_randevular 
+            WHERE user_id = :psikolog_id 
+              AND appointment_date = :appointment_date 
+              AND status != 'İptal'
+              AND id != :appointment_id  -- KENDİ randevumuz hariç
+              AND (
+                  (start_time <= :start_time AND end_time > :start_time) OR
+                  (start_time < :end_time AND end_time >= :end_time) OR
+                  (start_time >= :start_time AND end_time <= :end_time)
+              )
+        ");
+            $stmt->execute([
+                ':psikolog_id' => $psikologId,
+                ':appointment_date' => $appointmentDate,
+                ':start_time' => $startTime,
+                ':end_time' => $endTime,
+                ':appointment_id' => $appointmentId
+            ]);
+
+            if ($stmt->fetch(PDO::FETCH_ASSOC)) {
+                $pdo->rollBack();
+                echo json_encode(['status' => 'error', 'message' => 'Seçtiğiniz yeni saat dilimi maalesef doludur. Lütfen başka bir saat seçin.']);
+                exit;
+            }
+
+            // 3. Güncelleme İşlemi
+            $stmt = $pdo->prepare("
+            UPDATE psikolog_randevular 
+            SET appointment_date = :appointment_date, start_time = :start_time, end_time = :end_time, updated_at = CURRENT_TIMESTAMP
+            WHERE id = :id
+        ");
+            $stmt->execute([
+                ':appointment_date' => $appointmentDate,
+                ':start_time' => $startTime,
+                ':end_time' => $endTime,
+                ':id' => $appointmentId
+            ]);
+
+            $pdo->commit();
+            echo json_encode(['status' => 'success', 'message' => 'Randevu tarihi/saati başarıyla güncellendi. Onay bekleniyor.']);
+        } catch (PDOException $e) {
+            if (isset($pdo) && $pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            error_log("Randevu Güncelleme Hatası: " . $e->getMessage());
+            echo json_encode(['status' => 'error', 'message' => 'Güncelleme sırasında bir veritabanı hatası oluştu.']);
+        }
+        break;
+    case 'cancelAppointmentByClient':
+        // Danışanın sadece 'Beklemede' durumundaki randevu talebini iptal eder (durumunu 'İptal' yapar)
+        if (empty($_POST['appointment_id'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Randevu ID zorunludur.']);
+            exit;
+        }
+        if (!isset($_SESSION['id'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Oturum bilgisi bulunamadı.']);
+            exit;
+        }
+
+        $appointmentId = (int)$_POST['appointment_id'];
+        $clientUserId = (int)$_SESSION['id'];
+
+        try {
+            if (!isset($pdo)) {
+                $dbh = new Dbh();
+                $pdo = $dbh->connect();
+            }
+
+            $pdo->beginTransaction();
+
+            // 1. Yetki ve Durum Kontrolü (Randevu beklemede mi ve bu kullanıcıya mı ait?)
+            $stmt = $pdo->prepare("
+            SELECT status FROM psikolog_randevular 
+            WHERE id = :id AND client_user_id = :client_user_id
+        ");
+            $stmt->execute([':id' => $appointmentId, ':client_user_id' => $clientUserId]);
+            $currentStatus = $stmt->fetchColumn();
+
+            if ($currentStatus !== 'Beklemede') {
+                $pdo->rollBack();
+                echo json_encode(['status' => 'error', 'message' => 'Sadece "Beklemede" durumundaki randevular iptal edilebilir. Mevcut durum: ' . $currentStatus]);
+                exit;
+            }
+
+            // 2. Güncelleme İşlemi (Durumu 'İptal' olarak ayarla)
+            $stmt = $pdo->prepare("
+            UPDATE psikolog_randevular 
+            SET status = 'İptal', updated_at = CURRENT_TIMESTAMP
+            WHERE id = :id AND client_user_id = :client_user_id
+        ");
+            $stmt->execute([
+                ':id' => $appointmentId,
+                ':client_user_id' => $clientUserId
+            ]);
+
+            $pdo->commit();
+            echo json_encode(['status' => 'success', 'message' => 'Randevu talebiniz başarıyla iptal edildi.']);
+        } catch (PDOException $e) {
+            if (isset($pdo) && $pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            error_log("Randevu İptal Hatası: " . $e->getMessage());
+            echo json_encode(['status' => 'error', 'message' => 'İptal işlemi sırasında bir veritabanı hatası oluştu.']);
+        }
+        break;
+    case 'getAppointmentsByPsikolog':
+        // Psikologun kendi randevu taleplerini listeler
+        if (!isset($_SESSION['id'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Oturum hatası.']);
+            exit;
+        }
+        $psikologId = (int)$_SESSION['id'];
+        $appointments = [];
+
+        try {
+            if (!isset($pdo)) {
+                $dbh = new Dbh();
+                $pdo = $dbh->connect();
+            }
+
+            $stmt = $pdo->prepare("
+            SELECT 
+                pr.id, 
+                pr.appointment_date, 
+                pr.start_time, 
+                pr.end_time, 
+                pr.status,
+                pr.client_name,
+                pr.client_phone 
+            FROM psikolog_randevular pr
+            WHERE pr.user_id = :psikolog_id
+            ORDER BY pr.appointment_date ASC, pr.start_time ASC
+        ");
+            $stmt->execute([':psikolog_id' => $psikologId]);
+            $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            echo json_encode(['status' => 'success', 'appointments' => $appointments]);
+        } catch (PDOException $e) {
+            error_log("Psikolog Randevu Listeleme Hatası: " . $e->getMessage());
+            echo json_encode(['status' => 'error', 'message' => 'Randevular listelenirken bir hata oluştu.']);
+        }
+        break;
+
+    case 'updateAppointmentStatus':
+        // Randevu durumunu onaylama veya reddetme
+        if (empty($_POST['appointment_id']) || empty($_POST['new_status'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Randevu ID ve yeni durum zorunludur.']);
+            exit;
+        }
+        if (!isset($_SESSION['id'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Oturum hatası.']);
+            exit;
+        }
+
+        $appointmentId = (int)$_POST['appointment_id'];
+        $psikologId = (int)$_SESSION['id'];
+        $newStatus = $_POST['new_status']; // 'Onaylandı' veya 'Reddedildi' beklenir
+
+        // Güvenlik kontrolü
+        if (!in_array($newStatus, ['Onaylandı', 'Reddedildi'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Geçersiz durum değeri.']);
+            exit;
+        }
+
+        $appointmentInfo = null; // Randevu bilgilerini tutacak değişken
+
+        try {
+            if (!isset($pdo)) {
+                $dbh = new Dbh();
+                $pdo = $dbh->connect();
+            }
+
+            // 1. ADIM: Gerekli bilgileri (client_user_id, appointment_date, start_time) çek
+            $stmt_info = $pdo->prepare("
+            SELECT client_user_id, appointment_date, start_time 
+            FROM psikolog_randevular 
+            WHERE id = :id AND user_id = :psikolog_id 
+        ");
+            $stmt_info->execute([
+                ':id' => $appointmentId,
+                ':psikolog_id' => $psikologId
+            ]);
+            $appointmentInfo = $stmt_info->fetch(PDO::FETCH_ASSOC);
+
+            if (!$appointmentInfo) {
+                // Eğer randevu bulunamazsa veya durumu 'Beklemede' değilse hata ver
+                echo json_encode(['status' => 'error', 'message' => 'Randevu bulunamadı veya sadece "Beklemede" olanlar güncellenebilir.']);
+                exit;
+            }
+
+            // 2. ADIM: Durum güncellemesini yap
+            $stmt = $pdo->prepare("
+            UPDATE psikolog_randevular 
+            SET status = :new_status, updated_at = CURRENT_TIMESTAMP
+            WHERE id = :id AND user_id = :psikolog_id 
+        ");
+            $stmt->execute([
+                ':new_status' => $newStatus,
+                ':id' => $appointmentId,
+                ':psikolog_id' => $psikologId
+            ]);
+
+            if ($stmt->rowCount() > 0) {
+
+                $response = ['status' => 'success', 'message' => 'Randevu başarıyla güncellendi.'];
+
+                // 3. ADIM: Eğer onaylama yapılıyorsa, bilgileri çek ve d-m-y H:i formatında döndür
+                if ($newStatus === 'Onaylandı') {
+
+                    // Tarih (YYYY-MM-DD) ve Saati (HH:MM:SS) birleştir
+                    $fullDateTime = $appointmentInfo['appointment_date'] . ' ' . $appointmentInfo['start_time'];
+
+                    // DateTime nesnesi oluştur ve istenen d-m-y H:i formatına dönüştür
+                    try {
+                        $dt = new DateTime($fullDateTime);
+                        // Kullanıcının istediği d-m-y H:i formatına dönüştürülüyor
+                        $formattedDateTime = $dt->format('d-m-y H:i');
+                    } catch (Exception $e) {
+                        // Dönüşüm hatası olursa, veritabanındaki ham tarihi döndür
+                        $formattedDateTime = $appointmentInfo['appointment_date'] . ' ' . $appointmentInfo['start_time'];
+                    }
+
+
+                    $response['client_user_id'] = $appointmentInfo['client_user_id'];
+                    $response['appointment_date'] = $formattedDateTime; // d-m-y H:i formatında
+                } else {
+                    // Reddedildiğinde veya güncellenmediğinde boş döndür
+                    $response['client_user_id'] = '';
+                    $response['appointment_date'] = '';
+                }
+
+                echo json_encode($response);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Güncelleme için uygun randevu bulunamadı.']);
+            }
+        } catch (PDOException $e) {
+            error_log("Durum Güncelleme Hatası: " . $e->getMessage());
+            echo json_encode(['status' => 'error', 'message' => 'Durum değiştirilirken bir veritabanı hatası oluştu.']);
+        }
+        break;
+
+    case 'psikologUpdateAndApprove':
+        // Psikolog, beklemedeki randevunun saatini değiştirir ve otomatik olarak 'Onaylandı' yapar
+        if (empty($_POST['appointment_id']) || empty($_POST['appointment_date']) || empty($_POST['start_time']) || empty($_POST['end_time'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Tüm alanlar zorunludur.']);
+            exit;
+        }
+        if (!isset($_SESSION['id'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Oturum bilgisi bulunamadı.']);
+            exit;
+        }
+
+        $appointmentId = (int)$_POST['appointment_id'];
+        $psikologId = (int)$_SESSION['id'];
+        $appointmentDate = $_POST['appointment_date'];
+        $startTime = $_POST['start_time'];
+        $endTime = $_POST['end_time'];
+
+        try {
+            if (!isset($pdo)) {
+                $dbh = new Dbh();
+                $pdo = $dbh->connect();
+            }
+            $pdo->beginTransaction();
+
+            // 1. Durum Kontrolü (Sadece beklemede olan kendi randevusu mu?)
+            $stmt = $pdo->prepare("SELECT status FROM psikolog_randevular WHERE id = :id AND user_id = :psikolog_id");
+            $stmt->execute([':id' => $appointmentId, ':psikolog_id' => $psikologId]);
+            $currentStatus = $stmt->fetchColumn();
+
+
+
+            // 2. Çakışma Kontrolü (Yeni saat dilimi için, KENDİ randevusu hariç)
+            // Danışan tarafındaki aynı mantık kullanılır.
+            $stmt = $pdo->prepare("
+            SELECT id FROM psikolog_randevular 
+            WHERE user_id = :psikolog_id 
+              AND appointment_date = :appointment_date 
+              AND status != 'İptal'
+              AND id != :appointment_id 
+              AND (
+                  (start_time <= :start_time AND end_time > :start_time) OR
+                  (start_time < :end_time AND end_time >= :end_time) OR
+                  (start_time >= :start_time AND end_time <= :end_time)
+              )
+        ");
+            $stmt->execute([
+                ':psikolog_id' => $psikologId,
+                ':appointment_date' => $appointmentDate,
+                ':start_time' => $startTime,
+                ':end_time' => $endTime,
+                ':appointment_id' => $appointmentId
+            ]);
+
+            if ($stmt->fetch(PDO::FETCH_ASSOC)) {
+                $pdo->rollBack();
+                echo json_encode(['status' => 'error', 'message' => 'Seçtiğiniz yeni saat dilimi başka bir randevu ile çakışıyor.']);
+                exit;
+            }
+
+            // 3. Güncelleme ve Onaylama İşlemi
+            $stmt = $pdo->prepare("
+            UPDATE psikolog_randevular 
+            SET appointment_date = :appointment_date, 
+                start_time = :start_time, 
+                end_time = :end_time, 
+                status = 'Onaylandı', 
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = :id AND user_id = :psikolog_id
+        ");
+            $stmt->execute([
+                ':appointment_date' => $appointmentDate,
+                ':start_time' => $startTime,
+                ':end_time' => $endTime,
+                ':id' => $appointmentId,
+                ':psikolog_id' => $psikologId
+            ]);
+
+            $pdo->commit();
+            echo json_encode(['status' => 'success', 'message' => 'Randevu başarıyla güncellendi ve onaylandı.']);
+        } catch (PDOException $e) {
+            if (isset($pdo) && $pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            error_log("Psikolog Güncelleme/Onaylama Hatası: " . $e->getMessage());
+            echo json_encode(['status' => 'error', 'message' => 'İşlem sırasında bir veritabanı hatası oluştu.']);
+        }
         break;
     default:
         echo json_encode(['status' => 'error', 'message' => 'Geçersiz servis']);
