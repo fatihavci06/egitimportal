@@ -91,7 +91,7 @@ if (isset($_SESSION['role']) && in_array($_SESSION['role'], $allowedRoles)) {
                                                     </div>
                                                     <div class="modal-body py-10 px-lg-17">
                                                         <input type="hidden" name="appointment_id" id="modal_appointment_id">
-                                                        <p>Danışan: <span id="modal_client_name" class="fw-bold"></span></p>
+                                                        <p>Ad soyad: <span id="modal_client_name" class="fw-bold"></span></p>
 
                                                         <div class="fv-row mb-7">
                                                             <label class="form-label required">Yeni Randevu Tarihi</label>

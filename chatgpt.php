@@ -21,15 +21,16 @@ if (isset($_SESSION['role'])) {
         ]);
         exit;
     }
-
+date_default_timezone_set('Europe/Istanbul'); // Türkiye saati
+$today = date('d.m.Y'); // 22.10.2025 formatında örnek tarih
     // OpenAI API verisi
     $data = [
         "model" => "gpt-3.5-turbo",
         "messages" => [
-            // [
-            //     "role" => "system",
-            //     "content" => "Sen yalnızca eğitimle ilgili konulara cevap veren bir asistansın. Özellikle anaokulu, ilköğretim (1. sınıftan 8. sınıfa kadar) ve ortaöğretim düzeyindeki (lise) sorulara cevap ver. Eğitim dışındaki sorulara sadece 'Bu sistem yalnızca eğitimle ilgili soruları yanıtlamaktadır.' şeklinde cevap ver."
-            // ],
+            [
+            "role" => "system",
+            "content" => "Bugünün tarihi: $today. Sen bu bilgiyi kullanarak sorulara yanıt ver."
+        ],
             [
                 "role" => "user",
                 "content" => $userMessage

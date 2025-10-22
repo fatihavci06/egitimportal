@@ -6944,7 +6944,7 @@ ORDER BY msu.unit_order asc
             $stmt = $pdo->prepare("
             SELECT 
                 pr.id, 
-                pr.appointment_date, 
+                 DATE_FORMAT(pr.appointment_date, '%d-%m-%Y') AS appointment_date,
                 pr.start_time, 
                 pr.end_time, 
                 pr.status,
@@ -7037,7 +7037,7 @@ ORDER BY msu.unit_order asc
                     try {
                         $dt = new DateTime($fullDateTime);
                         // Kullanıcının istediği d-m-y H:i formatına dönüştürülüyor
-                        $formattedDateTime = $dt->format('d-m-y H:i');
+                        $formattedDateTime = $dt->format('d-m-Y H:i');
                     } catch (Exception $e) {
                         // Dönüşüm hatası olursa, veritabanındaki ham tarihi döndür
                         $formattedDateTime = $appointmentInfo['appointment_date'] . ' ' . $appointmentInfo['start_time'];
