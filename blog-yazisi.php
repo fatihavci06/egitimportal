@@ -37,7 +37,15 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     } */
 
 ?>
+
     <?php
+
+    $data = $data->getBlogContent($_GET['id']);
+
+    if (empty($data)) {
+        header("Location: uzman-psikologdan-aileye-tavsiyeler");
+        exit;
+    }
 
     ?>
     <style>
@@ -212,16 +220,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
                         <div class="d-flex flex-column flex-column-fluid">
                             <?php include_once "views/toolbar.php"; ?>
-                            <?php
-
-                            $data = $data->getBlogContent($_GET['id']);
-
-                            if (empty($data)) {
-                                header("Location: ana-okulu-icerikler");
-                                exit;
-                            }
-
-                            ?>
 
                             <div id="kt_app_content" class="app-content flex-column-fluid">
 
@@ -243,7 +241,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                         </header>
 
-                                        <div class="row " style="font-size:17px; margin-top:35px;">
+                                        <div class="row " style="font-size:17px; margin-top:0px;">
 
                                             <?php
 
@@ -255,7 +253,22 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                             ?>
 
-                                            <p id="contentDescription">
+                                            <?php
+
+                                            if (!empty($data['pdf_image'])) { ?>
+                                                <div style="margin-top: 20px;">
+                                                    <a target="_blank" href="<?= $data['pdf_path'] ?>">
+                                                        <img src="<?= $data['pdf_image'] ?>" alt="Yüklenen PDF Görseli"
+                                                            class="rounded img-fluid"
+                                                            style="object-fit: cover;  width: auto; height:100px">
+                                                        PDF'i Görüntüle
+                                                    </a>
+                                                </div>
+                                            <?php }
+
+                                            ?>
+
+                                            <p id="contentDescription" style="margin-top: 24px;">
                                                 <?php
                                                 if (isset($data['content'])) {
                                                     echo $data['content'];

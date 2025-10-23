@@ -130,6 +130,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 OR $_SESSION['role'] ==
                                                                     data-title="<?php echo htmlspecialchars($row['title']); ?>"
                                                                     data-content="<?php echo htmlspecialchars($row['content']); ?>"
                                                                     data-image="<?php echo htmlspecialchars($row['image']); ?>"
+                                                                    data-pdf_path="<?php echo htmlspecialchars($row['pdf_path']); ?>"
+                                                                    data-pdf_image="<?php echo htmlspecialchars($row['pdf_image']); ?>"
                                                                     data-status="<?php echo $row['is_active']; ?>">
                                                                     <i class="ki-duotone ki-pencil fs-4"><span class="path1"></span><span class="path2"></span></i>
                                                                 </a>
@@ -192,6 +194,16 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 OR $_SESSION['role'] ==
                             </div>
 
                             <div class="fv-row mb-7">
+                                <label class="fw-semibold fs-6 mb-2">PDF</label>
+                                <input type="file" name="pdf" id="add_pdf" class="form-control form-control-solid mb-3 mb-lg-0" accept="application/pdf" />
+                            </div>
+
+                            <div class="fv-row mb-7">
+                                <label class="fw-semibold fs-6 mb-2">PDF Kapağı</label>
+                                <input type="file" name="pdf_image" id="add_pdf_image" class="form-control form-control-solid mb-3 mb-lg-0" accept="image/*" />
+                            </div>
+
+                            <div class="fv-row mb-7">
                                 <label class="required fw-semibold fs-6 mb-2">Durum</label>
                                 <select name="status" id="add_status" class="form-select form-select-solid" required>
                                     <option value="1">Aktif</option>
@@ -244,6 +256,18 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 OR $_SESSION['role'] ==
                                 <label class="fw-semibold fs-6 mb-2">Görsel</label>
                                 <input type="file" name="image" id="update_image" class="form-control form-control-solid mb-3 mb-lg-0" accept="image/*" />
                                 <small class="form-text text-muted" id="current_image_info">Mevcut görsel: Yok</small>
+                            </div>
+
+                            <div class="fv-row mb-7">
+                                <label class="fw-semibold fs-6 mb-2">PDF</label>
+                                <input type="file" name="pdf" id="update_pdf" class="form-control form-control-solid mb-3 mb-lg-0" accept="application/pdf" />
+                                <small class="form-text text-muted" id="current_pdf_info">Mevcut PDF: Yok</small>
+                            </div>
+
+                            <div class="fv-row mb-7">
+                                <label class="fw-semibold fs-6 mb-2">PDF Görseli</label>
+                                <input type="file" name="pdf_image" id="update_pdf_image" class="form-control form-control-solid mb-3 mb-lg-0" accept="image/*" />
+                                <small class="form-text text-muted" id="current_pdf_image_info">Mevcut PDF Görseli: Yok</small>
                             </div>
 
                             <div class="fv-row mb-7">
@@ -335,6 +359,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 OR $_SESSION['role'] ==
                     const title = $(this).data('title');
                     const content = $(this).data('content');
                     const image = $(this).data('image');
+                    const pdf_path = $(this).data('pdf_path');
+                    const pdf_image = $(this).data('pdf_image');
                     const status = $(this).data('status');
 
                     // Form alanlarını doldur
@@ -345,6 +371,14 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 OR $_SESSION['role'] ==
                     // Görsel bilgisi
                     const currentImageInfo = $('#current_image_info');
                     currentImageInfo.html(image ? `Mevcut görsel: <a href="${image}" target="_blank">Görüntüle</a>` : 'Mevcut görsel: Yok');
+
+                    // PDF bilgisi
+                    const currentPdfInfo = $('#current_pdf_info');
+                    currentPdfInfo.html(pdf_path ? `Mevcut görsel: <a href="${pdf_path}" target="_blank">Görüntüle</a>` : 'Mevcut görsel: Yok');
+
+                    // PDF Görseli bilgisi
+                    const currentPdfImageInfo = $('#current_pdf_image_info');
+                    currentPdfImageInfo.html(pdf_image ? `Mevcut görsel: <a href="${pdf_image}" target="_blank">Görüntüle</a>` : 'Mevcut görsel: Yok');
 
                     // Durumu set et
                     $('#update_status').val(status);

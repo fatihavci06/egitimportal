@@ -5353,6 +5353,8 @@ ORDER BY msu.unit_order asc
             $add_by = $_SESSION['id'];
             // Görsel yükleme işlemi
             $image_path = '';
+            $pdf_path = '';
+            $pdf_image_path = '';
             if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
                 $upload_dir = '../uploads/blog/';
 
@@ -5383,7 +5385,7 @@ ORDER BY msu.unit_order asc
                 }
 
                 // Benzersiz dosya adı oluştur
-                $new_file_name = uniqid('word_', true) . '.' . $file_ext;
+                $new_file_name = uniqid('blog_', true) . '.' . $file_ext;
                 $upload_path = $upload_dir . $new_file_name;
 
                 // Dosyayı yükle
@@ -5395,13 +5397,97 @@ ORDER BY msu.unit_order asc
                 }
             }
 
+            if (isset($_FILES['pdf']) && $_FILES['pdf']['error'] === UPLOAD_ERR_OK) {
+                $upload_dir = '../uploads/blog/';
+
+                // Upload dizini yoksa oluştur
+                if (!is_dir($upload_dir)) {
+                    mkdir($upload_dir, 0755, true);
+                }
+
+                // Dosya bilgilerini al
+                $file_name = $_FILES['pdf']['name'];
+                $file_tmp = $_FILES['pdf']['tmp_name'];
+                $file_size = $_FILES['pdf']['size'];
+                $file_error = $_FILES['pdf']['error'];
+
+                // Dosya uzantısı kontrolü
+                $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+                $allowed_ext = ['pdf'];
+
+                if (!in_array($file_ext, $allowed_ext)) {
+                    echo json_encode(['success' => false, 'message' => 'Sadece PDF formatları kabul edilir!']);
+                    exit;
+                }
+
+                // Dosya boyutu kontrolü (max 5MB)
+                if ($file_size > 5 * 1024 * 1024) {
+                    echo json_encode(['success' => false, 'message' => 'Dosya boyutu 5MB\'dan küçük olmalıdır!']);
+                    exit;
+                }
+
+                // Benzersiz dosya adı oluştur
+                $new_file_name = uniqid('blog_', true) . '.' . $file_ext;
+                $upload_path = $upload_dir . $new_file_name;
+
+                // Dosyayı yükle
+                if (move_uploaded_file($file_tmp, $upload_path)) {
+                    $pdf_path = 'uploads/blog/' . $new_file_name;
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'Dosya yüklenirken hata oluştu!']);
+                    exit;
+                }
+            }
+
+            if (isset($_FILES['pdf_image']) && $_FILES['pdf_image']['error'] === UPLOAD_ERR_OK) {
+                $upload_dir = '../uploads/blog/';
+
+                // Upload dizini yoksa oluştur
+                if (!is_dir($upload_dir)) {
+                    mkdir($upload_dir, 0755, true);
+                }
+
+                // Dosya bilgilerini al
+                $file_name = $_FILES['pdf_image']['name'];
+                $file_tmp = $_FILES['pdf_image']['tmp_name'];
+                $file_size = $_FILES['pdf_image']['size'];
+                $file_error = $_FILES['pdf_image']['error'];
+
+                // Dosya uzantısı kontrolü
+                $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+                $allowed_ext = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+                if (!in_array($file_ext, $allowed_ext)) {
+                    echo json_encode(['success' => false, 'message' => 'Sadece JPG, JPEG, PNG, GIF ve WEBP formatları kabul edilir!']);
+                    exit;
+                }
+
+                // Dosya boyutu kontrolü (max 5MB)
+                if ($file_size > 5 * 1024 * 1024) {
+                    echo json_encode(['success' => false, 'message' => 'Dosya boyutu 5MB\'dan küçük olmalıdır!']);
+                    exit;
+                }
+
+                // Benzersiz dosya adı oluştur
+                $new_file_name = uniqid('blog_', true) . '.' . $file_ext;
+                $upload_path = $upload_dir . $new_file_name;
+
+                // Dosyayı yükle
+                if (move_uploaded_file($file_tmp, $upload_path)) {
+                    $pdf_image_path = 'uploads/blog/' . $new_file_name;
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'Dosya yüklenirken hata oluştu!']);
+                    exit;
+                }
+            }
+
             // Veritabanına ekleme işlemi
 
 
             $sql = "INSERT INTO psikoloji_blog_lnp 
-            (title, content, add_by, image, is_active) 
+            (title, content, add_by, image, is_active, pdf_path, pdf_image) 
             VALUES 
-            (:title, :content, :add_by, :image, :is_active)";
+            (:title, :content, :add_by, :image, :is_active, :pdf_path, :pdf_image)";
 
             $stmt = $pdo->prepare($sql);
 
@@ -5410,7 +5496,9 @@ ORDER BY msu.unit_order asc
                 ':content' => $content,
                 ':add_by' => $add_by,
                 ':image' => $image_path,
-                ':is_active' => $status
+                ':is_active' => $status,
+                ':pdf_path' => $pdf_path,
+                ':pdf_image' => $pdf_image_path
             ]);
 
             if ($result) {
@@ -5448,7 +5536,7 @@ ORDER BY msu.unit_order asc
 
 
             // Önce başlığın var olup olmadığını kontrol et
-            $check_sql = "SELECT id, image FROM psikoloji_blog_lnp WHERE id = :id";
+            $check_sql = "SELECT id, image, pdf_path, pdf_image FROM psikoloji_blog_lnp WHERE id = :id";
             $check_stmt = $pdo->prepare($check_sql);
             $check_stmt->execute([':id' => $blog_id]);
             $word = $check_stmt->fetch(PDO::FETCH_ASSOC);
@@ -5469,6 +5557,22 @@ ORDER BY msu.unit_order asc
                     $image_path = '../' . $word['image'];
                     if (file_exists($image_path)) {
                         unlink($image_path);
+                    }
+                }
+
+                // Eğer yazının pdf'si varsa, dosyayı da sil
+                if (!empty($word['pdf_path'])) {
+                    $pdf_path = '../' . $word['pdf_path'];
+                    if (file_exists($pdf_path)) {
+                        unlink($pdf_path);
+                    }
+                }
+
+                // Eğer yazının pdf'si varsa, dosyayı da sil
+                if (!empty($word['pdf_image'])) {
+                    $pdf_image_path = '../' . $word['pdf_image'];
+                    if (file_exists($pdf_image_path)) {
+                        unlink($pdf_image_path);
                     }
                 }
 
@@ -5535,13 +5639,13 @@ ORDER BY msu.unit_order asc
             $pdo = $dbh->connect();
 
             // Önce yazının var olup olmadığını kontrol et
-            $check_sql = "SELECT id, image FROM psikoloji_blog_lnp WHERE id = :id";
+            $check_sql = "SELECT id, image, pdf_path, pdf_image FROM psikoloji_blog_lnp WHERE id = :id";
             $check_stmt = $pdo->prepare($check_sql);
             $check_stmt->execute([':id' => $id]);
             $existing_word = $check_stmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$existing_word) {
-                echo json_encode(['success' => false, 'message' => 'Güncellenecek kelime bulunamadı!']);
+                echo json_encode(['success' => false, 'message' => 'Güncellenecek yazı bulunamadı!']);
                 exit;
             }
 
@@ -5549,7 +5653,7 @@ ORDER BY msu.unit_order asc
             $image_path = $existing_word['image']; // Mevcut görseli koru
 
             if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-                $upload_dir = '../uploads/words/';
+                $upload_dir = '../uploads/blog/';
 
                 // Upload dizini yoksa oluştur
                 if (!is_dir($upload_dir)) {
@@ -5579,19 +5683,125 @@ ORDER BY msu.unit_order asc
 
                 // Eski görsel varsa sil
                 if (!empty($existing_word['image'])) {
-                    $old_image_path = '../' . $existing_word['image'];
+                    $old_image_path =  '../' . $existing_word['image'];
                     if (file_exists($old_image_path)) {
                         unlink($old_image_path);
                     }
                 }
 
                 // Benzersiz dosya adı oluştur
-                $new_file_name = uniqid('word_', true) . '.' . $file_ext;
+                $new_file_name = uniqid('blog_', true) . '.' . $file_ext;
                 $upload_path = $upload_dir . $new_file_name;
 
                 // Dosyayı yükle
                 if (move_uploaded_file($file_tmp, $upload_path)) {
-                    $image_path = 'uploads/words/' . $new_file_name;
+                    $image_path = 'uploads/blog/' . $new_file_name;
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'Dosya yüklenirken hata oluştu!']);
+                    exit;
+                }
+            }
+
+            // PDF yükleme işlemi
+            $pdf_path = $existing_word['pdf_path']; // Mevcut görseli koru
+
+            if (isset($_FILES['pdf']) && $_FILES['pdf']['error'] === UPLOAD_ERR_OK) {
+                $upload_dir = '../uploads/blog/';
+
+                // Upload dizini yoksa oluştur
+                if (!is_dir($upload_dir)) {
+                    mkdir($upload_dir, 0755, true);
+                }
+
+                // Dosya bilgilerini al
+                $file_name = $_FILES['pdf']['name'];
+                $file_tmp = $_FILES['pdf']['tmp_name'];
+                $file_size = $_FILES['pdf']['size'];
+                $file_error = $_FILES['pdf']['error'];
+
+                // Dosya uzantısı kontrolü
+                $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+                $allowed_ext = ['pdf'];
+
+                if (!in_array($file_ext, $allowed_ext)) {
+                    echo json_encode(['success' => false, 'message' => 'Sadece PDF formatları kabul edilir!']);
+                    exit;
+                }
+
+                // Dosya boyutu kontrolü (max 5MB)
+                if ($file_size > 5 * 1024 * 1024) {
+                    echo json_encode(['success' => false, 'message' => 'Dosya boyutu 5MB\'dan küçük olmalıdır!']);
+                    exit;
+                }
+
+                // Eski görsel varsa sil
+                if (!empty($existing_word['pdf_path'])) {
+                    $old_image_path = '../' . $existing_word['pdf_path'];
+                    if (file_exists($old_image_path)) {
+                        unlink($old_image_path);
+                    }
+                }
+
+                // Benzersiz dosya adı oluştur
+                $new_file_name = uniqid('blog_', true) . '.' . $file_ext;
+                $upload_path = $upload_dir . $new_file_name;
+
+                // Dosyayı yükle
+                if (move_uploaded_file($file_tmp, $upload_path)) {
+                    $pdf_path = 'uploads/blog/' . $new_file_name;
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'Dosya yüklenirken hata oluştu!']);
+                    exit;
+                }
+            }
+
+            // PDF görseli yükleme işlemi
+            $pdf_image_path = $existing_word['pdf_image']; // Mevcut görseli koru
+
+            if (isset($_FILES['pdf_image']) && $_FILES['pdf_image']['error'] === UPLOAD_ERR_OK) {
+                $upload_dir = '../uploads/blog/';
+
+                // Upload dizini yoksa oluştur
+                if (!is_dir($upload_dir)) {
+                    mkdir($upload_dir, 0755, true);
+                }
+
+                // Dosya bilgilerini al
+                $file_name = $_FILES['pdf_image']['name'];
+                $file_tmp = $_FILES['pdf_image']['tmp_name'];
+                $file_size = $_FILES['pdf_image']['size'];
+                $file_error = $_FILES['pdf_image']['error'];
+
+                // Dosya uzantısı kontrolü
+                $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+                $allowed_ext = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+                if (!in_array($file_ext, $allowed_ext)) {
+                    echo json_encode(['success' => false, 'message' => 'Sadece JPG, JPEG, PNG, GIF ve WEBP formatları kabul edilir!']);
+                    exit;
+                }
+
+                // Dosya boyutu kontrolü (max 5MB)
+                if ($file_size > 5 * 1024 * 1024) {
+                    echo json_encode(['success' => false, 'message' => 'Dosya boyutu 5MB\'dan küçük olmalıdır!']);
+                    exit;
+                }
+
+                // Eski görsel varsa sil
+                if (!empty($existing_word['pdf_image'])) {
+                    $old_image_path = '../' . $existing_word['pdf_image'];
+                    if (file_exists($old_image_path)) {
+                        unlink($old_image_path);
+                    }
+                }
+
+                // Benzersiz dosya adı oluştur
+                $new_file_name = uniqid('blog_', true) . '.' . $file_ext;
+                $upload_path = $upload_dir . $new_file_name;
+
+                // Dosyayı yükle
+                if (move_uploaded_file($file_tmp, $upload_path)) {
+                    $pdf_image_path = 'uploads/blog/' . $new_file_name;
                 } else {
                     echo json_encode(['success' => false, 'message' => 'Dosya yüklenirken hata oluştu!']);
                     exit;
@@ -5603,7 +5813,9 @@ ORDER BY msu.unit_order asc
             SET title = :title, 
                 content = :content, 
                 is_active = :is_active, 
-                image = :image 
+                image = :image, 
+                pdf_path = :pdf_path, 
+                pdf_image = :pdf_image_path  
             WHERE id = :id";
 
             $stmt = $pdo->prepare($sql);
@@ -5613,18 +5825,20 @@ ORDER BY msu.unit_order asc
                 ':content' => $content,
                 ':is_active' => $status,
                 ':image' => $image_path,
-                ':id' => $id
+                ':id' => $id,
+                ':pdf_path' => $pdf_path,
+                ':pdf_image_path' => $pdf_image_path
             ]);
 
             if ($result) {
                 echo json_encode([
                     'success' => true,
-                    'message' => 'Kelime başarıyla güncellendi!'
+                    'message' => 'Yazı başarıyla güncellendi!'
                 ]);
             } else {
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Kelime güncellenirken bir hata oluştu!'
+                    'message' => 'Yazı güncellenirken bir hata oluştu!'
                 ]);
             }
         } catch (PDOException $e) {
@@ -6162,11 +6376,11 @@ ORDER BY msu.unit_order asc
             echo json_encode(['status' => 'error', 'message' => 'Güncelleme hatası: Veritabanı işlemi başarısız.']);
         }
         break;
-        case 'pskTestDownload':
+    case 'pskTestDownload':
         // Gerekli verileri al
         $userId = $_POST['student_id'] ?? 0;
         // Varsayılan school_id (pskTestUpload'daki gibi)
-        $schoolId = $_SESSION['school_id'] ?? 1; 
+        $schoolId = $_SESSION['school_id'] ?? 1;
         $testId = filter_input(INPUT_POST, 'test_id', FILTER_VALIDATE_INT);
         $filePath = $_POST['file_path'] ?? '';
 
@@ -6217,7 +6431,7 @@ ORDER BY msu.unit_order asc
             // Paket varsa, Transaction (İşlem Grubu) başlat
             try {
                 $pdo->beginTransaction();
-                
+
                 // 1. Paketi kullanıldı olarak işaretle
                 $stmt5 = $pdo->prepare("
                     UPDATE psikolojik_test_paketleri_user
@@ -6228,10 +6442,10 @@ ORDER BY msu.unit_order asc
                     'package_id' => $package['id'],
                     'test_id' => $testId
                 ]);
-                
+
                 // 2. İşlemi onayla
                 $pdo->commit();
-                
+
                 // İndirme işlemi için başarı mesajı gönder (ve indirme yolunu döndür)
                 echo json_encode(['success' => true, 'message' => 'Paketiniz kullanıldı, indirme başlatılıyor.', 'download_link' => $filePath]);
                 exit;
@@ -6273,7 +6487,7 @@ ORDER BY msu.unit_order asc
                 exit;
             }
         }
-        
+
         break;
 
     // ESKİ İŞLEMİN YENİ VERSİYONU: CEVAP YÜKLEME (PAKET KONTROLÜ VE KULLANIMI KALDIRILDI)
@@ -6296,7 +6510,7 @@ ORDER BY msu.unit_order asc
             echo json_encode(['success' => false, 'message' => 'Geçersiz Test ID.']);
             exit;
         }
-        
+
         // **ÖNEMLİ:** Buradaki paket kontrol mantığı KALDIRILMIŞTIR!
         // Paket kontrolü artık 'pskTestDownload' case'inde yapılmaktadır.
 
@@ -6368,9 +6582,9 @@ ORDER BY msu.unit_order asc
                 $stmt = $pdo->prepare($sqlUpdate);
 
                 if ($stmt->execute([
-                    'file_path' => $dbFilePath, 
+                    'file_path' => $dbFilePath,
                     'school_id' => $schoolId,
-                    'test_id' => $testId, 
+                    'test_id' => $testId,
                     'user_id' => $userId
                 ])) {
                     // Güncelleme başarısız ise (0 satır etkilenmişse), 
@@ -6398,7 +6612,8 @@ ORDER BY msu.unit_order asc
             // move_uploaded_file hatası
             echo json_encode(['success' => false, 'message' => 'Dosya sunucuya taşınamadı. Klasör izinlerini kontrol edin.']);
         }
-        break;case 'update_test_status':
+        break;
+    case 'update_test_status':
         $id = $_POST['id'] ?? null;
         // Frontend'den gelen 'test_name', 'name' sütununa karşılık gelir.
         $status = trim($_POST['status'] ?? '');
