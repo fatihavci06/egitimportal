@@ -59,20 +59,20 @@ if (isset($_SESSION['role']) && in_array($_SESSION['role'], $allowedRoles)) {
                                             <div class="table-responsive">
                                                 <table class="table align-middle table-row-dashed fs-6 gy-5" id="randevu_listesi_table">
                                                     <table class="table align-middle table-row-dashed fs-6 gy-5" id="randevu_listesi_table">
-    <thead>
-        <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
-            <th class="min-w-125px" data-order="desc">Talep ID</th>
-            <th class="min-w-125px">Ad Soyad</th>
-            <th class="min-w-125px">Telefon Numarası</th> 
-            <th class="min-w-125px">Tarih</th>
-            <th class="min-w-125px">Saat</th>
-            <th class="min-w-125px">Durum</th>
-            <th class="min-w-150px">İşlemler</th>
-        </tr>
-    </thead>
-    <tbody class="fw-semibold text-gray-600">
-    </tbody>
-</table>
+                                                        <thead>
+                                                            <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
+                                                                <th class="min-w-125px" data-order="desc">Talep ID</th>
+                                                                <th class="min-w-125px">Ad Soyad</th>
+                                                                <th class="min-w-125px">Telefon Numarası</th>
+                                                                <th class="min-w-125px">Tarih</th>
+                                                                <th class="min-w-125px">Saat</th>
+                                                                <th class="min-w-125px">Durum</th>
+                                                                <th class="min-w-150px">İşlemler</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="fw-semibold text-gray-600">
+                                                        </tbody>
+                                                    </table>
                                                     <tbody class="fw-semibold text-gray-600">
                                                     </tbody>
                                                 </table>

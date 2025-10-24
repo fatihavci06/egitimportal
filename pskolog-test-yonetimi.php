@@ -48,7 +48,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         <div class="card mb-2 mb-xl-10">
                                             <div class="card-header border-0">
                                                 <div class="card-title m-0">
-                                                    <h3 class="fw-bold m-0">Yeni Psikolojik Test Yükle</h3>
+                                                    <h3 class="fw-bold m-0">Yeni Psikolojik Test Yükle / Bağlantı Ekle</h3>
                                                 </div>
                                             </div>
 
@@ -59,11 +59,35 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <label for="test_name" class="form-label required fw-semibold fs-6">Test Adı</label>
                                                         <input type="text" id="test_name" name="test_name" class="form-control form-control-solid"  required>
                                                     </div>
-
+                                                    
                                                     <div class="mb-5 fv-row">
+                                                        <label class="form-label required fw-semibold fs-6">Test Tipi Seçimi</label>
+                                                        <div class="d-flex">
+                                                            <div class="form-check form-check-custom form-check-solid me-10">
+                                                                <input class="form-check-input" type="radio" name="test_type" value="pdf" id="type_pdf" checked/>
+                                                                <label class="form-check-label" for="type_pdf">
+                                                                    PDF Dosyası Yükle
+                                                                </label>
+                                                            </div>
+                                                            <div class="form-check form-check-custom form-check-solid">
+                                                                <input class="form-check-input" type="radio" name="test_type" value="link" id="type_link"/>
+                                                                <label class="form-check-label" for="type_link">
+                                                                    Harici Bağlantı (Google Form vb.)
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div id="pdf_upload_area" class="mb-5 fv-row">
                                                         <label for="pdf_file" class="form-label required fw-semibold fs-6">Test PDF Dosyası</label>
-                                                        <input type="file" id="pdf_file" name="pdf_file" class="form-control form-control-solid" accept=".pdf" required>
+                                                        <input type="file" id="pdf_file" name="pdf_file" class="form-control form-control-solid" accept=".pdf">
                                                         <div class="form-text mt-1">Sadece .pdf uzantılı dosyalar, maksimum 5MB.</div>
+                                                    </div>
+
+                                                    <div id="link_input_area" class="mb-5 fv-row" style="display:none;">
+                                                        <label for="external_link" class="form-label required fw-semibold fs-6">Test Bağlantı Adresi (URL)</label>
+                                                        <input type="url" id="external_link" name="external_link" class="form-control form-control-solid" placeholder="https://forms.gle/örnekbağlantı">
+                                                        <div class="form-text mt-1">Örn: Google Forms, SurveyMonkey, vb.</div>
                                                     </div>
 
                                                     <div class="mb-5 fv-row">
@@ -162,15 +186,35 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 }
                                             }
 
+                                            // YENİ: Form tipi değiştiğinde alanları göster/gizle ve required niteliğini ayarla
+                                            function toggleFormType() {
+                                                const typePdf = document.getElementById('type_pdf');
+                                                const typeLink = document.getElementById('type_link');
+                                                const pdfUploadArea = document.getElementById('pdf_upload_area');
+                                                const linkInputArea = document.getElementById('link_input_area');
+                                                const pdfFile = document.getElementById('pdf_file');
+                                                const externalLink = document.getElementById('external_link');
+
+                                                if (typePdf.checked) {
+                                                    pdfUploadArea.style.display = 'block';
+                                                    linkInputArea.style.display = 'none';
+                                                    pdfFile.setAttribute('required', 'required');
+                                                    externalLink.removeAttribute('required');
+                                                    externalLink.value = ''; // Bağlantı alanını temizle
+                                                } else if (typeLink.checked) {
+                                                    pdfUploadArea.style.display = 'none';
+                                                    linkInputArea.style.display = 'block';
+                                                    pdfFile.removeAttribute('required');
+                                                    externalLink.setAttribute('required', 'required');
+                                                    pdfFile.value = ''; // Dosya alanını temizle
+                                                }
+                                            }
+
                                             // 1. Test Verilerini Çekme ve Tabloyu Doldurma (DataTable)
                                             async function fetchTests() {
                                                 try {
-
-
-
                                                     const response = await fetch('./includes/ajax.php?service=fetch_tests', {
                                                         method: 'GET',
-
                                                     });
 
                                                     if (!response.ok) {
@@ -212,27 +256,27 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                                 tests.forEach(test => {
                                                     // --- HATA ÇÖZÜMÜ: VERİ GÜVENLİĞİ KONTROLLERİ ---
-
-                                                    // test_id için güvenlik kontrolü (Varsayılan: 0)
                                                     const testId = test.id || 0;
-
-                                                    // test_name için güvenlik kontrolü (Varsayılan: 'İsimsiz Test'). 
-                                                    // Bu, .replace() çağrılmadan önce değerin bir dize olmasını garanti eder.
                                                     const testName = test.test_name || test.name || 'İsimsiz Test';
-
-                                                    // upload_date için güvenlik kontrolü. (Varsayılan: mevcut zaman)
                                                     const uploadDateRaw = test.upload_date || test.created_at || new Date().toISOString();
                                                     const uploadDate = new Date(uploadDateRaw);
+                                                    
+                                                    // YENİ: test_type ve file_path kullanımı
+                                                    const testType = test.test_type || 'pdf'; 
+                                                    const filePath = test.file_path || '#';
+                                                    
+                                                    let fileLink = '#';
+                                                    let displayName = testName;
 
-                                                    // file_path için güvenlik kontrolü (Varsayılan: boş dize)
-                                                    const filePath = test.file_path || '';
-                                                    const fileLink = `${filePath}`;
-
-                                                    // Hata veren nokta: testName'i tırnak işaretlerinden kaçırarak (escape ederek)
-                                                    // JavaScript fonksiyonuna güvenli bir şekilde aktarmak için kullanılır. 
-                                                    // testName'in yukarıda dize (string) olarak atanması sayesinde .replace() artık hata vermez.
+                                                    if (testType === 'link') {
+                                                        fileLink = filePath; // Harici bağlantıyı kullan
+                                                        displayName = testName;
+                                                    } else {
+                                                        fileLink = `${filePath}`; // İç sunucu yolu
+                                                        displayName = testName;
+                                                    }
+                                                    
                                                     const safeTestNameForJS = testName.replace(/'/g, "\\'");
-
                                                     // ---------------------------------------------
 
 
@@ -247,7 +291,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     const row = tableBody.insertRow();
                                                     row.innerHTML = `
             <td>
-                <a href="${fileLink}" target="_blank" class="text-gray-800 text-hover-primary mb-1">${testName}</a>
+                <a href="${fileLink}" target="_blank" class="text-gray-800 text-hover-primary mb-1">${displayName}</a>
+                <span class="badge badge-light-primary ms-2">${testType.toUpperCase()}</span>
             </td>
             <td>${formattedDate}</td>
             <td class="text-end">
@@ -288,7 +333,18 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 const form = document.getElementById('test_upload_form');
                                                 const submitButton = document.getElementById('submit_button');
                                                 const formData = new FormData(form);
-                                                // formData, formdaki 'test_name', 'pdf_file' ve YENİ EKLENEN 'cover_img' alanlarını otomatik olarak içerir.
+                                                
+                                                // YENİ: Tipe göre veri temizleme
+                                                const isLink = document.getElementById('type_link').checked;
+
+                                                // Link seçiliyse dosya yükleme alanlarını FormData'dan kaldır
+                                                if (isLink) {
+                                                    formData.delete('pdf_file');
+                                                } else {
+                                                    formData.delete('external_link');
+                                                }
+                                                //--------------------------------
+
                                                 formData.append('action', 'upload_test');
 
 
@@ -312,6 +368,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                                     if (data.status === 'success') {
                                                         form.reset();
+                                                        toggleFormType(); // Formu sıfırladıktan sonra alanları varsayılan hale getir
                                                         fetchTests(); // Başarılı yüklemeden sonra listeyi güncelle
                                                     }
 
@@ -328,7 +385,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             // 3. Silme İşlemi
                                             async function deleteTest(testId, testName) {
                                                 // Özel bir onay/uyarı kutusu kullanılması önerilir, ancak burada temel JavaScript confirm kullanılmıştır.
-                                                // NOT: alert() ve confirm() kullanmak yerine Metronic style'da bir modal kullanmanız daha iyi olur.
                                                 if (!confirm(`Emin misiniz? "${testName}" adlı test kalıcı olarak silinecektir.`)) {
                                                     return;
                                                 }
@@ -428,6 +484,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                             // Olay Dinleyicileri
                                             document.addEventListener('DOMContentLoaded', function() {
+                                                // YENİ: Test tipi radio butonlarını dinle
+                                                const radioButtons = document.querySelectorAll('input[name="test_type"]');
+                                                radioButtons.forEach(radio => {
+                                                    radio.addEventListener('change', toggleFormType);
+                                                });
+                                                toggleFormType(); // Sayfa ilk yüklendiğinde varsayılanı ayarla
+
                                                 // Yükleme formunu dinle
                                                 const uploadForm = document.getElementById('test_upload_form');
                                                 if (uploadForm) {

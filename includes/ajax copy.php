@@ -6225,18 +6225,18 @@ ORDER BY msu.unit_order asc
             exit;
         }
 
-        // 1. Kullanıcının TOPLAMDA bu testler için daha önce ÜCRETSİZ indirme hakkını KULLANIP KULLANMADIĞINI KONTROL ET
-        // ÖNEMLİ DEĞİŞİKLİK: Sorgudan test_id filtresi KALDIRILDI. user_id'ye ait herhangi bir is_free=1 kaydı var mı diye bakılıyor.
-        $sqlCntrl = "SELECT id FROM psikolojik_test_sonuc_lnp WHERE user_id = :user_id AND is_free = 1 LIMIT 1";
+        // 1. Kullanıcının bu test için daha önce ücretsiz indirme hakkını KULLANIP KULLANMADIĞINI KONTROL ET
+        // (psikolojik_test_sonuc_lnp tablosunda user_id ve test_id'ye ait is_free=1 kaydı var mı?)
+        $sqlCntrl = "SELECT * FROM psikolojik_test_sonuc_lnp WHERE user_id = :user_id AND test_id = :test_id AND is_free = 1";
         $stmt2 = $pdo->prepare($sqlCntrl);
         $stmt2->execute([
-            'user_id' => $userId
+            'user_id' => $userId,
+            'test_id' => $testId
         ]);
-        // Eğer sonuç gelirse, bu kullanıcı ücretsiz hakkını daha önce kullanmıştır.
         $isFreeUsed = $stmt2->fetch(PDO::FETCH_ASSOC);
 
         if ($isFreeUsed) {
-            // Ücretsiz hak DAHA ÖNCE HERHANGİ BİR TEST İÇİN kullanılmış, ikinci indirme talebi: paket kontrolü yap
+            // Ücretsiz hak kullanılmış, ikinci indirme talebi: paket kontrolü yap
             $sqlPackage = "SELECT id FROM psikolojik_test_paketleri_user WHERE user_id = :user_id AND kullanim_durumu = 0 ORDER BY id ASC LIMIT 1";
             $stmt3 = $pdo->prepare($sqlPackage);
             $stmt3->execute([
@@ -6245,10 +6245,10 @@ ORDER BY msu.unit_order asc
             $package = $stmt3->fetch(PDO::FETCH_ASSOC);
 
             if (!$package) {
-                // Paket yoksa indirmeye izin verme (Harici link olsa bile engellenir)
+                // Paket yoksa indirmeye izin verme
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Toplam ücretsiz hakkınızı kullandınız. Bu indirme paket gereklidir. Lütfen paket alınız. Paket almak için <a href="ek-paket-satin-al" >buraya tıklayın</a>.'
+                    'message' => 'Bu testi daha önce indirdiğiniz için ikinci kez paket gereklidir. Lütfen paket alınız. Paket almak için <a href="ek-paket-satin-al" >buraya tıklayın</a>.'
                 ]);
                 exit;
             }
@@ -6259,26 +6259,16 @@ ORDER BY msu.unit_order asc
 
                 // 1. Paketi kullanıldı olarak işaretle
                 $stmt5 = $pdo->prepare("
-                UPDATE psikolojik_test_paketleri_user
-                SET kullanim_durumu = 1
-                WHERE id = :package_id
-            ");
+                    UPDATE psikolojik_test_paketleri_user
+                    SET kullanim_durumu = 1, kullanilan_tarih = NOW(), kullanilan_test_id = :test_id
+                    WHERE id = :package_id
+                ");
                 $stmt5->execute([
                     'package_id' => $package['id'],
-
+                    'test_id' => $testId
                 ]);
 
-                // 2. Eğer bu test için sonuç kaydı yoksa, oluştur (Sadece paket düşüldü kaydı için, is_free=0)
-                $sqlCheckCurrentTest = "SELECT id FROM psikolojik_test_sonuc_lnp WHERE user_id = :user_id AND test_id = :test_id";
-                $stmtCheckCurrent = $pdo->prepare($sqlCheckCurrentTest);
-                $stmtCheckCurrent->execute(['user_id' => $userId, 'test_id' => $testId]);
-                if (!$stmtCheckCurrent->fetch(PDO::FETCH_ASSOC)) {
-                    $sqlInsertNew = "INSERT INTO psikolojik_test_sonuc_lnp (test_id, user_id, school_id, is_free) VALUES (?, ?, ?, 0)";
-                    $stmtInsertNew = $pdo->prepare($sqlInsertNew);
-                    $stmtInsertNew->execute([$testId, $userId, $schoolId]);
-                }
-
-                // 3. İşlemi onayla
+                // 2. İşlemi onayla
                 $pdo->commit();
 
                 // İndirme işlemi için başarı mesajı gönder (ve indirme yolunu döndür)
@@ -6287,35 +6277,37 @@ ORDER BY msu.unit_order asc
             } catch (PDOException $e) {
                 $pdo->rollBack();
                 // Hata durumunda
+                // Hata ayıklama için: error_log("DB Hatası: " . $e->getMessage());
                 echo json_encode(['success' => false, 'message' => 'Paket güncelleme hatası. Lütfen tekrar deneyin.']);
                 exit;
             }
         } else {
-            // Ücretsiz hak HENÜZ KULLANILMAMIŞ (Toplamda ilk indirme), indirme izni ver ve is_free=1 olarak KAYDET (Bu test için)
+            // Ücretsiz hak KULLANILMAMIŞ (İlk indirme), indirme izni ver ve is_free=1 olarak KAYDET
             try {
-                // Kayıt var mı diye kontrol edelim (Yani, kullanıcı daha önce bu test için yükleme yapmış olabilir, ama indirme yapmamış olabilir)
+                // Kayıt var mı diye kontrol edelim (Yani, kullanıcı daha önce yükleme yapmış olabilir, ama indirme yapmamış olabilir)
                 $sqlCheckExisting = "SELECT id FROM psikolojik_test_sonuc_lnp WHERE user_id = :user_id AND test_id = :test_id";
                 $stmtCheck = $pdo->prepare($sqlCheckExisting);
                 $stmtCheck->execute(['user_id' => $userId, 'test_id' => $testId]);
                 $existingRecord = $stmtCheck->fetch(PDO::FETCH_ASSOC);
 
                 if ($existingRecord) {
-                    // Kayıt zaten var (muhtemelen daha önce yükleme yapılmış), is_free'yi 1 yap
+                    // Kayıt zaten var, is_free'yi 1 yap ve indirme tarihini güncelle
                     $stmt4 = $pdo->prepare("UPDATE psikolojik_test_sonuc_lnp SET is_free = 1 WHERE id = :id");
                     $stmt4->execute(['id' => $existingRecord['id']]);
                 } else {
                     // İlk defa indirme yapılıyor, is_free=1 olarak yeni bir sonuç kaydı oluştur
                     $sql = "INSERT INTO psikolojik_test_sonuc_lnp (test_id, user_id, school_id, is_free) 
-                         VALUES (?, ?, ?, 1)";
+                            VALUES (?, ?, ?, 1)";
                     $stmt = $pdo->prepare($sql);
                     $stmt->execute([$testId, $userId, $schoolId]);
                 }
 
                 // İndirme işlemi için başarı mesajı gönder (ve indirme yolunu döndür)
-                echo json_encode(['success' => true, 'message' => 'TOPLAMDAKİ ilk ücretsiz indirme hakkınız kullanıldı, indirme başlatılıyor.', 'download_link' => $filePath]);
+                echo json_encode(['success' => true, 'message' => 'İlk ücretsiz indirme hakkınız kullanıldı, indirme başlatılıyor.', 'download_link' => $filePath]);
                 exit;
             } catch (PDOException $e) {
                 // Hata durumunda
+                // error_log("DB Hatası: " . $e->getMessage());
                 echo json_encode(['success' => false, 'message' => 'Veritabanı bağlantı hatası: ' . $e->getMessage()]);
                 exit;
             }
@@ -6347,7 +6339,14 @@ ORDER BY msu.unit_order asc
 
 
         if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
-            echo json_encode(['success' => false, 'message' => 'Dosya yüklenemedi veya geçersiz.']);
+            // Dosya yükleme hatası veya dosya yok
+            $errorMsg = match ($file['error'] ?? UPLOAD_ERR_NO_FILE) {
+                UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => 'Yüklenen dosya boyutu çok büyük.',
+                UPLOAD_ERR_PARTIAL => 'Dosya sadece kısmen yüklenebildi.',
+                UPLOAD_ERR_NO_FILE => 'Lütfen bir dosya seçin.',
+                default => 'Dosya yüklenirken bilinmeyen bir hata oluştu.'
+            };
+            echo json_encode(['success' => false, 'message' => $errorMsg]);
             exit;
         }
 
@@ -6370,30 +6369,6 @@ ORDER BY msu.unit_order asc
             echo json_encode(['success' => false, 'message' => 'Dosya boyutu 10MB’dan büyük olamaz.']);
             exit;
         }
-
-        // ***************************************************************
-        // *** YENİ PAKET / KULLANIM HAKKI KONTROLÜ BAŞLANGICI ***
-        // Kullanıcının bu testi daha önce indirip indirmediğini (yani paket hakkını kullanıp kullanmadığını) kontrol et
-        try {
-            $sqlCheck = "SELECT COUNT(*) FROM psikolojik_test_sonuc_lnp 
-                         WHERE test_id = :test_id AND user_id = :user_id";
-            $stmtCheck = $pdo->prepare($sqlCheck);
-            $stmtCheck->execute(['test_id' => $testId, 'user_id' => $userId]);
-            $recordCount = $stmtCheck->fetchColumn();
-
-            // Eğer sonuç tablosunda bu kullanıcı ve test ID'si için kayıt yoksa, 
-            // kullanıcı testi indirmemiş/hakkını kullanmamış demektir.
-            if ($recordCount == 0) {
-                echo json_encode(['success' => false, 'message' => 'Bu testi cevaplamak için önce indirme hakkınızı kullanmalısınız. Paket kontrolü başarısız.']);
-                exit;
-            }
-        } catch (PDOException $e) {
-            // Veritabanı bağlantı hatası
-            echo json_encode(['success' => false, 'message' => 'Veritabanı kontrol hatası. Cevap yüklenemedi.']);
-            exit;
-        }
-        // *** YENİ PAKET / KULLANIM HAKKI KONTROLÜ BİTİŞİ ***
-        // ***************************************************************
 
         // 4. Dosyayı Güvenli Bir Şekilde Kaydetme
         $uploadDir = '../uploads/psk_test_cevaplari/'; // Kök dizine göre göreceli yol (Aynı kalsın)
@@ -6460,7 +6435,8 @@ ORDER BY msu.unit_order asc
             // move_uploaded_file hatası
             echo json_encode(['success' => false, 'message' => 'Dosya sunucuya taşınamadı. Klasör izinlerini kontrol edin.']);
         }
-        break;case 'update_test_status':
+        break;
+    case 'update_test_status':
         $id = $_POST['id'] ?? null;
         // Frontend'den gelen 'test_name', 'name' sütununa karşılık gelir.
         $status = trim($_POST['status'] ?? '');
@@ -6740,110 +6716,61 @@ ORDER BY msu.unit_order asc
         $endTime = $_POST['end_time'];
         $notes = trim($_POST['notes'] ?? '');
 
-        try {
-            if (!isset($pdo)) {
-                $dbh = new Dbh();
-                $pdo = $dbh->connect();
-            }
-            
-            // =========================================================================
-            // YENİ KONTROL 1: Bekleyen Test Sayısı ve Bekleyen Randevu İlişkisi
-            // =========================================================================
-
-            // A. Bekleyen (status=0) test sonucu sayısını bul
-            $sqlCountTests = "
-                SELECT COUNT(id) 
-                FROM psikolojik_test_sonuc_lnp 
-                WHERE user_id = :user_id 
-                AND status = 0 
-                AND file_path IS NOT NULL
-                AND file_path != ''
-            ";
-            $stmtCountTests = $pdo->prepare($sqlCountTests);
-            $stmtCountTests->execute([':user_id' => $clientUserId]);
-            $pendingTestsCount = $stmtCountTests->fetchColumn(); // N değeri
-
-            // B. Halihazırda 'Beklemede' olan randevu sayısını bul (Onaylanmamış talepler)
-            $sqlCountAppointments = "
-                SELECT COUNT(id) 
-                FROM psikolog_randevular 
-                WHERE client_user_id = :client_user_id 
-                AND status = 'Beklemede'
-            ";
-            $stmtCountAppointments = $pdo->prepare($sqlCountAppointments);
-            $stmtCountAppointments->execute([':client_user_id' => $clientUserId]);
-            $pendingAppointmentsCount = $stmtCountAppointments->fetchColumn(); // M değeri
-
-            // C. Kontrol: Bekleyen test sayısı, beklemede olan randevu sayısından büyük/eşit olmalı.
-            // Yani, her bekleyen test için maksimum 1 adet randevu oluşturma hakkı var.
-            if ($pendingAppointmentsCount >= $pendingTestsCount) {
-                // $pendingTestsCount = 0 ise ve $pendingAppointmentsCount >= 0 ise randevu oluşturulamaz.
-                // $pendingTestsCount = 1 ise ve $pendingAppointmentsCount >= 1 ise randevu oluşturulamaz.
-                $message = '';
-                if ($pendingTestsCount == 0) {
-                     $message = 'Yeni randevu talebi oluşturabilmek için öncelikle bir psikolojik test sonucunuzun değerlendirilmek üzere beklemede olması gerekmektedir.';
-                } else {
-                     $message = 'Halihazırda ' . $pendingAppointmentsCount . ' adet beklemede randevu talebiniz bulunmaktadır. Değerlendirilmek üzere  ' . $pendingTestsCount . ' adet testiniz beklediği için yeni randevu talebi oluşturamazsınız.';
-                }
-
-                echo json_encode([
-                    'status' => 'error', 
-                    'message' => $message
-                ]);
-                exit;
-            }
-            // =========================================================================
-            // KONTROL BİTİŞ: Eğer buraya ulaşıldıysa, randevu oluşturulabilir ($N > $M)
-            // =========================================================================
-
-            // 2. Randevu Çakışma Kontrolü (Aynı psikolog, tarih ve saat dilimi için)
-            $stmt = $pdo->prepare("
-                SELECT id FROM psikolog_randevular 
-                WHERE user_id = :user_id 
-                  AND appointment_date = :appointment_date 
-                  AND status != 'İptal' 
-                  AND (
-                      (start_time <= :start_time AND end_time > :start_time) OR 
-                      (start_time < :end_time AND end_time >= :end_time) OR 
-                      (start_time >= :start_time AND end_time <= :end_time) 
-                  )
-            ");
-            $stmt->execute([
-                ':user_id' => $psikologId,
-                ':appointment_date' => $appointmentDate,
-                ':start_time' => $startTime,
-                ':end_time' => $endTime
-            ]);
-
-            if ($stmt->fetch(PDO::FETCH_ASSOC)) {
-                echo json_encode(['status' => 'error', 'message' => 'Seçtiğiniz saat dilimi maalesef doludur. Lütfen başka bir saat seçin.']);
-                exit;
-            }
-
-            // 3. Randevuyu Kaydet
-            $stmt = $pdo->prepare("
-                INSERT INTO psikolog_randevular 
-                    (user_id, client_user_id, client_name, client_phone, appointment_date, start_time, end_time, status, notes) 
-                VALUES 
-                    (:psikolog_id, :client_user_id, :client_name, :client_phone, :appointment_date, :start_time, :end_time, 'Beklemede', :notes)
-            ");
-            $stmt->execute([
-                ':psikolog_id' => $psikologId,
-                ':client_user_id' => $clientUserId, 
-                ':client_name' => $clientName,
-                ':client_phone' => $clientPhone,
-                ':appointment_date' => $appointmentDate,
-                ':start_time' => $startTime,
-                ':end_time' => $endTime,
-                ':notes' => $notes
-            ]);
-
-            echo json_encode(['status' => 'success', 'message' => 'Randevunuz başarıyla talep edildi ve onay bekliyor.']);
-        } catch (PDOException $e) {
-            // error_log("Randevu Kayıt Hatası: " . $e->getMessage());
-            echo json_encode(['status' => 'error', 'message' => 'Randevu kaydedilirken bir veritabanı hatası oluştu.']);
+        // try {
+        if (!isset($pdo)) {
+            $dbh = new Dbh();
+            $pdo = $dbh->connect();
         }
-        break;case 'getAppointmentsByClient':
+
+        // 2. Randevu Çakışma Kontrolü (Aynı psikolog, tarih ve saat dilimi için)
+        $stmt = $pdo->prepare("
+            SELECT id FROM psikolog_randevular 
+            WHERE user_id = :user_id 
+              AND appointment_date = :appointment_date 
+              AND status != 'İptal' 
+              AND (
+                  (start_time <= :start_time AND end_time > :start_time) OR  -- Başlangıç saatimiz, mevcut randevunun içinde
+                  (start_time < :end_time AND end_time >= :end_time) OR      -- Bitiş saatimiz, mevcut randevunun içinde
+                  (start_time >= :start_time AND end_time <= :end_time)      -- Mevcut randevu, bizim randevumuzun içinde
+              )
+        ");
+        $stmt->execute([
+            ':user_id' => $psikologId,
+            ':appointment_date' => $appointmentDate,
+            ':start_time' => $startTime,
+            ':end_time' => $endTime
+        ]);
+
+        if ($stmt->fetch(PDO::FETCH_ASSOC)) {
+            echo json_encode(['status' => 'error', 'message' => 'Seçtiğiniz saat dilimi maalesef doludur. Lütfen başka bir saat seçin.']);
+            exit;
+        }
+
+        // 3. Randevuyu Kaydet
+        $stmt = $pdo->prepare("
+            INSERT INTO psikolog_randevular 
+                (user_id, client_user_id, client_name, client_phone, appointment_date, start_time, end_time, status, notes) 
+            VALUES 
+                (:psikolog_id, :client_user_id, :client_name, :client_phone, :appointment_date, :start_time, :end_time, 'Beklemede', :notes)
+        ");
+        $stmt->execute([
+            ':psikolog_id' => $psikologId,
+            ':client_user_id' => $clientUserId, // Yeni eklenen alan: Randevu talep eden kullanıcı
+            ':client_name' => $clientName,
+            ':client_phone' => $clientPhone,
+            ':appointment_date' => $appointmentDate,
+            ':start_time' => $startTime,
+            ':end_time' => $endTime,
+            ':notes' => $notes
+        ]);
+
+        echo json_encode(['status' => 'success', 'message' => 'Randevunuz başarıyla talep edildi ve onay bekliyor.']);
+        // } catch (PDOException $e) {
+        //     error_log("Randevu Kayıt Hatası: " . $e->getMessage());
+        //     echo json_encode(['status' => 'error', 'message' => 'Randevu kaydedilirken bir veritabanı hatası oluştu.']);
+        // }
+        break;
+    case 'getAppointmentsByClient':
         // Danışanın (client_user_id) kendi randevularını listeler
         if (!isset($_SESSION['id'])) {
             echo json_encode(['status' => 'error', 'message' => 'Oturum hatası.']);
