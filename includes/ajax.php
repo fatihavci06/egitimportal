@@ -6576,27 +6576,35 @@ ORDER BY msu.unit_order asc
         }
 
         // ***************************************************************
-        // *** YENİ PAKET / KULLANIM HAKKI KONTROLÜ BAŞLANGICI ***
-        // Kullanıcının bu testi daha önce indirip indirmediğini (yani paket hakkını kullanıp kullanmadığını) kontrol et
+        // *** GÜNCELLENMİŞ PAKET / KULLANIM HAKKI KONTROLÜ BAŞLANGICI ***
         try {
-            $sqlCheck = "SELECT COUNT(*) FROM psikolojik_test_sonuc_lnp 
+            // Kaydın varlığını ve daha önce dosya yüklenip yüklenmediğini kontrol et
+            $sqlCheck = "SELECT file_path FROM psikolojik_test_sonuc_lnp 
                          WHERE test_id = :test_id AND user_id = :user_id";
             $stmtCheck = $pdo->prepare($sqlCheck);
             $stmtCheck->execute(['test_id' => $testId, 'user_id' => $userId]);
-            $recordCount = $stmtCheck->fetchColumn();
+            $result = $stmtCheck->fetch(PDO::FETCH_ASSOC);
 
-            // Eğer sonuç tablosunda bu kullanıcı ve test ID'si için kayıt yoksa, 
-            // kullanıcı testi indirmemiş/hakkını kullanmamış demektir.
-            if ($recordCount == 0) {
-                echo json_encode(['success' => false, 'message' => 'Bu testi cevaplamak için önce indirme hakkınızı kullanmalısınız. Paket kontrolü başarısız.']);
+            // 1. İndirme hakkı kontrolü (Kayıt yoksa indirme yapılmamış demektir)
+            if (!$result) {
+                echo json_encode(['success' => false, 'message' => 'Bu testi cevaplamak için önce indirme hakkınızı kullanmalısınız. Cevap yüklenemedi.']);
                 exit;
             }
+
+            // 2. Tekrar yükleme kontrolü (Dosya yolu zaten doluysa, daha önce yükleme yapılmıştır)
+            // Eğer file_path doluysa ve bu bir FREE test değilse, yeniden yüklemeyi engelleyebiliriz.
+            // En basit çözüm: file_path doluysa engelle.
+            if (!empty($result['file_path'])) {
+                echo json_encode(['success' => false, 'message' => 'Bu teste ait cevap dosyasını daha önce yüklediniz. Tekrar yükleme yapılamaz.']);
+                exit;
+            }
+
         } catch (PDOException $e) {
             // Veritabanı bağlantı hatası
             echo json_encode(['success' => false, 'message' => 'Veritabanı kontrol hatası. Cevap yüklenemedi.']);
             exit;
         }
-        // *** YENİ PAKET / KULLANIM HAKKI KONTROLÜ BİTİŞİ ***
+        // *** GÜNCELLENMİŞ PAKET / KULLANIM HAKKI KONTROLÜ BİTİŞİ ***
         // ***************************************************************
 
         // 4. Dosyayı Güvenli Bir Şekilde Kaydetme
@@ -6627,7 +6635,7 @@ ORDER BY msu.unit_order asc
                 $dbFilePath = str_replace('../', '', $targetPath);
 
                 // Varolan kaydı (indirme sırasında oluşturulanı veya daha öncekini) güncelle
-                // SADECE file_path ve upload_date güncellenir. is_free'ye dokunulmaz.
+                // NOT: Yukarıdaki kontrolden dolayı buradaki UPDATE, file_path boşken (ilk yüklemede) çalışacaktır.
                 $sqlUpdate = "UPDATE psikolojik_test_sonuc_lnp 
                               SET file_path = :file_path, school_id = :school_id
                               WHERE test_id = :test_id AND user_id = :user_id";
@@ -6639,10 +6647,13 @@ ORDER BY msu.unit_order asc
                     'test_id' => $testId,
                     'user_id' => $userId
                 ])) {
-                    // Güncelleme başarısız ise (0 satır etkilenmişse), 
-                    // indirme yapmadan direkt yükleme yapmış olabilir. 
-                    // Bu durumda yeni kayıt ekliyoruz (is_free=0)
+                    // Normalde yukaridaki kontrol nedeniyle rowCount() 0 olmamalı.
+                    // Ancak indirme yapmadan direkt yükleme yapmaya çalışan bir kullanıcı için
+                    // eğer kayıt yoksa (ki bu durumda yukarıda engellenir) bu blok çalışır.
+                    // Eğer test indirilmiş ve bir kayıt oluşmuşsa, UPDATE çalışır.
                     if ($stmt->rowCount() == 0) {
+                         // Bu blok, indirme kaydı olup da UPDATE'in 0 satırı etkilediği teorik bir durum için duruyor.
+                         // Pratik olarak, indirme yapmadan direkt yükleme yapanlar yukarıda engellenir.
                         $sqlInsert = "INSERT INTO psikolojik_test_sonuc_lnp (test_id, user_id, school_id, file_path, upload_date, is_free) 
                                       VALUES (?, ?, ?, ?, NOW(), 0)";
                         $stmtInsert = $pdo->prepare($sqlInsert);
@@ -6664,8 +6675,7 @@ ORDER BY msu.unit_order asc
             // move_uploaded_file hatası
             echo json_encode(['success' => false, 'message' => 'Dosya sunucuya taşınamadı. Klasör izinlerini kontrol edin.']);
         }
-        break;
-    case 'update_test_status':
+        break;case 'update_test_status':
         $id = $_POST['id'] ?? null;
         // Frontend'den gelen 'test_name', 'name' sütununa karşılık gelir.
         $status = trim($_POST['status'] ?? '');
