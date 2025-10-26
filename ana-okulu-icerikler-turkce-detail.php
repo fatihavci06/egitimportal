@@ -369,26 +369,95 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <div class="container py-5">
 
 
-                                                        <div class="row row-cols-2 row-cols-md-4 g-3">
+                                                        <?php
+// Sayacı başlatıyoruz.
+$i = 0; 
+?>
+<div class="row row-cols-2 row-cols-md-3 g-3">
+    
+    <?php foreach ($weeks as $week): ?>
+        <?php
+        // Karakter sırasını belirliyoruz: bir kız, bir erkek
+        $character_type = ($i % 2 === 0) ? 'kiz' : 'erkek';
 
-                                                            <?php foreach ($weeks as  $week): ?>
-                                                                <div class="col">
-                                                                    <a href="ana-okulu-icerikler-turkce-detail-week?week_id=<?= $week['id']  ?>&week_name=<?= $week['name'] ?>" class="month-block-link shadow-sm">
+        // Arkaplan görseli yolunu belirliyoruz.
+        $background_image = ($character_type === 'kiz')
+            ? 'uploads/ana-okulu-icerikler-turkce/belirli-gun-haftalar-kiz.png'
+            : 'uploads/ana-okulu-icerikler-turkce/belirli-gun-haftalar-erkek.png';
+        
+        // Dinamik link
+        $link = "ana-okulu-icerikler-turkce-detail-week?week_id=" . $week['id'] . "&week_name=" . $week['name'];
+        ?>
 
-                                                                        <div class="month-block d-flex align-items-center h-100">
+        <div class="col">
+            <a href="<?= $link ?>" class="month-block-link shadow-sm d-block text-decoration-none">
 
+                <div class="month-block" style="
+                    /* Ana arkaplan görseli: Karakter ve ahşap tabela */
+                    background-image: url('<?= $background_image ?>');
+                    background-repeat: no-repeat;
+                    background-size: 100% 100%;
+                    min-height: 250px;
+                    position: relative;
+                ">
+                    
+                    <div class="tabela-content" style="
+                        position: absolute;
+                        top: 80px; /* Ahşap tabelanın görünen kısmına göre pozisyon */
+                        left: 210px;;
+                        transform: translate(-50%, -50%);
+                        width: 200px; /* Tabelanın genişliğini artırdık */
+                        border-radius: 5px; /* Köşe yuvarlaklığı */
+                        overflow: hidden; /* İçerik taşmasını engellemek ve border-radius'u korumak için */
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Hafif gölge */
+                    ">
+                        
+                        <div class="tabela-top-white" style="
+                            background-color: white;
+                            padding: 10px;
+                            text-align: center;
+                        ">
+                            <div class="ikon-ve-baslik" style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap;">
+                                
+                                <div style="flex-grow: 1;">
+                                    <span class="d-block fw-bold" style="font-size: 0.9rem; color: #38a538;">
+                                        <?= htmlspecialchars($week['name']) ?>
+                                    </span>
+                                </div>
+                            </div>
 
+                        </div>
+                        
+                        <div class="tabela-bottom-green" style="
+                            background-color: #38a538; /* Yeşil Zemin */
+                            padding: 5px 10px;
+                            text-align: left;
+                        ">
+                            <span class="text-white" style="font-size: 0.8rem;">İncele</span>
+                        </div>
+                    </div>
 
-                                                                            <span class="fw-bold text-dark">
-                                                                                <?= htmlspecialchars($week['name']) ?>
-                                                                            </span>
+                </div>
+            </a>
+        </div>
+    <?php 
+    // Sayacı artırıyoruz.
+    $i++;
+    endforeach; 
+    ?>
+</div>
+</div>
 
-                                                                        </div>
-                                                                    </a>
-                                                                </div>
-                                                            <?php endforeach; ?>
+<style>
+/* Eklenen CSS sınıfları ve stiller, resimdeki görünümü daha iyi taklit etmek için gerekebilir. */
+/* Örneğin, .month-block-link'e 100% genişlik vermek, içerideki görselleri düzenlemek vb. */
+/* Yukarıdaki inline stiller temel görünümü sağlamalıdır. */
 
-                                                        </div>
+/* Eğer tabela içinde başka özel bir tasarım varsa (örn. kahverengi üst kısım), 
+   background-image'in sadece karakteri değil, tüm tabelayı içermesi veya 
+   ek CSS katmanları kullanılması gerekir. Mevcut arkaplan görseli yolunuzun 
+   hem karakteri hem de tabelayı içeren nihai bir PNG olduğunu varsayıyorum. */
+</style>
                                                     </div>
                                             <?php
                                                     break;
