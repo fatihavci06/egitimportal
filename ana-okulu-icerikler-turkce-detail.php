@@ -232,8 +232,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <div class="card-body pt-5 ">
                                         <div class="row container-fluid" style="margin-top:-25px;">
-                                            <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
-                    border-top border-bottom border-custom-red mb-2" style="border-width: 5px !important; height:85px;margin-bottom: 26px !important;">
+                                            <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center border-top border-bottom border-custom-red mb-2" style="border-width: 5px !important; height:85px;margin-bottom: 26px !important;">
 
                                                 <div class="d-flex align-items-center">
                                                     <div class="rounded-circle bg-danger me-3 shadow icon-circle-lg d-flex justify-content-center align-items-center"
@@ -259,7 +258,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     $data = $dataList->getTurkceImportanWeekDetail();
 
                                                     // Sütunları düzenlemek için ana satırı başlat
-                                                    echo '<div class="row">';
+                                                    echo '<div class="row" style="background-size: 15%; background-position: bottom right; background-repeat: no-repeat; background-image: url(uploads/maskot-ikili.png); ">';
 
                                                     // Her bir kavram grubu için 4 sütunluk bir yapı kullan
                                                     foreach ($data as $week) {
