@@ -93,7 +93,7 @@ if (isset($_SESSION['role'])) {
                                             <div class="me-3 icon-circle-lg">
                                                 <img src="assets/media/mascots/lineup-robot-maskot.png" style="width: 80px;" alt="Maskot">
                                             </div>
-                                            <h1 class="fs-3 fw-bold text-dark mb-0">Yapay Zekaya Sorunu Sor</h1>
+                                            <h1 class="fs-3 fw-bold text-dark mb-0">Öğrenen Robot Freya'ya Sorunu Sor</h1>
                                         </div>
                                     </header>
 

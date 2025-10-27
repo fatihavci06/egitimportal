@@ -43,7 +43,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         .month-block {
             /* Temiz, yuvarlak kenarlı blok görünümü */
             background-color: #ffffff;
-            border: 1px solid #dee2e6;
+            /* border: 1px solid #dee2e6; */
             border-radius: 0.5rem;
             padding: 1rem;
         }
@@ -373,7 +373,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 // Sayacı başlatıyoruz.
 $i = 0; 
 ?>
-<div class="row row-cols-2 row-cols-md-3 g-3">
+<div class="row row-cols-2 row-cols-xl-3 row-cols-lg-3 row-cols-md-2 row-cols-sm-1 g-3">
     
     <?php foreach ($weeks as $week): ?>
         <?php
@@ -390,24 +390,27 @@ $i = 0;
         ?>
 
         <div class="col">
-            <a href="<?= $link ?>" class="month-block-link shadow-sm d-block text-decoration-none">
+            <a href="<?= $link ?>" class="month-block-link d-block text-decoration-none">
 
                 <div class="month-block" style="
                     /* Ana arkaplan görseli: Karakter ve ahşap tabela */
                     background-image: url('<?= $background_image ?>');
                     background-repeat: no-repeat;
-                    background-size: 100% 100%;
-                    min-height: 250px;
+                   /* background-size: 100% 100%; 
+                    min-height: 250px;*/
                     position: relative;
+                    min-height: 340px;
+                    background-size: contain;
+                    background-position: center;
                 ">
                     
                     <div class="tabela-content" style="
                         position: absolute;
-                        top: 80px; /* Ahşap tabelanın görünen kısmına göre pozisyon */
-                            left: 60%;
+                        top: 108px; /* Ahşap tabelanın görünen kısmına göre pozisyon */
+                            left: 54%;
 
                         transform: translate(-50%, -50%);
-                        width: 200px; /* Tabelanın genişliğini artırdık */
+                        width: 170px; /* Tabelanın genişliğini artırdık */
                         border-radius: 5px; /* Köşe yuvarlaklığı */
                         overflow: hidden; /* İçerik taşmasını engellemek ve border-radius'u korumak için */
                         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Hafif gölge */

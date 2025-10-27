@@ -262,56 +262,38 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-5 d-flex justify-content-center">
                                                 <div class="card w-100 border-0">
                                                     <a href="#" class="text-decoration-none w-100">
-                                                                    <div class="card-overlay d-flex align-items-center justify-content-center position-absolute top-50 ">
-                                                                        <img src="uploads/atolyeler/spor-ve-dans-atolyesi.png">
-                                                                    </div>
-                                                        
-                                                    </a>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-5 d-flex justify-content-center">
-                                                <div class="card shadow-lg w-100 border-0" style="max-width: 300px; border-radius: 15px;">
-                                                    <a href="ana-okulu-icerikler-turkce-detail.php?title=Aylar&type=2" class="text-decoration-none w-100">
-                                                        <div class="concept-wrapper">
-                                                            <div class="kavramlar-container">
-                                                                <div class="orange-border-box">
-                                                                    <div class="red-orange-accent-bg">
-                                                                        <h3 class="text-white fw-bolder text-center m-0 fs-3">AYLAR</h3>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                                        <div class="card-overlay d-flex align-items-center justify-content-center">
+                                                            <img src="uploads/atolyeler/spor-ve-dans-atolyesi.png" class="img-fluid">
                                                         </div>
                                                     </a>
                                                 </div>
                                             </div>
 
                                             <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-5 d-flex justify-content-center">
-                                                <div class="card shadow-lg w-100 border-0" style="max-width: 300px; border-radius: 15px;">
-                                                    <a href="ana-okulu-icerikler-turkce-detail.php?title=Belirli Günler ve Haftalar&type=3" class="text-decoration-none w-100">
-                                                        <div class="concept-wrapper">
-                                                            <div class="kavramlar-container">
-                                                                <div class="orange-border-box">
-                                                                    <div class="red-orange-accent-bg">
-                                                                        <h3 class="text-white fw-bolder text-center m-0 fs-5">BELİRLİ GÜNLER VE HAFTALAR</h3>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                                <div class="card w-100 border-0">
+                                                    <a href="#" class="text-decoration-none w-100">
+                                                        <div class="card-overlay d-flex align-items-center justify-content-center">
+                                                            <img src="uploads/atolyeler/bilim-atolyesi.png" class="img-fluid">
                                                         </div>
                                                     </a>
                                                 </div>
                                             </div>
+
                                             <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-5 d-flex justify-content-center">
-                                                <div class="card shadow-lg w-100 border-0" style="max-width: 300px; border-radius: 15px;">
-                                                    <a href="ana-okulu-icerikler-turkce-detail.php?title=Etkinlikler&type=4" class="text-decoration-none w-100">
-                                                        <div class="concept-wrapper">
-                                                            <div class="kavramlar-container">
-                                                                <div class="orange-border-box">
-                                                                    <div class="red-orange-accent-bg">
-                                                                        <h3 class="text-white fw-bolder text-center m-0 fs-5">ETKİNLİKLER</h3>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                                <div class="card w-100 border-0">
+                                                    <a href="#" class="text-decoration-none w-100">
+                                                        <div class="card-overlay d-flex align-items-center justify-content-center">
+                                                            <img src="uploads/atolyeler/sanat-atolyesi.png" class="img-fluid">
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-5 d-flex justify-content-center">
+                                                <div class="card w-100 border-0">
+                                                    <a href="#" class="text-decoration-none w-100">
+                                                        <div class="card-overlay d-flex align-items-center justify-content-center">
+                                                            <img src="uploads/atolyeler/puzzle-atolyesi.png" class="img-fluid">
                                                         </div>
                                                     </a>
                                                 </div>
