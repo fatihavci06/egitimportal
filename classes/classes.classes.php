@@ -2,6 +2,22 @@
 
 class Classes extends Dbh
 {
+
+	public function getUsersName($userId)
+	{
+		$sql = 'SELECT name, surname FROM users_lnp WHERE id = ?';
+		$stmt = $this->connect()->prepare($sql);
+		$executeResult = $stmt->execute([$userId]);
+
+		if (!$executeResult) {
+			$stmt = null;
+			exit();
+		}
+
+		$data = $stmt->fetch(PDO::FETCH_ASSOC);
+		return $data;
+	}
+
 	public function getTestByTopicLessonUnit($class_id, $lesson_id = null, $unit_id = null, $topic_id = null)
 	{
 

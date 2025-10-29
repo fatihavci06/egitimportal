@@ -128,20 +128,19 @@ if (isset($_SESSION['role'])) {
                                                         <table id="meetingTable" class="table table-striped table-bordered align-middle">
                                                             <thead>
                                                                 <tr>
-                                                                    <th>Başlık</th>
-                                                                    <th>Tarih & Saat</th>
-                                                                    <th>Yaş Grubu</th>
+                                                                    <th style="width: 1%;"></th>
+                                                                    <th>Ders Bilgileri</th>
                                                                     <th>İşlem</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
                                                                 <?php if (!empty($list)): ?>
-                                                                    <?php foreach ($list as $row): ?>
+                                                                    <?php foreach ($list as $row): 
+                                                                        $name = $liveVideoList->getUsersName($row['organizer_id']);
+                                                                        ?>
                                                                         <tr>
-                                                                            <td><?= htmlspecialchars($row['description']) ?></td>
-
-                                                                            <td><?= date('d-m-Y H:i', strtotime($row['meeting_date'])) ?></td>
-                                                                            <td><?= htmlspecialchars($row['class_name']) ?></td>
+                                                                            <td><img src="https://lineupcampus.com/online/assets/media/icons/dersler/turkce.png" style="width: 50px"></td>
+                                                                            <td><span style="font-size: 17px; font-weight: 600"><?= htmlspecialchars($row['description']) ?></span> <br> <?= $name['name'] . ' ' . $name['surname'] ?> / <?= htmlspecialchars($row['class_name']) ?> <br> <?= date('d-m-Y H:i', strtotime($row['meeting_date'])) ?> </td>
                                                                             <td>
                                                                                 <?php if ($_SESSION['role'] == 1 || $_SESSION['role'] == 10001): ?>
                                                                                     <a href="<?= htmlspecialchars($row['zoom_start_url']) ?>" target="_blank" class="btn btn-success btn-sm me-2">

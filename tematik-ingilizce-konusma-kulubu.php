@@ -206,7 +206,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <i class="fas fa-bullseye fa-2x text-white"></i>
                                                     </div>
 
-                                                    <h1 class="fs-3 fw-bold text-dark mb-0">Türkçe</h1>
+                                                    <h1 class="fs-3 fw-bold text-dark mb-0">Tematik İngilizce Konuşma Kulübü</h1>
                                                 </div>
                                             </header>
                                         </div>
@@ -259,138 +259,45 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                         <div class="row container-fluid d-flex justify-content-center">
 
-                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 mb-5 d-flex justify-content-center">
-                                                <div class="s" style="max-width: 300px; border-radius: 15px;">
-                                                    <a href="ana-okulu-icerikler-turkce-detail.php?title=Kavramlar&type=1" class="text-decoration-none w-100">
-                                                        <div class="concept-wrapper" style="position: relative; overflow: hidden; border-radius: 15px;">
-                                                            <div class="background-image-container" style="
-                    background-image: url('uploads/ana-okulu-icerikler-turkce/kavramlar.png'); 
-                    background-size: cover;
-                    background-position: center;
-                    width: 290px;
-                    height: 220px; 
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                ">
-                                                                <div class="kavramlar-overlay" style="
-                        background-color: #F87B00;
-                        padding: 5px 15px; /* padding azaltıldı */
-                        border-radius: 6px;
-                        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
-                        margin-right: 65px;
-                        width: auto; /* sabit genişlik kaldırıldı */
-                        display: inline-block; /* içerik kadar genişlik */
-                    ">
-                                                                    <h3 class="text-white fw-bolder text-center m-0 fs-4">KAVRAMLAR</h3>
-                                                                </div>
-                                                            </div>
+                                            <div class="col-xl-6 col-lg-6 col-md-2 col-sm-12 mb-5 d-flex justify-content-center">
+                                                <div class="card w-100 border-0">
+                                                    <a href="konusma-kulubu-konulari" class="text-decoration-none w-100">
+                                                        <div class="card-overlay d-flex align-items-center justify-content-center">
+                                                            <img src="uploads/tematik-ingilizce-konusma-kulubu/smart-kids-club.png" class="img-fluid">
                                                         </div>
                                                     </a>
                                                 </div>
                                             </div>
 
-
-                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 mb-5 d-flex justify-content-center">
-                                                <div class="" style="max-width: 300px; border-radius: 15px;">
-                                                    <a href="ana-okulu-icerikler-turkce-detail.php?title=Aylar&type=2" class="text-decoration-none w-100">
-                                                        <div class="concept-wrapper" style="position: relative; overflow: hidden; border-radius: 15px;">
-                                                            <div class="background-image-container" style="
-                    background-image: url('uploads/ana-okulu-icerikler-turkce/gun-hafta.png'); 
-                    background-size: cover;
-                    background-position: center;
-                    width: 290px;
-                    height: 220px; 
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                ">
-                                                                <div class="kavramlar-overlay" style="
-                        background-color: #F87B00;
-                        padding: 5px 15px;
-                        border-radius: 6px;
-                        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
-                        margin-right: 65px;
-                        width: auto;
-                        display: inline-block;
-                    ">
-                                                                    <h3 class="text-white fw-bolder text-center m-0 fs-4">AYLAR</h3>
-                                                                </div>
-                                                            </div>
+                                            <div class="col-xl-6 col-lg-6 col-md-2 col-sm-12 mb-5 d-flex justify-content-center">
+                                                <div class="card w-100 border-0">
+                                                    <a href="#" class="text-decoration-none w-100">
+                                                        <div class="card-overlay d-flex align-items-center justify-content-center">
+                                                            <img src="uploads/tematik-ingilizce-konusma-kulubu/art-and-talk-club.png" class="img-fluid">
                                                         </div>
                                                     </a>
                                                 </div>
                                             </div>
 
-
-                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 mb-5 d-flex justify-content-center">
-                                                <div style="max-width: 300px; border-radius: 15px;">
-                                                    <a href="ana-okulu-icerikler-turkce-detail.php?title=Belirli Günler ve Haftalar&type=3" class="text-decoration-none w-100">
-                                                        <div class="concept-wrapper" style="position: relative; overflow: hidden; border-radius: 15px;">
-                                                            <div class="background-image-container" style="
-                    background-image: url('uploads/ana-okulu-icerikler-turkce/gun-hafta.png'); 
-                    background-size: cover;
-                    background-position: center;
-                    width: 290px;
-                    height: 220px; 
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                ">
-                                                                <div class="kavramlar-overlay" style="
-                        background-color: #F87B00;
-                        padding: 5px 10px;
-                        border-radius: 6px;
-                        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
-                        width: auto;
-                        display: inline-block;
-                        text-align: center;
-                        white-space: normal; /* alt satıra geçebilmesi için */
-                        margin-right: 63px;
-                    ">
-                                                                    <h3 class="text-white fw-bolder m-0 fs-5">BELİRLİ GÜNLER<br>VE HAFTALAR</h3>
-                                                                </div>
-                                                            </div>
+                                            <div class="col-xl-6 col-lg-6 col-md-2 col-sm-12 mb-5 d-flex justify-content-center">
+                                                <div class="card w-100 border-0">
+                                                    <a href="#" class="text-decoration-none w-100">
+                                                        <div class="card-overlay d-flex align-items-center justify-content-center">
+                                                            <img src="uploads/tematik-ingilizce-konusma-kulubu/drama-role-play-club.png" class="img-fluid">
                                                         </div>
                                                     </a>
                                                 </div>
                                             </div>
 
-
-
-                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 mb-5 d-flex justify-content-center">
-                                                <div style="max-width: 300px; border-radius: 15px;">
-                                                    <a href="ana-okulu-icerikler-turkce-detail.php?title=Etkinlikler&type=4" class="text-decoration-none w-100">
-                                                        <div class="concept-wrapper" style="position: relative; overflow: hidden; border-radius: 15px;">
-                                                            <div class="background-image-container" style="
-                    background-image: url('uploads/ana-okulu-icerikler-turkce/etkinlikler.png'); 
-                    background-size: cover;
-                    background-position: center;
-                    width: 290px;
-                    height: 220px; 
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                ">
-                                                                <div class="kavramlar-overlay" style="
-                        background-color: #F87B00;
-                        padding: 5px 8px;  /* sağ-sol küçültüldü */
-                        border-radius: 6px;
-                        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
-                        margin-right: 0;
-                        width: auto;
-                        display: inline-block;
-                        margin-right: 130px;
-                    ">
-                                                                    <h3 class="text-white fw-bolder text-center m-0 fs-5">ETKİNLİKLER</h3>
-                                                                </div>
-                                                            </div>
+                                            <div class="col-xl-6 col-lg-6 col-md-2 col-sm-12 mb-5 d-flex justify-content-center">
+                                                <div class="card w-100 border-0">
+                                                    <a href="#" class="text-decoration-none w-100">
+                                                        <div class="card-overlay d-flex align-items-center justify-content-center">
+                                                            <img src="uploads/tematik-ingilizce-konusma-kulubu/sign-and-talk-club.png" class="img-fluid">
                                                         </div>
                                                     </a>
                                                 </div>
                                             </div>
-
-
 
 
                                         </div>
@@ -440,4 +347,4 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 <?php } else {
     header("location: index");
 }
-?>
+?>ß

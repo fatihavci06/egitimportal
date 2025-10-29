@@ -68,7 +68,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <i class="fas fa-bullseye fa-2x text-white"></i>
                                                     </div>
 
-                                                    <h1 class="fs-3 fw-bold text-dark mb-0">Yaşam Rehberi</h1>
+                                                    <h1 class="fs-3 fw-bold text-dark mb-0">Aile Atölyeleri</h1>
                                                 </div>
                                             </header>
                                         </div>
@@ -77,10 +77,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         <div class="row justify-content-start">
 
                                             <div class="col-8">
-                                                <div class="card custom-card card-psikoloji p-4">
+                                                <div class=" custom-card card-psikoloji p-4">
                                                     <a href="psikolojik-test-listesi" class="text-decoration-none text-dark text-hover-primary">
                                                         <div class="d-flex align-items-center">
-                                                            <img src="includes/uploads/psikologkosesi/psikolojik-testler.jpg" alt="Aile Atölyeleri Görseli" style="width: 90%; height: auto; object-fit: contain;">
+                                                            <img src="uploads/aile-atolyeleri/aile-atolyeleri.png" alt="Aile Atölyeleri Görseli" style="max-width: 100%; height: auto; object-fit: contain;">
 
                                                         </div>
                                                     </a>
@@ -88,19 +88,19 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </div>
 
                                             <div class="col-8">
-                                                <div class="card custom-card card-tavsiye p-4">
+                                                <div class=" custom-card card-tavsiye p-4">
                                                     <a href="uzman-psikologdan-aileye-tavsiyeler" class="text-decoration-none text-dark text-hover-primary">
                                                         <div class="d-flex align-items-center">
-                                                            <img src="includes/uploads/psikologkosesi/uzman-psikologdan-aileye-tavsiyeler.jpg" alt="Aile Atölyeleri Görseli" style="width: 90%; height: auto; object-fit: contain;">
+                                                            <img src="uploads/aile-atolyeleri/global-kids-events.png" alt="Aile Atölyeleri Görseli" style="max-width: 100%; height: auto; object-fit: contain;">
                                                         </div>
                                                     </a>
                                                 </div>
                                             </div>
 
                                             <div class="col-8">
-                                                <div class="card custom-card  p-4">
+                                                <div class=" custom-card  p-4">
                                                     <div class="d-flex align-items-center">
-                                                        <img src="includes/uploads/psikologkosesi/aile-atolyeleri.jpg" alt="Aile Atölyeleri Görseli" style="width: 90%; height: auto; object-fit: contain;">
+                                                        <img src="uploads/aile-atolyeleri/family-game-nights.png" alt="Aile Atölyeleri Görseli" style="max-width: 100%; height: auto; object-fit: contain;">
                                                     </div>
                                                 </div>
                                             </div>
