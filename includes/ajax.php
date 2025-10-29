@@ -6481,7 +6481,7 @@ ORDER BY msu.unit_order asc
                     'package_id' => $package['id'],
                     'test_id' => $testId
                 ]);
-                
+
                 // 2. İşlemi onayla
                 $pdo->commit();
 
@@ -6598,7 +6598,6 @@ ORDER BY msu.unit_order asc
                 echo json_encode(['success' => false, 'message' => 'Bu teste ait cevap dosyasını daha önce yüklediniz. Tekrar yükleme yapılamaz.']);
                 exit;
             }
-
         } catch (PDOException $e) {
             // Veritabanı bağlantı hatası
             echo json_encode(['success' => false, 'message' => 'Veritabanı kontrol hatası. Cevap yüklenemedi.']);
@@ -6652,8 +6651,8 @@ ORDER BY msu.unit_order asc
                     // eğer kayıt yoksa (ki bu durumda yukarıda engellenir) bu blok çalışır.
                     // Eğer test indirilmiş ve bir kayıt oluşmuşsa, UPDATE çalışır.
                     if ($stmt->rowCount() == 0) {
-                         // Bu blok, indirme kaydı olup da UPDATE'in 0 satırı etkilediği teorik bir durum için duruyor.
-                         // Pratik olarak, indirme yapmadan direkt yükleme yapanlar yukarıda engellenir.
+                        // Bu blok, indirme kaydı olup da UPDATE'in 0 satırı etkilediği teorik bir durum için duruyor.
+                        // Pratik olarak, indirme yapmadan direkt yükleme yapanlar yukarıda engellenir.
                         $sqlInsert = "INSERT INTO psikolojik_test_sonuc_lnp (test_id, user_id, school_id, file_path, upload_date, is_free) 
                                       VALUES (?, ?, ?, ?, NOW(), 0)";
                         $stmtInsert = $pdo->prepare($sqlInsert);
@@ -6675,7 +6674,8 @@ ORDER BY msu.unit_order asc
             // move_uploaded_file hatası
             echo json_encode(['success' => false, 'message' => 'Dosya sunucuya taşınamadı. Klasör izinlerini kontrol edin.']);
         }
-        break;case 'update_test_status':
+        break;
+    case 'update_test_status':
         $id = $_POST['id'] ?? null;
         // Frontend'den gelen 'test_name', 'name' sütununa karşılık gelir.
         $status = trim($_POST['status'] ?? '');
@@ -6960,7 +6960,7 @@ ORDER BY msu.unit_order asc
                 $dbh = new Dbh();
                 $pdo = $dbh->connect();
             }
-            
+
             // =========================================================================
             // YENİ KONTROL 1: Bekleyen Test Sayısı ve Bekleyen Randevu İlişkisi
             // =========================================================================
@@ -6996,13 +6996,13 @@ ORDER BY msu.unit_order asc
                 // $pendingTestsCount = 1 ise ve $pendingAppointmentsCount >= 1 ise randevu oluşturulamaz.
                 $message = '';
                 if ($pendingTestsCount == 0) {
-                     $message = 'Yeni randevu talebi oluşturabilmek için öncelikle bir psikolojik test sonucunuzun değerlendirilmek üzere beklemede olması gerekmektedir.';
+                    $message = 'Yeni randevu talebi oluşturabilmek için öncelikle bir psikolojik test sonucunuzun değerlendirilmek üzere beklemede olması gerekmektedir.';
                 } else {
-                     $message = 'Halihazırda ' . $pendingAppointmentsCount . ' adet beklemede randevu talebiniz bulunmaktadır. Değerlendirilmek üzere  ' . $pendingTestsCount . ' adet testiniz beklediği için yeni randevu talebi oluşturamazsınız.';
+                    $message = 'Halihazırda ' . $pendingAppointmentsCount . ' adet beklemede randevu talebiniz bulunmaktadır. Değerlendirilmek üzere  ' . $pendingTestsCount . ' adet testiniz beklediği için yeni randevu talebi oluşturamazsınız.';
                 }
 
                 echo json_encode([
-                    'status' => 'error', 
+                    'status' => 'error',
                     'message' => $message
                 ]);
                 exit;
@@ -7044,7 +7044,7 @@ ORDER BY msu.unit_order asc
             ");
             $stmt->execute([
                 ':psikolog_id' => $psikologId,
-                ':client_user_id' => $clientUserId, 
+                ':client_user_id' => $clientUserId,
                 ':client_name' => $clientName,
                 ':client_phone' => $clientPhone,
                 ':appointment_date' => $appointmentDate,
@@ -7058,7 +7058,8 @@ ORDER BY msu.unit_order asc
             // error_log("Randevu Kayıt Hatası: " . $e->getMessage());
             echo json_encode(['status' => 'error', 'message' => 'Randevu kaydedilirken bir veritabanı hatası oluştu.']);
         }
-        break;case 'getAppointmentsByClient':
+        break;
+    case 'getAppointmentsByClient':
         // Danışanın (client_user_id) kendi randevularını listeler
         if (!isset($_SESSION['id'])) {
             echo json_encode(['status' => 'error', 'message' => 'Oturum hatası.']);
@@ -7475,6 +7476,427 @@ ORDER BY msu.unit_order asc
             echo json_encode(['status' => 'error', 'message' => 'İşlem sırasında bir veritabanı hatası oluştu.']);
         }
         break;
+    case 'tekerlemeList':
+    try {
+        // 1. Sınıf ID'lerini Sınıf İsimleriyle Eşleştirmek İçin Tüm Sınıfları Çek
+        // NOT: Sınıflar tablonuzun adının 'classes_lnp' olduğunu varsayıyorum.
+        $class_stmt = $pdo->prepare("SELECT id, name FROM classes_lnp"); 
+        $class_stmt->execute();
+        $all_classes = $class_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $class_map = [];
+        // [10 => '3-4 Yaş', 11 => '4-5 Yaş', ...] şeklinde bir eşleme oluşturur
+        foreach ($all_classes as $class) {
+            $class_map[$class['id']] = $class['name'];
+        }
+
+        // 2. Tekerlemeleri Çek
+        $stmt = $pdo->prepare("
+            SELECT 
+                id, 
+                description, 
+                class_id, 
+                image_path, 
+                sound_path,
+                status 
+            FROM tekerlemeler_lnp
+            ORDER BY id DESC
+        ");
+        $stmt->execute();
+        $tekerlemeler = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // 3. class_id'leri class_name'lere dönüştür
+        $processed_tekerlemeler = array_map(function($tekerleme) use ($class_map) {
+            $raw_class_ids = $tekerleme['class_id']; // Örn: "10;11;12"
+            $class_names = [];
+            
+            if (!empty($raw_class_ids)) {
+                $id_array = explode(';', $raw_class_ids);
+                foreach ($id_array as $id) {
+                    $id = (int)trim($id); // ID'nin sayısal olduğundan emin ol
+                    if (isset($class_map[$id])) {
+                        $class_names[] = $class_map[$id];
+                    }
+                }
+            }
+            
+            // Yeni bir alan ekle: class_names (Örn: "3-4 Yaş, 4-5 Yaş, 5-6 Yaş")
+            // Datatable'da gösterilecek olan budur.
+            $tekerleme['class_names'] = implode(', ', $class_names); 
+            
+            // class_id alanını da frontend'in güncelleme modalı için koruyoruz.
+            return $tekerleme; 
+        }, $tekerlemeler);
+
+
+        $response = ['status' => 'success', 'data' => $processed_tekerlemeler];
+    } catch (PDOException $e) {
+        error_log("Tekerleme Listeleme Hatası: " . $e->getMessage());
+        $response = ['status' => 'error', 'message' => 'Tekerlemeler listelenirken bir hata oluştu.'];
+    }
+
+    header('Content-Type: application/json');
+    echo json_encode($response);
+    exit;
+
+// --- 2. DETAY GÖSTERME İŞLEMİ (READ SINGLE FOR EDIT) ---
+case 'tekerlemeShow':
+        $id = $_GET['id'] ?? null;
+        if (!$id || !is_numeric($id)) {
+            $response = ['status' => 'error', 'message' => 'Geçersiz Tekerleme ID.'];
+            header('Content-Type: application/json');
+            echo json_encode($response);
+            exit;
+        }
+
+        try {
+            $stmt = $pdo->prepare("
+                SELECT 
+                    id, 
+                    description, 
+                    school_id, 
+                    image_path, 
+                    sound_path,
+                    class_id, 
+                    status
+                FROM tekerlemeler_lnp
+                WHERE id = :id
+            ");
+            $stmt->execute([':id' => $id]);
+            $tekerleme = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($tekerleme) {
+                $response = ['status' => 'success', 'data' => $tekerleme];
+            } else {
+                $response = ['status' => 'error', 'message' => 'Tekerleme bulunamadı.'];
+            }
+        } catch (PDOException $e) {
+            error_log("Tekerleme Detay Hatası: " . $e->getMessage());
+            $response = ['status' => 'error', 'message' => 'Detaylar çekilirken bir hata oluştu.'];
+        }
+
+
+        echo json_encode($response);
+        exit;
+
+        // --- 3. EKLEME İŞLEMİ (CREATE) ---
+    case 'tekerlemeAdd':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $response = ['status' => 'error', 'message' => 'Yalnızca POST isteği kabul edilir.'];
+
+            echo json_encode($response);
+            exit;
+        }
+
+        // ⭐ YENİ: class_ids alanını zorunlu alanlara ekledik, çünkü sınıfsız tekerleme eklenmemeli.
+        $required_fields = [ 'description', 'class_ids'];
+        $missing_field = false;
+        foreach ($required_fields as $field) {
+            // class_ids için dizi kontrolü de yapıyoruz
+            if ($field === 'class_ids' && (!isset($_POST[$field]) || !is_array($_POST[$field]) || empty($_POST[$field]))) {
+                $missing_field = true;
+                break;
+            } elseif (!isset($_POST[$field])) {
+                $missing_field = true;
+                break;
+            }
+        }
+
+        if ($missing_field) {
+            // Hata mesajını daha açıklayıcı hale getirebiliriz
+            $response = ['status' => 'error', 'message' => 'Okul ID, Açıklama ve İlgili Sınıflar alanları zorunludur.'];
+
+            echo json_encode($response);
+            exit;
+        }
+
+        // Dosya Yükleme İşlemleri (Resim ve Ses)
+        $upload_dir = '../uploads/tekerlemeler/'; // Bitiş eğik çizgisini ekledim
+        $image_path = null;
+        $sound_path = null;
+        $file_error = false;
+
+        // Görüntü Dosyası Yükleme (ZORUNLU varsayılmıştır)
+        if (isset($_FILES['image_path']) && $_FILES['image_path']['error'] === UPLOAD_ERR_OK) {
+            $image_file = $_FILES['image_path'];
+            $image_path = $upload_dir . uniqid('img_') . '_' . basename($image_file['name']);
+            if (!move_uploaded_file($image_file['tmp_name'], $image_path)) {
+                $response = ['status' => 'error', 'message' => 'Görüntü dosyası yüklenirken hata oluştu.'];
+                $file_error = true;
+            }
+        } else {
+            $response = ['status' => 'error', 'message' => 'Görüntü dosyası zorunludur.'];
+            $file_error = true;
+        }
+
+        // Ses Dosyası Yükleme (ZORUNLU varsayılmıştır)
+        if (!$file_error && isset($_FILES['sound_path']) && $_FILES['sound_path']['error'] === UPLOAD_ERR_OK) {
+            $sound_file = $_FILES['sound_path'];
+            $sound_path = $upload_dir . uniqid('snd_') . '_' . basename($sound_file['name']);
+            if (!move_uploaded_file($sound_file['tmp_name'], $sound_path)) {
+                // Yüklenen resmi sil ve hata mesajı döndür
+                if (file_exists($image_path)) unlink($image_path);
+                $response = ['status' => 'error', 'message' => 'Ses dosyası yüklenirken hata oluştu.'];
+                $file_error = true;
+            }
+        } else if (!$file_error) {
+            // Sadece resim yüklendiyse, onu sil
+            if (file_exists($image_path)) unlink($image_path);
+            $response = ['status' => 'error', 'message' => 'Ses dosyası zorunludur.'];
+            $file_error = true;
+        }
+
+        if ($file_error) {
+
+            echo json_encode($response);
+            exit;
+        }
+
+        // ⭐ YENİ: class_ids dizisini al ve noktalı virgül (;) ile birleştir
+        $class_ids_array = $_POST['class_ids'] ?? [];
+        // Güvenlik: Sadece sayısal değerleri al ve boş veya 0 olanları filtrele
+        $safe_class_ids = array_map(function ($id) {
+            return (int)$id;
+        }, $class_ids_array);
+
+        // İstenen format: 10;11;12 şeklinde birleştir
+        $formatted_class_ids = implode(';', array_filter($safe_class_ids));
+        // ⭐ YENİ BİTİŞ
+
+        // Veritabanına Kayıt
+        try {
+           
+            $description = $_POST['description'];
+            // created_at ve updated_at otomatik ayarlanır
+
+            $stmt = $pdo->prepare("
+            INSERT INTO tekerlemeler_lnp
+                (school_id, class_id, description, image_path, sound_path) /* ⭐ class_id eklendi */
+            VALUES 
+                (:school_id, :class_id, :description, :image_path, :sound_path) /* ⭐ :class_id eklendi */
+        ");
+            $stmt->execute([
+                ':school_id' => 1,
+                ':class_id' => $formatted_class_ids, /* ⭐ Birleştirilmiş sınıf ID'leri bind edildi */
+                ':description' => $description,
+                ':image_path' => $image_path,
+                ':sound_path' => $sound_path
+            ]);
+
+            $response = ['status' => 'success', 'message' => 'Tekerleme başarıyla eklendi.'];
+        } catch (PDOException $e) {
+            error_log("Tekerleme Ekleme Hatası: " . $e->getMessage());
+            // Veritabanı hatasında yüklenen dosyaları sil
+            if (file_exists($image_path)) unlink($image_path);
+            if (file_exists($sound_path)) unlink($sound_path);
+            $response = ['status' => 'error', 'message' => 'Veritabanına ekleme yapılırken bir hata oluştu.'];
+        }
+
+
+        echo json_encode($response);
+        exit;
+    case 'tekerlemeUpdate':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $response = ['status' => 'error', 'message' => 'Yalnızca POST isteği kabul edilir.'];
+
+            echo json_encode($response);
+            exit;
+        }
+
+        $id = $_POST['id'] ?? null;
+        if (!$id || !is_numeric($id)) {
+            $response = ['status' => 'error', 'message' => 'Geçersiz Tekerleme ID.'];
+
+            echo json_encode($response);
+            exit;
+        }
+
+        $school_id = (int)($_POST['school_id'] ?? 1);
+        $description = $_POST['description'] ?? '';
+
+        // ⭐ YENİ: class_ids dizisini al ve noktalı virgül (;) ile birleştir
+        $class_ids_array = $_POST['class_ids'] ?? [];
+        $formatted_class_ids = '';
+        if (is_array($class_ids_array) && !empty($class_ids_array)) {
+            // Güvenlik: Sadece sayısal değerleri al ve boş veya 0 olanları filtrele
+            $safe_class_ids = array_map(function ($id) {
+                return (int)$id;
+            }, $class_ids_array);
+
+            // İstenen format: 10;11;12 şeklinde birleştir
+            $formatted_class_ids = implode(';', array_filter($safe_class_ids));
+        }
+        // ⭐ YENİ BİTİŞ
+
+        // Mevcut dosya yollarını çek ve koru (Gizli inputlardan geldiği varsayılır)
+        $original_image_path = $_POST['original_image_path'] ?? null;
+        $original_sound_path = $_POST['original_sound_path'] ?? null;
+        $image_path = $original_image_path;
+        $sound_path = $original_sound_path;
+        $upload_dir = 'uploads/tekerlemeler/';
+        $new_image_uploaded = false;
+        $new_sound_uploaded = false;
+        $file_error = false;
+
+
+        // Görüntü Dosyası Yükleme (Yeni dosya varsa)
+        if (isset($_FILES['image_path']) && $_FILES['image_path']['error'] === UPLOAD_ERR_OK) {
+            $image_file = $_FILES['image_path'];
+            $image_path = $upload_dir . uniqid('img_') . '_' . basename($image_file['name']);
+            if (!move_uploaded_file($image_file['tmp_name'], $image_path)) {
+                $response = ['status' => 'error', 'message' => 'Yeni görüntü dosyası yüklenirken hata oluştu.'];
+                $file_error = true;
+            }
+            $new_image_uploaded = true;
+        }
+
+        // Ses Dosyası Yükleme (Yeni dosya varsa)
+        if (!$file_error && isset($_FILES['sound_path']) && $_FILES['sound_path']['error'] === UPLOAD_ERR_OK) {
+            $sound_file = $_FILES['sound_path'];
+            $sound_path = $upload_dir . uniqid('snd_') . '_' . basename($sound_file['name']);
+            if (!move_uploaded_file($sound_file['tmp_name'], $sound_path)) {
+                if ($new_image_uploaded && file_exists($image_path)) unlink($image_path);
+                $response = ['status' => 'error', 'message' => 'Yeni ses dosyası yüklenirken hata oluştu.'];
+                $file_error = true;
+            }
+            $new_sound_uploaded = true;
+        }
+
+        if ($file_error) {
+
+            echo json_encode($response);
+            exit;
+        }
+
+        // Veritabanı Güncelleme
+        try {
+            // updated_at otomatik güncellenecektir.
+            $stmt = $pdo->prepare("
+            UPDATE tekerlemeler_lnp SET 
+                school_id = :school_id, 
+                class_id = :class_id,  /* ⭐ class_id alanı eklendi */
+                description = :description, 
+                image_path = :image_path, 
+                sound_path = :sound_path
+            WHERE id = :id
+        ");
+            $stmt->execute([
+                ':school_id' => $school_id,
+                ':class_id' => $formatted_class_ids, /* ⭐ Birleştirilmiş sınıf ID'leri bind edildi */
+                ':description' => $description,
+                ':image_path' => $image_path,
+                ':sound_path' => $sound_path,
+                ':id' => $id
+            ]);
+
+            // Eski dosyaları silme (Sadece yeni dosya yüklendiyse ve orijinal dosya varsa)
+            if ($new_image_uploaded && $original_image_path && file_exists($original_image_path)) {
+                unlink($original_image_path);
+            }
+            if ($new_sound_uploaded && $original_sound_path && file_exists($original_sound_path)) {
+                unlink($original_sound_path);
+            }
+
+            $response = ['status' => 'success', 'message' => 'Tekerleme başarıyla güncellendi.'];
+        } catch (PDOException $e) {
+            error_log("Tekerleme Güncelleme Hatası: " . $e->getMessage());
+            // Veritabanı hatasında yeni yüklenen dosyaları sil
+            if ($new_image_uploaded && file_exists($image_path)) unlink($image_path);
+            if ($new_sound_uploaded && file_exists($sound_path)) unlink($sound_path);
+            $response = ['status' => 'error', 'message' => 'Veritabanında güncelleme yapılırken bir hata oluştu.'];
+        }
+
+
+        echo json_encode($response);
+        exit;
+    case 'tekerlemeDelete':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $response = ['status' => 'error', 'message' => 'Yalnızca POST isteği kabul edilir.'];
+
+            echo json_encode($response);
+            exit;
+        }
+
+        $id = $_POST['id'] ?? null;
+        if (!$id || !is_numeric($id)) {
+            $response = ['status' => 'error', 'message' => 'Geçersiz Tekerleme ID.'];
+
+            echo json_encode($response);
+            exit;
+        }
+
+        // Silmeden önce dosya yollarını al
+        try {
+            $stmt = $pdo->prepare("SELECT image_path, sound_path FROM tekerlemeler_lnp WHERE id = :id");
+            $stmt->execute([':id' => $id]);
+            $files = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            // Veritabanından silme işlemi
+            $stmt = $pdo->prepare("DELETE FROM tekerlemeler_lnp WHERE id = :id");
+            $stmt->execute([':id' => $id]);
+
+            if ($stmt->rowCount() > 0) {
+                // Dosyaları sunucudan silme
+                if ($files) {
+                    if ($files['image_path'] && file_exists($files['image_path'])) unlink($files['image_path']);
+                    if ($files['sound_path'] && file_exists($files['sound_path'])) unlink($files['sound_path']);
+                }
+
+                $response = ['status' => 'success', 'message' => 'Tekerleme ve ilgili dosyaları başarıyla silindi.'];
+            } else {
+                $response = ['status' => 'error', 'message' => 'Silinecek tekerleme bulunamadı.'];
+            }
+        } catch (PDOException $e) {
+            error_log("Tekerleme Silme Hatası: " . $e->getMessage());
+            $response = ['status' => 'error', 'message' => 'Silme işlemi sırasında bir hata oluştu.'];
+        }
+
+
+        echo json_encode($response);
+        exit;
+    case 'tekerlemeChangeStatus':
+        // Yalnızca POST isteği kabul edilir
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $response = ['status' => 'error', 'message' => 'Yalnızca POST isteği kabul edilir.'];
+            echo json_encode($response);
+            exit;
+        }
+
+        $id = $_POST['id'] ?? null;
+        $status = $_POST['status'] ?? null; // Yeni durum (0 veya 1)
+
+        // ID ve Durum kontrolü
+        if (!$id || !is_numeric($id) || !in_array($status, [0, 1])) {
+            $response = ['status' => 'error', 'message' => 'Geçersiz Tekerleme ID veya Durum değeri.'];
+            echo json_encode($response);
+            exit;
+        }
+
+        try {
+            // Durum güncelleme işlemi
+            $stmt = $pdo->prepare("UPDATE tekerlemeler_lnp SET status = :status WHERE id = :id");
+            $stmt->bindParam(':status', $status, PDO::PARAM_INT);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            // Güncellenen satır sayısını kontrol et
+            if ($stmt->rowCount() > 0) {
+                $statusText = $status == 1 ? 'Aktif' : 'Pasif';
+                $response = ['status' => 'success', 'message' => "Tekerleme başarıyla {$statusText} yapıldı."];
+            } else {
+                // Eğer rowCount 0 ise, ya ID bulunamamıştır ya da durum zaten aynıdır.
+                // ID'nin varlığını kontrol etmek daha doğru olur, ancak bu durumda başarılı mesajı verebiliriz
+                // ya da sadece durumun zaten güncel olduğunu belirtebiliriz.
+                $response = ['status' => 'error', 'message' => 'Tekerleme bulunamadı veya durum zaten aynıydı.'];
+            }
+        } catch (PDOException $e) {
+            error_log("Tekerleme Durum Değiştirme Hatası: " . $e->getMessage());
+            $response = ['status' => 'error', 'message' => 'Durum değiştirme işlemi sırasında bir veritabanı hatası oluştu.'];
+        }
+
+
+        echo json_encode($response);
+        exit;
     default:
         echo json_encode(['status' => 'error', 'message' => 'Geçersiz servis']);
         break;

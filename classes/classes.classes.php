@@ -1247,6 +1247,7 @@ WHERE t.id = :id";
 
 	public function getMainSchoolUnitByClassId($class_id, $lesson_id = '')
 	{
+
 		$query = '
         SELECT 
             mu.name AS unit_name, 
@@ -1446,9 +1447,9 @@ WHERE t.id = :id";
             WHERE mc.main_school_class_id = u.class_id AND status = 1
             AND mc.id = ?
         )
-    '); 
+    ');
 
-	/*	$stmt = $this->connect()->prepare('
+		/*	$stmt = $this->connect()->prepare('
 			SELECT 1
 			FROM users_lnp u
 			WHERE u.id = ?
@@ -2061,4 +2062,40 @@ INNER JOIN users_lnp AS u ON u.id = pst.user_id;');
 			return [];
 		}
 	}
+	public function getTekerlemeListByClassId($class_id)
+{
+    $stmt = $this->connect()->prepare('
+        SELECT * 
+        FROM tekerlemeler_lnp 
+        WHERE class_id LIKE :class_id 
+          AND status = 1 
+        ORDER BY id ASC
+    ');
+
+    $searchValue = "%{$class_id}%";
+
+    if (!$stmt->execute([':class_id' => $searchValue])) {
+        $stmt = null;
+        exit();
+    }
+
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+    foreach ($data as &$row) {
+        if (!empty($row['image_path'])) {
+           
+            $row['image_path'] = preg_replace('#^\.{2}/#', './', $row['image_path']);
+        }
+
+        if (!empty($row['sound_path'])) {
+            $row['sound_path'] = preg_replace('#^\.{2}/#', './', $row['sound_path']);
+        }
+    }
+    unset($row); 
+
+    return $data;
+}
+
+
 }

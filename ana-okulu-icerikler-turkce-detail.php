@@ -405,7 +405,7 @@ $i = 0;
                         position: absolute;
                         top: 80px; /* Ahşap tabelanın görünen kısmına göre pozisyon */
                             left: 60%;
-
+e
                         transform: translate(-50%, -50%);
                         width: 200px; /* Tabelanın genişliğini artırdık */
                         border-radius: 5px; /* Köşe yuvarlaklığı */
