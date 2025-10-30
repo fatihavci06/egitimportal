@@ -7477,21 +7477,21 @@ ORDER BY msu.unit_order asc
         }
         break;
     case 'tekerlemeList':
-    try {
-        // 1. Sınıf ID'lerini Sınıf İsimleriyle Eşleştirmek İçin Tüm Sınıfları Çek
-        // NOT: Sınıflar tablonuzun adının 'classes_lnp' olduğunu varsayıyorum.
-        $class_stmt = $pdo->prepare("SELECT id, name FROM classes_lnp"); 
-        $class_stmt->execute();
-        $all_classes = $class_stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            // 1. Sınıf ID'lerini Sınıf İsimleriyle Eşleştirmek İçin Tüm Sınıfları Çek
+            // NOT: Sınıflar tablonuzun adının 'classes_lnp' olduğunu varsayıyorum.
+            $class_stmt = $pdo->prepare("SELECT id, name FROM classes_lnp");
+            $class_stmt->execute();
+            $all_classes = $class_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $class_map = [];
-        // [10 => '3-4 Yaş', 11 => '4-5 Yaş', ...] şeklinde bir eşleme oluşturur
-        foreach ($all_classes as $class) {
-            $class_map[$class['id']] = $class['name'];
-        }
+            $class_map = [];
+            // [10 => '3-4 Yaş', 11 => '4-5 Yaş', ...] şeklinde bir eşleme oluşturur
+            foreach ($all_classes as $class) {
+                $class_map[$class['id']] = $class['name'];
+            }
 
-        // 2. Tekerlemeleri Çek
-        $stmt = $pdo->prepare("
+            // 2. Tekerlemeleri Çek
+            $stmt = $pdo->prepare("
             SELECT 
                 id, 
                 description, 
@@ -7502,45 +7502,45 @@ ORDER BY msu.unit_order asc
             FROM tekerlemeler_lnp
             ORDER BY id DESC
         ");
-        $stmt->execute();
-        $tekerlemeler = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt->execute();
+            $tekerlemeler = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // 3. class_id'leri class_name'lere dönüştür
-        $processed_tekerlemeler = array_map(function($tekerleme) use ($class_map) {
-            $raw_class_ids = $tekerleme['class_id']; // Örn: "10;11;12"
-            $class_names = [];
-            
-            if (!empty($raw_class_ids)) {
-                $id_array = explode(';', $raw_class_ids);
-                foreach ($id_array as $id) {
-                    $id = (int)trim($id); // ID'nin sayısal olduğundan emin ol
-                    if (isset($class_map[$id])) {
-                        $class_names[] = $class_map[$id];
+            // 3. class_id'leri class_name'lere dönüştür
+            $processed_tekerlemeler = array_map(function ($tekerleme) use ($class_map) {
+                $raw_class_ids = $tekerleme['class_id']; // Örn: "10;11;12"
+                $class_names = [];
+
+                if (!empty($raw_class_ids)) {
+                    $id_array = explode(';', $raw_class_ids);
+                    foreach ($id_array as $id) {
+                        $id = (int)trim($id); // ID'nin sayısal olduğundan emin ol
+                        if (isset($class_map[$id])) {
+                            $class_names[] = $class_map[$id];
+                        }
                     }
                 }
-            }
-            
-            // Yeni bir alan ekle: class_names (Örn: "3-4 Yaş, 4-5 Yaş, 5-6 Yaş")
-            // Datatable'da gösterilecek olan budur.
-            $tekerleme['class_names'] = implode(', ', $class_names); 
-            
-            // class_id alanını da frontend'in güncelleme modalı için koruyoruz.
-            return $tekerleme; 
-        }, $tekerlemeler);
+
+                // Yeni bir alan ekle: class_names (Örn: "3-4 Yaş, 4-5 Yaş, 5-6 Yaş")
+                // Datatable'da gösterilecek olan budur.
+                $tekerleme['class_names'] = implode(', ', $class_names);
+
+                // class_id alanını da frontend'in güncelleme modalı için koruyoruz.
+                return $tekerleme;
+            }, $tekerlemeler);
 
 
-        $response = ['status' => 'success', 'data' => $processed_tekerlemeler];
-    } catch (PDOException $e) {
-        error_log("Tekerleme Listeleme Hatası: " . $e->getMessage());
-        $response = ['status' => 'error', 'message' => 'Tekerlemeler listelenirken bir hata oluştu.'];
-    }
+            $response = ['status' => 'success', 'data' => $processed_tekerlemeler];
+        } catch (PDOException $e) {
+            error_log("Tekerleme Listeleme Hatası: " . $e->getMessage());
+            $response = ['status' => 'error', 'message' => 'Tekerlemeler listelenirken bir hata oluştu.'];
+        }
 
-    header('Content-Type: application/json');
-    echo json_encode($response);
-    exit;
+        header('Content-Type: application/json');
+        echo json_encode($response);
+        exit;
 
-// --- 2. DETAY GÖSTERME İŞLEMİ (READ SINGLE FOR EDIT) ---
-case 'tekerlemeShow':
+        // --- 2. DETAY GÖSTERME İŞLEMİ (READ SINGLE FOR EDIT) ---
+    case 'tekerlemeShow':
         $id = $_GET['id'] ?? null;
         if (!$id || !is_numeric($id)) {
             $response = ['status' => 'error', 'message' => 'Geçersiz Tekerleme ID.'];
@@ -7589,7 +7589,7 @@ case 'tekerlemeShow':
         }
 
         // ⭐ YENİ: class_ids alanını zorunlu alanlara ekledik, çünkü sınıfsız tekerleme eklenmemeli.
-        $required_fields = [ 'description', 'class_ids'];
+        $required_fields = ['description', 'class_ids'];
         $missing_field = false;
         foreach ($required_fields as $field) {
             // class_ids için dizi kontrolü de yapıyoruz
@@ -7665,7 +7665,7 @@ case 'tekerlemeShow':
 
         // Veritabanına Kayıt
         try {
-           
+
             $description = $_POST['description'];
             // created_at ve updated_at otomatik ayarlanır
 
@@ -7896,6 +7896,320 @@ case 'tekerlemeShow':
 
 
         echo json_encode($response);
+        exit;
+    case 'sarkiList':
+        $stmt = $pdo->query("SELECT * FROM sarkilar_lnp ORDER BY id DESC");
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode(['data' => $data]);
+        exit;
+
+    case 'sarkiCreate':
+        $title = $_POST['title'] ?? '';
+        $youtube_url = $_POST['youtube_url'] ?? '';
+        $class_id = implode(';', $_POST['class_id']) . ';';
+        $stmt = $pdo->prepare("INSERT INTO sarkilar_lnp (title, class_id, youtube_url, status) VALUES (:title, :class_id, :youtube_url, 1)");
+        $stmt->execute(['title' => $title, 'class_id' => $class_id, 'youtube_url' => $youtube_url]);
+        echo json_encode(['status' => 'success', 'message' => 'Şarkı eklendi.']);
+        exit;
+
+    case 'sarkiGet':
+        $id = $_GET['id'] ?? 0;
+        $stmt = $pdo->prepare("SELECT * FROM sarkilar_lnp WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        echo json_encode($data ? ['status' => 'success', 'data' => $data] : ['status' => 'error', 'message' => 'Kayıt bulunamadı.']);
+        exit;
+
+    case 'sarkiUpdate':
+        $id = $_POST['id'];
+        $title = $_POST['title'];
+        $youtube_url = $_POST['youtube_url'];
+        $class_id = implode(';', $_POST['class_id']) . ';';
+        $stmt = $pdo->prepare("UPDATE sarkilar_lnp SET title=:title, youtube_url=:youtube_url, class_id=:class_id WHERE id=:id");
+        $stmt->execute(['title' => $title, 'youtube_url' => $youtube_url, 'class_id' => $class_id, 'id' => $id]);
+        echo json_encode(['status' => 'success', 'message' => 'Şarkı güncellendi.']);
+        exit;
+
+    case 'sarkiDelete':
+        $id = $_POST['id'];
+        $stmt = $pdo->prepare("DELETE FROM sarkilar_lnp WHERE id=:id");
+        $stmt->execute(['id' => $id]);
+        echo json_encode(['status' => 'success', 'message' => 'Şarkı silindi.']);
+        exit;
+
+    case 'sarkiStatus':
+        $id = $_POST['id'];
+        $status = $_POST['status'];
+        $stmt = $pdo->prepare("UPDATE sarkilar_lnp SET status=:status WHERE id=:id");
+        $stmt->execute(['status' => $status, 'id' => $id]);
+        echo json_encode(['status' => 'success', 'message' => 'Durum güncellendi.']);
+        exit;
+   case 'sanalGezilerList':
+        try {
+            $stmt = $pdo->query("SELECT id, title, icon, link, class_id, status FROM sanal_geziler_lnp ORDER BY id DESC");
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode(['data' => $data]);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['data' => [], 'error' => 'Listeleme hatası: ' . $e->getMessage()]);
+        }
+        exit;
+
+    case 'sanalGezilerCreate':
+        
+        // 🚨 SABİTLER BURADA TANIMLANDI 🚨
+        $UPLOAD_DIR = '../uploads/icons/';
+        $MAX_FILE_SIZE = 512 * 1024; // 512 KB
+        $allowed_mime_types = ['image/jpeg', 'image/png', 'image/svg+xml'];
+
+        $title = trim($_POST['title'] ?? '');
+        $link = trim($_POST['link'] ?? '');
+        $class_id_array = $_POST['class_id'] ?? [];
+        $icon_filename = null; 
+        
+        // 1. Dosya Yükleme İşlemi
+        $file = $_FILES['icon_file'] ?? ['error' => UPLOAD_ERR_NO_FILE, 'size' => 0];
+        $is_file_uploaded = false;
+
+        if ($file['error'] !== UPLOAD_ERR_NO_FILE && $file['size'] > 0) {
+            
+            // A) Güvenlik ve Boyut Kontrolü
+            if ($file['error'] !== UPLOAD_ERR_OK || $file['size'] > $MAX_FILE_SIZE) {
+                echo json_encode(['status' => 'error', 'message' => 'Dosya yükleme hatası veya boyutu 512KB\'ı aşıyor.']);
+                exit;
+            }
+            
+            // B) MIME Tipi Kontrolü
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mime_type = finfo_file($finfo, $file['tmp_name']);
+            finfo_close($finfo);
+
+            if (!in_array($mime_type, $allowed_mime_types)) {
+                echo json_encode(['status' => 'error', 'message' => 'Sadece JPG, PNG veya SVG dosyaları yüklenebilir.']);
+                exit;
+            }
+            
+            // C) Dosya Adı Oluşturma ve Taşıma
+            $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $icon_filename = uniqid('icon_', true) . '.' . $extension;
+            $destination = $UPLOAD_DIR . $icon_filename;
+            
+            if (!is_dir($UPLOAD_DIR)) {
+                mkdir($UPLOAD_DIR, 0777, true);
+            }
+
+            if (!move_uploaded_file($file['tmp_name'], $destination)) {
+                echo json_encode(['status' => 'error', 'message' => 'Dosya sunucuya taşınırken kritik hata oluştu.']);
+                exit;
+            }
+            $is_file_uploaded = true;
+        }
+
+        // 2. Veri Kontrolü
+        if (empty($title) || empty($link) || empty($class_id_array)) {
+            // Yüklenen dosya varsa geri sil
+            if ($is_file_uploaded && file_exists($UPLOAD_DIR . $icon_filename)) {
+                unlink($UPLOAD_DIR . $icon_filename);
+            }
+            echo json_encode(['status' => 'error', 'message' => 'Lütfen gerekli tüm alanları doldurun.']);
+            exit;
+        }
+        
+        // Sınıf ID'lerini noktalı virgülle birleştirme
+        $class_id = implode(';', $class_id_array) . ';';
+
+        // 3. Veritabanı Kaydı
+        try {
+            $stmt = $pdo->prepare("INSERT INTO sanal_geziler_lnp (title, icon, link, class_id, status) VALUES (:title, :icon, :link, :class_id, 1)");
+            $stmt->execute([
+                'title' => $title, 
+                'icon' => $icon_filename, 
+                'link' => $link, 
+                'class_id' => $class_id
+            ]);
+            echo json_encode(['status' => 'success', 'message' => 'Sanal Gezi başarıyla eklendi.']);
+        } catch (PDOException $e) {
+            // Veritabanı hatası durumunda dosyayı sil
+            if ($is_file_uploaded && file_exists($UPLOAD_DIR . $icon_filename)) {
+                unlink($UPLOAD_DIR . $icon_filename);
+            }
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Ekleme hatası: ' . $e->getMessage()]);
+        }
+        exit;
+
+    case 'sanalGezilerGet':
+        $id = $_GET['id'] ?? 0;
+        try {
+            $stmt = $pdo->prepare("SELECT id, title, icon, link, class_id, status FROM sanal_geziler_lnp WHERE id = :id");
+            $stmt->execute(['id' => $id]);
+            $data = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($data) {
+                $data['class_id'] = rtrim($data['class_id'], ';');
+                echo json_encode(['status' => 'success', 'data' => $data]);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Kayıt bulunamadı.']);
+            }
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Getirme hatası: ' . $e->getMessage()]);
+        }
+        exit;
+
+    case 'sanalGezilerUpdate':
+        
+        // 🚨 SABİTLER BURADA TANIMLANDI 🚨
+        $UPLOAD_DIR = '../uploads/icons/';
+        $MAX_FILE_SIZE = 512 * 1024; // 512 KB
+        $allowed_mime_types = ['image/jpeg', 'image/png', 'image/svg+xml'];
+        
+        $id = $_POST['id'] ?? 0;
+        $title = trim($_POST['title'] ?? '');
+        $link = trim($_POST['link'] ?? '');
+        $class_id_array = $_POST['class_id'] ?? [];
+        $new_icon_filename = null; 
+
+        if (empty($id) || empty($title) || empty($link) || empty($class_id_array)) {
+            echo json_encode(['status' => 'error', 'message' => 'Lütfen gerekli tüm alanları doldurun.']);
+            exit;
+        }
+
+        // 1. Mevcut ikon adını çek
+        $current_icon = null;
+        try {
+            $stmt = $pdo->prepare("SELECT icon FROM sanal_geziler_lnp WHERE id = :id");
+            $stmt->execute(['id' => $id]);
+            $current_icon = $stmt->fetchColumn();
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Mevcut veri çekme hatası.']);
+            exit;
+        }
+        
+        // 2. Yeni Dosya Yükleme İşlemi
+        $file = $_FILES['icon_file'] ?? ['error' => UPLOAD_ERR_NO_FILE, 'size' => 0];
+        $is_new_file_uploaded = false;
+        
+        $final_icon_filename = $current_icon; // Varsayılan olarak mevcut ikon kalır
+
+        if ($file['error'] !== UPLOAD_ERR_NO_FILE && $file['size'] > 0) {
+            // A) Güvenlik ve Boyut Kontrolü
+            if ($file['error'] !== UPLOAD_ERR_OK || $file['size'] > $MAX_FILE_SIZE) {
+                echo json_encode(['status' => 'error', 'message' => 'Yeni ikon boyutu 512KB\'ı aşıyor veya yükleme hatası var.']);
+                exit;
+            }
+            
+            // B) MIME Tipi Kontrolü
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mime_type = finfo_file($finfo, $file['tmp_name']);
+            finfo_close($finfo);
+
+            if (!in_array($mime_type, $allowed_mime_types)) {
+                echo json_encode(['status' => 'error', 'message' => 'Sadece JPG, PNG veya SVG dosyaları yüklenebilir.']);
+                exit;
+            }
+            
+            // C) Dosya Adı Oluşturma ve Taşıma
+            $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $new_icon_filename = uniqid('icon_', true) . '.' . $extension;
+            $destination = $UPLOAD_DIR . $new_icon_filename;
+            
+            if (!is_dir($UPLOAD_DIR)) {
+                mkdir($UPLOAD_DIR, 0777, true);
+            }
+
+            if (move_uploaded_file($file['tmp_name'], $destination)) {
+                $is_new_file_uploaded = true;
+                $final_icon_filename = $new_icon_filename;
+                
+                // Başarıyla yüklendiyse, eski ikonu sil
+                if (!empty($current_icon) && file_exists($UPLOAD_DIR . $current_icon)) {
+                    unlink($UPLOAD_DIR . $current_icon);
+                }
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Yeni ikon sunucuya taşınırken hata oluştu.']);
+                exit;
+            }
+        }
+        
+        // Sınıf ID'lerini noktalı virgülle birleştirme
+        $class_id = implode(';', $class_id_array) . ';';
+
+        // 3. Veritabanı Güncellemesi
+        try {
+            $stmt = $pdo->prepare("UPDATE sanal_geziler_lnp SET title=:title, icon=:icon, link=:link, class_id=:class_id WHERE id=:id");
+            $stmt->execute([
+                'title' => $title, 
+                'icon' => $final_icon_filename, 
+                'link' => $link, 
+                'class_id' => $class_id, 
+                'id' => $id
+            ]);
+            echo json_encode(['status' => 'success', 'message' => 'Sanal Gezi başarıyla güncellendi.']);
+        } catch (PDOException $e) {
+            // Veritabanı hatası olursa, yeni yüklenen dosyayı sil (eğer yeni yükleme yapıldıysa)
+            if ($is_new_file_uploaded && file_exists($UPLOAD_DIR . $new_icon_filename)) {
+                unlink($UPLOAD_DIR . $new_icon_filename);
+            }
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Güncelleme hatası: ' . $e->getMessage()]);
+        }
+        exit;
+
+    case 'sanalGezilerDelete':
+        
+        // 🚨 SABİTLER BURADA TANIMLANDI 🚨
+        $UPLOAD_DIR = '../uploads/icons/';
+        
+        $id = $_POST['id'] ?? 0;
+        
+        // 1. Önce mevcut ikon adını çek (silmek için)
+        $current_icon = null;
+        try {
+            $stmt = $pdo->prepare("SELECT icon FROM sanal_geziler_lnp WHERE id = :id");
+            $stmt->execute(['id' => $id]);
+            $current_icon = $stmt->fetchColumn();
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Silinecek ikon bilgisini çekme hatası.']);
+            exit;
+        }
+
+        try {
+            // 2. Veritabanından kaydı sil
+            $stmt = $pdo->prepare("DELETE FROM sanal_geziler_lnp WHERE id=:id");
+            $stmt->execute(['id' => $id]);
+            
+            // 3. Dosyayı sil
+            if (!empty($current_icon) && file_exists($UPLOAD_DIR . $current_icon)) {
+                unlink($UPLOAD_DIR . $current_icon);
+            }
+            
+            echo json_encode(['status' => 'success', 'message' => 'Sanal Gezi silindi.']);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Veritabanı silme hatası: ' . $e->getMessage()]);
+        }
+        exit;
+
+    case 'sanalGezilerStatus':
+        $id = $_POST['id'] ?? 0;
+        $status = $_POST['status'] ?? 0;
+        
+        if (!in_array($status, [0, 1])) {
+             echo json_encode(['status' => 'error', 'message' => 'Geçersiz durum değeri.']);
+             exit;
+        }
+
+        try {
+            $stmt = $pdo->prepare("UPDATE sanal_geziler_lnp SET status=:status WHERE id=:id");
+            $stmt->execute(['status' => $status, 'id' => $id]);
+            echo json_encode(['status' => 'success', 'message' => 'Durum güncellendi.']);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Durum güncelleme hatası: ' . $e->getMessage()]);
+        }
         exit;
     default:
         echo json_encode(['status' => 'error', 'message' => 'Geçersiz servis']);

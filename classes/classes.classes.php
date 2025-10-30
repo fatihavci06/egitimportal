@@ -2079,8 +2079,8 @@ INNER JOIN users_lnp AS u ON u.id = pst.user_id;');
 		}
 	}
 	public function getTekerlemeListByClassId($class_id)
-{
-    $stmt = $this->connect()->prepare('
+	{
+		$stmt = $this->connect()->prepare('
         SELECT * 
         FROM tekerlemeler_lnp 
         WHERE class_id LIKE :class_id 
@@ -2088,30 +2088,96 @@ INNER JOIN users_lnp AS u ON u.id = pst.user_id;');
         ORDER BY id ASC
     ');
 
-    $searchValue = "%{$class_id}%";
+		$searchValue = "%{$class_id}%";
 
-    if (!$stmt->execute([':class_id' => $searchValue])) {
-        $stmt = null;
-        exit();
-    }
+		if (!$stmt->execute([':class_id' => $searchValue])) {
+			$stmt = null;
+			exit();
+		}
 
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-
-    foreach ($data as &$row) {
-        if (!empty($row['image_path'])) {
-           
-            $row['image_path'] = preg_replace('#^\.{2}/#', './', $row['image_path']);
-        }
-
-        if (!empty($row['sound_path'])) {
-            $row['sound_path'] = preg_replace('#^\.{2}/#', './', $row['sound_path']);
-        }
-    }
-    unset($row); 
-
-    return $data;
-}
+		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
+		foreach ($data as &$row) {
+			if (!empty($row['image_path'])) {
+
+				$row['image_path'] = preg_replace('#^\.{2}/#', './', $row['image_path']);
+			}
+
+			if (!empty($row['sound_path'])) {
+				$row['sound_path'] = preg_replace('#^\.{2}/#', './', $row['sound_path']);
+			}
+		}
+		unset($row);
+
+		return $data;
+	}
+	public function getSarkiListByClassId($class_id)
+	{
+		$stmt = $this->connect()->prepare('
+        SELECT * 
+        FROM sarkilar_lnp 
+        WHERE class_id LIKE :class_id 
+          AND status = 1 
+        ORDER BY id ASC
+    ');
+
+		$searchValue = "%{$class_id}%";
+
+		if (!$stmt->execute([':class_id' => $searchValue])) {
+			$stmt = null;
+			exit();
+		}
+
+		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+		foreach ($data as &$row) {
+			if (!empty($row['image_path'])) {
+
+				$row['image_path'] = preg_replace('#^\.{2}/#', './', $row['image_path']);
+			}
+
+			if (!empty($row['sound_path'])) {
+				$row['sound_path'] = preg_replace('#^\.{2}/#', './', $row['sound_path']);
+			}
+		}
+		unset($row);
+
+		return $data;
+	}
+	public function getSanalGeziListByClassId($class_id)
+	{
+		$stmt = $this->connect()->prepare('
+        SELECT * 
+        FROM sanal_geziler_lnp 
+        WHERE class_id LIKE :class_id 
+          AND status = 1 
+        ORDER BY id ASC
+    ');
+
+		$searchValue = "%{$class_id}%";
+
+		if (!$stmt->execute([':class_id' => $searchValue])) {
+			$stmt = null;
+			exit();
+		}
+
+		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+		foreach ($data as &$row) {
+			if (!empty($row['image_path'])) {
+
+				$row['image_path'] = preg_replace('#^\.{2}/#', './', $row['image_path']);
+			}
+
+			if (!empty($row['sound_path'])) {
+				$row['sound_path'] = preg_replace('#^\.{2}/#', './', $row['sound_path']);
+			}
+		}
+		unset($row);
+
+		return $data;
+	}
 }
