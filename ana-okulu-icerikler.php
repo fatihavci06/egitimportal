@@ -19,6 +19,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         $studentidsi = $_SESSION['id'];
     }
     $lessonId=$_GET['lesson_id']??'';
+  
     $unitList = $unit->getMainSchoolUnitByClassId($class_idsi,$lessonId);
 
     include_once "views/pages-head.php";

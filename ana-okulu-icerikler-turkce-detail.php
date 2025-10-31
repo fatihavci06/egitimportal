@@ -406,9 +406,15 @@ $i = 0;
                     
                     <div class="tabela-content" style="
                         position: absolute;
+<<<<<<< HEAD
+                        top: 80px; /* Ahşap tabelanın görünen kısmına göre pozisyon */
+                            left: 60%;
+e
+=======
                         top: 108px; /* Ahşap tabelanın görünen kısmına göre pozisyon */
                             left: 54%;
 
+>>>>>>> 7cdd96f56a92c4636dfd5a13234f78a7de08b641
                         transform: translate(-50%, -50%);
                         width: 170px; /* Tabelanın genişliğini artırdık */
                         border-radius: 5px; /* Köşe yuvarlaklığı */
