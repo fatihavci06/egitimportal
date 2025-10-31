@@ -1,8 +1,18 @@
 <?php
 ob_start();
-if (!defined('GUARD')) {
-    die('Direkt erişim yasak!');
+$allowedRoles = [1, 3, 4, 6, 7, 8, 9, 10, 10001, 20001];
+   
+if (isset($_SESSION['role']) && in_array($_SESSION['role'], $allowedRoles, true)) {
+    // Yetkili kullanıcı işlemleri
+} else {
+   
+    
+    // veya yönlendirme:
+    header("Location: yetkisiz.php");
+    exit;
 }
+
+
 $current_uri = $_SERVER['REQUEST_URI'];
 
 ?>

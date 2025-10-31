@@ -238,6 +238,7 @@ class Login extends Dbh
 				$_SESSION['teacher_id'] = $user[0]["teacher_id"];
 				$_SESSION['parent_id'] = $user[0]["parent_id"];
 				$_SESSION['lesson_id'] = $user[0]["lesson_id"];
+				$_SESSION['package_id'] = $user[0]["package_id"]??0;
 				$_SESSION['name'] = $user[0]["name"] . ' ' . $user[0]["surname"];
 
 				$stmt = null;
