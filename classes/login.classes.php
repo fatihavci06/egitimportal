@@ -227,6 +227,23 @@ class Login extends Dbh
 					exit();
 				}
 
+				$_SESSION['package_id'] = $user[0]["package_id"] ?? 0;
+
+				if ($user[0]["role"] == 5) {
+					$stmtparent = $this->connect()->prepare('SELECT package_id FROM users_lnp WHERE parent_id = ?');
+
+					if (!$stmtparent->execute([$user[0]["id"]])) {
+						$stmtparent = null;
+						$_SESSION['err'] = 1;
+						header("location: ../index");
+						exit();
+					}
+
+					$parent = $stmtparent->fetchAll(PDO::FETCH_ASSOC);
+
+					$_SESSION['package_id'] = $parent[0]["package_id"] ?? 0;
+				}
+
 				$this->delAttempt($this->ip_address);
 
 				$_SESSION['email'] = $user[0]["email"];
@@ -238,10 +255,10 @@ class Login extends Dbh
 				$_SESSION['teacher_id'] = $user[0]["teacher_id"];
 				$_SESSION['parent_id'] = $user[0]["parent_id"];
 				$_SESSION['lesson_id'] = $user[0]["lesson_id"];
-				$_SESSION['package_id'] = $user[0]["package_id"]??0;
 				$_SESSION['name'] = $user[0]["name"] . ' ' . $user[0]["surname"];
 
 				$stmt = null;
+				$stmtparent = null;
 
 				$this->loginInfo($_SESSION['id']);
 			}
