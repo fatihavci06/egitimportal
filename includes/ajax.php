@@ -7733,7 +7733,7 @@ ORDER BY msu.unit_order asc
         $original_sound_path = $_POST['original_sound_path'] ?? null;
         $image_path = $original_image_path;
         $sound_path = $original_sound_path;
-        $upload_dir = 'uploads/tekerlemeler/';
+        $upload_dir = '../uploads/tekerlemeler/';
         $new_image_uploaded = false;
         $new_sound_uploaded = false;
         $file_error = false;
@@ -7743,6 +7743,7 @@ ORDER BY msu.unit_order asc
         if (isset($_FILES['image_path']) && $_FILES['image_path']['error'] === UPLOAD_ERR_OK) {
             $image_file = $_FILES['image_path'];
             $image_path = $upload_dir . uniqid('img_') . '_' . basename($image_file['name']);
+    
             if (!move_uploaded_file($image_file['tmp_name'], $image_path)) {
                 $response = ['status' => 'error', 'message' => 'Yeni görüntü dosyası yüklenirken hata oluştu.'];
                 $file_error = true;
@@ -7959,7 +7960,7 @@ ORDER BY msu.unit_order asc
         
         // 🚨 SABİTLER BURADA TANIMLANDI 🚨
         $UPLOAD_DIR = '../uploads/icons/';
-        $MAX_FILE_SIZE = 5 * 1024*1024; // 512 KB
+        $MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
         $allowed_mime_types = ['image/jpeg', 'image/png', 'image/svg+xml'];
 
         $title = trim($_POST['title'] ?? '');
@@ -8061,7 +8062,7 @@ ORDER BY msu.unit_order asc
         
         // 🚨 SABİTLER BURADA TANIMLANDI 🚨
         $UPLOAD_DIR = '../uploads/icons/';
-        $MAX_FILE_SIZE = 512 * 1024; // 512 KB
+        $MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
         $allowed_mime_types = ['image/jpeg', 'image/png', 'image/svg+xml'];
         
         $id = $_POST['id'] ?? 0;
