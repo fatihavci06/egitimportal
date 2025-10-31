@@ -229,7 +229,8 @@ class Login extends Dbh
 
 				$_SESSION['package_id'] = $user[0]["package_id"] ?? 0;
 
-				if ($user[0]["role"] == 5) {
+				if ($user[0]["role"] == 5 || $user[0]["role"] == 10005) {
+					
 					$stmtparent = $this->connect()->prepare('SELECT package_id FROM users_lnp WHERE parent_id = ?');
 
 					if (!$stmtparent->execute([$user[0]["id"]])) {
@@ -240,6 +241,7 @@ class Login extends Dbh
 					}
 
 					$parent = $stmtparent->fetchAll(PDO::FETCH_ASSOC);
+				
 
 					$_SESSION['package_id'] = $parent[0]["package_id"] ?? 0;
 				}

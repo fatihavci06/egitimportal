@@ -1,28 +1,60 @@
 <?php
 ob_start();
 $allowedRoles = [1, 3, 4, 6, 7, 8, 9, 10, 10001, 20001];
-   
+
 if (isset($_SESSION['role']) && in_array($_SESSION['role'], $allowedRoles, true)) {
     // Yetkili kullanıcı işlemleri
 } else {
-   
-    
-    // veya yönlendirme:
-    header("Location: yetkisiz.php");
-    exit;
+    include_once "classes/dbh.classes.php";
+    include "classes/permission.classes.php";
+    $permissionList = new Permission();
+
+    $page = getPageSlug(); // Daha önce hazırladığımız fonksiyon
+ 
+    $packageId = $_SESSION['package_id'] ?? null;
+
+    $permissionList->checkPageAccess($page, $packageId);
 }
 
 
-$current_uri = $_SERVER['REQUEST_URI'];
+function getPageSlug()
+{
+    $url = $_SERVER['REQUEST_URI'];   // Örn: /lineup_campus/ana-okulu-icerikler?lesson_id=9
+    $host = $_SERVER['HTTP_HOST'];    // Örn: localhost veya lineupcampus.com
+
+    $page = '';
+
+    if ($host === 'localhost') {
+        // localhost ortamında lineup_campus/ sonrası
+        if (preg_match('#lineup_campus/([^?]+)#', $url, $matches)) {
+            $page = preg_replace('/\.php$/', '', $matches[1]);
+        } else {
+            $page = $url;
+        }
+    } else {
+        // Canlı ortamda online/ sonrası
+        if (preg_match('#online/([^?]+)#', $url, $matches)) {
+            $page = preg_replace('/\.php$/', '', $matches[1]);
+        } else {
+            $page = $url;
+        }
+    }
+
+    return $page;
+}
+
 
 ?>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-CJ093GJRRN"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    window.dataLayer = window.dataLayer || [];
 
-  gtag('config', 'G-CJ093GJRRN');
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+
+    gtag('config', 'G-CJ093GJRRN');
 </script>
 <div id="kt_app_header" class="app-header d-flex flex-column flex-stack">
     <!--begin::Header main-->
@@ -54,19 +86,19 @@ $current_uri = $_SERVER['REQUEST_URI'];
         <!--begin::Navbar-->
         <div class="app-navbar flex-grow-1 justify-content-end" id="kt_app_header_navbar">
             <?php if ($_SESSION['role'] == 2) { ?>
-            <div class="app-navbar-item d-flex align-items-center flex-lg-grow-1 me-2 ps-2 me-lg-0 fs-2 hosgeldin">
-                <b>Hoş geldin <?php echo $_SESSION['name']; ?> haydi görevleri tamamlayarak puan toplamaya başla!</b>
-            </div>
-            <div class="app-navbar-item d-flex justify-content align-items-center flex-lg-grow-1 me-2 me-lg-0 maskotheader">
-                <img src="assets/media/mascots/header-mascots.png" alt="Lineup Campus Maskotlar" class="h-50px theme-light-show" />
-            </div>
-            <?php }elseif($_SESSION['role'] == 10002 OR $_SESSION['role'] == 10005) { ?>
-            <div class="app-navbar-item d-flex align-items-center flex-lg-grow-1 me-2 ps-2 me-lg-0 fs-2 hosgeldin">
-                <b>Hoş geldin <?php echo $_SESSION['name']; ?>!</b>
-            </div>
-            <div class="app-navbar-item d-flex justify-content align-items-center flex-lg-grow-1 me-2 me-lg-0 maskotheader">
-                <img src="assets/media/mascots/header-mascots.png" alt="Lineup Campus Maskotlar" class="h-75px theme-light-show" />
-            </div>
+                <div class="app-navbar-item d-flex align-items-center flex-lg-grow-1 me-2 ps-2 me-lg-0 fs-2 hosgeldin">
+                    <b>Hoş geldin <?php echo $_SESSION['name']; ?> haydi görevleri tamamlayarak puan toplamaya başla!</b>
+                </div>
+                <div class="app-navbar-item d-flex justify-content align-items-center flex-lg-grow-1 me-2 me-lg-0 maskotheader">
+                    <img src="assets/media/mascots/header-mascots.png" alt="Lineup Campus Maskotlar" class="h-50px theme-light-show" />
+                </div>
+            <?php } elseif ($_SESSION['role'] == 10002 or $_SESSION['role'] == 10005) { ?>
+                <div class="app-navbar-item d-flex align-items-center flex-lg-grow-1 me-2 ps-2 me-lg-0 fs-2 hosgeldin">
+                    <b>Hoş geldin <?php echo $_SESSION['name']; ?>!</b>
+                </div>
+                <div class="app-navbar-item d-flex justify-content align-items-center flex-lg-grow-1 me-2 me-lg-0 maskotheader">
+                    <img src="assets/media/mascots/header-mascots.png" alt="Lineup Campus Maskotlar" class="h-75px theme-light-show" />
+                </div>
             <?php } ?>
             <!--begin::Notifications-->
             <?php include "includes/views/notifications-announcements.php" ?>

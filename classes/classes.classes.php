@@ -2180,4 +2180,21 @@ INNER JOIN users_lnp AS u ON u.id = pst.user_id;');
 
 		return $data;
 	}
+	public function pagePermissionCheck($page)
+	{
+		$searchValue = "%{$page}%";
+		$stmt = $this->connect()->prepare('
+		SELECT * FROM `page_permission` WHERE page_url LIKE :search_value
+	');
+
+	
+
+		if (!$stmt->execute([':search_value' => $searchValue])) {
+			$stmt = null;
+			exit();
+		}
+
+		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		return $data;
+	}
 }
