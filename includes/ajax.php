@@ -7959,7 +7959,7 @@ ORDER BY msu.unit_order asc
         
         // 🚨 SABİTLER BURADA TANIMLANDI 🚨
         $UPLOAD_DIR = '../uploads/icons/';
-        $MAX_FILE_SIZE = 512 * 1024; // 512 KB
+        $MAX_FILE_SIZE = 5 * 1024*1024; // 512 KB
         $allowed_mime_types = ['image/jpeg', 'image/png', 'image/svg+xml'];
 
         $title = trim($_POST['title'] ?? '');
