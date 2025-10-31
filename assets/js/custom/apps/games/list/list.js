@@ -40,17 +40,27 @@ var KTCustomersList = function () {
     }
 
     var handleAlterActiveStatusRow = () => {
-        const deleteButtons = table.querySelectorAll('[data-kt-customer-table-filter="delete_row"]');
+        // Tüm tabloyu (veya en azından `data-kt-customer-table-filter="delete_row"` butonlarını içeren üst öğeyi) dinle
+        const tableBody = table.querySelector('tbody'); // Eğer `table` değişkeniniz DataTables'ın DOM öğesiyse
 
-        deleteButtons.forEach(d => {
-            d.addEventListener('click', function (e) {
+        tableBody.addEventListener('click', function (e) {
+            // Kontrol: Tıklanan öğenin aradığımız buton olup olmadığını kontrol et
+            const clickedButton = e.target.closest('[data-kt-customer-table-filter="delete_row"]');
+
+            if (clickedButton) {
                 e.preventDefault();
 
-                const parent = e.target.closest('tr');
+                // clickedButton üzerinden gerekli işlemleri yap
+                const parent = clickedButton.closest('tr');
 
-                const customerName = parent.querySelectorAll('td')[1].innerText;
+                const customerName = parent.querySelectorAll('td')[2].innerText;
                 const gameId = parent.getAttribute('id');
-                var activeStatus = parent.querySelectorAll('td')[2].innerText;
+                var activeStatus = parent.querySelectorAll('td')[3].innerText;
+
+                //const actionButton = parent.querySelector('[data-kt-customer-table-filter="delete_row"]');
+                const actionButton = e.target.closest('[data-kt-customer-table-filter="delete_row"]');
+
+                // ... (geriye kalan mevcut kodunuz aynı kalır)
 
                 if (activeStatus === "Aktif") {
                     activeStatus = "pasif";
@@ -71,11 +81,73 @@ var KTCustomersList = function () {
                     }
                 }).then(function (result) {
                     if (result.value) {
-
                         sendAlterRequest(
                             { id: gameId },
                             `İşlem tamamlandı.`,
                             function () {
+                                // Belki burada DataTables'ı yeniden çizmek (`table.draw(false);`)
+                                // veya satırı DOM'dan kaldırmak/güncellemek gerekebilir.
+                                // BURASI GÜNCELLENİYOR: Badge (Span) İçeriği ve Class'ları
+
+                                // 1. Durumun yazılı olduğu 4. hücreyi (index 3) bul
+                                const statusCell = parent.querySelectorAll('td')[3];
+
+                                // 2. Yeni durumu ve metnini belirle
+                                const newStatusText = activeStatus === "pasif" ? "Pasif" : "Aktif";
+
+                                // 3. Hücre içindeki badge'i bul
+                                const badge = statusCell.querySelector('.badge');
+
+                                if (badge) {
+                                    // Metni güncelle
+                                    badge.innerText = newStatusText;
+
+                                    // Class'ları (Renkleri) güncelle
+                                    const activeClass = 'badge-light-success'; // Tahmin edilen Aktif class'ı
+                                    const passiveClass = 'badge-light-danger'; // Tahmin edilen Pasif class'ı
+
+                                    if (activeStatus === "aktif") {
+                                        // Pasif class'ı kaldır, Aktif class'ı ekle
+                                        badge.classList.remove(passiveClass);
+                                        badge.classList.add(activeClass);
+                                    } else {
+                                        // Aktif class'ı kaldır, Pasif class'ı ekle
+                                        badge.classList.remove(activeClass);
+                                        badge.classList.add(passiveClass);
+                                    }
+
+
+
+                                    // 🔹 Menüdeki buton metnini güncelle
+                                    const currentText = actionButton.textContent.trim().toLowerCase();
+                                    const newText = currentText === "aktif yap" ? "Pasif Yap" : "Aktif Yap";
+                                    actionButton.textContent = newText;
+
+                                    // DataTables API'si ile veriyi güncelle (sıralama/arama için önemli)
+                                    $(parent).closest('table').DataTable()
+                                        /*  .row(parent)
+                                         .cell(statusCell)
+                                         .data(newStatusText) */
+                                        .draw(false);
+
+                                } else {
+                                    // Eğer hücrede badge yoksa, sadece metni güncelleyelim.
+                                    // Bu kısım sadece bir güvenlik önlemidir, span varken buraya düşmemesi gerekir.
+                                    statusCell.innerText = newStatusText;
+
+
+
+                                    // 🔹 Menüdeki buton metnini güncelle
+                                        const currentText = actionButton.textContent.trim().toLowerCase();
+                                        const newText = currentText === "aktif yap" ? "Pasif Yap" : "Aktif Yap";
+                                        actionButton.textContent = newText;
+                                    
+                                    $(parent).closest('table').DataTable()
+                                        /* .row(parent)
+                                        .cell(statusCell)
+                                        .data(newStatusText) */
+                                        .draw(false);
+                                }
                             }
                         );
                     } else if (result.dismiss === 'cancel') {
@@ -90,7 +162,7 @@ var KTCustomersList = function () {
                         });
                     }
                 });
-            })
+            }
         });
     }
 
