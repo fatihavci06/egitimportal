@@ -284,7 +284,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             $dynamicUrl = '#';
                                                             if ($contentId !== null) {
                                                                 // URL formatı: ana-okulu-icerikler-detay.php?id=[ID]
-                                                                $dynamicUrl = 'ana-okulu-icerikler-detay.php?id=' . urlencode($contentId);
+                                                                $dynamicUrl = 'ana-okulu-icerik-detay.php?id=' . urlencode($contentId);
                                                             }
 
                                                             // Liste Öğesi (İkonlu ve linkli)

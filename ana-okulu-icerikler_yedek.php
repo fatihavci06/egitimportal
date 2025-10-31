@@ -410,7 +410,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         title: 'Konu',
                                         render: function(data, type, row) {
                                             // row.slug varsa kullan, yoksa default url
-                                            var urlSlug = row.slug || 'ana-okulu-icerikler-detay.php?id=' + row.id;
+                                            var urlSlug = row.slug || 'ana-okulu-icerik-detay.php?id=' + row.id;
                                             var subjectName = data;
 
                                             return `
