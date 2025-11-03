@@ -80,20 +80,6 @@ if ($to_email) {
 $_SESSION['package_id'] = $packageId;
 // Yönlendirme
 echo '
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-Swal.fire({
-  title: "Başarılı!",
-  text: "Paketiniz başarıyla yükseltildi.",
-  icon: "success",
-  confirmButtonText: "Tamam"
-}).then(() => {
-  window.location.href = "/online/";
-});
-</script>
-';
-exit;
-?>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -103,16 +89,16 @@ exit;
 </head>
 <body>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    Swal.fire({
-        title: "Başarılı!",
-        text: "Paketiniz başarıyla yükseltildi.",
-        icon: "success",
-        confirmButtonText: "Tamam"
-    }).then(() => {
-        window.location.href = "/online/";
-    });
+Swal.fire({
+    title: "Başarılı!",
+    text: "Paketiniz başarıyla yükseltildi.",
+    icon: "success",
+    confirmButtonText: "Tamam"
+}).then(() => {
+    window.location.href = "/online/";
 });
 </script>
 </body>
 </html>
+';
+exit;
