@@ -4,21 +4,54 @@ session_start();
 
 define('GUARD', true);
 
-// Kullanıcı rol kontrolü, kendi sisteminize göre düzenlemelisiniz
+// Kullanıcı rol kontrolü
 if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 2 || $_SESSION['role'] == 10005 || $_SESSION['role'] == 10002)) {
+
     // Veritabanı ve sınıf dahil etme
-    include_once "classes/dbh.classes.php"; // Kendi Dbh sınıf dosyanız
-    include "classes/classes.classes.php"; // Kendi Classes sınıf dosyanız
+    include_once "classes/dbh.classes.php";
+    include "classes/classes.classes.php";
 
     $class = new Classes();
+    $packagesList = $class->getPackagesList();
+   
+    // 1. MEVCUT PLAN BİLGİSİNİ ALMA
+    $currentPackageId = $_SESSION['package_id'] ?? 21; // Varsayılan olarak Keşif Paketi ID'si (21) kabul edildi
 
-    // Mevcut plan bilgisini varsayalım (örneğin session'dan veya DB'den çekilebilir)
-    $currentPlan = 'Keşif Paketi'; // Varsayılan olarak Keşif Paketi mevcut kabul edildi
+    // Kullanıcı ID'sini AJAX'ta kullanmak üzere değişkene al
+    $loggedInUserId = $_SESSION['id'] ?? 0;
+    $classId = $_SESSION['class_id'] ?? null;
+
+    // class_id'ye göre plan id seti belirle
+    switch ($classId) {
+        case 10:
+            $planIds = [1, 2, 3];
+            break;
+        case 11:
+            $planIds = [21, 22, 23];
+            break;
+        case 12:
+            $planIds = [25, 26, 27];
+            break;
+    }
+
+    // 2. PLAN VERİLERİNİ OLUŞTURMA
+    $prices = [];
+    foreach ($packagesList as $package) {
+        $prices[$package['id']] = $package['price_yearly'] ?? 0;
+    }
+   
+    // Yardımcı formatlama fonksiyonu
+    function formatPrice($price)
+    {
+        return number_format((float)$price, 0, ',', '.');
+    }
+
+    // 4. PLAN VERİLERİNİ OLUŞTUR
     $plans = [
         [
-            'id' => 21,
+            'id' => $planIds[0],
             'name' => 'Keşif Paketi',
-            'price_yearly' => '5000', // Yıllık Fiyat
+            'price_yearly' => $prices[$planIds[0]] ?? '5000',
             'description' => 'Çocukların temel eğitimi için ilk adımı atın.',
             'features' => [
                 '123 Eğitim Videosu',
@@ -27,13 +60,14 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                 'Konuşma Kulübünde Speaking İmkanı',
                 '206 Oyun'
             ],
-            'color' => 'success', // Keşif Paketi için yeşil ton (success)
-            'is_current' => $currentPlan === 'Keşif Paketi'
+            'color' => 'success',
+            'is_current' =>  $_SESSION['package_id'] == $planIds[0],
+            'price_yearly_formatted' => formatPrice($prices[$planIds[0]] ?? 5000)
         ],
         [
-            'id' => 22,
+            'id' => $planIds[1],
             'name' => 'Macera Paketi',
-            'price_yearly' => '8000', // Yıllık Fiyat
+            'price_yearly' => $prices[$planIds[1]] ?? '8000',
             'description' => 'Eğitimi ve psikolojik gelişimi birleştiren geniş paket.',
             'features' => [
                 '123 Eğitim Videosu',
@@ -50,13 +84,14 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                 'E Kütüphane',
                 'Mentor Öğretmen Desteği'
             ],
-            'color' => 'warning', // Macera Paketi için sarı/turuncu ton (warning)
-            'is_current' => $currentPlan === 'Macera Paketi'
+            'color' => 'warning',
+            'is_current' =>  $_SESSION['package_id'] == $planIds[1],
+            'price_yearly_formatted' => formatPrice($prices[$planIds[1]] ?? 8000)
         ],
         [
-            'id' => 23,
+            'id' => $planIds[2],
             'name' => 'Galaksi Paketi',
-            'price_yearly' => '10000', // Yıllık Fiyat
+            'price_yearly' => $prices[$planIds[2]] ?? '10000',
             'description' => 'Tüm özelliklerin ve premium desteğin sınırsız sunulduğu paket.',
             'features' => [
                 '123 Eğitim Videosu',
@@ -74,10 +109,18 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                 '"Global Kids Events" (Online İngilizce Festivalleri)',
                 'Mentor Öğretmen Desteği ile Haftalık Görevlendirme - Veli ile Birebir İletişim'
             ],
-            'color' => 'danger', // Galaksi Paketi için kırmızı ton (danger)
-            'is_current' => $currentPlan === 'Galaksi Paketi'
+            'color' => 'danger',
+            'is_current' =>  $_SESSION['package_id'] == $planIds[2],
+            'price_yearly_formatted' => formatPrice($prices[$planIds[2]] ?? 10000)
         ]
     ];
+
+    // Mevcut planın SweetAlert'te kullanılmak üzere verisini bulma
+    $currentPlanData = array_filter($plans, function ($plan) use ($currentPackageId) {
+        return $plan['id'] == $currentPackageId;
+    });
+    $currentPlanData = array_values($currentPlanData)[0] ?? ['name' => 'Mevcut Plan', 'price_yearly' => '0', 'price_yearly_formatted' => '0'];
+
 ?>
     <!DOCTYPE html>
     <html lang="tr">
@@ -88,6 +131,14 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
         <title>Plan Yükseltme | Abonelik Yönetimi</title>
 
         <?php include_once "views/pages-head.php"; ?>
+
+        <script>
+            // Mevcut ve diğer planların fiyatlarını SweetAlert için erişilebilir yapıyoruz.
+            const allPlans = <?php echo json_encode($plans); ?>;
+            const currentPlanId = <?php echo json_encode($currentPackageId); ?>;
+            const currentPlanPrice = <?php echo json_encode($currentPlanData['price_yearly']); ?>;
+            const loggedInUserId = <?php echo json_encode($loggedInUserId); ?>; // Kullanıcı ID'si eklendi
+        </script>
 
     </head>
 
@@ -126,17 +177,14 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <div id="kt_app_content_container" class="app-container container-fluid">
 
-                                    <!-- BAŞLIK VE AÇIKLAMA -->
                                     <div class="text-center mb-10">
                                         <h1 class="text-dark fw-bold mb-3">İhtiyaçlarınıza Uygun Planı Seçin</h1>
                                         <div class="text-muted fw-semibold fs-5">
-                                            Size en uygun olan planı seçerek hemen yükseltin. Tüm fiyatlar yıllık ödeme bazındadır.
+                                            **Mevcut Planınız: <?php echo $currentPlanData['name']; ?>.** Size en uygun olan planı seçerek hemen yükseltin. Tüm fiyatlar yıllık ödeme bazındadır.
                                         </div>
                                     </div>
 
-                                    <!-- AYLIK/YILLIK TOGGLE KALDIRILDI -->
-                                    <!-- FİYATLANDIRMA KARTLARI -->
-                                    <div class="row g-10">
+                                    <div class="row g-10 justify-content-center">
 
                                         <?php foreach ($plans as $plan) : ?>
                                             <div class="col-xl-4 col-md-6 mb-8">
@@ -144,30 +192,23 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                     <div class="card-header border-0 pt-9">
                                                         <div class="d-flex flex-center position-relative">
                                                             <div class="me-2">
-                                                                <!-- Fiyat, yıllık olarak sabitlendi -->
                                                                 <span class="fs-2hx fw-bold text-dark me-2">
-                                                                    <?php echo $plan['price_yearly']; ?>
+                                                                    <?php echo number_format((float)$plan['price_yearly'], 0, ',', '.'); ?>
                                                                 </span>
-                                                                <!-- Fiyat birimi Yıllık olarak değiştirildi -->
                                                                 <span class="fs-4 fw-semibold text-gray-400">₺ / Yıllık</span>
                                                             </div>
-                                                            <?php if ($plan['is_current']) : ?>
 
-                                                            <?php endif; ?>
                                                         </div>
                                                     </div>
 
-                                                    <!-- card-body'ye flex-grow-1 eklenerek içeriğin esnek büyümesi sağlandı -->
                                                     <div class="card-body p-0 pb-10 d-flex flex-column flex-grow-1">
                                                         <div class="d-flex flex-column align-items-center text-center">
                                                             <h2 class="fw-bold text-dark my-5"><?php echo $plan['name']; ?></h2>
                                                             <div class="fw-semibold text-gray-400 mb-6"><?php echo $plan['description']; ?></div>
                                                         </div>
 
-                                                        <!-- dikey boşluk azaltmak için mb-5 yerine mb-3 kullanıldı -->
                                                         <div class="d-flex flex-column px-9 mb-10">
                                                             <?php foreach ($plan['features'] as $feature) : ?>
-                                                                <!-- mb-5 yerine mb-2 kullanılarak satır aralığı azaltıldı -->
                                                                 <div class="d-flex align-items-center mb-2">
                                                                     <span class="fw-semibold fs-6 text-gray-800 flex-grow-1 me-3"><?php echo $feature; ?></span>
                                                                     <i class="ki-duotone ki-check-circle fs-1 text-<?php echo $plan['color']; ?>">
@@ -178,7 +219,6 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                             <?php endforeach; ?>
                                                         </div>
 
-                                                        <!-- mt-auto eklenerek butonun her zaman kartın dibine hizalanması sağlandı -->
                                                         <div class="d-flex flex-center mt-auto">
                                                             <?php if ($plan['is_current']) : ?>
                                                                 <button class="btn btn-<?php echo $plan['color']; ?> disabled">
@@ -188,8 +228,9 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                                 <a href="#" class="btn btn-<?php echo $plan['color']; ?>"
                                                                     data-kt-action="upgrade-plan"
                                                                     data-plan-name="<?php echo $plan['name']; ?>"
-                                                                    data-plan-id="<?php echo $plan['id']; ?>">
-                                                                    <i class="ki-duotone ki-arrow-up fs-4 me-2"></i> Satın Al
+                                                                    data-plan-id="<?php echo $plan['id']; ?>"
+                                                                    data-plan-price="<?php echo $plan['price_yearly']; ?>">
+                                                                    <i class="ki-duotone ki-arrow-up fs-4 me-2"></i> Yükselt
                                                                 </a>
                                                             <?php endif; ?>
                                                         </div>
@@ -199,8 +240,6 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                         <?php endforeach; ?>
 
                                     </div>
-                                    <!-- FİYATLANDIRMA KARTLARI SONU -->
-
                                 </div>
                             </div>
                         </div>
@@ -225,22 +264,50 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
         <script src="assets/js/custom/widgets.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        <!-- PLAN YÜKSELTME JS -->
         <script>
             document.addEventListener('DOMContentLoaded', function() {
 
-                // Plan Yükseltme Aksiyonu (SweetAlert ile)
+                // Helper: Fiyatı formatlar (örn: 5000 -> 5.000)
+                function formatPrice(price) {
+                    return parseFloat(price).toLocaleString('tr-TR', {
+                        maximumFractionDigits: 0
+                    });
+                }
+
+                // Plan Yükseltme Aksiyonu (SweetAlert ve AJAX ile)
                 document.querySelectorAll('[data-kt-action="upgrade-plan"]').forEach(button => {
                     button.addEventListener('click', function(e) {
                         e.preventDefault();
+
                         const planName = this.getAttribute('data-plan-name');
                         const planId = this.getAttribute('data-plan-id');
+                        const upgradePrice = parseFloat(this.getAttribute('data-plan-price')); // Yükseltilmek istenen planın fiyatı
+
+                        // Fiyat Farkı Hesaplama
+                        const currentPrice = parseFloat(currentPlanPrice); // Global PHP değişkeninden alındı
+                        const amountToPay = upgradePrice - currentPrice;
+
+                        // Yükseltme kontrolü (Sadece daha pahalıya yükseltme yapılabilir)
+                        if (amountToPay <= 0) {
+                            Swal.fire({
+                                title: 'İşlem İptal Edildi',
+                                text: 'Seçtiğiniz plan, mevcut planınızdan daha ucuz veya aynı fiyattadır. Yükseltme işlemi yapılamaz.',
+                                icon: 'error',
+                                confirmButtonText: 'Tamam'
+                            });
+                            return;
+                        }
+
+                        // SweetAlert'te gösterilecek tutar
+                        const amountToPayFormatted = formatPrice(amountToPay);
+
+                        // 1. Onay Kutusu
                         Swal.fire({
-                            title: `${planName} planını satın almak üzeresiniz.`,
-                            text: `Toplam tutar ${planName === 'Keşif Paketi' ? '5000' : (planName === 'Macera Paketi' ? '8000' : '10000')} TL (Yıllık). Onaylıyor musunuz?`,
+                            title: `**${planName}** planına yükseltmek üzeresiniz.`,
+                            html: `Mevcut planınızın (₺${formatPrice(currentPrice)}) fiyatı düşüldükten sonra ödenecek fark: <br><br>**<span class="text-danger fs-1">${amountToPayFormatted} ₺</span>** (Yıllık)`,
                             icon: 'question',
                             showCancelButton: true,
-                            confirmButtonText: 'Evet, Satın Al',
+                            confirmButtonText: 'Evet, Yükseltmeyi Onayla',
                             cancelButtonText: 'Vazgeç',
                             customClass: {
                                 confirmButton: 'btn btn-success',
@@ -248,18 +315,55 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                             }
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                // Ödeme/yükseltme işlemi için auth.php'ye yönlendirme
+
+                                // 2. Yükleniyor Alert'i
                                 Swal.fire({
                                     title: 'İşlem Başlatılıyor!',
-                                    text: 'Yönlendiriliyorsunuz...',
+                                    text: 'Güvenli ödeme sayfasına yönlendiriliyorsunuz, lütfen bekleyiniz.',
                                     icon: 'info',
+                                    allowOutsideClick: false,
                                     showConfirmButton: false,
-                                    timer: 1500
+                                    willOpen: () => {
+                                        Swal.showLoading();
+                                    }
                                 });
-                                // plan_id ve action parametreleriyle auth.php'ye yönlendirme
-                                setTimeout(() => {
-                                    window.location.href = `tami-sanal-pos/auth_upgrade_package.php?action=upgrade&package_id=${planId}`;
-                                }, 1500);
+
+                                // AJAX İsteği: TAMI Token Alımı
+                                $.ajax({
+                                    url: 'tami-sanal-pos/auth_upgrade_package.php', // Token almak için kullanılan endpoint
+                                    type: 'POST',
+                                    dataType: 'json',
+                                    data: {
+                                        amount: amountToPay, // Ödenecek fark tutarı
+                                        package_id: planId, // Yeni paketin ID'si
+                                        user_id: loggedInUserId, // Global değişkenden alınan kullanıcı ID'si
+                                        action: 'upgrade_package' // Sunucu tarafında yükseltme olduğunu belirtmek için ek parametre
+                                    },
+                                    success: function(response) {
+                                        Swal.close(); // Yükleniyor alert'ini kapat
+
+                                        if (response.oneTimeToken) {
+                                            // Başarılı: TAMI Hosted Payment Page'e yönlendirme
+                                            window.location.href = 'https://portal.tami.com.tr/hostedPaymentPage?token=' + response.oneTimeToken;
+                                        } else {
+                                            // Hata: Token alınamadı
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'İşlem Başarısız',
+                                                text: response.message || 'Ödeme tokenı alınamadı. Lütfen tekrar deneyin.',
+                                                confirmButtonText: 'Tamam'
+                                            });
+                                        }
+                                    },
+                                    error: function(xhr, status, error) {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Sunucu Hatası',
+                                            text: 'Sunucu ile iletişimde bir hata oluştu. Lütfen teknik ekibe danışınız.',
+                                            confirmButtonText: 'Tamam'
+                                        });
+                                    }
+                                });
                             }
                         });
                     });
