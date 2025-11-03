@@ -93,5 +93,3 @@ Swal.fire({
 </script>
 ';
 exit;
-header("Location: /online/");
-exit;
