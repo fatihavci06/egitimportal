@@ -230,7 +230,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                                     data-plan-name="<?php echo $plan['name']; ?>"
                                                                     data-plan-id="<?php echo $plan['id']; ?>"
                                                                     data-plan-price="<?php echo $plan['price_yearly']; ?>">
-                                                                    <i class="ki-duotone ki-arrow-up fs-4 me-2"></i> Yükselt
+                                                                    <i class="ki-duotone ki-arrow-up fs-4 me-2"></i> Paket Değiştir
                                                                 </a>
                                                             <?php endif; ?>
                                                         </div>
