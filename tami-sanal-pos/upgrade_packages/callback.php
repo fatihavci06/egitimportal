@@ -19,7 +19,7 @@ $paymentId = $_SESSION['upgrade_order_id'] ?? null;
 $price = $_SESSION['upgrade_paid_price'] ?? 0; // KDV dahil toplam
 
 // Abonelik süresi çek
-$stmt0 = $pdo->prepare("SELECT subscription_period FROM packages_lnp WHERE package_id = ? LIMIT 1");
+$stmt0 = $pdo->prepare("SELECT subscription_period FROM packages_lnp WHERE id = ? LIMIT 1");
 $stmt0->execute([$packageId]);
 $subscriptionData = $stmt0->fetch(PDO::FETCH_ASSOC);
 $subscriptionPeriod = $subscriptionData['subscription_period'] ?? 0;
