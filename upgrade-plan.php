@@ -16,6 +16,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
     $currentPlan = 'Keşif Paketi'; // Varsayılan olarak Keşif Paketi mevcut kabul edildi
     $plans = [
         [
+            'id' => 21,
             'name' => 'Keşif Paketi',
             'price_yearly' => '5000', // Yıllık Fiyat
             'description' => 'Çocukların temel eğitimi için ilk adımı atın.',
@@ -30,6 +31,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
             'is_current' => $currentPlan === 'Keşif Paketi'
         ],
         [
+            'id' => 22,
             'name' => 'Macera Paketi',
             'price_yearly' => '8000', // Yıllık Fiyat
             'description' => 'Eğitimi ve psikolojik gelişimi birleştiren geniş paket.',
@@ -52,6 +54,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
             'is_current' => $currentPlan === 'Macera Paketi'
         ],
         [
+            'id' => 23,
             'name' => 'Galaksi Paketi',
             'price_yearly' => '10000', // Yıllık Fiyat
             'description' => 'Tüm özelliklerin ve premium desteğin sınırsız sunulduğu paket.',
@@ -115,14 +118,14 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                     <?php include_once "views/sidebar.php"; ?>
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
                         <div class="d-flex flex-column flex-column-fluid">
-                            <?php 
+                            <?php
                             // Toolbar içeriği düzenlendi
                             $toolbar_title = "Plan Yükseltme";
-                            include_once "views/toolbar.php"; 
+                            include_once "views/toolbar.php";
                             ?>
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <div id="kt_app_content_container" class="app-container container-fluid">
-                                    
+
                                     <!-- BAŞLIK VE AÇIKLAMA -->
                                     <div class="text-center mb-10">
                                         <h1 class="text-dark fw-bold mb-3">İhtiyaçlarınıza Uygun Planı Seçin</h1>
@@ -130,11 +133,11 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                             Size en uygun olan planı seçerek hemen yükseltin. Tüm fiyatlar yıllık ödeme bazındadır.
                                         </div>
                                     </div>
-                                    
+
                                     <!-- AYLIK/YILLIK TOGGLE KALDIRILDI -->
                                     <!-- FİYATLANDIRMA KARTLARI -->
                                     <div class="row g-10">
-                                        
+
                                         <?php foreach ($plans as $plan) : ?>
                                             <div class="col-xl-4 col-md-6 mb-8">
                                                 <div class="card card-flush d-flex flex-column h-md-100 <?php echo $plan['is_current'] ? 'border border-' . $plan['color'] . ' border-2 shadow-lg' : 'shadow'; ?>">
@@ -149,7 +152,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                                 <span class="fs-4 fw-semibold text-gray-400">₺ / Yıllık</span>
                                                             </div>
                                                             <?php if ($plan['is_current']) : ?>
-                                                             
+
                                                             <?php endif; ?>
                                                         </div>
                                                     </div>
@@ -160,12 +163,12 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                             <h2 class="fw-bold text-dark my-5"><?php echo $plan['name']; ?></h2>
                                                             <div class="fw-semibold text-gray-400 mb-6"><?php echo $plan['description']; ?></div>
                                                         </div>
-                                                        
+
                                                         <!-- dikey boşluk azaltmak için mb-5 yerine mb-3 kullanıldı -->
-                                                        <div class="d-flex flex-column px-9 mb-10"> 
+                                                        <div class="d-flex flex-column px-9 mb-10">
                                                             <?php foreach ($plan['features'] as $feature) : ?>
                                                                 <!-- mb-5 yerine mb-2 kullanılarak satır aralığı azaltıldı -->
-                                                                <div class="d-flex align-items-center mb-2"> 
+                                                                <div class="d-flex align-items-center mb-2">
                                                                     <span class="fw-semibold fs-6 text-gray-800 flex-grow-1 me-3"><?php echo $feature; ?></span>
                                                                     <i class="ki-duotone ki-check-circle fs-1 text-<?php echo $plan['color']; ?>">
                                                                         <span class="path1"></span>
@@ -174,15 +177,18 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                                 </div>
                                                             <?php endforeach; ?>
                                                         </div>
-                                                        
+
                                                         <!-- mt-auto eklenerek butonun her zaman kartın dibine hizalanması sağlandı -->
-                                                        <div class="d-flex flex-center mt-auto"> 
+                                                        <div class="d-flex flex-center mt-auto">
                                                             <?php if ($plan['is_current']) : ?>
                                                                 <button class="btn btn-<?php echo $plan['color']; ?> disabled">
                                                                     <i class="ki-duotone ki-briefcase-2 fs-4 me-2"></i> Mevcut Planınız
                                                                 </button>
                                                             <?php else : ?>
-                                                                <a href="#" class="btn btn-<?php echo $plan['color']; ?>" data-kt-action="upgrade-plan" data-plan-name="<?php echo $plan['name']; ?>">
+                                                                <a href="#" class="btn btn-<?php echo $plan['color']; ?>"
+                                                                    data-kt-action="upgrade-plan"
+                                                                    data-plan-name="<?php echo $plan['name']; ?>"
+                                                                    data-plan-id="<?php echo $plan['id']; ?>">
                                                                     <i class="ki-duotone ki-arrow-up fs-4 me-2"></i> Satın Al
                                                                 </a>
                                                             <?php endif; ?>
@@ -194,7 +200,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
 
                                     </div>
                                     <!-- FİYATLANDIRMA KARTLARI SONU -->
-                                    
+
                                 </div>
                             </div>
                         </div>
@@ -218,17 +224,17 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
         <script src="assets/js/widgets.bundle.js"></script>
         <script src="assets/js/custom/widgets.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        
+
         <!-- PLAN YÜKSELTME JS -->
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                
+
                 // Plan Yükseltme Aksiyonu (SweetAlert ile)
                 document.querySelectorAll('[data-kt-action="upgrade-plan"]').forEach(button => {
                     button.addEventListener('click', function(e) {
                         e.preventDefault();
                         const planName = this.getAttribute('data-plan-name');
-                        
+                        const planId = this.getAttribute('data-plan-id');
                         Swal.fire({
                             title: `${planName} planını satın almak üzeresiniz.`,
                             text: `Toplam tutar ${planName === 'Keşif Paketi' ? '5000' : (planName === 'Macera Paketi' ? '8000' : '10000')} TL (Yıllık). Onaylıyor musunuz?`,
@@ -242,15 +248,18 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                             }
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                // Burada AJAX çağrısı ile ödeme/yükseltme işlemini tetikleyin
+                                // Ödeme/yükseltme işlemi için auth.php'ye yönlendirme
                                 Swal.fire({
-                                    title: 'Yönlendiriliyor!',
-                                    text: 'Ödeme sayfasına yönlendiriliyorsunuz...',
+                                    title: 'İşlem Başlatılıyor!',
+                                    text: 'Yönlendiriliyorsunuz...',
                                     icon: 'info',
                                     showConfirmButton: false,
                                     timer: 1500
                                 });
-                                // window.location.href = 'payment_page.php?plan=' + planName;
+                                // plan_id ve action parametreleriyle auth.php'ye yönlendirme
+                                setTimeout(() => {
+                                    window.location.href = `tami-sanal-pos/auth_upgrade_package.php?action=upgrade&package_id=${planId}`;
+                                }, 1500);
                             }
                         });
                     });
