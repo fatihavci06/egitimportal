@@ -78,10 +78,10 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                             foreach ($sanalGeziler as $gezi) {
                                                 $i++;
                                                 // Arka plan rengi: Tek satır için açık gri (#f3f6f9), Çift satır için beyaz (#ffffff)
-                                                $bgColorCode = ($i % 2 == 1) ? '#bbbcbc' : '#ffffff';
+                                                $bgColorCode = ($i % 2 == 1) ? '#f1f1f1' : '#ffffff';
                                         ?>
                                                 <div class="col-12">
-                                                    <div class="card card-flush" style="height: 100px; background-color: <?php echo $bgColorCode; ?> !important;">
+                                                    <div class="card card-flush" style="background-color: <?php echo $bgColorCode; ?> !important;">
                                                         <div class="card-body d-flex align-items-center justify-content-between py-5">
                                                             <div class="d-flex align-items-center flex-grow-1">
                                                                 <div class="symbol symbol-40px symbol-circle me-4">

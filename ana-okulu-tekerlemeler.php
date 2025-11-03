@@ -124,7 +124,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <?php endif; ?>
 
                                                         <?php if (!empty($tekerleme['sound_path'])) : ?>
-                                                            <div class="card-body border-top">
+                                                            <div class="card-body border-top" style="padding: 0rem 2.25rem; background-color: #f1f3f4;">
                                                                 <audio controls class="w-100">
                                                                     <source src="<?= htmlspecialchars($tekerleme['sound_path']) ?>" type="audio/mpeg">
                                                                     Tarayıcınız audio öğesini desteklemiyor.

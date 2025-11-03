@@ -25,7 +25,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         $studentidsi = $_SESSION['id'];
     }
 
-    if ($_SESSION['role'] == 10002 OR $_SESSION['role'] == 10005) {
+    if ($_SESSION['role'] == 10002 or $_SESSION['role'] == 10005) {
 
         $contentId = $_GET['id'];
         $exists = $data->permissionControl($contentId, $studentidsi);
@@ -36,7 +36,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         }
     }
 
-    ?>
+?>
     <?php
 
     ?>
@@ -251,7 +251,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                     <div class="card-body col-12 row pt-5">
                                         <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
                                              border-top border-bottom border-custom-red "
-                                            style="border-width: 5px !important; height:85px;margin-bottom: 26px !important;">
+                                            style="border-width: 5px !important; height:85px;margin-bottom: 0px !important;">
 
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle bg-danger me-3 shadow icon-circle-lg d-flex justify-content-center align-items-center"
@@ -283,43 +283,45 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        <?php endforeach;
+                                                    <?php endforeach;
                                                     } ?>
                                                 </div>
-                                                 <?php  if (isset($data['video_url']) && $data['video_url'] !=null) {   ?>
-                                                <div class="row mt-4" id="videoContent"
-                                                    style="justify-content: center; margin-top: -35px !important;">
-                                                    <div class="video-responsive" style="background: none; max-width: 95%;">
+                                                <?php if (isset($data['video_url']) && $data['video_url'] != null) {   ?>
+                                                    <div class="row mt-4" id="videoContent"
+                                                        style="justify-content: center; margin-top: -35px !important;">
+                                                        <div class="video-responsive" style="background: none; max-width: 95%;">
 
-                                                        <?php
+                                                            <?php
 
-                                                        $videoUrl = $data['video_url'] ?? ''; // video_url'nin tanımlı olduğundan emin olun
-                                                        $embedUrl = convertToEmbedUrl($videoUrl);
+                                                            $videoUrl = $data['video_url'] ?? ''; // video_url'nin tanımlı olduğundan emin olun
+                                                            $embedUrl = convertToEmbedUrl($videoUrl);
 
-                                                        if ($embedUrl):
-                                                            // YouTube veya Vimeo iframe özelliklerini ayarla
-                                                            $iframeProperties = 'width="80%" height="600px" frameborder="0" allowfullscreen';
-                                                            if (strpos($embedUrl, 'youtube.com') !== false) { // YouTube'a özgü izinler
-                                                                $iframeProperties .= ' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"';
-                                                            } elseif (strpos($embedUrl, 'vimeo.com') !== false) { // Vimeo'ya özgü izinler
-                                                                $iframeProperties .= ' allow="autoplay; fullscreen; picture-in-picture"';
-                                                            }
+                                                            if ($embedUrl):
+                                                                // YouTube veya Vimeo iframe özelliklerini ayarla
+                                                                $iframeProperties = 'width="80%" height="600px" frameborder="0" allowfullscreen';
+                                                                if (strpos($embedUrl, 'youtube.com') !== false) { // YouTube'a özgü izinler
+                                                                    $iframeProperties .= ' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"';
+                                                                } elseif (strpos($embedUrl, 'vimeo.com') !== false) { // Vimeo'ya özgü izinler
+                                                                    $iframeProperties .= ' allow="autoplay; fullscreen; picture-in-picture"';
+                                                                }
                                                             ?>
-                                                            <iframe id="<?= $data['id'] ?>"
-                                                                src="<?= htmlspecialchars($embedUrl, ENT_QUOTES, 'UTF-8') ?>"
-                                                                title="Video player" <?= $iframeProperties ?>>
-                                                            </iframe>
+                                                                <iframe id="<?= $data['id'] ?>"
+                                                                    src="<?= htmlspecialchars($embedUrl, ENT_QUOTES, 'UTF-8') ?>"
+                                                                    title="Video player" <?= $iframeProperties ?>>
+                                                                </iframe>
 
-                                                       
-                                                        <?php endif; ?>
+
+                                                            <?php endif; ?>
+                                                        </div>
                                                     </div>
-                                                </div>
                                                 <?php } ?>
-                                                <div class="row mt-4">
-                                                    <?php
-                                                  
-                                                    if (isset($data['wordwalls']) && count($data['wordwalls']) > 0) {
-                                                        foreach ($data['wordwalls'] as $wordWall): ?>
+                                                <?php
+
+                                                if (isset($data['wordwalls']) && count($data['wordwalls']) > 0) { ?>
+
+                                                    <div class="row mt-4">
+
+                                                        <?php foreach ($data['wordwalls'] as $wordWall): ?>
                                                             <div class="col-md-12 mb-4">
                                                                 <div class="card shadow-sm">
                                                                     <h3 class="card-title mt-4 mb-4">
@@ -332,56 +334,56 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        <?php endforeach;
+                                                    <?php endforeach;
                                                     } ?>
-                                                </div>
-                                                <div class="row " style="font-size:17px; margin-top:35px;">
-                                                    <p id="contentDescription">
+                                                    </div>
+                                                    <div class="row " style="font-size:17px; margin-top:5px;">
+                                                        <p id="contentDescription">
+                                                            <?php
+                                                            if (isset($data['content'])) {
+                                                                echo $data['content'];
+                                                            }
+                                                            ?>
+
+                                                        </p>
+                                                    </div>
+
+                                                    <div class="row" id="files" role="tabpanel" aria-labelledby="files-tab">
                                                         <?php
-                                                        if (isset($data['content'])) {
-                                                            echo $data['content'];
-                                                        }
+                                                        if (!empty($data['files'])) {
                                                         ?>
+                                                            <h1 style="margin-top:5px;margin-bottom:3px">Dosyalar</h1>
+                                                            <?php foreach ($data['files'] as $file): ?>
+                                                                <div class="col-md-12 mb-4" style="font-size: 20px;">
+                                                                    <div class="card shadow-sm">
+                                                                        <div class="card-body p-5">
+                                                                            <h5 class="card-title">
+                                                                                <a href="<?= $file['file_path'] ?>" target="_blank"
+                                                                                    class="text-decoration-none text-primary">
+                                                                                    <i class="bi bi-file-earmark"></i>
+                                                                                    <?= basename($file['file_path']) ?>
+                                                                                </a>
+                                                                            </h5>
 
-                                                    </p>
-                                                </div>
+                                                                            <p><strong>Açıklama:</strong>
+                                                                                <?= htmlspecialchars($file['description'] ?? 'Açıklama mevcut değil.') ?>
+                                                                            </p>
 
-                                                <div class="row" id="files" role="tabpanel" aria-labelledby="files-tab">
-                                                    <?php
-                                                    if (!empty($data['files'])) {
-                                                        ?>
-                                                        <h1 style="margin-top:50px;margin-bottom:30px">Dosyalar</h1>
-                                                        <?php foreach ($data['files'] as $file): ?>
-                                                            <div class="col-md-12 mb-4" style="font-size: 20px;">
-                                                                <div class="card shadow-sm">
-                                                                    <div class="card-body">
-                                                                        <h5 class="card-title">
-                                                                            <a href="<?= $file['file_path'] ?>" target="_blank"
-                                                                                class="text-decoration-none text-primary">
-                                                                                <i class="bi bi-file-earmark"></i>
-                                                                                <?= basename($file['file_path']) ?>
-                                                                            </a>
-                                                                        </h5>
+                                                                            <div class="d-flex justify-content-between">
+                                                                                <a href="<?= $file['file_path'] ?>"
+                                                                                    class="btn btn-primary btn-sm" target="_blank">
+                                                                                    <i class="bi bi-download"></i> Dosyayı Görüntüle
+                                                                                </a>
 
-                                                                        <p><strong>Açıklama:</strong>
-                                                                            <?= htmlspecialchars($file['description'] ?? 'Açıklama mevcut değil.') ?>
-                                                                        </p>
-
-                                                                        <div class="d-flex justify-content-between">
-                                                                            <a href="<?= $file['file_path'] ?>"
-                                                                                class="btn btn-primary btn-sm" target="_blank">
-                                                                                <i class="bi bi-download"></i> Dosyayı Görüntüle
-                                                                            </a>
-
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        <?php endforeach; ?>
+                                                            <?php endforeach; ?>
                                                         <?php
-                                                    }
-                                                    ?>
-                                                </div>
+                                                        }
+                                                        ?>
+                                                    </div>
 
                                             </div>
 
@@ -437,7 +439,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
     </body>
 
-    </html>
+</html>
 <?php } else {
     header("location: index");
 }
