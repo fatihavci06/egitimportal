@@ -93,3 +93,26 @@ Swal.fire({
 </script>
 ';
 exit;
+?>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Paket Yükseltildi</title>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    Swal.fire({
+        title: "Başarılı!",
+        text: "Paketiniz başarıyla yükseltildi.",
+        icon: "success",
+        confirmButtonText: "Tamam"
+    }).then(() => {
+        window.location.href = "/online/";
+    });
+});
+</script>
+</body>
+</html>
