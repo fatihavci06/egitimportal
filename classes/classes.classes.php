@@ -2197,4 +2197,23 @@ INNER JOIN users_lnp AS u ON u.id = pst.user_id;');
 		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		return $data;
 	}
+
+	public function getPackagesList()
+{
+   $stmt = $this->connect()->prepare('
+    SELECT id, credit_card_fee as  price_yearly
+    FROM `packages_lnp` 
+    WHERE class_id = :class_id 
+    AND (name NOT LIKE "%Aylık%" AND name NOT LIKE "%Yıllık%")
+');
+    $executed = $stmt->execute([':class_id' => $_SESSION['class_id'] ?? null]);
+
+    if (!$executed) {
+        // Hata durumunda PDOException yerine kendi hata mesajını kullanmak istersen:
+        return [];
+    }
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 }

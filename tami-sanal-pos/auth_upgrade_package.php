@@ -29,7 +29,7 @@ function getPackageInfo($packageId, $pdo)
 header('Content-Type: application/json');
 
 try {
-  $upgradePackageId= $_GET['package_id'];
+  $upgradePackageId= $_POST['package_id'];
   $packageId=$_SESSION['package_id'];
   $amount=getPackageInfo($upgradePackageId,$pdo)['credit_card_fee'] - getPackageInfo($packageId,$pdo)['credit_card_fee'];
 
@@ -45,11 +45,11 @@ try {
 
   $orderId = getGUID();
 
-  $_SESSION['extra_package_id'] = $_POST['package_id'] ?? null;
+  $_SESSION['upgrade_package_id'] = $_POST['package_id'] ?? null;
 
-  $_SESSION['paidPrice'] = $amount;
+  $_SESSION['upgrade_paid_price'] = $amount;
 
-  $_SESSION['orderId'] = $orderId;
+  $_SESSION['upgrade_order_id'] = $orderId;
 
   $body = json_encode([
     "mobilePhoneNumber" => $telephone,
