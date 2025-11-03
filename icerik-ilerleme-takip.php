@@ -13,7 +13,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     include_once "views/pages-head.php";
 
 
-
+    echo 222;
+    die;
 
     $studentObj = new Student();
     $student = new ShowStudent();

@@ -207,9 +207,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         style="width: 65px; height: 65px;">
                                                         <i class="fas fa-bullseye fa-2x text-white"></i>
                                                     </div>
-                                                    
 
-                                                    <h1 class="fs-3 fw-bold text-dark mb-0"><?= $_GET['etkinlik_name']??'-' ?></h1>
+
+                                                    <h1 class="fs-3 fw-bold text-dark mb-0"><?= $_GET['etkinlik_name'] ?? '-' ?></h1>
 
                                                 </div>
                                             </header>
@@ -294,9 +294,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                 </h5>
 
                                                                 <p class="card-text text-muted mb-3" style="font-size: 14px;"><?= htmlspecialchars($content['content_type']) ?></p>
-
+                                                                <?php
+                                                                $contentType = htmlspecialchars($content['content_type'])
+                                                                ?>
                                                                 <div class="mt-auto d-flex justify-content-start">
-                                                                    <a href="ana-okulu-icerikler-detay.php?id=<?= htmlspecialchars($content['id']) ?>" class="btn-custom-open">
+                                                                    <a href="ana-okulu-<?= ($contentType == 'İndirilebilir İçerik') ? 'indirilebilir-' : '' ?>icerik-detay.php?id=<?= htmlspecialchars($content['id'], ENT_QUOTES, 'UTF-8') ?>"
+                                                                        class="btn-custom-open">
                                                                         Aç
                                                                     </a>
                                                                 </div>

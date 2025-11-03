@@ -143,7 +143,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                <?= htmlspecialchars($value['lesson_name']) ?>
                                                             </td>
                                                             <td>
-                                                                <a href="ana-okulu-icerikler-detay.php?id=<?= $value['id'] ?>" class="text-gray-800 text-hover-primary mb-1">
+                                                                <a href="ana-okulu-icerik-detay.php?id=<?= $value['id'] ?>" class="text-gray-800 text-hover-primary mb-1">
                                                                     <?= htmlspecialchars($value['subject']) ?>
                                                                 </a>
                                                             </td>

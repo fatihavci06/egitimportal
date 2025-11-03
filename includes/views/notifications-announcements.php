@@ -304,7 +304,7 @@ $timeDifference = new DateFormat();
             this.a_apiUrl = 'includes/fetch_announcements.inc.php';
 
             this.intervalId = null;
-            this.refreshInterval = 1 * 60 * 1000;
+            this.refreshInterval = 10 * 60 * 1000;
             this.init();
         }
 

@@ -686,7 +686,7 @@ class ShowStudent extends Student
         // die();
 
         foreach ($items as $key => $value) {
-
+           
 
             $placeholder = "placeholder";
 
@@ -702,7 +702,7 @@ class ShowStudent extends Student
             $studentList .= '
                     <tr>
                         <td>
-                            <a href="./ana-okulu-icerikler-detay.php?id=' . $value['content_id'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['subject'] . '</a>
+                            <a href="./ana-okulu-icerik-detay.php?id=' . $value['content_id'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['subject'] . '</a>
                         </td>
                         <td>
                             ' . $topic_name . '
@@ -842,7 +842,7 @@ class ShowStudent extends Student
             $studentList .= '
                     <tr>
                         <td>
-                            <a href="./ana-okulu-icerikler-detay.php?id=' . $value['content_id'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['subject'] . '</a>
+                            <a href="./ana-okulu-icerik-detay.php?id=' . $value['content_id'] . '" class="text-gray-800 text-hover-primary mb-1">' . $value['subject'] . '</a>
                         </td>
                         <td>
                             ' . $topic_name . '

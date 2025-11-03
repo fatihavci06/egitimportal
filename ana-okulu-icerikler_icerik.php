@@ -346,8 +346,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                     </div>
                                     <div class="row container-fluid">
                                         <?php foreach ($contentList as $u): ?>
+                                             <?php
+                                                            $contentType = $u['content_type'];
+                                                            
+                                                            ?>
                                             <div class="col-md-3 col-xl-3 mb-4">
-                                                <a href="ana-okulu-icerikler-detay.php?id=<?= $u['id'] ?>" class="text-decoration-none d-block h-100">
+                                                <a href="ana-okulu-<?= ($contentType == 'İndirilebilir İçerik') ? 'indirilebilir-' : '' ?>icerik-detay.php?id=<?= $u['id'] ?>" 
+   class="text-decoration-none d-block h-100">
                                                     <div class="card h-100 shadow-sm border-0">
                                                         <div class="d-flex justify-content-center align-items-center" style="height: 180px; 
                         background-image: url('uploads/contents/konuDefault.jpg'); 
@@ -365,10 +370,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             <h5 class="card-title fw-bold text-dark mb-1" style="font-size: 16px;">
                                                                 <?= htmlspecialchars($u['subject']) ?>
                                                             </h5>
-                                                            <?php
-                                                            $contentType = $u['content_type'];
-                                                            
-                                                            ?>
+                                                           
                                                             <p class="card-text text-muted mb-3" style="font-size: 14px;"><?= $contentType ?></p>
 
                                                             <div class="mt-auto d-flex justify-content-start">
