@@ -8,7 +8,10 @@ error_reporting(E_ALL);
 
 require_once '../../classes/dbh.classes.php';
 require_once '../../classes/Mailer.php';
-
+if (isset($_SESSION['upgrade_done']) && $_SESSION['upgrade_done'] === true) {
+    header("Location: /online/");
+    exit;
+}
 $mailer = new Mailer();
 $db = new Dbh();
 $pdo = $db->connect();
@@ -78,6 +81,7 @@ if ($to_email) {
     $mailer->send($to_email, $subject, $body);
 }
 $_SESSION['package_id'] = $packageId;
+$_SESSION['upgrade_done'] = true;
 // Yönlendirme
 echo '
 <!DOCTYPE html>
