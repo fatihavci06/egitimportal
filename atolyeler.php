@@ -261,7 +261,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                             <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-5 d-flex justify-content-center">
                                                 <div class="card w-100 border-0">
-                                                    <a href="#" class="text-decoration-none w-100">
+                                                    <a href="spor-ve-dans-atolyesi" class="text-decoration-none w-100">
                                                         <div class="card-overlay d-flex align-items-center justify-content-center">
                                                             <img src="uploads/atolyeler/spor-ve-dans-atolyesi.png" class="img-fluid">
                                                         </div>
@@ -271,7 +271,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                             <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-5 d-flex justify-content-center">
                                                 <div class="card w-100 border-0">
-                                                    <a href="#" class="text-decoration-none w-100">
+                                                    <a href="bilim-atolyesi" class="text-decoration-none w-100">
                                                         <div class="card-overlay d-flex align-items-center justify-content-center">
                                                             <img src="uploads/atolyeler/bilim-atolyesi.png" class="img-fluid">
                                                         </div>
@@ -281,7 +281,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                             <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-5 d-flex justify-content-center">
                                                 <div class="card w-100 border-0">
-                                                    <a href="#" class="text-decoration-none w-100">
+                                                    <a href="sanat-atolyesi" class="text-decoration-none w-100">
                                                         <div class="card-overlay d-flex align-items-center justify-content-center">
                                                             <img src="uploads/atolyeler/sanat-atolyesi.png" class="img-fluid">
                                                         </div>
@@ -291,7 +291,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                             <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-5 d-flex justify-content-center">
                                                 <div class="card w-100 border-0">
-                                                    <a href="#" class="text-decoration-none w-100">
+                                                    <a href="puzzle-atolyesi" class="text-decoration-none w-100">
                                                         <div class="card-overlay d-flex align-items-center justify-content-center">
                                                             <img src="uploads/atolyeler/puzzle-atolyesi.png" class="img-fluid">
                                                         </div>

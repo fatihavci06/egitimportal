@@ -270,13 +270,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <tbody style="text-align: center;">
                                                     <tr>
                                                         <td>
-                                                            <p>My Family and Me &ndash; Ailem ve Ben</p>
+                                                            <p><a href="my-family-and-me-ailem-ve-ben" style="color: #071437">My Family and Me &ndash; Ailem ve Ben</a></p>
                                                         </td>
                                                         <td>
                                                             <p>03.10.2025 SAAT 16.00</p>
                                                         </td>
                                                         <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"> <img src="uploads/konusma-kulubu-basliklar/carpi.png" style="width: 55px; padding: 0 10px;"></p>
+                                                            <p><a href="my-family-and-me-ailem-ve-ben"><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"></a></p>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -287,7 +287,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             <p>07.10.2025 SAAT 16.00</p>
                                                         </td>
                                                         <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"> <img src="uploads/konusma-kulubu-basliklar/carpi.png" style="width: 55px; padding: 0 10px;"></p>
+                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"></p>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -298,7 +298,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             <p>15.10.2025 SAAT 16.00</p>
                                                         </td>
                                                         <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"> <img src="uploads/konusma-kulubu-basliklar/carpi.png" style="width: 55px; padding: 0 10px;"></p>
+                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"></p>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -309,7 +309,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             <p>03.10.2025 SAAT 16.00</p>
                                                         </td>
                                                         <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"> <img src="uploads/konusma-kulubu-basliklar/carpi.png" style="width: 55px; padding: 0 10px;"></p>
+                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"></p>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -320,7 +320,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             <p>07.10.2025 SAAT 16.00</p>
                                                         </td>
                                                         <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"> <img src="uploads/konusma-kulubu-basliklar/carpi.png" style="width: 55px; padding: 0 10px;"></p>
+                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"></p>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -331,7 +331,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             <p>15.10.2025 SAAT 16.00</p>
                                                         </td>
                                                         <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"> <img src="uploads/konusma-kulubu-basliklar/carpi.png" style="width: 55px; padding: 0 10px;"></p>
+                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"></p>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -342,7 +342,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             <p>03.10.2025 SAAT 16.00</p>
                                                         </td>
                                                         <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"> <img src="uploads/konusma-kulubu-basliklar/carpi.png" style="width: 55px; padding: 0 10px;"></p>
+                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"></p>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -353,139 +353,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             <p>07.10.2025 SAAT 16.00</p>
                                                         </td>
                                                         <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"> <img src="uploads/konusma-kulubu-basliklar/carpi.png" style="width: 55px; padding: 0 10px;"></p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <p>Clothes and Fashion Day &ndash; Kıyafetler ve Moda G&uuml;n&uuml;</p>
-                                                        </td>
-                                                        <td>
-                                                            <p>15.10.2025 SAAT 16.00</p>
-                                                        </td>
-                                                        <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"> <img src="uploads/konusma-kulubu-basliklar/carpi.png" style="width: 55px; padding: 0 10px;"></p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <p>Healthy Habits &ndash; Sağlıklı Alışkanlıklar</p>
-                                                        </td>
-                                                        <td>
-                                                            <p>03.10.2025 SAAT 16.00</p>
-                                                        </td>
-                                                        <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"> <img src="uploads/konusma-kulubu-basliklar/carpi.png" style="width: 55px; padding: 0 10px;"></p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <p>Transportation Adventure &ndash; Ulaşım Ara&ccedil;ları Macerası</p>
-                                                        </td>
-                                                        <td>
-                                                            <p>07.10.2025 SAAT 16.00</p>
-                                                        </td>
-                                                        <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"> <img src="uploads/konusma-kulubu-basliklar/carpi.png" style="width: 55px; padding: 0 10px;"></p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <p>Community Helpers &ndash; Topluma Yardım Edenler (itfaiyeci, polis vb.)</p>
-                                                        </td>
-                                                        <td>
-                                                            <p>15.10.2025 SAAT 16.00</p>
-                                                        </td>
-                                                        <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"> <img src="uploads/konusma-kulubu-basliklar/carpi.png" style="width: 55px; padding: 0 10px;"></p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <p>In My School &ndash; Okulda</p>
-                                                        </td>
-                                                        <td>
-                                                            <p>03.10.2025 SAAT 16.00</p>
-                                                        </td>
-                                                        <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"> <img src="uploads/konusma-kulubu-basliklar/carpi.png" style="width: 55px; padding: 0 10px;"></p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <p>Birthday Party! &ndash; Doğum G&uuml;n&uuml; Partisi!</p>
-                                                        </td>
-                                                        <td>
-                                                            <p>07.10.2025 SAAT 16.00</p>
-                                                        </td>
-                                                        <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"> <img src="uploads/konusma-kulubu-basliklar/carpi.png" style="width: 55px; padding: 0 10px;"></p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <p>Under the Sea &ndash; Deniz Altında</p>
-                                                        </td>
-                                                        <td>
-                                                            <p>15.10.2025 SAAT 16.00</p>
-                                                        </td>
-                                                        <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"> <img src="uploads/konusma-kulubu-basliklar/carpi.png" style="width: 55px; padding: 0 10px;"></p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <p>At the Supermarket &ndash; S&uuml;permarkette</p>
-                                                        </td>
-                                                        <td>
-                                                            <p>03.10.2025 SAAT 16.00</p>
-                                                        </td>
-                                                        <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"> <img src="uploads/konusma-kulubu-basliklar/carpi.png" style="width: 55px; padding: 0 10px;"></p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <p>Space and Planets &ndash; Uzay ve Gezegenler</p>
-                                                        </td>
-                                                        <td>
-                                                            <p>07.10.2025 SAAT 16.00</p>
-                                                        </td>
-                                                        <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"> <img src="uploads/konusma-kulubu-basliklar/carpi.png" style="width: 55px; padding: 0 10px;"></p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <p>Let&rsquo;s Go Camping! &ndash; Haydi Kampa Gidelim!</p>
-                                                        </td>
-                                                        <td>
-                                                            <p>15.10.2025 SAAT 16.00</p>
-                                                        </td>
-                                                        <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"> <img src="uploads/konusma-kulubu-basliklar/carpi.png" style="width: 55px; padding: 0 10px;"></p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <p>At the Park &ndash; Parkta</p>
-                                                        </td>
-                                                        <td>
-                                                            <p>15.10.2025 SAAT 16.00</p>
-                                                        </td>
-                                                        <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"> <img src="uploads/konusma-kulubu-basliklar/carpi.png" style="width: 55px; padding: 0 10px;"></p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <p>Fairy Tales and Imagination &ndash; Masallar ve Hayal G&uuml;c&uuml;</p>
-                                                        </td>
-                                                        <td>
-                                                            <p>15.10.2025 SAAT 16.00</p>
-                                                        </td>
-                                                        <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"> <img src="uploads/konusma-kulubu-basliklar/carpi.png" style="width: 55px; padding: 0 10px;"></p>
+                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"></p>
                                                         </td>
                                                     </tr>
                                                 </tbody>

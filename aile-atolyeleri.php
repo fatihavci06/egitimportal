@@ -73,12 +73,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </header>
                                         </div>
 
-                                        
+
                                         <div class="row justify-content-start">
 
                                             <div class="col-8">
                                                 <div class=" custom-card card-psikoloji p-4">
-                                                    <a href="psikolojik-test-listesi" class="text-decoration-none text-dark text-hover-primary">
+                                                    <a href="aile-atolyesi" class="text-decoration-none text-dark text-hover-primary">
                                                         <div class="d-flex align-items-center">
                                                             <img src="uploads/aile-atolyeleri/aile-atolyeleri.png" alt="Aile Atölyeleri Görseli" style="max-width: 100%; height: auto; object-fit: contain;">
 
@@ -89,7 +89,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                             <div class="col-8">
                                                 <div class=" custom-card card-tavsiye p-4">
-                                                    <a href="uzman-psikologdan-aileye-tavsiyeler" class="text-decoration-none text-dark text-hover-primary">
+                                                    <a href="global-kids-events" class="text-decoration-none text-dark text-hover-primary">
                                                         <div class="d-flex align-items-center">
                                                             <img src="uploads/aile-atolyeleri/global-kids-events.png" alt="Aile Atölyeleri Görseli" style="max-width: 100%; height: auto; object-fit: contain;">
                                                         </div>
@@ -99,9 +99,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                             <div class="col-8">
                                                 <div class=" custom-card  p-4">
-                                                    <div class="d-flex align-items-center">
-                                                        <img src="uploads/aile-atolyeleri/family-game-nights.png" alt="Aile Atölyeleri Görseli" style="max-width: 100%; height: auto; object-fit: contain;">
-                                                    </div>
+                                                    <a href="family-game-nights" class="text-decoration-none text-dark text-hover-primary">
+                                                        <div class="d-flex align-items-center">
+                                                            <img src="uploads/aile-atolyeleri/family-game-nights.png" alt="Aile Atölyeleri Görseli" style="max-width: 100%; height: auto; object-fit: contain;">
+                                                        </div>
+                                                    </a>
                                                 </div>
                                             </div>
 
