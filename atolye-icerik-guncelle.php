@@ -389,7 +389,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
           }
 
           // Temel Validasyonlar
-          if (!isValid || $('#subject').val().trim() === '' || $('#content_type').val() === '' || !selectedContentType || !selectedClassIds || selectedClassIds.length === 0) {
+          if (!isValid || $('#subject').val().trim() === '' || $('#content_type').val() === ''  || !selectedClassIds || selectedClassIds.length === 0) {
             if (isValid) { // Sadece temel alanlar eksikse bu uyarıyı göster
               Swal.fire({ icon: 'warning', title: 'Uyarı', text: 'Lütfen zorunlu alanları (Başlık, Tür, İçerik Türü, Yaş Grubu) doldurun.' });
             }

@@ -109,9 +109,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <input class="form-check-input ms-10" type="radio" name="secim" value="wordwall"> İnteraktif Oyun
                                                     </label>
                                                     
-                                                    <label>
-                                                        <input class="form-check-input ms-10" type="radio" name="secim" value="content"> Metin İçeriği
-                                                    </label>
+                                                  
                                                 </div>
 
                                                 <div id="videoInput" class="mb-4" style="display:none;">
@@ -291,15 +289,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     }
 
                     const selectedContentType = $('input[name="secim"]:checked').val();
-                    if (!selectedContentType) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Uyarı',
-                            text: 'Lütfen bir içerik türü seçin.',
-                            confirmButtonText: 'Tamam'
-                        });
-                        return;
-                    }
+                   
                     
                     const selectedClassIds = $('#main_school_class_id').val();
                     if (!selectedClassIds || selectedClassIds.length === 0) {

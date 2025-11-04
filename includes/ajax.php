@@ -8452,7 +8452,7 @@ $video_url = $_POST['video_url'] ?? null;
         $newFileDescriptions = $_POST['descriptions'] ?? [];
 
         // Temel Validasyon
-        if (empty($contentId) || empty($subject) || empty($class_ids) || empty($content_type) || empty($secim_type)) {
+        if (empty($contentId) || empty($subject) || empty($class_ids) || empty($content_type) ) {
             throw new Exception('Lütfen zorunlu alanları (ID, Başlık, Yaş Grubu, Tür, İçerik Türü) doldurun.', 400);
         }
 
