@@ -8202,22 +8202,36 @@ KTUtil.onDOMContentLoaded(function () {
 	KTAppSidebar.init();
 });
 
-let startTime = new Date().getTime(); // Sayfa yüklendiğindeki zamanı kaydet
+// let startTime = new Date().getTime(); // Sayfa yüklendiğindeki zamanı kaydet
 
-window.addEventListener('beforeunload', function(event) {
-  const endTime = new Date().getTime();
-  const timeSpent = Math.floor((endTime - startTime) / 1000); // Saniye cinsinden süre
- // const startTimeFormatted = new Date(startTime);
+// window.addEventListener('beforeunload', function(event) {
+//   const endTime = new Date().getTime();
+//   const timeSpent = Math.floor((endTime - startTime) / 1000); // Saniye cinsinden süre
+//  // const startTimeFormatted = new Date(startTime);
 
-  $.ajax({
-    type: "POST",
-    url: 'includes/timespend.inc.php',
-    dataType: "json",
-    data: {
-        timeSpent: encodeURIComponent(timeSpent),
-        startTime: startTime,
-    },
-  });
-  //event.preventDefault();
-  //event.returnValue = '';
+//   $.ajax({
+//     type: "POST",
+//     url: 'includes/timespend.inc.php',
+//     dataType: "json",
+//     data: {
+//         timeSpent: encodeURIComponent(timeSpent),
+//         startTime: startTime,
+//     },
+//   });
+//   //event.preventDefault();
+//   //event.returnValue = '';
+// });
+
+let startTime = Date.now();
+
+window.addEventListener('beforeunload', function() {
+  const endTime = Date.now();
+  const timeSpent = Math.floor((endTime - startTime) / 1000);
+
+  const data = new FormData();
+  data.append('timeSpent', timeSpent);
+  data.append('startTime', startTime);
+
+  // Tamamen asenkron, hiçbir şekilde tarayıcıyı bekletmez ✅
+  navigator.sendBeacon('includes/timespend.inc.php', data);
 });
