@@ -7743,7 +7743,7 @@ ORDER BY msu.unit_order asc
         if (isset($_FILES['image_path']) && $_FILES['image_path']['error'] === UPLOAD_ERR_OK) {
             $image_file = $_FILES['image_path'];
             $image_path = $upload_dir . uniqid('img_') . '_' . basename($image_file['name']);
-    
+
             if (!move_uploaded_file($image_file['tmp_name'], $image_path)) {
                 $response = ['status' => 'error', 'message' => 'Yeni görüntü dosyası yüklenirken hata oluştu.'];
                 $file_error = true;
@@ -7945,7 +7945,7 @@ ORDER BY msu.unit_order asc
         $stmt->execute(['status' => $status, 'id' => $id]);
         echo json_encode(['status' => 'success', 'message' => 'Durum güncellendi.']);
         exit;
-   case 'sanalGezilerList':
+    case 'sanalGezilerList':
         try {
             $stmt = $pdo->query("SELECT id, title, icon, link, class_id, status FROM sanal_geziler_lnp ORDER BY id DESC");
             $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -7957,7 +7957,7 @@ ORDER BY msu.unit_order asc
         exit;
 
     case 'sanalGezilerCreate':
-        
+
         // 🚨 SABİTLER BURADA TANIMLANDI 🚨
         $UPLOAD_DIR = '../uploads/icons/';
         $MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -7966,20 +7966,20 @@ ORDER BY msu.unit_order asc
         $title = trim($_POST['title'] ?? '');
         $link = trim($_POST['link'] ?? '');
         $class_id_array = $_POST['class_id'] ?? [];
-        $icon_filename = null; 
-        
+        $icon_filename = null;
+
         // 1. Dosya Yükleme İşlemi
         $file = $_FILES['icon_file'] ?? ['error' => UPLOAD_ERR_NO_FILE, 'size' => 0];
         $is_file_uploaded = false;
 
         if ($file['error'] !== UPLOAD_ERR_NO_FILE && $file['size'] > 0) {
-            
+
             // A) Güvenlik ve Boyut Kontrolü
             if ($file['error'] !== UPLOAD_ERR_OK || $file['size'] > $MAX_FILE_SIZE) {
                 echo json_encode(['status' => 'error', 'message' => 'Dosya yükleme hatası veya boyutu 512KB\'ı aşıyor.']);
                 exit;
             }
-            
+
             // B) MIME Tipi Kontrolü
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $mime_type = finfo_file($finfo, $file['tmp_name']);
@@ -7989,12 +7989,12 @@ ORDER BY msu.unit_order asc
                 echo json_encode(['status' => 'error', 'message' => 'Sadece JPG, PNG veya SVG dosyaları yüklenebilir.']);
                 exit;
             }
-            
+
             // C) Dosya Adı Oluşturma ve Taşıma
             $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
             $icon_filename = uniqid('icon_', true) . '.' . $extension;
             $destination = $UPLOAD_DIR . $icon_filename;
-            
+
             if (!is_dir($UPLOAD_DIR)) {
                 mkdir($UPLOAD_DIR, 0777, true);
             }
@@ -8015,7 +8015,7 @@ ORDER BY msu.unit_order asc
             echo json_encode(['status' => 'error', 'message' => 'Lütfen gerekli tüm alanları doldurun.']);
             exit;
         }
-        
+
         // Sınıf ID'lerini noktalı virgülle birleştirme
         $class_id = implode(';', $class_id_array) . ';';
 
@@ -8023,9 +8023,9 @@ ORDER BY msu.unit_order asc
         try {
             $stmt = $pdo->prepare("INSERT INTO sanal_geziler_lnp (title, icon, link, class_id, status) VALUES (:title, :icon, :link, :class_id, 1)");
             $stmt->execute([
-                'title' => $title, 
-                'icon' => $icon_filename, 
-                'link' => $link, 
+                'title' => $title,
+                'icon' => $icon_filename,
+                'link' => $link,
                 'class_id' => $class_id
             ]);
             echo json_encode(['status' => 'success', 'message' => 'Sanal Gezi başarıyla eklendi.']);
@@ -8045,7 +8045,7 @@ ORDER BY msu.unit_order asc
             $stmt = $pdo->prepare("SELECT id, title, icon, link, class_id, status FROM sanal_geziler_lnp WHERE id = :id");
             $stmt->execute(['id' => $id]);
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
-            
+
             if ($data) {
                 $data['class_id'] = rtrim($data['class_id'], ';');
                 echo json_encode(['status' => 'success', 'data' => $data]);
@@ -8059,17 +8059,17 @@ ORDER BY msu.unit_order asc
         exit;
 
     case 'sanalGezilerUpdate':
-        
+
         // 🚨 SABİTLER BURADA TANIMLANDI 🚨
         $UPLOAD_DIR = '../uploads/icons/';
         $MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
         $allowed_mime_types = ['image/jpeg', 'image/png', 'image/svg+xml'];
-        
+
         $id = $_POST['id'] ?? 0;
         $title = trim($_POST['title'] ?? '');
         $link = trim($_POST['link'] ?? '');
         $class_id_array = $_POST['class_id'] ?? [];
-        $new_icon_filename = null; 
+        $new_icon_filename = null;
 
         if (empty($id) || empty($title) || empty($link) || empty($class_id_array)) {
             echo json_encode(['status' => 'error', 'message' => 'Lütfen gerekli tüm alanları doldurun.']);
@@ -8087,11 +8087,11 @@ ORDER BY msu.unit_order asc
             echo json_encode(['status' => 'error', 'message' => 'Mevcut veri çekme hatası.']);
             exit;
         }
-        
+
         // 2. Yeni Dosya Yükleme İşlemi
         $file = $_FILES['icon_file'] ?? ['error' => UPLOAD_ERR_NO_FILE, 'size' => 0];
         $is_new_file_uploaded = false;
-        
+
         $final_icon_filename = $current_icon; // Varsayılan olarak mevcut ikon kalır
 
         if ($file['error'] !== UPLOAD_ERR_NO_FILE && $file['size'] > 0) {
@@ -8100,7 +8100,7 @@ ORDER BY msu.unit_order asc
                 echo json_encode(['status' => 'error', 'message' => 'Yeni ikon boyutu 512KB\'ı aşıyor veya yükleme hatası var.']);
                 exit;
             }
-            
+
             // B) MIME Tipi Kontrolü
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $mime_type = finfo_file($finfo, $file['tmp_name']);
@@ -8110,12 +8110,12 @@ ORDER BY msu.unit_order asc
                 echo json_encode(['status' => 'error', 'message' => 'Sadece JPG, PNG veya SVG dosyaları yüklenebilir.']);
                 exit;
             }
-            
+
             // C) Dosya Adı Oluşturma ve Taşıma
             $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
             $new_icon_filename = uniqid('icon_', true) . '.' . $extension;
             $destination = $UPLOAD_DIR . $new_icon_filename;
-            
+
             if (!is_dir($UPLOAD_DIR)) {
                 mkdir($UPLOAD_DIR, 0777, true);
             }
@@ -8123,7 +8123,7 @@ ORDER BY msu.unit_order asc
             if (move_uploaded_file($file['tmp_name'], $destination)) {
                 $is_new_file_uploaded = true;
                 $final_icon_filename = $new_icon_filename;
-                
+
                 // Başarıyla yüklendiyse, eski ikonu sil
                 if (!empty($current_icon) && file_exists($UPLOAD_DIR . $current_icon)) {
                     unlink($UPLOAD_DIR . $current_icon);
@@ -8133,7 +8133,7 @@ ORDER BY msu.unit_order asc
                 exit;
             }
         }
-        
+
         // Sınıf ID'lerini noktalı virgülle birleştirme
         $class_id = implode(';', $class_id_array) . ';';
 
@@ -8141,10 +8141,10 @@ ORDER BY msu.unit_order asc
         try {
             $stmt = $pdo->prepare("UPDATE sanal_geziler_lnp SET title=:title, icon=:icon, link=:link, class_id=:class_id WHERE id=:id");
             $stmt->execute([
-                'title' => $title, 
-                'icon' => $final_icon_filename, 
-                'link' => $link, 
-                'class_id' => $class_id, 
+                'title' => $title,
+                'icon' => $final_icon_filename,
+                'link' => $link,
+                'class_id' => $class_id,
                 'id' => $id
             ]);
             echo json_encode(['status' => 'success', 'message' => 'Sanal Gezi başarıyla güncellendi.']);
@@ -8159,12 +8159,12 @@ ORDER BY msu.unit_order asc
         exit;
 
     case 'sanalGezilerDelete':
-        
+
         // 🚨 SABİTLER BURADA TANIMLANDI 🚨
         $UPLOAD_DIR = '../uploads/icons/';
-        
+
         $id = $_POST['id'] ?? 0;
-        
+
         // 1. Önce mevcut ikon adını çek (silmek için)
         $current_icon = null;
         try {
@@ -8181,12 +8181,12 @@ ORDER BY msu.unit_order asc
             // 2. Veritabanından kaydı sil
             $stmt = $pdo->prepare("DELETE FROM sanal_geziler_lnp WHERE id=:id");
             $stmt->execute(['id' => $id]);
-            
+
             // 3. Dosyayı sil
             if (!empty($current_icon) && file_exists($UPLOAD_DIR . $current_icon)) {
                 unlink($UPLOAD_DIR . $current_icon);
             }
-            
+
             echo json_encode(['status' => 'success', 'message' => 'Sanal Gezi silindi.']);
         } catch (PDOException $e) {
             http_response_code(500);
@@ -8197,10 +8197,10 @@ ORDER BY msu.unit_order asc
     case 'sanalGezilerStatus':
         $id = $_POST['id'] ?? 0;
         $status = $_POST['status'] ?? 0;
-        
+
         if (!in_array($status, [0, 1])) {
-             echo json_encode(['status' => 'error', 'message' => 'Geçersiz durum değeri.']);
-             exit;
+            echo json_encode(['status' => 'error', 'message' => 'Geçersiz durum değeri.']);
+            exit;
         }
 
         try {
@@ -8212,6 +8212,435 @@ ORDER BY msu.unit_order asc
             echo json_encode(['status' => 'error', 'message' => 'Durum güncelleme hatası: ' . $e->getMessage()]);
         }
         exit;
+    case 'createAtolyeContent':
+
+        $uploadDir = '../uploads/atolye_content/'; // Bir üst dizinde uploads/atolye_content klasörünü varsayar.
+
+        if (!is_dir($uploadDir)) {
+            // Klasör yoksa oluştur ve izinleri ayarla
+            if (!mkdir($uploadDir, 0777, true) && !is_dir($uploadDir)) {
+                // Klasör oluşturulamazsa hata döndür
+                echo json_encode(['status' => 'error', 'message' => 'Yükleme dizini oluşturulamadı. İzinleri kontrol edin.']);
+                exit;
+            }
+        }
+
+
+
+        // POST verilerini al
+        $subject = $_POST['subject'] ?? null;
+        $class_ids = $_POST['class_ids'] ?? null; // Noktalı virgülle ayrılmış ID'ler
+        $zoom_url = $_POST['zoom_url'] ?? null;
+        $content_type = $_POST['content_type'] ?? null;
+        $secim_type = $_POST['secim'] ?? null; // Formdan 'secim' adıyla geliyor, tabloda 'secim_type'
+        $video_url = $_POST['video_url'] ?? null;
+        $mcontent = $_POST['content'] ?? null; // TinyMCE içeriği
+        $descriptions = $_POST['descriptions'] ?? []; // Dosya açıklamaları
+        $zoom_date = $_POST['zoom_date'] ?? null;
+        $zoom_time = $_POST['zoom_time'] ?? null;
+
+        // WordWall verileri
+        $wordWallTitles = $_POST['wordWallTitles'] ?? [];
+        $wordWallUrls = $_POST['wordWallUrls'] ?? [];
+
+
+        // Temel Validasyon
+        if (empty($subject) || empty($class_ids) || empty($content_type) || empty($secim_type)) {
+            echo json_encode(['status' => 'error', 'message' => 'Lütfen zorunlu alanları (Başlık, Yaş Grubu, Tür, İçerik Türü) doldurun.']);
+            exit;
+        }
+
+        // Veritabanı işlemleri Transaction içine alınır
+        try {
+            $pdo->beginTransaction();
+
+            // 1. Ana İçeriği (atolye_contents) Veritabanına Ekleme
+            // Not: Tablo şemanızda 'video_url' sütunu olmadığı için, formdan gelen video linkini
+            // 'content' alanına (metin içeriği) eklemiyoruz. Eğer video linkini kaydetmeniz gerekiyorsa,
+            // ya bu tabloya 'video_url' sütunu eklemeli ya da 'content' alanını kullanmalısınız.
+
+            $mainInsertSql = "INSERT INTO atolye_contents 
+                              (class_ids, subject, zoom_url, zoom_date,zoom_time, content_type, secim_type, content,video_url) 
+                              VALUES (:class_ids, :subject, :zoom_url,:zoom_date,:zoom_time, :content_type, :secim_type, :content,:video_url)";
+
+            $stmt = $pdo->prepare($mainInsertSql);
+            $stmt->execute([
+                'class_ids'    => $class_ids,
+                'subject'      => $subject,
+                'zoom_url'     => $zoom_url,
+                'zoom_date'    => $zoom_date,
+                'zoom_time'    => $zoom_time,
+                'content_type' => $content_type,
+                'secim_type'   => $secim_type,
+                'content'      => $mcontent, // Bu alan hem text hem de video linki için kullanılabilir.
+                'video_url'      => $video_url
+            ]);
+
+            $contentId = $pdo->lastInsertId();
+
+
+            // 2. Dosya/Görsel Yükleme ve atolye_files_and_images Tablosuna Ekleme
+            if ($secim_type === 'file_path' && !empty($_FILES['files']['name'][0])) {
+                $fileCount = count($_FILES['files']['name']);
+
+                for ($i = 0; $i < $fileCount; $i++) {
+
+                    $fileName = $_FILES['files']['name'][$i];
+                    $fileTmpName = $_FILES['files']['tmp_name'][$i];
+                    $fileError = $_FILES['files']['error'][$i];
+                    $fileMimeType = $_FILES['files']['type'][$i];
+                    $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+                    $newFileName = uniqid('file_') . '.' . $fileExtension;
+                    $fileDestination = $uploadDir . $newFileName;
+                    $fileStoragePath = 'uploads/atolye_content/' . $newFileName; // DB'de saklanacak yol
+
+                    $description = $descriptions[$i] ?? '';
+
+                    if ($fileError === 0) {
+                        if (move_uploaded_file($fileTmpName, $fileDestination)) {
+
+                            // Dosya türünü belirle ('image' veya 'file' ENUM'u için)
+                            $isImage = (strpos($fileMimeType, 'image') !== false || in_array($fileExtension, ['png', 'jpg', 'jpeg', 'gif', 'svg']));
+                            $dbFileType = $isImage ? 'image' : 'file';
+
+                            // Veritabanına kaydet
+                            $fileInsertSql = "INSERT INTO atolye_files_and_images 
+                                              (content_id, file_path, description, type) 
+                                              VALUES (:content_id, :file_path, :description, :type)";
+
+                            $stmt = $pdo->prepare($fileInsertSql);
+                            $stmt->execute([
+                                'content_id'       => $contentId,
+                                'file_path'        => $fileStoragePath,
+                                'description'      => $description,
+                                'type'             => $dbFileType // 'file' veya 'image'
+                            ]);
+                        } else {
+                            $pdo->rollBack();
+                            echo json_encode(['status' => 'error', 'message' => "Dosya yükleme başarısız oldu: $fileName. Sunucu izinlerini kontrol edin."]);
+                            exit;
+                        }
+                    } else if ($fileError !== 4) { // Hata kodu 4: Dosya seçilmedi demek. Diğer hataları raporla.
+                        $pdo->rollBack();
+                        echo json_encode(['status' => 'error', 'message' => "Dosya yükleme hatası ($fileName): Hata kodu $fileError"]);
+                        exit;
+                    }
+                }
+            }
+
+
+            // 3. WordWall İçeriklerini atolye_wordwall_links Tablosuna Ekleme
+            if ($secim_type === 'wordwall') {
+                $wordWallCount = count($wordWallTitles);
+                if ($wordWallCount > 0) {
+                    for ($i = 0; $i < $wordWallCount; $i++) {
+                        $title = trim($wordWallTitles[$i] ?? '');
+                        $url = trim($wordWallUrls[$i] ?? '');
+
+                        if (!empty($title) && !empty($url)) {
+                            $wordWallInsertSql = "INSERT INTO atolye_wordwall_links 
+                                                  (content_id, title, url) 
+                                                  VALUES (:content_id, :title, :url)";
+                            $stmt = $pdo->prepare($wordWallInsertSql);
+                            $stmt->execute([
+                                'content_id' => $contentId,
+                                'title'      => $title,
+                                'url'        => $url
+                            ]);
+                        }
+                    }
+                }
+            }
+
+
+            // Her şey başarılıysa Transaction'ı onayla
+            $pdo->commit();
+            echo json_encode(['status' => 'success', 'message' => 'Atölye içeriği başarıyla oluşturuldu.', 'id' => $contentId]);
+        } catch (PDOException $e) {
+            // Hata olursa Transaction'ı geri al
+            $pdo->rollBack();
+            http_response_code(500);
+            // Hata mesajını daha kullanıcı dostu bir şekilde göster (debug için tam mesajı dahil ettim)
+            echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası oluştu. Lütfen tablo/sütun isimlerini kontrol edin. Detay: ' . $e->getMessage()]);
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Beklenmeyen bir hata oluştu: ' . $e->getMessage()]);
+        }
+        exit;
+    case 'deleteAtolyeFile':
+        $uploadDir = '../uploads/atolye_content/';
+        $fileId = filter_input(INPUT_POST, 'file_id', FILTER_VALIDATE_INT);
+        $contentId = filter_input(INPUT_POST, 'content_id', FILTER_VALIDATE_INT);
+
+        if (!$fileId || !$contentId) {
+            echo json_encode(['status' => 'error', 'message' => 'Dosya ID veya İçerik ID eksik.']);
+            exit;
+        }
+
+        $pdo->beginTransaction();
+
+        try {
+            // --- 1. Silinecek dosya yolunu veritabanından çek ---
+            $selectSql = "SELECT file_path FROM atolye_files_and_images WHERE id = :file_id AND content_id = :content_id";
+            $stmt = $pdo->prepare($selectSql);
+            $stmt->execute(['file_id' => $fileId, 'content_id' => $contentId]);
+            $fileData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$fileData) {
+                throw new Exception('Dosya veritabanında bulunamadı veya bu içeriğe ait değil.', 404);
+            }
+
+            $filePathInDb = $fileData['file_path'];
+            // Fiziksel dosya yolunu oluştur
+            $fullPath = $uploadDir . $filePathInDb;
+
+            // --- 2. Dosya kaydını veritabanından sil ---
+            $deleteDbSql = "DELETE FROM atolye_files_and_images WHERE id = :file_id AND content_id = :content_id";
+            $stmt = $pdo->prepare($deleteDbSql);
+            $dbDeleteSuccess = $stmt->execute(['file_id' => $fileId, 'content_id' => $contentId]);
+
+            if (!$dbDeleteSuccess) {
+                throw new Exception('Dosya kaydı veritabanından silinirken hata oluştu.', 500);
+            }
+
+            // --- 3. Fiziki dosyayı sunucudan sil ---
+            // Kontrol: Dosya yolu geçerli ve mevcut mu?
+            if (file_exists($fullPath)) {
+                if (!unlink($fullPath)) {
+                    // Silme hatası durumunda işlemi geri al ve hata fırlat
+                    throw new Exception('Fiziksel dosya sunucudan silinirken hata oluştu. (Lütfen manuel kontrol edin)', 500);
+                }
+            } else {
+                // Dosya fiziki olarak yoksa hata vermeyiz, sadece loglayabiliriz (Şimdilik devam ediyoruz)
+                // throw new Exception('Uyarı: Fiziki dosya bulunamadı, sadece DB kaydı silindi.', 200);
+            }
+
+            // Her şey başarılıysa Transaction'ı onayla
+            $pdo->commit();
+            echo json_encode(['status' => 'success', 'message' => 'Dosya başarıyla silindi.']);
+        } catch (Exception $e) {
+            // Hata durumunda Transaction'ı geri al
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+
+            // Hata mesajını AJAX'a geri gönder
+
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+            exit;
+        }
+
+        break;
+    case 'updateAtolyeContent':
+        $uploadDir = '../uploads/atolye_content/';
+        // POST verilerini al ve temizle
+        $contentId = filter_var($_POST['content_id'] ?? null, FILTER_VALIDATE_INT);
+        $subject = filter_var($_POST['subject'] ?? null, FILTER_SANITIZE_STRING);
+        $class_ids = filter_var($_POST['class_ids'] ?? null, FILTER_SANITIZE_STRING);
+        $zoom_url = filter_var($_POST['zoom_url'] ?? null, FILTER_SANITIZE_URL);
+        $content_type = filter_var($_POST['content_type'] ?? null, FILTER_SANITIZE_STRING);
+        $secim_type = filter_var($_POST['secim'] ?? null, FILTER_SANITIZE_STRING);
+        $content = $_POST['content'] ?? null; // Metin editöründen gelen içerik veya video linki
+$video_url = $_POST['video_url'] ?? null;
+        $wordWallTitles = $_POST['wordWallTitles'] ?? [];
+        $wordWallUrls = $_POST['wordWallUrls'] ?? [];
+
+        // Yüklenecek dosyalar ve açıklamaları
+        $newFiles = $_FILES['files'] ?? null;
+        $newFileDescriptions = $_POST['descriptions'] ?? [];
+
+        // Temel Validasyon
+        if (empty($contentId) || empty($subject) || empty($class_ids) || empty($content_type) || empty($secim_type)) {
+            throw new Exception('Lütfen zorunlu alanları (ID, Başlık, Yaş Grubu, Tür, İçerik Türü) doldurun.', 400);
+        }
+
+
+
+        // Transaction Başlatma
+        $pdo->beginTransaction();
+
+        try {
+            // --- 1. ANA İÇERİK GÜNCELLEMESİ (atolye_contents) ---
+            $mainUpdateSql = "UPDATE atolye_contents SET 
+                                    class_ids = :class_ids, 
+                                    subject = :subject, 
+                                    zoom_url = :zoom_url, 
+                                    content_type = :content_type, 
+                                    secim_type = :secim_type, 
+                                    content = :content,
+                                    video_url = :video_url,
+                                    updated_at = NOW()
+                                WHERE id = :id";
+
+            $stmt = $pdo->prepare($mainUpdateSql);
+            $updateSuccess = $stmt->execute([
+                'id'            => $contentId,
+                'class_ids'     => $class_ids,
+                'subject'       => $subject,
+                'zoom_url'      => $zoom_url,
+                'content_type'  => $content_type,
+                'secim_type'    => $secim_type,
+                'content'       => $content,
+                'video_url'       => $video_url
+            ]);
+
+            if (!$updateSuccess) {
+                throw new Exception('Ana içerik veritabanında güncellenemedi (SQL Hatası).', 500);
+            }
+
+            // --- 2. WORDWALL LİNKLERİNİN GÜNCELLEMESİ ---
+            if ($secim_type === 'wordwall') {
+                // a) Eski linkleri sil
+                $deleteWordWallSql = "DELETE FROM atolye_wordwall_links WHERE content_id = :content_id";
+                $stmt = $pdo->prepare($deleteWordWallSql);
+                $stmt->execute(['content_id' => $contentId]);
+
+                // b) Yeni linkleri ekle
+                $wordWallInsertSql = "INSERT INTO atolye_wordwall_links (content_id, title, url) VALUES (:content_id, :title, :url)";
+                $stmt = $pdo->prepare($wordWallInsertSql);
+
+                for ($i = 0; $i < count($wordWallUrls); $i++) {
+                    $title = filter_var(trim($wordWallTitles[$i] ?? ''), FILTER_SANITIZE_STRING);
+                    $url = filter_var(trim($wordWallUrls[$i] ?? ''), FILTER_SANITIZE_URL);
+
+                    if (!empty($url) && !empty($title)) {
+                        $stmt->execute([
+                            'content_id' => $contentId,
+                            'title'      => $title,
+                            'url'        => $url
+                        ]);
+                    }
+                }
+            }
+
+            // --- 3. YENİ DOSYALARI YÜKLEME VE KAYDETME (Manuel) ---
+            if ($secim_type === 'file_path' && $newFiles && $newFiles['name'][0] != '') {
+                $fileInsertSql = "INSERT INTO atolye_files_and_images (content_id, file_path, description) VALUES (:content_id, :file_path, :description)";
+                $stmt = $pdo->prepare($fileInsertSql);
+                $uploadedFiles = []; // Geri alma durumunda silmek için
+
+                foreach ($newFiles['name'] as $index => $fileName) {
+                    // Sadece geçerli yüklemeleri işle
+                    if ($newFiles['error'][$index] === UPLOAD_ERR_OK) {
+                        $tmpName = $newFiles['tmp_name'][$index];
+                        $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
+                        $safeFileName = uniqid('file_', true) . '.' . $fileExtension;
+                        $targetPath = $uploadDir . $safeFileName;
+
+                        // Dosyayı sunucuya taşı
+                        if (move_uploaded_file($tmpName, $targetPath)) {
+                            $uploadedFiles[] = $targetPath; // Başarılı yüklemeyi kaydet
+
+                            $description = filter_var(trim($newFileDescriptions[$index] ?? ''), FILTER_SANITIZE_STRING);
+
+                            // Veritabanına kaydet
+                            $dbSaveSuccess = $stmt->execute([
+                                'content_id' => $contentId,
+                                'file_path'  => str_replace('../', '', $targetPath), // Veritabanına göreceli yol kaydet
+                                'description' => $description
+                            ]);
+
+                            if (!$dbSaveSuccess) {
+                                // Veritabanı hatası, geri alma işlemini tetikler
+                                throw new Exception('Yeni dosya veritabanına kaydedilemedi.', 500);
+                            }
+                        } else {
+                            // move_uploaded_file hatası, geri alma işlemini tetikler
+                            throw new Exception('Dosya sunucuya taşınamadı: ' . $fileName, 500);
+                        }
+                    } elseif ($newFiles['error'][$index] !== UPLOAD_ERR_NO_FILE) {
+                        // Diğer yükleme hatalarını yakala
+                        throw new Exception('Dosya yükleme hatası: ' . $fileName . ' (Kod: ' . $newFiles['error'][$index] . ')', 500);
+                    }
+                }
+            }
+
+
+            // Her şey başarılıysa Transaction'ı onayla
+            $pdo->commit();
+            echo json_encode(['status' => 'success', 'message' => 'Atölye içeriği ve tüm ilgili veriler başarıyla güncellendi!']);
+        } catch (Exception $e) {
+            // Hata durumunda Transaction'ı geri al
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+
+            // Eğer dosyalar yüklendiyse, onları da sil
+            if (isset($uploadedFiles) && !empty($uploadedFiles)) {
+                foreach ($uploadedFiles as $filePath) {
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                }
+            }
+
+            // Hata mesajını AJAX'a geri gönder
+
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+
+        break;
+    case 'atolyeContentStatusChange':
+
+
+        if (!isset($_POST['id']) || !isset($_POST['status'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Eksik parametreler (ID veya Durum).']);
+            exit;
+        }
+
+        // 2. Veri Doğrulama ve Temizleme
+        $contentId = filter_var($_POST['id'], FILTER_VALIDATE_INT);
+        $newStatus = filter_var($_POST['status'], FILTER_VALIDATE_INT);
+
+        if ($contentId === false || $newStatus === false || ($newStatus !== 0 && $newStatus !== 1)) {
+            echo json_encode(['status' => 'error', 'message' => 'Geçersiz ID veya Durum değeri.']);
+            exit;
+        }
+
+        try {
+            // 3. Veritabanı Güncelleme
+            $updateSql = "UPDATE atolye_contents SET status = :status WHERE id = :id";
+            $stmt = $pdo->prepare($updateSql);
+
+            $stmt->execute([
+                ':status' => $newStatus,
+                ':id'     => $contentId
+            ]);
+
+            // Güncelleme başarılı mı? (En az 1 satır etkilendiyse)
+            if ($stmt->rowCount() > 0) {
+                $statusText = ($newStatus == 1) ? 'Aktif' : 'Pasif';
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => 'İçerik başarıyla **' . $statusText . '** hale getirildi.'
+                ]);
+            } else {
+                // Eğer satır etkilenmediyse, ya ID bulunamadı ya da durum zaten aynıydı.
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'İçerik durumu güncellenemedi. ID\'yi kontrol edin veya durum zaten ayarlanmış olabilir.'
+                ]);
+            }
+        } catch (PDOException $e) {
+            http_response_code(500); // Sunucu Hatası
+            // Hata mesajını loglayın ve kullanıcıya genel bir hata mesajı gösterin
+            error_log("Atolye Status Change PDO Error: " . $e->getMessage());
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Veritabanı hatası oluştu. Lütfen logları ve sorguyu kontrol edin.'
+            ]);
+        } catch (Exception $e) {
+            http_response_code(500); // Beklenmeyen Hata
+            error_log("Atolye Status Change Unexpected Error: " . $e->getMessage());
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Beklenmeyen bir sunucu hatası oluştu.'
+            ]);
+        }
+        exit;
+
     default:
         echo json_encode(['status' => 'error', 'message' => 'Geçersiz servis']);
         break;

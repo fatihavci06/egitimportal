@@ -1,168 +1,123 @@
-<!DOCTYPE html>
-<html lang="tr">
 <?php
+// PHP Sınıf Dahil Etme ve Veri Çekme İşlemleri
 session_start();
 define('GUARD', true);
+
+// Rol Kontrolü 
+// Yetkili roller: 1, 10001, 10002, 10005. Yetkisizse yönlendirilir.
 if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001 or $_SESSION['role'] == 10002 or $_SESSION['role'] == 10005)) {
-    /*  include_once "classes/dbh.classes.php";
+
+    // Gerekli dosyaları dahil et
+    include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
-    require_once "classes/student.classes.php";
-    $unit = new Classes();
-    $studentInfo = new Student();
+    include_once "views/pages-head.php"; // Head içeriği
 
-    if ($_SESSION['role'] == 10005) {
-        $getPreSchoolStudent = $studentInfo->getPreSchoolStudentsInfoForParents($_SESSION['id']);
-        $studentidsi = $getPreSchoolStudent[0]['id'];
-    } else {
-        $studentidsi = $_SESSION['id'];
+    // ----------------------------------------------------
+    // KONTROL VE FİLTRELEME
+    // ----------------------------------------------------
+    $targetContentType = "Spor ve Dans Atölyesi";
+    $pageTitle = $targetContentType;
+    $pageIcon = "fas fa-bullseye"; // Kullanılan ikon
+
+    // Kullanıcının tekil class_id'sini SESSION'dan al
+    $userClassId = $_SESSION['class_id'] ?? null;
+
+    $atolyeContents = [];
+    $allWordwallLinks = [];
+    $allFilesAndImages = [];
+    $classesObj = null;
+
+    if (!empty($userClassId)) {
+        // Verileri çek
+        $classesObj = new Classes();
+
+        // 1. Kartlar için ana içerikleri çek (class_ids ; ile ayrılmış olsa bile filtrelenmiş olarak gelir)
+        $atolyeContents = $classesObj->getAtolyeContentsByTypeAndClass($targetContentType, $userClassId);
+
+        // 2. TÜM Wordwall linklerini çek (Liste Modal için)
+        $allWordwallLinks = $classesObj->getAllWordwallLinksByContentTypeAndClass($targetContentType, $userClassId);
+
+        // 3. TÜM Dosya/Görsel yollarını çek (Liste Modal için)
+        $allFilesAndImages = $classesObj->getAllFilesAndImagesByContentTypeAndClass($targetContentType, $userClassId);
+        // 3. TÜM Dosya/Görsel yollarını çek (Liste Modal için)
+        $zoomDetail = $classesObj->getZoomDetail($userClassId,$targetContentType);
     }
-    $contentList = $unit->getMainSchoolContentByUnitAndTopicId($_GET['unit_id'], $_GET['topic_id']);
-
-    $topicInfo = $unit->getMainSchoolTopicById($_GET['topic_id']); */
-
-    include_once "views/pages-head.php";
+    // ----------------------------------------------------
 ?>
-    <style>
-        /* Genel Stil İyileştirmeleri */
+    <!DOCTYPE html>
+    <html lang="tr">
 
-        .main-card-container {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            border: 1px solid #e0e0e0;
-        }
-
-        .custom-card {
-            border: none;
-            padding: 0px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border-radius: 15px;
-            background-color: white;
-            margin-bottom: 25px;
-        }
-
-        .card-title-custom {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #ed5606;
-            margin-bottom: 15px;
-        }
-
-        .content-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .icon-small {
-            font-size: 50px !important;
-            color: #e83e8c !important;
-        }
-
-
-
-        .btn-custom {
-            /* background-color: #1b84ff; */
-            color: white;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 25px;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
-            margin-top: 15px;
-        }
-
-        #myTable thead {
-            display: none;
-        }
-
-        .btn-custom:hover {
-            background-color: #1a9c7b;
-        }
-
-        .left-align {
-            margin-left: 0;
-            margin-right: auto;
-        }
-
-        .right-align {
-            margin-left: auto;
-            margin-right: 0;
-        }
-
-        .left-align .card-body {
-            align-items: flex-start;
-            text-align: left;
-        }
-
-        .left-align .content-wrapper {
-            flex-direction: row;
-        }
-
-        .right-align .card-body {
-            align-items: flex-end;
-            text-align: right;
-        }
-
-        .right-align .content-wrapper {
-            flex-direction: row-reverse;
-        }
-
-        .card-body {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .bg-custom-light {
-            background-color: #e6e6fa;
-            /* Light purple */
-        }
-
-        .border-custom-red {
-            border-color: #d22b2b !important;
-        }
-
-        .text-custom-cart {
-            color: #6a5acd;
-            /* Slate blue for the cart */
-        }
-
-        /* For the circular icon, we'll use a larger padding or fixed size */
-        .icon-circle-lg {
-            width: 60px;
-            /* fixed width */
-            height: 60px;
-            /* fixed height */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .icon-circle-lg img {
-            max-width: 100%;
-            /* Ensure image scales within the circle */
-            max-height: 100%;
-        }
-
-
-        /* Animasyonlar */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
+    <head>
+        <style>
+            /* Sadece gerekli stil tanımları bırakıldı */
+            .icon-circle-lg {
+                width: 65px;
+                height: 65px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-radius: 50%;
+                background-color: #dc3545;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
             }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
+            .ratio-16x9 {
+                position: relative;
+                width: 100%;
+                padding-bottom: 56.25%;
+                height: 0;
             }
-        }
-    </style>
+
+            .ratio-16x9 iframe {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+            }
+
+            .hover-effect {
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+
+            .hover-effect:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15) !important;
+            }
+
+            .bg-custom-light {
+                background-color: #f8f9fa;
+            }
+
+            .border-custom-red {
+                border-color: #dc3545 !important;
+            }
+
+            .tabela-content {
+                width: 100%;
+                border-radius: 5px;
+                overflow: hidden;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                /* margin-bottom: 20px; */
+                /* Bootstrap mb-3 kullanıldığı için burayı kapattık */
+                cursor: pointer;
+                transition: box-shadow 0.3s;
+            }
+
+            .tabela-content:hover {
+                box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+            }
+
+            .tabela-bottom-green {
+                background-color: #0ab1b9;
+                padding: 5px 10px;
+                text-align: left;
+            }
+        </style>
+    </head>
 
     <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" class="app-default">
+
         <script>
             var defaultThemeMode = "light";
             var themeMode;
@@ -182,6 +137,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 document.documentElement.setAttribute("data-bs-theme", themeMode);
             }
         </script>
+
         <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
             <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
                 <?php include_once "views/header.php"; ?>
@@ -196,377 +152,434 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                     <div class="card-body pt-5 ">
                                         <div class="row container-fluid" style="margin-top:-25px;">
                                             <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
-                                             border-top border-bottom border-custom-red mb-2" style="border-width: 5px !important; height:85px;margin-bottom: 26px !important;">
+ border-top border-bottom border-custom-red mb-2" style="border-width: 5px !important; height:85px;margin-bottom: 26px !important;">
 
                                                 <div class="d-flex align-items-center">
                                                     <div class="rounded-circle bg-danger me-3 shadow icon-circle-lg d-flex justify-content-center align-items-center"
                                                         style="width: 65px; height: 65px;">
-                                                        <i class="fas fa-bullseye fa-2x text-white"></i>
+                                                        <i class="<?= $pageIcon ?> fa-2x text-white"></i>
                                                     </div>
-
-                                                    <h1 class="fs-3 fw-bold text-dark mb-0">Spor ve Dans Atölyesi</h1>
+                                                    <h1 class="fs-3 fw-bold text-dark mb-0"><?= htmlspecialchars($pageTitle) ?></h1>
                                                 </div>
 
                                             </header>
                                         </div>
                                     </div>
-                                    <div class="row container-fluid">
-                                        <div class="col-md-3">
-                                            <img src="uploads/atolyeler/spor-ve-dans-atolyesi.png" style="max-width: 100%;">
+
+                                    <div class="row container-fluid mb-5">
+
+                                        <div class="col-md-3 mb-4">
+                                            <img src="uploads/atolyeler/spor-ve-dans-atolyesi.png" style="max-width: 100%; border-radius: 10px;">
                                         </div>
-                                        <div class="col-md-5" style="justify-items: center;"a>
-                                            <div class="tabela-content" style="
-                        width: 50%; /* Tabelanın genişliğini artırdık */
-                        border-radius: 5px; /* Köşe yuvarlaklığı */
-                        overflow: hidden; /* İçerik taşmasını engellemek ve border-radius'u korumak için */
-                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Hafif gölge */
-                    ">
 
-                                                <div class="tabela-top-white" style="
-                            background-color: white;
-                            padding: 10px;
-                        ">
+                                        <div class="col-md-3 mb-4">
+
+                                            <div class="tabela-content mb-3" data-bs-toggle="modal" data-bs-target="#fileListModal">
+                                                <div class="tabela-top-white" style="background-color: white; padding: 10px;">
                                                     <div class="ikon-ve-baslik" style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap;">
-
                                                         <div style="flex-grow: 1;">
-                                                            <span class="d-block fw-bold" style="font-size: 2rem; color: #0ab1b9;">
-                                                                <i class="fa-solid fa-file-arrow-down" style="font-size: 2rem; color: #0ab1b9; margin-right: 10px"></i>Yazdırılabilir İçerik
+                                                            <span class="d-block fw-bold" style="font-size: 1.5rem; color: #0ab1b9;">
+                                                                <i class="fa-solid fa-file-arrow-down" style="font-size: 1.5rem; color: #0ab1b9; margin-right: 10px"></i>Yazdırılabilir İçerik
                                                             </span>
                                                         </div>
                                                     </div>
-
                                                 </div>
-
-                                                <div class="tabela-bottom-green" style="
-                            background-color: #0ab1b9; 
-                            padding: 5px 10px;
-                            text-align: left;
-                        ">
-                                                    <span class="text-white" style="font-size: 1rem;">İncele</span>
+                                                <div class="tabela-bottom-green">
+                                                    <span class="text-white fw-bold" style="font-size: 1rem;">İncele (<?= count($allFilesAndImages) ?>)</span>
                                                 </div>
                                             </div>
-                                            <div class="tabela-content  mt-10" style="
-                        width: 50%; /* Tabelanın genişliğini artırdık */
-                        border-radius: 5px; /* Köşe yuvarlaklığı */
-                        overflow: hidden; /* İçerik taşmasını engellemek ve border-radius'u korumak için */
-                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Hafif gölge */
-                    ">
 
-                                                <div class="tabela-top-white" style="
-                            background-color: white;
-                            padding: 10px;
-                        ">
+                                            <div class="tabela-content mb-3" data-bs-toggle="modal" data-bs-target="#wordwallListModal">
+                                                <div class="tabela-top-white" style="background-color: white; padding: 10px;">
                                                     <div class="ikon-ve-baslik" style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap;">
-
                                                         <div style="flex-grow: 1;">
-                                                            <span class="d-block fw-bold" style="font-size: 2rem; color: #0ab1b9;">
-                                                                <i class="fa-solid fa-chess-board" style="font-size: 2rem; color: #0ab1b9; margin-right: 10px"></i>Wordwall
+                                                            <span class="d-block fw-bold" style="font-size: 1.5rem; color: #0ab1b9;">
+                                                                <i class="fa-solid fa-chess-board" style="font-size: 1.5rem; color: #0ab1b9; margin-right: 10px"></i>Wordwall
                                                             </span>
                                                         </div>
                                                     </div>
-
                                                 </div>
-
-                                                <div class="tabela-bottom-green" style="
-                            background-color: #0ab1b9; 
-                            padding: 5px 10px;
-                            text-align: left;
-                        ">
-                                                    <span class="text-white" style="font-size: 1rem;">İncele</span>
+                                                <div class="tabela-bottom-green">
+                                                    <span class="text-white fw-bold" style="font-size: 1rem;">İncele (<?= count($allWordwallLinks) ?>)</span>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <a href="ana-okulu-icerik-detay.php?id=461" class="text-decoration-none d-block h-100">
-                                                <div class="card h-100 shadow-sm border-0">
-                                                    <div class="d-flex justify-content-center align-items-center" style="height: 180px; 
-                        background-image: url('uploads/contents/konuDefault.jpg'); 
-                        background-size: cover; background-position: center; 
-                        border-top-left-radius: .375rem; border-top-right-radius: .375rem;">
 
-                                                        <i class="bi bi-play-circle-fill text-white" style="font-size: 50px; opacity: 0.9;"></i>
+                                            <?php if (!empty($zoomDetail)): ?>
+                                                <a class="tabela-content mb-3 d-block text-decoration-none"
+                                                    href="<?php echo htmlspecialchars($zoomDetail['zoom_url'] ?? '#'); ?>"
+                                                    target="_blank"
+                                                    style="cursor: pointer; color: inherit;">
 
+                                                   <div class="tabela-top-white" style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <div class="ikon-ve-baslik" style="display: flex; align-items: center; flex-wrap: wrap;">
+        <div style="flex-grow: 1;">
+            <span class="d-block fw-bold" style="font-size: 1.8rem; color: #007bff; display: flex; align-items: center;">
+                <i class="fa-solid fa-video me-2" style="font-size: 1.8rem; color: #007bff; margin-right: 12px;"></i>
+                Canlı Ders
+            </span>
+            <hr style="border-top: 1px solid #dee2e6; margin-top: 10px; margin-bottom: 10px;">
+            
+            <span class="d-block mt-2" style="font-size: 1.1rem; color: #343a40;">
+                **📅 Tarih:** <?php 
+                    $date = $zoomDetail['zoom_date'] ?? 'Tarih Bilgisi Yok';
+                    // Tarih bilgisini d-m-Y formatına çevir (Varsayım: $date Y-m-d formatında geliyor)
+                    echo ($date !== 'Tarih Bilgisi Yok') ? htmlspecialchars(date('d-m-Y', strtotime($date))) : $date; 
+                ?>
+            </span>
+            
+            <span class="d-block" style="font-size: 1.1rem; color: #343a40; margin-top: 5px;">
+                **🕒 Saat:** <?php echo htmlspecialchars($zoomDetail['zoom_time'] ?? 'Saat Bilgisi Yok'); ?>
+            </span>
+        </div>
+    </div>
+</div>
+
+                                                    <div class="tabela-bottom-green" style="background-color: #dc3545; padding: 5px;">
+                                                        <span class="text-white fw-bold" style="font-size: 1rem;">Derse Git</span>
                                                     </div>
-                                                    <div class="card-body d-flex flex-column">
-                                                        <h5 class="card-title fw-bold text-dark mb-1" style="font-size: 16px;">
-                                                            Spor ve Dans </h5>
+                                                </a>
+                                            <?php endif; ?>
+                                        </div>
 
-                                                        <p class="card-text text-muted mb-3" style="font-size: 14px;">Eğitim Videosu</p>
+                                        <div class="col-md-6">
+                                            <div class="row">
+                                                <?php
+                                                if (!empty($atolyeContents)):
+                                                    foreach ($atolyeContents as $content):
 
-                                                        <div class="mt-auto d-flex justify-content-start">
-                                                            <span style="padding: 8px 28px; font-size: 14px; border-radius: 999px; text-decoration: none; transition: background-color 0.3s; background-color: rgb(43, 140, 1); color: white !important; border: 1px solid rgb(43, 140, 1) !important;" onmouseover="this.style.backgroundColor='#ed5606'" onmouseout="this.style.backgroundColor='#2b8c01'">
-                                                                Aç
-                                                            </span>
+                                                        // Wordwall, Dosya/Görsel içeriklerini atla
+                                                        if ($content['secim_type'] == 'wordwall' || $content['secim_type'] == 'file_path') {
+                                                            continue;
+                                                        }
+
+                                                        // Varsayılan değerler
+                                                        $iconClass = 'fa-solid fa-file-lines';
+                                                        $defaultImage = 'uploads/contents/konuDefault.jpg';
+                                                        $contentTypeText = 'İçeriği Oku';
+                                                        $actionUrl = "ana-okulu-icerik-detay.php?id=" . $content['id'];
+                                                        $buttonText = 'Aç';
+                                                        $isEmbedModal = false;
+
+                                                        // İçerik tipine göre aksiyonları belirle
+                                                        if ($content['secim_type'] == 'video_link') {
+                                                            $iconClass = 'bi-play-circle-fill';
+                                                            $contentTypeText = 'Eğitim Videosu';
+                                                            $buttonText = 'Video İzle';
+                                                            $isEmbedModal = true;
+                                                            $actionUrl = $content['video_url'] ? $content['video_url'] : "#";
+                                                        } elseif ($content['secim_type'] == 'content') {
+                                                            $iconClass = 'fa-solid fa-file-lines';
+                                                            $contentTypeText = 'Yazılı İçerik';
+                                                            $defaultImage = 'uploads/contents/textDefault.jpg';
+                                                            $buttonText = 'Oku';
+                                                        }
+
+                                                        // Her kart 6 sütun kaplayarak (ana 6 sütun içinde) 2'şerli görünmesini sağlar.
+                                                ?>
+                                                        <div class="col-md-6 mb-4">
+                                                            <?php if (!$isEmbedModal && $actionUrl != '#'): ?>
+                                                                <a href="<?= htmlspecialchars($actionUrl) ?>" class="text-decoration-none d-block h-100">
+                                                                <?php endif; ?>
+
+                                                                <div class="card h-100 shadow-sm border-0 hover-effect 
+ <?= $isEmbedModal ? 'openEmbedModal' : '' ?>"
+                                                                    data-bs-toggle="<?= $isEmbedModal ? 'modal' : '' ?>"
+                                                                    data-bs-target="<?= $isEmbedModal ? '#embedModal' : '' ?>"
+                                                                    data-embed-url="<?= $isEmbedModal ? htmlspecialchars($actionUrl) : '' ?>"
+                                                                    data-subject="<?= htmlspecialchars($content['subject']) ?>"
+                                                                    data-type="<?= $content['secim_type'] == 'video_link' ? 'Video' : 'Content' ?>">
+
+                                                                    <div class="d-flex justify-content-center align-items-center" style="height: 180px; 
+ background-image: url('<?= htmlspecialchars($defaultImage) ?>'); 
+ background-size: cover; background-position: center; 
+ border-top-left-radius: .375rem; border-top-right-radius: .375rem;">
+                                                                        <i class="<?= $iconClass ?> text-white" style="font-size: 50px; opacity: 0.9;"></i>
+                                                                    </div>
+
+                                                                    <div class="card-body d-flex flex-column">
+                                                                        <h5 class="card-title fw-bold text-dark mb-1" style="font-size: 16px;">
+                                                                            <?= htmlspecialchars($content['subject']) ?>
+                                                                        </h5>
+                                                                        <p class="card-text text-muted mb-3" style="font-size: 14px;"><?= $contentTypeText ?></p>
+
+                                                                        <div class="mt-auto d-flex justify-content-start">
+
+                                                                            <?php
+                                                                            $buttonStyle = "padding: 8px 28px; font-size: 14px; border-radius: 999px; text-decoration: none; transition: background-color 0.3s; background-color: rgb(43, 140, 1); color: white !important; border: 1px solid rgb(43, 140, 1) !important;";
+                                                                            $hoverStyle = "onmouseover=\"this.style.backgroundColor='#ed5606'\" onmouseout=\"this.style.backgroundColor='#2b8c01'\"";
+
+                                                                            if ($isEmbedModal): // Video için Modal Butonu
+                                                                            ?>
+                                                                                <button type="button" class="btn openEmbedModal" data-bs-toggle="modal" data-bs-target="#embedModal"
+                                                                                    data-embed-url="<?= htmlspecialchars($actionUrl) ?>"
+                                                                                    data-subject="<?= htmlspecialchars($content['subject']) ?>"
+                                                                                    data-type="Video"
+                                                                                    style="<?= $buttonStyle ?>" <?= $hoverStyle ?>>
+                                                                                    <?= $buttonText ?>
+                                                                                </button>
+
+                                                                            <?php else: // Link (Detay, Dosya veya Wordwall Liste)
+                                                                            ?>
+                                                                                <a href="<?= htmlspecialchars($actionUrl) ?>"
+                                                                                    style="<?= $buttonStyle ?>" <?= $hoverStyle ?>>
+                                                                                    <?= $buttonText ?>
+                                                                                </a>
+                                                                            <?php endif; ?>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <?php if (!$isEmbedModal && $actionUrl != '#'): ?>
+                                                                </a>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    <?php endforeach;
+                                                else: ?>
+                                                    <div class="col-12">
+                                                        <div class="alert alert-info text-center">
+                                                            Bu atölye türüne ve sizin sınıfınıza ait henüz içerik bulunmamaktadır.
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </a>
+                                                <?php endif; ?>
+                                            </div>
                                         </div>
                                     </div>
-
-
-
-
-
                                 </div>
                             </div>
                         </div>
+                        <?php include_once "views/footer.php"; ?>
                     </div>
-                    <?php include_once "views/footer.php"; ?>
+                    <?php include_once "views/aside.php"; ?>
                 </div>
-                <?php include_once "views/aside.php"; ?>
             </div>
         </div>
+
+        <div class="modal fade" id="embedModal" tabindex="-1" aria-labelledby="embedModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="embedModalLabel">İçerik Görüntüleyici</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="ratio ratio-16x9">
+                            <iframe id="embedFrame" src="" title="İçerik Oynatıcı" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <div class="modal fade" id="wordwallListModal" tabindex="-1" aria-labelledby="wordwallListModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="wordwallListModalLabel">Tüm Wordwall Oyunları</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <?php if (!empty($allWordwallLinks)): ?>
+                            <ul class="list-group">
+                                <?php foreach ($allWordwallLinks as $link): ?>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="fa-solid fa-gamepad me-2 text-danger"></i>
+                                            <strong><?= htmlspecialchars($link['subject']) ?>:</strong> <?= htmlspecialchars($link['title'] ?? 'Oyun Bağlantısı') ?>
+                                        </div>
+                                        <button type="button"
+                                            class="btn btn-sm btn-danger openWordwallEmbedInModal"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#embedModal"
+                                            data-embed-url="<?= htmlspecialchars($link['url']) ?>"
+                                            data-subject="<?= htmlspecialchars($link['subject']) ?>"
+                                            data-type="Wordwall">
+                                            Oyna
+                                        </button>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php else: ?>
+                            <div class="alert alert-info">Bu sınıfa ait aktif Wordwall oyunu bulunmamaktadır.</div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="fileListModal" tabindex="-1" aria-labelledby="fileListModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="fileListModalLabel">Tüm Dosyalar ve Görseller</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <?php if (!empty($allFilesAndImages)): ?>
+                            <ul class="list-group">
+                                <?php foreach ($allFilesAndImages as $file): ?>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <?php $icon = ($file['type'] == 'file') ? 'fa-solid fa-file-arrow-down' : 'fa-solid fa-image'; ?>
+                                            <i class="<?= $icon ?> me-2 text-primary"></i>
+                                            <strong><?= htmlspecialchars($file['subject']) ?>:</strong> <?= htmlspecialchars($file['description'] ?? basename($file['file_path'])) ?>
+                                        </div>
+                                        <a href="<?= htmlspecialchars($file['file_path']) ?>" target="_blank" class="btn btn-sm btn-primary"><?= ($file['type'] == 'file') ? 'İndir' : 'Görüntüle' ?></a>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php else: ?>
+                            <div class="alert alert-info">Bu sınıfa ait aktif dosya veya görsel bulunmamaktadır.</div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="zoomDetailModal" tabindex="-1" aria-labelledby="zoomDetailModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="zoomDetailModalLabel">Canlı Ders Bilgileri</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <?php if (!empty($zoomDetail)): ?>
+                            <ul class="list-group list-group-flush">
+                                <?php if (isset($zoomDetail['title'])): ?>
+                                    <li class="list-group-item"><strong>Konu:</strong> <?= htmlspecialchars($zoomDetail['title']) ?></li>
+                                <?php endif; ?>
+                                <?php if (isset($zoomDetail['date']) && isset($zoomDetail['time'])): ?>
+                                    <li class="list-group-item"><strong>Tarih/Saat:</strong> <?= htmlspecialchars($zoomDetail['date'] . ' ' . $zoomDetail['time']) ?></li>
+                                <?php endif; ?>
+                                <?php if (isset($zoomDetail['meeting_id'])): ?>
+                                    <li class="list-group-item"><strong>Meeting ID:</strong> <?= htmlspecialchars($zoomDetail['meeting_id']) ?></li>
+                                <?php endif; ?>
+                                <?php if (isset($zoomDetail['password'])): ?>
+                                    <li class="list-group-item"><strong>Şifre:</strong> <?= htmlspecialchars($zoomDetail['password']) ?></li>
+                                <?php endif; ?>
+                                <?php if (isset($zoomDetail['zoom_link'])): ?>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <strong>Bağlantı:</strong>
+                                        <a href="<?= htmlspecialchars($zoomDetail['zoom_link']) ?>" target="_blank" class="btn btn-sm" style="background-color: #dc3545; color: white;">Derse Git</a>
+                                    </li>
+                                <?php endif; ?>
+                                <?php if (empty($zoomDetail['zoom_link']) && empty($zoomDetail['meeting_id'])): ?>
+                                    <div class="alert alert-warning mt-3">Canlı ders bilgisi mevcut ancak giriş bağlantısı veya ID'si belirtilmemiş.</div>
+                                <?php endif; ?>
+                            </ul>
+                        <?php else: ?>
+                            <div class="alert alert-info">Bu sınıfa ait aktif canlı ders bilgisi bulunmamaktadır.</div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
             <i class="ki-duotone ki-arrow-up">
                 <span class="path1"></span>
                 <span class="path2"></span>
             </i>
         </div>
+
         <script>
             var hostUrl = "assets/";
         </script>
         <script src="assets/plugins/global/plugins.bundle.js"></script>
         <script src="assets/js/scripts.bundle.js"></script>
-        <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
-        <script src="assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
-        <script src="assets/js/custom/apps/subtopics/list/export.js"></script>
-        <script src="assets/js/custom/apps/subtopics/list/list.js"></script>
-        <script src="assets/js/custom/apps/subtopics/list/topicadd.js"></script>
-        <script src="assets/js/custom/apps/subtopics/add.js"></script>
-        <script src="assets/js/custom/apps/subtopics/create.js"></script>
-        <script src="assets/js/widgets.bundle.js"></script>
-        <script src="assets/js/custom/widgets.js"></script>
-        <script src="assets/js/custom/apps/chat/chat.js"></script>
-        <script src="assets/js/custom/utilities/modals/upgrade-plan.js"></script>
-        <script src="assets/js/custom/utilities/modals/create-account.js"></script>
-        <script src="assets/js/custom/utilities/modals/create-app.js"></script>
-        <script src="assets/js/custom/utilities/modals/users-search.js"></script>
         <script>
-            // $(document).ready(function() {
+            $(document).ready(function() {
 
-            //     // Sayfa yüklendiğinde tabloyu dolduran fonksiyon
-            //     function loadInitialTableData() {
-            //         var lessonId = $('#lesson_id option:eq(1)').val() || null;
+                // Embed Modal açıldığında (Video ve Wordwall için ortak)
+                $('.openEmbedModal').on('click', function() {
+                    var $target = $(this).is('button') ? $(this) : $(this); // Tıklanan öğeyi bul
+                    var embedUrl = $target.data('embed-url');
+                    var subject = $target.data('subject');
+                    var type = $target.data('type');
+                    var finalUrl = embedUrl;
 
-            //         const data = {
-            //             month: $('#month').val(),
-            //             week: $('#week').val(),
-            //             activity_title: $('#activity_title').val(),
-            //             content_title: $('#content_title').val(),
-            //             concept_title: $('#concept_title').val(),
-            //             main_school_class_id: $('#main_school_class_id').val(),
-            //             lesson_id: lessonId,
-            //             unit_id: $('#unit_id').val(),
-            //             topic_id: $('#topic_id').val()
-            //         };
+                    // Wordwall için URL'i direkt kullan
+                    if (type === 'Wordwall') {
+                        $('#embedModalLabel').text(subject + ' - Wordwall Oyunu');
+                    }
+                    // Video için URL'i embed formatına çevirme (Daha güvenli yöntem)
+                    else {
+                        var videoId = null;
 
-            //         $.ajax({
-            //             url: 'includes/ajax.php?service=filter-main-school-content',
-            //             method: 'POST',
-            //             data: data,
-            //             dataType: 'json',
-            //             success: function(response) {
-            //                 if (response.status === 'success' && Array.isArray(response.data)) {
+                        // 1. Uzun format için Video ID'sini bul: ?v=ID
+                        // Hem ?v=ID hem de &v=ID durumlarını kapsar.
+                        var watchMatch = embedUrl.match(/[?&]v=([^&]+)/);
+                        if (watchMatch) {
+                            videoId = watchMatch[1];
+                        }
 
-            //                     if ($.fn.DataTable.isDataTable('#myTable')) {
-            //                         $('#myTable').DataTable().clear().destroy();
-            //                     }
+                        // 2. Kısa format için Video ID'sini bul: youtu.be/ID
+                        if (!videoId && embedUrl.includes("youtu.be/")) {
+                            var shortMatch = embedUrl.match(/youtu\.be\/([^?&#]+)/);
+                            if (shortMatch) {
+                                videoId = shortMatch[1];
+                            }
+                        }
 
-            //                     $('#myTable').DataTable({
-            //                         data: response.data,
-            //                         columns: [{
-            //                             data: 'subject',
-            //                             title: 'Konu',
-            //                             render: function(data, type, row) {
-            //                                 // row.slug varsa kullan, yoksa default url
-            //                                 var urlSlug = row.slug || 'ana-okulu-icerikler-detay.php?id=' + row.id;
-            //                                 var subjectName = data;
+                        if (videoId) {
+                            // Güvenli embed URL'i oluştur: https://www.youtube.com/embed/VIDEO_ID?autoplay=1
+                            finalUrl = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1';
+                        } else {
+                            // Eğer video ID'si bulunamazsa (belki zaten embed linki veya hatalı),
+                            // orijinal URL'i kullan ve autoplay ekle
+                            finalUrl = embedUrl;
 
-            //                                 return `
-            //                                                 <div class="col-12" style="margin-bottom: -20px; font-size:12px!important;">
-            //                                                     <a href="${urlSlug}" class="text-decoration-none">
-            //                                                         <div class="border rounded d-flex align-items-center p-2" 
-            //                                                             style="border: 2px solid #333; box-shadow: 0 2px 6px rgba(0,0,0,0.15); justify-content: flex-start;">
-            //                                                             <button type="button" class="btn btn-light btn-sm me-3">
-            //                                                                 <i style="font-size:20px!important" class="bi bi-play-fill"></i>
-            //                                                             </button>
-            //                                                             <div>
-            //                                                                 <div class="fw-semibold fs-5" style="font-size:12px!important; color: #000;">${subjectName}</div>
-            //                                                                 <div style="font-size:10px; color: #666;">${row.month}</div>  <!-- Buraya ay bilgisi -->
-            //                                                             </div>
-            //                                                         </div>
-            //                                                     </a>
-            //                                                 </div>`;
-            //                             }
-            //                         }]
-            //                     });
+                            if (!finalUrl.includes("?")) {
+                                finalUrl += '?autoplay=1';
+                            } else {
+                                finalUrl += '&autoplay=1';
+                            }
+                        }
 
+                        $('#embedModalLabel').text(subject + ' - Eğitim Videosu');
+                    }
 
-            //                     $('#lesson_id option:eq(1)').prop('selected', true).trigger('change');
+                    $('#embedFrame').attr('src', finalUrl); // iframe'i ayarla
+                });
 
-            //                 } else {
-            //                     alert("Veri boş geldi veya status success değil.");
-            //                 }
-            //             },
-            //             error: function(err) {
-            //                 console.error("Hata:", err);
-            //             }
-            //         });
-            //     }
+                // ----------------------------------------------------------------------
+                // YENİ EKLEME: Wordwall Listesi içinden iframe ile açılma
+                // ----------------------------------------------------------------------
+                $('#wordwallListModal').on('click', '.openWordwallEmbedInModal', function() {
+                    var embedUrl = $(this).data('embed-url');
+                    var subject = $(this).data('subject');
 
-            //     // Sayfa yüklenince tabloyu doldur
-            //     loadInitialTableData();
+                    // 1. Wordwall List Modal'ı kapat
+                    var wordwallListModalElement = document.getElementById('wordwallListModal');
+                    var wordwallListModal = bootstrap.Modal.getInstance(wordwallListModalElement);
+                    if (wordwallListModal) {
+                        wordwallListModal.hide();
+                    }
 
-            //     $('#lesson_id').on('change', function() {
-            //         var selectedLessonId = $(this).val();
+                    // 2. Embed Modal içeriğini ayarla
+                    $('#embedModalLabel').text(subject + ' - Wordwall Oyunu');
+                    // Wordwall linkleri genellikle tam link olduğundan ek bir çevrim gerekmez.
+                    $('#embedFrame').attr('src', embedUrl);
 
-            //         $.ajax({
-            //             url: 'includes/ajax.php?service=mainSchoolGetUnits',
-            //             type: 'POST',
-            //             data: {
-            //                 class_id: $('#main_school_class_id').val(),
-            //                 lesson_id: selectedLessonId
-            //             },
-            //             dataType: 'json',
-            //             success: function(response) {
-            //                 if (response.status === 'success') {
-            //                     var unitSelect = $('#unit_id');
-            //                     unitSelect.empty();
+                    // 3. Embed Modal'ın açılması data-bs-toggle ile otomatik olarak tetiklenmelidir.
+                });
 
-            //                     if (response.data.length > 0) {
-            //                         unitSelect.append('<option selected disabled>Ünite Seçiniz...</option>');
-
-            //                         $.each(response.data, function(index, lesson) {
-            //                             unitSelect.append(
-            //                                 $('<option></option>')
-            //                                 .val(lesson.id)
-            //                                 .text(lesson.name)
-            //                             );
-            //                         });
-            //                     } else {
-            //                         unitSelect.append('<option disabled>Bu sınıfa ait ders bulunamadı.</option>');
-            //                     }
-            //                 }
-            //             },
-            //             error: function() {
-            //                 alert('Sunucu ile iletişimde hata oluştu!');
-            //             }
-            //         });
-            //     });
-
-            //     $('#unit_id').on('change', function() {
-            //         var selectedUnitId = $(this).val();
-
-            //         $.ajax({
-            //             url: 'includes/ajax.php?service=mainSchoolGetTopics',
-            //             type: 'POST',
-            //             data: {
-            //                 unit_id: selectedUnitId
-            //             },
-            //             dataType: 'json',
-            //             success: function(response) {
-            //                 if (response.status === 'success') {
-            //                     var topicSelect = $('#topic_id');
-            //                     topicSelect.empty();
-
-            //                     if (response.data.length > 0) {
-            //                         topicSelect.append('<option selected disabled>Konu Seçiniz...</option>');
-
-            //                         $.each(response.data, function(index, topic) {
-            //                             topicSelect.append(
-            //                                 $('<option></option>')
-            //                                 .val(topic.id)
-            //                                 .text(topic.name)
-            //                             );
-            //                         });
-            //                     } else {
-            //                         topicSelect.append('<option disabled>Bu sınıfa ait ders bulunamadı.</option>');
-            //                     }
-            //                 }
-            //             },
-            //             error: function() {
-            //                 alert('Sunucu ile iletişimde hata oluştu!');
-            //             }
-            //         });
-            //     });
-
-            //     // Select2 başlatma
-            //     $('#week, #activity_title, #content_title, #concept_title').select2({
-            //         placeholder: "Seçiniz",
-            //         allowClear: true
-            //     });
-
-            //     // Filtrele butonu
-            //     $('#filterBtn').on('click', function(e) {
-            //         e.preventDefault();
-            //         loadInitialTableData();
-            //     });
-
-            //     // Temizle butonu
-            //     $('#clearFilterBtn').on('click', function() {
-            //         $('#month').val('');
-            //         $('#week, #activity_title, #content_title, #concept_title, #main_school_class_id').val('').trigger('change');
-            //         $('#lesson_id').val('Seçiniz').trigger('change');
-            //         $('#unit_id').val('Seçiniz').trigger('change');
-            //         $('#topic_id').val('Seçiniz').trigger('change');
-
-            //         if ($.fn.DataTable.isDataTable('#myTable')) {
-            //             $('#myTable').DataTable().clear().draw();
-            //         }
-            //     });
-
-            //     // Yaş grubu değiştiğinde dersleri getir
-            //     $('#main_school_class_id').on('change', function() {
-            //         var selectedClassId = $(this).val();
-            //         var lessonSelect = $('#lesson_id');
-            //         var unitSelect = $('#unit_id');
-            //         var topicSelect = $('#topic_id');
-
-            //         lessonSelect.empty();
-            //         unitSelect.empty();
-            //         topicSelect.empty();
-
-            //         lessonSelect.append('<option selected disabled>Seçiniz</option>');
-            //         unitSelect.append('<option selected disabled>Önce ders seçiniz...</option>');
-            //         topicSelect.append('<option selected disabled>Önce ünite seçiniz...</option>');
-
-            //         if (selectedClassId) {
-            //             $.ajax({
-            //                 url: 'includes/ajax.php?service=getMainSchoolLessonList',
-            //                 type: 'POST',
-            //                 data: {
-            //                     class_id: selectedClassId
-            //                 },
-            //                 dataType: 'json',
-            //                 success: function(response) {
-            //                     if (response.status === 'success' && response.data.length > 0) {
-            //                         $.each(response.data, function(index, lesson) {
-            //                             lessonSelect.append(
-            //                                 $('<option></option>')
-            //                                 .val(lesson.id)
-            //                                 .text(lesson.name)
-            //                             );
-            //                         });
-            //                     } else {
-            //                         lessonSelect.append('<option disabled>Bu yaş grubuna ait ders bulunamadı.</option>');
-            //                     }
-            //                 },
-            //                 error: function() {
-            //                     alert('Dersler yüklenirken bir hata oluştu!');
-            //                 }
-            //             });
-            //         }
-            //     });
-
-            // });
+                // Embed Modal kapandığında
+                $('#embedModal').on('hidden.bs.modal', function() {
+                    $('#embedFrame').attr('src', ''); // İçeriği durdur
+                });
+            });
         </script>
-
     </body>
 
-</html>
+    </html>
 <?php } else {
+    // Giriş yapılmamış veya yetkisizse yönlendir
     header("location: index");
+    exit;
 }
 ?>

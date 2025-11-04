@@ -1565,6 +1565,288 @@ WHERE mc.school_id = 1
 
 		return $classData;
 	}
+	public function getAtolyeContentList()
+	{
+		// Not: 'school_id' sütunu tablonuzda yoksa WHERE koşulunu kaldırın.
+		// Güvenliğiniz için sadece ihtiyacınız olan sütunları çekmek en iyisidir.
+		$stmt = $this->connect()->prepare('SELECT id, class_ids, subject, content_type, secim_type,status, created_at FROM atolye_contents ORDER BY id DESC');
+
+		if (!$stmt->execute()) {
+			$stmt = null;
+			error_log("Atölye İçerik Listesi çekilirken hata oluştu.");
+			return [];
+		}
+
+		$contentData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $contentData;
+	}
+
+
+	// YENİ: Belirli bir içerik türü ve sınıf ID'sine ait TÜM Wordwall linklerini çeker
+	public function getAllWordwallLinksByContentTypeAndClass($contentType, $classId)
+	{
+		// Dinamik LIKE filtresi oluşturulur: ( ;ID; | ID;% | %;ID | ID )
+		$likePattern = "%" . $classId . ";%" . " OR T1.class_ids = :class_id OR T1.class_ids LIKE :class_id_start OR T1.class_ids LIKE :class_id_end";
+
+		$sql = "SELECT T2.title, T2.url, T1.subject 
+            FROM atolye_contents T1
+            INNER JOIN atolye_wordwall_links T2 ON T1.id = T2.content_id
+            WHERE T1.content_type = :content_type
+              AND T1.status = 1
+              AND (
+                T1.class_ids = :class_id_exact OR 
+                T1.class_ids LIKE :class_id_start OR 
+                T1.class_ids LIKE :class_id_middle OR 
+                T1.class_ids LIKE :class_id_end
+              )
+            ORDER BY T1.id ASC, T2.id ASC";
+
+		$stmt = $this->connect()->prepare($sql);
+		$stmt->execute([
+			'content_type' => $contentType,
+			'class_id_exact' => $classId,            // Tam eşleşme (örn: "12")
+			'class_id_start' => $classId . ';%',     // Listenin başı (örn: "12;15")
+			'class_id_middle' => '%;' . $classId . ';%', // Listenin ortası (örn: "15;12;20")
+			'class_id_end' => '%;' . $classId         // Listenin sonu (örn: "15;12")
+		]);
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
+
+	// YENİ: Belirli bir içerik türü ve sınıf ID'sine ait TÜM Dosya/Görsel yollarını çeker
+	public function getAllFilesAndImagesByContentTypeAndClass($contentType, $classId)
+	{
+		$sql = "SELECT T2.file_path, T2.description, T2.type, T1.subject 
+            FROM atolye_contents T1
+            INNER JOIN atolye_files_and_images T2 ON T1.id = T2.content_id
+            WHERE T1.content_type = :content_type
+              AND T1.status = 1
+              AND (
+                T1.class_ids = :class_id_exact OR 
+                T1.class_ids LIKE :class_id_start OR 
+                T1.class_ids LIKE :class_id_middle OR 
+                T1.class_ids LIKE :class_id_end
+              )
+            ORDER BY T1.id ASC, T2.id ASC";
+
+		$stmt = $this->connect()->prepare($sql);
+		$stmt->execute([
+			'content_type' => $contentType,
+			'class_id_exact' => $classId,
+			'class_id_start' => $classId . ';%',
+			'class_id_middle' => '%;' . $classId . ';%',
+			'class_id_end' => '%;' . $classId
+		]);
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
+
+	// KARTLAR İÇİN ANA SORGUNUN DA AYNI ŞEKİLDE GÜNCELLENMESİ GEREKİR!
+	public function getAtolyeContentsByTypeAndClass($contentType, $classId)
+	{
+		// atolye_contents'den kartlar için ana veriyi çeker
+		$sql = "SELECT id, subject, secim_type, video_url, content 
+            FROM atolye_contents 
+            WHERE content_type = :content_type 
+              AND status = 1
+              AND (
+                class_ids = :class_id_exact OR 
+                class_ids LIKE :class_id_start OR 
+                class_ids LIKE :class_id_middle OR 
+                class_ids LIKE :class_id_end
+              )
+            ORDER BY id ASC";
+
+		$stmt = $this->connect()->prepare($sql);
+		$stmt->execute([
+			'content_type' => $contentType,
+			'class_id_exact' => $classId,
+			'class_id_start' => $classId . ';%',
+			'class_id_middle' => '%;' . $classId . ';%',
+			'class_id_end' => '%;' . $classId
+		]);
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
+
+	// Ana içerik detaylarını çeken fonksiyon (Detay sayfası için gerekli)
+	public function getContentDetailById($classId)
+	{
+		// Sorguya class_id ve status kontrolü eklendi.
+		$sql = "SELECT * FROM atolye_contents 
+              AND class_id = :class_id 
+              AND status = 1 
+            LIMIT 1";
+
+		$stmt = $this->connect()->prepare($sql);
+
+		// Güvenlik için parametreler dizisi
+		$params = [
+
+			'class_id' => $classId
+		];
+
+		$stmt->execute($params);
+
+		return $stmt->fetch(PDO::FETCH_ASSOC); // Tek bir içerik kaydını döndürür
+	}
+	public function getZoomDetail($class_id,$targetContentType)
+	{
+		// 1. Güvenlik ve Doğrulama
+		$safeClassId = filter_var($class_id, FILTER_VALIDATE_INT);
+
+		if (!$safeClassId) {
+			return false; // Geçersiz ID
+		}
+
+		$pdo = $this->connect();
+
+		try {
+			// 2. SQL Sorgusu: En Yakın Tarihli Kaydı Çekme
+
+			// ÖNEMLİ: class_ids alanı "1,5,10" gibi değerler içerdiği için 
+			// güvenlikli "FIND_IN_SET" veya LIKE kullanımı tercih edilir.
+			// LIKE kullanımı için, % joker karakteri artık PHP tarafında eklenecek.
+
+			$sql = "
+    SELECT * FROM atolye_contents 
+    WHERE 
+        (
+            class_ids LIKE :class_id_start_match 
+            OR class_ids LIKE :class_id_middle_match 
+            OR class_ids = :class_id_exact
+        )
+        AND content_type = :content_type
+        AND CONCAT(zoom_date, ' ', zoom_time) >= NOW()
+    ORDER BY CONCAT(zoom_date, ' ', zoom_time) ASC
+    LIMIT 1
+";
+
+			$stmt = $pdo->prepare($sql);
+
+			// Parametreleri hazırla
+			$params = [
+				// Örneğin: 10,5,2 -> ',10,%' veya '10,%' gibi durumları yakalamak için
+				// Ancak en güvenli yöntem virgüllü liste kullanıyorsanız FIND_IN_SET kullanmaktır.
+				// LIKE kullanıldığı varsayılırsa:
+				'class_id_exact'      => $safeClassId, // Sadece tek bir class_id ise (ör: 10)
+				'class_id_start_match' => $safeClassId . ',%', // Listenin başında (ör: 10,5,2)
+				'class_id_middle_match' => '%,' . $safeClassId . ',%', // Listenin ortasında (ör: 5,10,2)
+				'content_type' => $targetContentType
+
+				// Eğer veritabanı yapınız sadece tek bir class ID tutuyorsa, 
+				// yukarıdaki LIKE ve OR koşulları yerine sadece `class_ids = :class_id_exact` kullanılır.
+			];
+
+			$stmt->execute($params);
+			$contentData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+			if (!$contentData) {
+				return false; // İçerik bulunamadı veya gelecekteki bir zoom yok
+			}
+
+			return $contentData;
+		} catch (PDOException $e) {
+			// Hata kaydı tutulabilir
+			error_log("Zoom detayı çekilirken hata oluştu: " . $e->getMessage());
+			return false;
+		}
+	}
+	public function getAtolyeContentForEdit($contentId)
+	{
+
+		// Content ID'sini güvenli hale getir
+		$safeContentId = filter_var($contentId, FILTER_VALIDATE_INT);
+
+		if (!$safeContentId) {
+			return false; // Geçersiz ID
+		}
+
+		$data = [];
+		$pdo = $this->connect(); // PDO bağlantısını al
+
+		try {
+			// 1. Ana İçerik Bilgisini Çekme (atolye_contents)
+			$sql = "SELECT * FROM atolye_contents WHERE id = :id";
+			$stmt = $pdo->prepare($sql);
+			$stmt->execute(['id' => $safeContentId]);
+			$contentData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+			if (!$contentData) {
+				return false; // İçerik bulunamadı
+			}
+
+			$data = $contentData;
+
+
+
+
+			// B. Dosya ve Görseller (atolye_files_and_images)
+			// Düzenleme sayfasında görsel ve dosyaları ayırmak isteyebilirsiniz.
+			$sql_files = "SELECT * FROM atolye_files_and_images WHERE content_id = :id";
+			$stmt_files = $pdo->prepare($sql_files);
+			$stmt_files->execute(['id' => $safeContentId]);
+			$filesAndImages = $stmt_files->fetchAll(PDO::FETCH_ASSOC);
+
+			$data['files'] = [];
+			$data['images'] = [];
+
+			foreach ($filesAndImages as $item) {
+				if ($item['type'] === 'file') {
+					$data['files'][] = $item;
+				} elseif ($item['type'] === 'image') {
+					$data['files'][] = $item;
+				}
+			}
+
+			// C. WordWall Linkleri (atolye_wordwall_links)
+			$sql_wordwall = "SELECT * FROM atolye_wordwall_links WHERE content_id = :id";
+			$stmt_wordwall = $pdo->prepare($sql_wordwall);
+			$stmt_wordwall->execute(['id' => $safeContentId]);
+			$data['wordwall_links'] = $stmt_wordwall->fetchAll(PDO::FETCH_ASSOC);
+
+			// Tüm veriyi içeren ana diziyi döndür
+			return $data;
+		} catch (PDOException $e) {
+
+			echo "Hata: " . $e->getMessage();
+			die;
+			// Hata kaydı tutulabilir
+			// error_log("Atölye içerik düzenleme verisi çekilirken hata oluştu: " . $e->getMessage());
+			// return false;
+		}
+	}
+	/**
+	 * Verilen noktalı virgülle ayrılmış yaş grubu ID'lerini isimlere çevirir.
+	 * (main_school_classes tablosunu kullandığı varsayılır)
+	 */
+	public function getClassNamesByIds(string $classIdsString)
+	{
+		if (empty($classIdsString)) {
+			return "Tanımsız";
+		}
+
+		$ids = explode(';', $classIdsString);
+		// ID'leri temizle ve sadece sayısal olanları bırak
+		$cleanIds = array_filter($ids, 'is_numeric');
+
+		if (empty($cleanIds)) {
+			return "Geçersiz ID";
+		}
+
+		// Güvenli sorgu için yer tutucuları oluştur
+		$placeholders = implode(',', array_fill(0, count($cleanIds), '?'));
+
+		// main_school_classes tablosundan isimleri çeker
+		$sql = "SELECT name FROM classes_lnp WHERE id IN ($placeholders)";
+		$stmt = $this->connect()->prepare($sql);
+
+		if (!$stmt->execute($cleanIds)) {
+			error_log("Yaş Grubu isimlerini çekerken hata: " . implode(',', $cleanIds));
+			return "DB Hata";
+		}
+
+		$names = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+		return implode(', ', $names); // İsimleri virgülle ayırarak döndür
+	}
 
 	public function getRoles()
 	{
@@ -2187,7 +2469,7 @@ INNER JOIN users_lnp AS u ON u.id = pst.user_id;');
 		SELECT * FROM `page_permission` WHERE page_url LIKE :search_value
 	');
 
-	
+
 
 		if (!$stmt->execute([':search_value' => $searchValue])) {
 			$stmt = null;
@@ -2199,21 +2481,20 @@ INNER JOIN users_lnp AS u ON u.id = pst.user_id;');
 	}
 
 	public function getPackagesList()
-{
-   $stmt = $this->connect()->prepare('
+	{
+		$stmt = $this->connect()->prepare('
     SELECT id, credit_card_fee as  price_yearly
     FROM `packages_lnp` 
     WHERE class_id = :class_id 
     AND (name NOT LIKE "%Aylık%" AND name NOT LIKE "%Yıllık%")
 ');
-    $executed = $stmt->execute([':class_id' => $_SESSION['class_id'] ?? null]);
+		$executed = $stmt->execute([':class_id' => $_SESSION['class_id'] ?? null]);
 
-    if (!$executed) {
-        // Hata durumunda PDOException yerine kendi hata mesajını kullanmak istersen:
-        return [];
-    }
+		if (!$executed) {
+			// Hata durumunda PDOException yerine kendi hata mesajını kullanmak istersen:
+			return [];
+		}
 
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
 }
