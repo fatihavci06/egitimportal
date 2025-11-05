@@ -1581,6 +1581,23 @@ WHERE mc.school_id = 1
 
 		return $contentData;
 	}
+	public function getKulupList()
+	{
+		// Not: 'school_id' sütunu tablonuzda yoksa WHERE koşulunu kaldırın.
+		// Güvenliğiniz için sadece ihtiyacınız olan sütunları çekmek en iyisidir.
+		$stmt = $this->connect()->prepare('SELECT * FROM konusma_kulupleri_lnp ORDER BY id DESC');
+
+		if (!$stmt->execute()) {
+			$stmt = null;
+			error_log("Kulup Listesi çekilirken hata oluştu.");
+			return [];
+		}
+
+		$contentData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $contentData;
+	}
+
 
 
 	// YENİ: Belirli bir içerik türü ve sınıf ID'sine ait TÜM Wordwall linklerini çeker

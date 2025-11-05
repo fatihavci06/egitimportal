@@ -134,7 +134,6 @@ function createLiveZoomMeeting($pdo, $title, $date, $userId, $classIds, $role)
         } else {
             return ['success' => false, 'message' => 'Veritabanına kayıt yapılamadı.'];
         }
-
     } catch (Exception $e) {
         error_log("Canlı Video Hatası: " . $e->getMessage());
         return [
@@ -8357,7 +8356,7 @@ ORDER BY msu.unit_order asc
             $combinedDateTime = $zoom_date . ' ' . $zoom_time;
 
             // Fonksiyona gönder
-            $getResult=createLiveZoomMeeting($pdo, $subject, $combinedDateTime, $_SESSION['id'],  $class_ids, $_SESSION['role']);
+            $getResult = createLiveZoomMeeting($pdo, $subject, $combinedDateTime, $_SESSION['id'],  $class_ids, $_SESSION['role']);
             $zoom_url = $getResult['zoom_join_url'];
         }
         // WordWall verileri
@@ -8756,6 +8755,202 @@ ORDER BY msu.unit_order asc
                 'status' => 'error',
                 'message' => 'Beklenmeyen bir sunucu hatası oluştu.'
             ]);
+        }
+        exit;
+    case 'kulupEkle':
+        $uploadDir = '../uploads/club_covers/';
+        // POST verilerini al (FormData ile gönderildiği için doğrudan $_POST kullanılır)
+        $class_ids = $_POST['class_ids'] ?? null; // Noktalı virgülle ayrılmış ID'ler
+        $name_tr = $_POST['name_tr'] ?? null;
+        $name_en = $_POST['name_en'] ?? null;
+        // cover_img dosyası $_FILES üzerinden alınır
+
+        // Temel Validasyon
+        if (empty($name_tr) || empty($name_en) || empty($class_ids)) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Lütfen tüm zorunlu alanları (Kulüp Adı TR/EN, Sınıflar) doldurun.']);
+            exit;
+        }
+
+        $cover_img_path = null;
+
+        // Dosya Yükleme İşlemi (cover_img)
+        if (!empty($_FILES['cover_img']['name'])) {
+            $file = $_FILES['cover_img'];
+            $fileTmpName = $file['tmp_name'];
+            $fileError = $file['error'];
+            $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+            $allowedExtensions = ['png', 'jpg', 'jpeg'];
+
+            if ($fileError === 0) {
+                if (in_array($fileExtension, $allowedExtensions)) {
+                    $newFileName = uniqid('club_') . '.' . $fileExtension;
+                    $fileDestination = $uploadDir . $newFileName;
+                    $cover_img_path = 'uploads/club_covers/' . $newFileName; // DB'de saklanacak yol
+
+                    if (!move_uploaded_file($fileTmpName, $fileDestination)) {
+                        http_response_code(500);
+                        echo json_encode(['status' => 'error', 'message' => 'Kapak görseli yüklenirken hata oluştu. Sunucu izinlerini kontrol edin.']);
+                        exit;
+                    }
+                } else {
+                    http_response_code(400);
+                    echo json_encode(['status' => 'error', 'message' => 'Kapak görseli için sadece PNG, JPG ve JPEG dosyaları izinlidir.']);
+                    exit;
+                }
+            } else if ($fileError !== 4) { // Hata kodu 4: Dosya seçilmedi demek. Diğer hataları raporla.
+                http_response_code(500);
+                echo json_encode(['status' => 'error', 'message' => "Kapak görseli yükleme hatası: Hata kodu {$fileError}"]);
+                exit;
+            }
+        }
+
+
+        // Veritabanı işlemleri Transaction içine alınır
+        try {
+            $pdo->beginTransaction();
+
+            $insertSql = "INSERT INTO konusma_kulupleri_lnp 
+                          (class_ids, name_tr, name_en, cover_img, created_by) 
+                          VALUES (:class_ids, :name_tr, :name_en, :cover_img, :created_by)";
+
+            $stmt = $pdo->prepare($insertSql);
+            $stmt->execute([
+                'class_ids' => $class_ids,
+                'name_tr'   => $name_tr,
+                'name_en'   => $name_en,
+                'cover_img' => $cover_img_path,
+                'created_by' => $_SESSION['id'] ?? 0 // Oturumdan kullanıcı ID'sini al
+            ]);
+
+            $clubId = $pdo->lastInsertId();
+
+            $pdo->commit();
+            echo json_encode(['status' => 'success', 'message' => 'Kulüp başarıyla eklendi.', 'id' => $clubId]);
+        } catch (PDOException $e) {
+            $pdo->rollBack();
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası oluştu. Lütfen tablo/sütun isimlerini kontrol edin. Detay: ' . $e->getMessage()]);
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Beklenmeyen bir hata oluştu: ' . $e->getMessage()]);
+        }
+        exit;
+
+        // YENİ SERVİS: KULÜP GÜNCELLEME
+    case 'kulupGuncelle':
+        $uploadDir = '../uploads/club_covers/';
+        // POST verilerini al
+        $club_id = $_POST['club_id'] ?? null;
+        $class_ids = $_POST['class_ids'] ?? null; // Noktalı virgülle ayrılmış ID'ler
+        $name_tr = $_POST['name_tr'] ?? null;
+        $name_en = $_POST['name_en'] ?? null;
+        $existing_cover_img = $_POST['existing_cover_img'] ?? null; // Mevcut görsel yolu
+
+        // Temel Validasyon
+        if (empty($club_id) || empty($name_tr) || empty($name_en) || empty($class_ids)) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Lütfen tüm zorunlu alanları (ID, Kulüp Adı TR/EN, Sınıflar) doldurun.']);
+            exit;
+        }
+
+        $cover_img_path = $existing_cover_img; // Varsayılan olarak mevcut yolu koru
+
+        // Dosya Yükleme İşlemi (cover_img)
+        if (!empty($_FILES['cover_img']['name'])) {
+            $file = $_FILES['cover_img'];
+            $fileTmpName = $file['tmp_name'];
+            $fileError = $file['error'];
+            $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+            $allowedExtensions = ['png', 'jpg', 'jpeg'];
+
+            if ($fileError === 0) {
+                if (in_array($fileExtension, $allowedExtensions)) {
+
+                    // Eski dosyayı sil
+                    if ($existing_cover_img && file_exists('../' . $existing_cover_img)) {
+                        unlink('../' . $existing_cover_img);
+                    }
+
+                    $newFileName = uniqid('club_') . '.' . $fileExtension;
+                    $fileDestination = $uploadDir . $newFileName;
+                    $cover_img_path = 'uploads/club_covers/' . $newFileName; // DB'de saklanacak yol
+
+                    if (!move_uploaded_file($fileTmpName, $fileDestination)) {
+                        http_response_code(500);
+                        echo json_encode(['status' => 'error', 'message' => 'Yeni kapak görseli yüklenirken hata oluştu.']);
+                        exit;
+                    }
+                } else {
+                    http_response_code(400);
+                    echo json_encode(['status' => 'error', 'message' => 'Kapak görseli için sadece PNG, JPG ve JPEG dosyaları izinlidir.']);
+                    exit;
+                }
+            } else if ($fileError !== 4) {
+                http_response_code(500);
+                echo json_encode(['status' => 'error', 'message' => "Kapak görseli yükleme hatası: Hata kodu {$fileError}"]);
+                exit;
+            }
+        }
+
+
+        // Veritabanı işlemleri Transaction içine alınır
+        try {
+            $pdo->beginTransaction();
+
+            $updateSql = "UPDATE konusma_kulupleri_lnp SET 
+                          class_ids = :class_ids, 
+                          name_tr = :name_tr, 
+                          name_en = :name_en, 
+                          cover_img = :cover_img 
+                          WHERE id = :club_id";
+
+            $stmt = $pdo->prepare($updateSql);
+            $stmt->execute([
+                'club_id'   => $club_id,
+                'class_ids' => $class_ids,
+                'name_tr'   => $name_tr,
+                'name_en'   => $name_en,
+                'cover_img' => $cover_img_path
+            ]);
+
+            $pdo->commit();
+            echo json_encode(['status' => 'success', 'message' => "Kulüp ({$club_id} ID) başarıyla güncellendi."]);
+        } catch (PDOException $e) {
+            $pdo->rollBack();
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası oluştu. Lütfen tablo/sütun isimlerini kontrol edin. Detay: ' . $e->getMessage()]);
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Beklenmeyen bir hata oluştu: ' . $e->getMessage()]);
+        }
+        exit;
+
+        // YENİ SERVİS: KULÜP DURUM DEĞİŞTİRME
+    case 'kulupStatusChange':
+        $club_id = $_POST['id'] ?? null;
+        $status = $_POST['status'] ?? null; // 0 veya 1
+
+        if (empty($club_id) || !is_numeric($status) || ($status != 0 && $status != 1)) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Geçersiz kulüp ID veya durum değeri.']);
+            exit;
+        }
+
+        try {
+            $updateSql = "UPDATE konusma_kulupleri_lnp SET status = :status WHERE id = :id";
+            $stmt = $pdo->prepare($updateSql);
+            $stmt->execute(['id' => $club_id, 'status' => $status]);
+
+            $statusText = $status == 1 ? 'Aktif' : 'Pasif';
+            echo json_encode(['status' => 'success', 'message' => "Kulüp durumu başarıyla '{$statusText}' olarak değiştirildi."]);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Durum değiştirilirken veritabanı hatası oluştu. Detay: ' . $e->getMessage()]);
         }
         exit;
 
