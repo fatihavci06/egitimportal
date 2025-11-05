@@ -28,6 +28,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     $classesObj = null;
 
     if (!empty($userClassId)) {
+   
         // Verileri çek
         $classesObj = new Classes();
 
@@ -40,7 +41,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         // 3. TÜM Dosya/Görsel yollarını çek (Liste Modal için)
         $allFilesAndImages = $classesObj->getAllFilesAndImagesByContentTypeAndClass($targetContentType, $userClassId);
         // 3. TÜM Dosya/Görsel yollarını çek (Liste Modal için)
+        
         $zoomDetail = $classesObj->getZoomDetail($userClassId,$targetContentType);
+        
     }
     // ----------------------------------------------------
 ?>

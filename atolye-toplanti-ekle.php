@@ -52,6 +52,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         <form class="form" action="#" id="ContentForm">
 
                                             <div class="row mt-4">
+                                              
+                                                <div class="col-lg-6">
+                                                    <label class="required fs-6 fw-semibold mb-2" for="subject">Başlık</label>
+                                                    <input type="text" class="form-control" placeholder="Konu Başlığı" id="subject" name="subject" required />
+                                                </div>
+                                            </div>
+                                             <div class="row mt-4">
                                                 <div class="col-lg-6">
                                                     <label class="fs-6 fw-semibold mb-2" for="main_school_class_id">Yaş Grubu </label>
                                                     <select class="form-select" id="main_school_class_id" name="main_school_class_id[]" multiple required data-control="select2" data-placeholder="Yaş Grupları Seçiniz">
@@ -60,14 +67,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <?php } ?>
                                                     </select>
                                                 </div>
-                                                <div class="col-lg-6">
-                                                    <label class="required fs-6 fw-semibold mb-2" for="subject">Başlık</label>
-                                                    <input type="text" class="form-control" placeholder="Konu Başlığı" id="subject" name="subject" required />
-                                                </div>
+                                              
                                             </div>
 
                                             <div class="row mt-4">
-                                            
+                                              
                                                 
                                                 <div class="col-lg-6">
                                                     <label class="required fs-6 fw-semibold mb-2" for="content_type">Atölye Türü</label>
@@ -81,54 +85,20 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 </div>
                                             </div>
 
-                                          
                                             <div class="row mt-4">
-                                                <label class="required fs-6 fw-semibold mb-2">İçerik Türü</label>
-                                                <div class="fv-row mb-7 mt-4" id="chooseOne">
-                                                    <label>
-                                                        <input class="form-check-input " type="radio" name="secim" value="video_link"> Video URL
-                                                    </label>
-                                                    <label>
-                                                        <input class="form-check-input ms-10" type="radio" name="secim" value="file_path"> Dosya / Görsel Yükle
-                                                    </label>
-
-                                                    <label>
-                                                        <input class="form-check-input ms-10" type="radio" name="secim" value="wordwall"> İnteraktif Oyun
-                                                    </label>
-                                                    
-                                                  
+                                                <div class="col-lg-3">
+                                                    <label class="fs-6 fw-semibold mb-2" for="zoom_date">Toplantı Tarihi</label>
+                                                    <input type="text" class="form-control" placeholder="Tarih Seçiniz" id="zoom_date" name="zoom_date" />
                                                 </div>
-
-                                                <div id="videoInput" class="mb-4" style="display:none;">
-                                                    <label for="video_url">Video Link (Youtube):</label>
-                                                    <input type="text" class="form-control" name="video_url" id="video_url">
+                                                <div class="col-lg-3">
+                                                    <label class="fs-6 fw-semibold mb-2" for="zoom_time">Toplantı Saati</label>
+                                                    <input type="text" class="form-control" placeholder="Saat Seçiniz" id="zoom_time" name="zoom_time" />
                                                 </div>
-
-                                                <div id="fileInput" class="mb-4" style="display:none;">
-                                                    <label for="files">Dosya ve Görsel Yükle (Çoklu Seçilebilir):</label>
-                                                    <input type="file" class="form-control" name="files[]" id="files" multiple accept=".xls,.xlsx,.doc,.docx,.ppt,.pptx,.png,.jpeg,.jpg,.svg,.pdf">
-                                                    <div id="fileDescriptions"></div>
-                                                    <small class="text-muted">Yüklediğiniz her dosya/görsel için aşağıda bir açıklama alanı açılacaktır.</small>
-                                                </div>
-
-                                                <div id="wordwallInputs" class="mb-4" style="display:none;">
-                                                    <label>WordWall Iframe Linkleri (Çoklu):</label>
-                                                    <div id="dynamicFields">
-                                                        <div class="input-group mb-2" data-index="0">
-                                                            <input type="text" name="wordWallTitles[]" class="form-control me-2" placeholder="Başlık">
-                                                            <input type="text" name="wordWallUrls[]" class="form-control me-2" placeholder="URL">
-                                                            <button type="button" class="btn btn-danger removeField">Sil</button>
-                                                        </div>
-                                                    </div>
-                                                    <button type="button" id="addField" class="btn btn-sm btn-primary mt-2">Ekle</button>
-                                                </div>
-
                                             </div>
 
-                                            <div id="textInput" class="mb-4" style="display:none;">
-                                                <label for="mcontent">Metin İçeriği:</label>
-                                                <textarea class="form-control tinymce-editor" name="mcontent" id="mcontent" rows="4"></textarea>
-                                            </div>
+                                         
+
+                                          
 
                                             <div class="row mt-5">
                                                 <div class="col-lg-11"></div>
@@ -188,71 +158,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     allowInput: true,
                     placeholder: "Saat Seçiniz"
                 });
-                // ----------------------------------------------------------------------
-                // YENİ EKLENEN BİTİŞ
-                // ----------------------------------------------------------------------
-
-                // Wordwall Dinamik Alan Ekleme/Silme
-                $('#addField').on('click', function() {
-                    fieldCount++;
-                    $('#dynamicFields').append(`
-					<div class="input-group mb-2" data-index="${fieldCount}">
-						<input type="text" name="wordWallTitles[]" class="form-control me-2" placeholder="Başlık">
-						<input type="text" name="wordWallUrls[]" class="form-control me-2" placeholder="URL">
-						<button type="button" class="btn btn-danger removeField">Sil</button>
-					</div>
-				`);
-                });
-                $('#dynamicFields').on('click', '.removeField', function() {
-                    $(this).closest('.input-group').remove();
-                });
-
-                // TinyMCE Başlatma
-                tinymce.init({
-                    selector: '.tinymce-editor',
-                    // diğer ayarlar...
-                });
-
-                // Dosya Yüklendiğinde Açıklama Alanlarını Oluşturma
-                $('#files').on('change', function() {
-                    const files = this.files;
-                    const container = $('#fileDescriptions');
-                    container.empty(); // Önceki açıklamaları temizle
-
-                    for (let i = 0; i < files.length; i++) {
-                        const fileName = files[i].name;
-                        const descriptionField = `
-						<div class="mb-3">
-							<label for="description_${i}" class="form-label">"${fileName}" dosyası için açıklama:</label>
-							<textarea class="form-control" name="descriptions[]" id="description_${i}" rows="2"></textarea>
-						</div>
-					`;
-                        container.append(descriptionField);
-                    }
-                });
-
-                // İçerik Türü Seçimi - GÖSTER/GİZLE İŞLEMLERİ
-                $('input[name="secim"]').on('change', function() {
-                    let selected = $(this).val();
-
-                    // Tüm inputları gizle
-                    $('#videoInput, #fileInput, #textInput, #wordwallInputs').hide();
-
-                    // Seçime göre ilgili inputu göster
-                    if (selected === 'video_link') {
-                        $('#videoInput').show();
-                    } else if (selected === 'file_path') {
-                        $('#fileInput').show(); // Sadece tek bir dosya/görsel yükleme alanı gösterilir
-                    } else if (selected === 'content') {
-                        $('#textInput').show();
-                    } else if (selected === 'wordwall') {
-                        $('#wordwallInputs').show();
-                    }
-                });
+               
 
                 $('#submitForm').on('click', function(e) {
                     e.preventDefault();
-                    const content = tinymce.get('mcontent').getContent();
+               
 
                     // VALIDASYONLAR (Kısaltıldı, eski validasyonlar geçerlidir)
                     if ($('#subject').val().trim() === '') {
@@ -275,7 +185,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         return;
                     }
 
-                    const selectedContentType = $('input[name="secim"]:checked').val();
+                   
                    
                     
                     const selectedClassIds = $('#main_school_class_id').val();
@@ -292,25 +202,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     let formData = new FormData();
                     let isValid = true;
 
-                    // WordWall Validasyonu (Aynı Kaldı)
-                    $('#dynamicFields .input-group').each(function(index) {
-                        const titleInput = $(this).find('input[name="wordWallTitles[]"]');
-                        const urlInput = $(this).find('input[name="wordWallUrls[]"]');
-
-                        const titleValue = titleInput.val().trim();
-                        const urlValue = urlInput.val().trim();
-
-                        if (urlValue !== '' && titleValue === '') {
-                            isValid = false;
-                            Swal.fire({
-                                icon: 'warning',
-                                title: 'Eksik Alan',
-                                text: 'Lütfen bağlantı girilen her WordWall satırı için bir başlık yazınız.'
-                            });
-                            return false;
-                        }
-                    });
-
+                 
                     if (!isValid) return;
 
                     // 🔽 FORMDATA EKLEMELERİ
@@ -322,35 +214,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     // Diğer Temel Alanlar
                     formData.append('subject', $('#subject').val());
                     formData.append('content_type', $('#content_type').val());
-                    formData.append('content', content);
-                    formData.append('secim', selectedContentType);
-                    formData.append('video_url', $('#video_url').val());
+             
 
-                    // YENİ EKLENEN VERİLER: ZOOM TARİH VE SAAT
-                   
+                    formData.append('zoom_date', $('#zoom_date').val()); // Yeni
+                    formData.append('zoom_time', $('#zoom_time').val()); // Yeni
 
                     // WordWall Verileri (Dolu olanları ekler)
-                    $('#dynamicFields .input-group').each(function() {
-                        const title = $(this).find('input[name="wordWallTitles[]"]').val().trim();
-                        const url = $(this).find('input[name="wordWallUrls[]"]').val().trim();
-
-                        if (title !== '' && url !== '') {
-                            formData.append(`wordWallTitles[]`, title);
-                            formData.append(`wordWallUrls[]`, url);
-                        }
-                    });
-
-                    // Dosya/Görsel Yüklemeleri (tek input 'files' ile halledildi)
-                    const files = $('#files')[0].files;
-                    for (let i = 0; i < files.length; i++) {
-                        // PHP tarafında `$_FILES['files']` dizisine erişilecektir.
-                        formData.append('files[]', files[i]);
-                    }
-
-                    // Dosya Açıklamaları
-                    $("textarea[name='descriptions[]']").each(function() {
-                        formData.append('descriptions[]', $(this).val());
-                    });
+               
 
                     // AJAX gönderimi
                     $.ajax({
@@ -384,7 +254,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Başarılı',
-                                    text: 'Atölye içeriği başarıyla kaydedildi!',
+                                    text: 'Başarıyla kaydedildi!',
                                     confirmButtonText: 'Tamam'
                                 }).then(() => {
                                     location.reload();

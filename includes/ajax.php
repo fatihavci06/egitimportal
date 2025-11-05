@@ -35,6 +35,117 @@ function jsonResponse(int $statusCode, string $status, string $message): void
     echo json_encode(['status' => $status, 'message' => $message]);
     exit();
 }
+function createLiveZoomMeeting($pdo, $title, $date, $userId, $classIds, $role)
+{
+    if (!$title || !$date || !$userId || !$classIds) {
+        return ['success' => false, 'message' => 'Eksik bilgi gönderildi.'];
+    }
+
+    try {
+        require_once '../zoom/ZoomTokenManager.php';
+        $zoom = new ZoomTokenManager();
+        $access_token = $zoom->getAccessToken();
+
+        $start_time = date('Y-m-d\TH:i:s', strtotime($date));
+        $zoomUserId = 'me';
+
+        $meeting_details = [
+            'topic' => $title,
+            'type' => 2,
+            'start_time' => $start_time,
+            'duration' => 60,
+            'timezone' => 'Europe/Istanbul',
+            'settings' => [
+                'host_video' => true,
+                'participant_video' => true,
+                'auto_recording' => 'cloud',
+            ],
+        ];
+
+        // Zoom API isteği
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "https://api.zoom.us/v2/users/{$zoomUserId}/meetings");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer $access_token",
+            "Content-Type: application/json",
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($meeting_details));
+
+        $response = curl_exec($ch);
+        $err = curl_error($ch);
+        curl_close($ch);
+
+        if ($err) {
+            error_log("Zoom API Hatası: " . $err);
+            return ['success' => false, 'message' => 'Zoom bağlantısı kurulamadı.', 'zoom_error' => $err];
+        }
+
+        $zoomResponse = json_decode($response, true);
+        if (!isset($zoomResponse['join_url'], $zoomResponse['start_url'])) {
+            error_log("Zoom Yanıtı Geçersiz: " . $response);
+            return ['success' => false, 'message' => 'Zoom toplantısı oluşturulamadı.', 'zoom_error' => $response];
+        }
+
+        $joinUrl = $zoomResponse['join_url'];
+        $startUrl = $zoomResponse['start_url'];
+
+        // Çoklu class_id desteği
+        $classIdArray = array_filter(array_map('trim', explode(';', $classIds))); // örn: ['10', '11', '12']
+
+        if (empty($classIdArray)) {
+            return ['success' => false, 'message' => 'Geçerli bir sınıf ID bulunamadı.'];
+        }
+
+        $stmt = $pdo->prepare("
+            INSERT INTO meetings_lnp 
+            (organizer_id, description, meeting_date, zoom_join_url, zoom_start_url, class_id, role) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ");
+
+        $insertedCount = 0;
+
+        foreach ($classIdArray as $cid) {
+            if (is_numeric($cid)) {
+                $result = $stmt->execute([
+                    $userId,
+                    $title,
+                    $date,
+                    $joinUrl,
+                    $startUrl,
+                    $cid,
+                    $role
+                ]);
+                if ($result) {
+                    $insertedCount++;
+                }
+            }
+        }
+
+        if ($insertedCount > 0) {
+            return [
+                'success' => true,
+                'message' => 'Canlı ders başarıyla oluşturuldu.',
+                'inserted_count' => $insertedCount,
+                'zoom_join_url' => $joinUrl,
+                'zoom_start_url' => $startUrl
+            ];
+        } else {
+            return ['success' => false, 'message' => 'Veritabanına kayıt yapılamadı.'];
+        }
+
+    } catch (Exception $e) {
+        error_log("Canlı Video Hatası: " . $e->getMessage());
+        return [
+            'success' => false,
+            'message' => 'Bir hata oluştu.',
+            'error' => $e->getMessage()
+        ];
+    }
+}
+
+
 // Servis kontrolü
 $service = $_GET['service'] ?? '';
 
@@ -8212,6 +8323,7 @@ ORDER BY msu.unit_order asc
             echo json_encode(['status' => 'error', 'message' => 'Durum güncelleme hatası: ' . $e->getMessage()]);
         }
         exit;
+
     case 'createAtolyeContent':
 
         $uploadDir = '../uploads/atolye_content/'; // Bir üst dizinde uploads/atolye_content klasörünü varsayar.
@@ -8239,13 +8351,22 @@ ORDER BY msu.unit_order asc
         $zoom_date = $_POST['zoom_date'] ?? null;
         $zoom_time = $_POST['zoom_time'] ?? null;
 
+        if ($zoom_date != null && $zoom_time != null) {
+            $zoom_date = date('Y-m-d', strtotime($zoom_date));
+            $zoom_time = date('H:i:s', strtotime($zoom_time));
+            $combinedDateTime = $zoom_date . ' ' . $zoom_time;
+
+            // Fonksiyona gönder
+            $getResult=createLiveZoomMeeting($pdo, $subject, $combinedDateTime, $_SESSION['id'],  $class_ids, $_SESSION['role']);
+            $zoom_url = $getResult['zoom_join_url'];
+        }
         // WordWall verileri
         $wordWallTitles = $_POST['wordWallTitles'] ?? [];
         $wordWallUrls = $_POST['wordWallUrls'] ?? [];
 
 
         // Temel Validasyon
-        if (empty($subject) || empty($class_ids) || empty($content_type) || empty($secim_type)) {
+        if (empty($subject) || empty($class_ids) || empty($content_type)) {
             echo json_encode(['status' => 'error', 'message' => 'Lütfen zorunlu alanları (Başlık, Yaş Grubu, Tür, İçerik Türü) doldurun.']);
             exit;
         }
@@ -8254,10 +8375,7 @@ ORDER BY msu.unit_order asc
         try {
             $pdo->beginTransaction();
 
-            // 1. Ana İçeriği (atolye_contents) Veritabanına Ekleme
-            // Not: Tablo şemanızda 'video_url' sütunu olmadığı için, formdan gelen video linkini
-            // 'content' alanına (metin içeriği) eklemiyoruz. Eğer video linkini kaydetmeniz gerekiyorsa,
-            // ya bu tabloya 'video_url' sütunu eklemeli ya da 'content' alanını kullanmalısınız.
+
 
             $mainInsertSql = "INSERT INTO atolye_contents 
                               (class_ids, subject, zoom_url, zoom_date,zoom_time, content_type, secim_type, content,video_url) 
@@ -8443,7 +8561,7 @@ ORDER BY msu.unit_order asc
         $content_type = filter_var($_POST['content_type'] ?? null, FILTER_SANITIZE_STRING);
         $secim_type = filter_var($_POST['secim'] ?? null, FILTER_SANITIZE_STRING);
         $content = $_POST['content'] ?? null; // Metin editöründen gelen içerik veya video linki
-$video_url = $_POST['video_url'] ?? null;
+        $video_url = $_POST['video_url'] ?? null;
         $wordWallTitles = $_POST['wordWallTitles'] ?? [];
         $wordWallUrls = $_POST['wordWallUrls'] ?? [];
 
@@ -8452,7 +8570,7 @@ $video_url = $_POST['video_url'] ?? null;
         $newFileDescriptions = $_POST['descriptions'] ?? [];
 
         // Temel Validasyon
-        if (empty($contentId) || empty($subject) || empty($class_ids) || empty($content_type) ) {
+        if (empty($contentId) || empty($subject) || empty($class_ids) || empty($content_type)) {
             throw new Exception('Lütfen zorunlu alanları (ID, Başlık, Yaş Grubu, Tür, İçerik Türü) doldurun.', 400);
         }
 

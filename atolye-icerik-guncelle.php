@@ -3,7 +3,7 @@ session_start();
 define('GUARD', true);
 
 if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001)) {
-  include_once "classes/dbh.classes.php"; 
+  include_once "classes/dbh.classes.php";
   include "classes/classes.classes.php";
   include_once "views/pages-head.php";
 
@@ -21,17 +21,33 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
   // Bu metodun, atolye_contents tablosundan ana içeriği ve
   // atolye_files ve atolye_wordwall_links tablolarından ilgili verileri çekmesini varsayıyoruz.
-  $contentData = $classesObj->getAtolyeContentForEdit($contentId); 
-
+  $contentData = $classesObj->getAtolyeContentForEdit($contentId);
+if (!empty($contentData['zoom_url'])) {
+    echo "
+    <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Toplantı düzenlenemez',
+            text: 'Bu bir toplantıdır ve düzenlenemez.',
+            confirmButtonText: 'Tamam'
+        }).then(() => {
+            window.location.href = 'atolye-yonetimi';
+        });
+    });
+    </script>";
+    exit();
+}
 
   if (!$contentData) {
     header("Location: atolye-icerikleri");
     exit;
   }
-  
+
   // Form için gerekli diğer verileri çekme
   $mainSchoolClasses = $classesObj->getAgeGroup(); // Tüm yaş gruplarını çek
-  
+
   // Çekilen veriden seçili yaş gruplarını ayırma
   $selectedClassIdsString = $contentData['class_ids'] ?? '';
   $delimiter = strpos($selectedClassIdsString, ';') !== false ? ';' : ',';
@@ -43,9 +59,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
   $existingFiles = $contentData['files'] ?? [];
 ?>
 
-<!DOCTYPE html>
-<html lang="tr">
-    <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
+  <!DOCTYPE html>
+  <html lang="tr">
+
+  <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
     <script>
       var defaultThemeMode = "light";
       var themeMode;
@@ -76,8 +93,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
               <div id="kt_app_content" class="app-content flex-column-fluid">
                 <div id="kt_app_content_container" class="app-container container-fluid">
                   <div class="card-body pt-5">
-                    
-                    <form class="form" action="#" id="UpdateContentForm"> 
+
+                    <form class="form" action="#" id="UpdateContentForm">
                       <input type="hidden" name="content_id" value="<?= $contentData['id'] ?>">
 
                       <div class="row mt-4">
@@ -90,9 +107,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             required
                             data-control="select2"
                             data-placeholder="Yaş Grupları Seçiniz">
-                            <?php foreach ($mainSchoolClasses as $c) { 
+                            <?php foreach ($mainSchoolClasses as $c) {
                               $selected = in_array($c['id'], $selectedClassIdsArray) ? 'selected' : '';
-                              ?>
+                            ?>
                               <option value="<?= $c['id'] ?>" <?= $selected ?>><?= $c['name'] ?></option>
                             <?php } ?>
                           </select>
@@ -104,41 +121,27 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                       </div>
 
                       <div class="row mt-4">
-                        <div class="col-lg-6">
-                          <label class=" fs-6 fw-semibold mb-2" for="zoom_url">Zoom URL</label>
-                          <input type="url" class="form-control" placeholder="Zoom Toplantı Bağlantısı" id="zoom_url" name="zoom_url" value="<?= htmlspecialchars($contentData['zoom_url'] ?? '') ?>" />
-                        </div>
+
                         <div class="col-lg-6">
                           <label class="required fs-6 fw-semibold mb-2" for="content_type">Tür</label>
                           <select class="form-select" id="content_type" name="content_type" required data-control="select2" data-placeholder="Tür Seçimi">
                             <option value="">Seçiniz</option>
-                            <?php 
-                              $types = ["Spor ve Dans Atölyesi", "Bilim Atölyesi", "Sanat Atölyesi", "Puzzle Atölyesi"];
-                              foreach ($types as $type) {
-                                $selected = ($contentData['content_type'] ?? '') == $type ? 'selected' : '';
-                                echo "<option value=\"$type\" $selected>$type</option>";
-                              }
+                            <?php
+                            $types = ["Spor ve Dans Atölyesi", "Bilim Atölyesi", "Sanat Atölyesi", "Puzzle Atölyesi"];
+                            foreach ($types as $type) {
+                              $selected = ($contentData['content_type'] ?? '') == $type ? 'selected' : '';
+                              echo "<option value=\"$type\" $selected>$type</option>";
+                            }
                             ?>
                           </select>
                         </div>
                       </div>
-                      
-<div class="row mt-4">
-    <div class="col-lg-3">
-        <label class="fs-6 fw-semibold mb-2" for="zoom_date">Toplantı Tarihi</label>
-        <input type="text" class="form-control" placeholder="Tarih Seçiniz" id="zoom_date" name="zoom_date" value="<?= htmlspecialchars($contentData['zoom_date'] ?? '') ?>" />
-    </div>
-    <div class="col-lg-3">
-        <label class="fs-6 fw-semibold mb-2" for="zoom_time">Toplantı Saati</label>
-        <input type="text" class="form-control" placeholder="Saat Seçiniz" id="zoom_time" name="zoom_time" value="<?= htmlspecialchars($contentData['zoom_time'] ?? '') ?>" />
-    </div>
-    <div class="col-lg-6">
-        </div>
-</div>
+
+
                       <div class="row mt-4">
                         <label class="required fs-6 fw-semibold mb-2">İçerik Türü</label>
                         <div class="fv-row mb-7 mt-4" id="chooseOne">
-                          
+
                           <?php $secimType = $contentData['secim_type'] ?? ''; ?>
 
                           <label class="me-10">
@@ -147,7 +150,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                           <label class="me-10">
                             <input class="form-check-input" type="radio" name="secim" value="file_path" <?= $secimType == 'file_path' ? 'checked' : '' ?>> Dosya / Görsel Yükle
                           </label>
-                      
+
                           <label>
                             <input class="form-check-input" type="radio" name="secim" value="wordwall" <?= $secimType == 'wordwall' ? 'checked' : '' ?>> İnteraktif Oyun
                           </label>
@@ -159,7 +162,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         </div>
 
                         <div id="fileInput" class="mb-4" style="display:none;">
-                          
+
                           <div class="mb-5 border p-3 rounded">
                             <h5 class="fs-6 fw-bold mb-3">Mevcut Dosyalar/Görseller</h5>
                             <div id="existingFilesContainer">
@@ -171,7 +174,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         <a href="<?= htmlspecialchars($file['file_path']) ?>" target="_blank" class="fw-bold"><?= basename($file['file_path']) ?></a>
                                         <small class="text-muted ms-3">(<?= htmlspecialchars($file['description']) ?>)</small>
                                       </span>
-                                      <button type="button" class="btn btn-sm btn-danger delete-existing-file" data-file-id="<?= $file['id'] ?>">Sil</button> 
+                                      <button type="button" class="btn btn-sm btn-danger delete-existing-file" data-file-id="<?= $file['id'] ?>">Sil</button>
                                     </li>
                                   <?php endforeach; ?>
                                 </ul>
@@ -210,7 +213,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         </div>
 
                       </div>
-                      
+
                       <div id="textInput" class="mb-4" style="display:none;">
                         <label for="mcontent">Metin İçeriği:</label>
                         <textarea class="form-control tinymce-editor" name="content" id="mcontent" rows="4"><?= $secimType == 'content' ? htmlspecialchars($contentData['content'] ?? '') : '' ?></textarea>
@@ -219,7 +222,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                       <div class="row mt-5">
                         <div class="col-lg-11"></div>
                         <div class="col-lg-1">
-                          <button type="submit" id="submitUpdateForm" class="btn btn-primary btn-sm">Güncelle</button> 
+                          <button type="submit" id="submitUpdateForm" class="btn btn-primary btn-sm">Güncelle</button>
                         </div>
                       </div>
                     </form>
@@ -247,38 +250,17 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     <script src="assets/plugins/global/plugins.bundle.js"></script>
     <script src="assets/js/scripts.bundle.js"></script>
     <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
-    <script src="assets/plugins/custom/tinymce/tinymce.bundle.js"></script> 
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"> 
+    <script src="assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="assets/js/widgets.bundle.js"></script>
     <script src="assets/js/custom/widgets.js"></script>
 
     <script>
       $(document).ready(function() {
-        
-        // YENİ EK: Flatpickr JS kütüphanesini dahil ediyoruz
-        const flatpickrScript = document.createElement('script');
-        flatpickrScript.src = "https://cdn.jsdelivr.net/npm/flatpickr";
-        document.body.appendChild(flatpickrScript);
-        
-        flatpickrScript.onload = function() {
-          // Flatpickr Başlatmaları - Kütüphane yüklendikten sonra başlatılmalı
-          flatpickr("#zoom_date", {
-            dateFormat: "Y-m-d", // Örn: 2025-11-05
-            allowInput: true,
-            placeholder: "Tarih Seçiniz"
-          });
 
-          flatpickr("#zoom_time", {
-            enableTime: true,
-            noCalendar: true,
-            dateFormat: "H:i", // Örn: 15:30
-            time_24hr: true,
-            allowInput: true,
-            placeholder: "Saat Seçiniz"
-          });
-        };
-        
-        let fieldCount = $('#dynamicFields .wordwall-item').length; 
+
+
+        let fieldCount = $('#dynamicFields .wordwall-item').length;
 
         // --- 1. TinyMCE Başlatma (Hata çözümü için standart ayarlarla) ---
         tinymce.init({
@@ -286,7 +268,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
           // Gerekli standart eklentileri ve araç çubuğunu ekleyin
           plugins: 'advlist autolink lists link image charmap print preview anchor code',
           toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | code | help',
-          height: 300 
+          height: 300
         });
 
         // --- 2. Select2 Başlatma ---
@@ -314,12 +296,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         $('#dynamicFields').on('click', '.removeField', function() {
           $(this).closest('.input-group').remove();
         });
-        
+
         // --- 4. Dosya Yüklendiğinde Açıklama Alanlarını Oluşturma ---
         $('#files').on('change', function() {
           const files = this.files;
           const container = $('#fileDescriptions');
-          container.empty(); 
+          container.empty();
 
           for (let i = 0; i < files.length; i++) {
             const fileName = files[i].name;
@@ -336,10 +318,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         // --- 5. İçerik Türü Seçimi - Dinamik Alanların Gösterilmesi (Görünürlük Sorunu Çözümü) ---
         $('input[name="secim"]').on('change', function() {
           let selected = $('input[name="secim"]:checked').val();
-          
+
           // Tüm inputları gizle
           $('#videoInput, #fileInput, #textInput, #wordwallInputs').hide();
-          
+
           // Seçime göre ilgili inputu göster
           if (selected === 'video_link') {
             $('#videoInput').show();
@@ -352,27 +334,35 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
           }
         }).trigger('change'); // Sayfa yüklendiğinde bir kez çalıştır!
 
-        
+
         // --- 6. GÜNCELLEME AJAX İŞLEMİ ---
         $('#UpdateContentForm').on('submit', function(e) {
           e.preventDefault();
-          
+
           const submitButton = $('#submitUpdateForm');
           const selectedContentType = $('input[name="secim"]:checked').val();
           const selectedClassIds = $('#main_school_class_id').val();
-          
+
           let content = '';
           let isValid = true;
-          
+
           // İçerik/Video/Wordwall validasyonu
           if (selectedContentType === 'content') {
             content = tinymce.get('mcontent').getContent();
             if (content.trim() === '') {
-              Swal.fire({ icon: 'warning', title: 'Uyarı', text: 'Metin İçeriği boş olamaz.' });
+              Swal.fire({
+                icon: 'warning',
+                title: 'Uyarı',
+                text: 'Metin İçeriği boş olamaz.'
+              });
               isValid = false;
             }
           } else if (selectedContentType === 'video_link' && $('#video_url').val().trim() === '') {
-            Swal.fire({ icon: 'warning', title: 'Uyarı', text: 'Video URL alanı boş olamaz.' });
+            Swal.fire({
+              icon: 'warning',
+              title: 'Uyarı',
+              text: 'Video URL alanı boş olamaz.'
+            });
             isValid = false;
           } else if (selectedContentType === 'wordwall') {
             // WordWall Validasyonu
@@ -381,7 +371,11 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
               const urlValue = $(this).find('input[name="wordWallUrls[]"]').val().trim();
 
               if ((urlValue !== '' && titleValue === '') || (titleValue !== '' && urlValue === '')) {
-                Swal.fire({ icon: 'warning', title: 'Eksik Alan', text: 'WordWall Başlık ve URL alanları birlikte doldurulmalıdır.' });
+                Swal.fire({
+                  icon: 'warning',
+                  title: 'Eksik Alan',
+                  text: 'WordWall Başlık ve URL alanları birlikte doldurulmalıdır.'
+                });
                 isValid = false;
                 return false; // each döngüsünden çıkar
               }
@@ -389,9 +383,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
           }
 
           // Temel Validasyonlar
-          if (!isValid || $('#subject').val().trim() === '' || $('#content_type').val() === ''  || !selectedClassIds || selectedClassIds.length === 0) {
+          if (!isValid || $('#subject').val().trim() === '' || $('#content_type').val() === '' || !selectedClassIds || selectedClassIds.length === 0) {
             if (isValid) { // Sadece temel alanlar eksikse bu uyarıyı göster
-              Swal.fire({ icon: 'warning', title: 'Uyarı', text: 'Lütfen zorunlu alanları (Başlık, Tür, İçerik Türü, Yaş Grubu) doldurun.' });
+              Swal.fire({
+                icon: 'warning',
+                title: 'Uyarı',
+                text: 'Lütfen zorunlu alanları (Başlık, Tür, İçerik Türü, Yaş Grubu) doldurun.'
+              });
             }
             return;
           }
@@ -403,7 +401,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
           // KRİTİK: class_ids'i tek bir string olarak ayırıcı ile ekle
           formData.set('class_ids', selectedClassIds.join(';'));
-          
+
           // İçerik alanını doğru kaynaktan al ve FormData'ya ekle
           if (selectedContentType === 'content') {
             formData.set('content', tinymce.get('mcontent').getContent()); // TinyMCE'den gelen güncel içerik
@@ -413,15 +411,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
             // Dosya veya WordWall için content alanı boş bırakılır
             formData.set('content', '');
           }
-                    
-                    // YENİ EK: Zoom Tarih ve Saati FormData'ya ekle
-                    formData.set('zoom_date', $('#zoom_date').val());
-                    formData.set('zoom_time', $('#zoom_time').val());
-                    // YENİ EK SONU
+
+
+          // YENİ EK SONU
 
           // AJAX gönderimi
           $.ajax({
-            url: './includes/ajax.php?service=updateAtolyeContent', 
+            url: './includes/ajax.php?service=updateAtolyeContent',
             type: 'POST',
             data: formData,
             dataType: 'json',
@@ -434,7 +430,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                   title: 'Başarılı',
                   text: response.message || 'Atölye içeriği başarıyla güncellendi!',
                 }).then(() => {
-                  window.location.reload(); 
+                  window.location.reload();
                 });
               } else {
                 Swal.fire({
@@ -457,13 +453,13 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
             }
           });
         });
-        
+
         // MEVCUT DOSYA SİLME İŞLEMİ (AJAX) - Kalan kod aynı kalır
         $(document).on('click', '.delete-existing-file', function() {
           const button = $(this);
           const fileId = button.data('file-id');
           const contentId = $('input[name="content_id"]').val();
-          
+
           Swal.fire({
             title: 'Emin misiniz?',
             text: "Bu dosyayı kalıcı olarak silmek istiyor musunuz?",
@@ -476,9 +472,12 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
           }).then((result) => {
             if (result.isConfirmed) {
               $.ajax({
-                url: './includes/ajax.php?service=deleteAtolyeFile', 
+                url: './includes/ajax.php?service=deleteAtolyeFile',
                 type: 'POST',
-                data: { file_id: fileId, content_id: contentId },
+                data: {
+                  file_id: fileId,
+                  content_id: contentId
+                },
                 dataType: 'json',
                 success: function(response) {
                   if (response.status === 'success') {
@@ -501,7 +500,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
       });
     </script>
   </body>
-</html>
+
+  </html>
 <?php } else {
   header("location: index");
 }

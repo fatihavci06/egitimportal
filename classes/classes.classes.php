@@ -1654,6 +1654,7 @@ WHERE mc.school_id = 1
                 class_ids LIKE :class_id_middle OR 
                 class_ids LIKE :class_id_end
               )
+			  AND secim_type !=''
             ORDER BY id ASC";
 
 		$stmt = $this->connect()->prepare($sql);
@@ -1692,57 +1693,44 @@ WHERE mc.school_id = 1
 	{
 		// 1. Güvenlik ve Doğrulama
 		$safeClassId = filter_var($class_id, FILTER_VALIDATE_INT);
-
+		
 		if (!$safeClassId) {
+			
 			return false; // Geçersiz ID
 		}
 
 		$pdo = $this->connect();
 
 		try {
-			// 2. SQL Sorgusu: En Yakın Tarihli Kaydı Çekme
 
-			// ÖNEMLİ: class_ids alanı "1,5,10" gibi değerler içerdiği için 
-			// güvenlikli "FIND_IN_SET" veya LIKE kullanımı tercih edilir.
-			// LIKE kullanımı için, % joker karakteri artık PHP tarafında eklenecek.
-
+		
 			$sql = "
-    SELECT * FROM atolye_contents 
-    WHERE 
-        (
-            class_ids LIKE :class_id_start_match 
-            OR class_ids LIKE :class_id_middle_match 
-            OR class_ids = :class_id_exact
-        )
-        AND content_type = :content_type
-        AND CONCAT(zoom_date, ' ', zoom_time) >= NOW()
-    ORDER BY CONCAT(zoom_date, ' ', zoom_time) ASC
-    LIMIT 1
-";
+					SELECT zoom_url, zoom_date, zoom_time
+					FROM atolye_contents
+					WHERE content_type = :content_type
+					AND zoom_url != ''
+					AND status = 1
+					AND class_ids LIKE :class_id
+					AND TIMESTAMP(zoom_date, zoom_time) >= NOW()
+					ORDER BY TIMESTAMP(zoom_date, zoom_time) ASC
+					LIMIT 1
+				";
 
 			$stmt = $pdo->prepare($sql);
 
 			// Parametreleri hazırla
-			$params = [
-				// Örneğin: 10,5,2 -> ',10,%' veya '10,%' gibi durumları yakalamak için
-				// Ancak en güvenli yöntem virgüllü liste kullanıyorsanız FIND_IN_SET kullanmaktır.
-				// LIKE kullanıldığı varsayılırsa:
-				'class_id_exact'      => $safeClassId, // Sadece tek bir class_id ise (ör: 10)
-				'class_id_start_match' => $safeClassId . ',%', // Listenin başında (ör: 10,5,2)
-				'class_id_middle_match' => '%,' . $safeClassId . ',%', // Listenin ortasında (ör: 5,10,2)
-				'content_type' => $targetContentType
-
-				// Eğer veritabanı yapınız sadece tek bir class ID tutuyorsa, 
-				// yukarıdaki LIKE ve OR koşulları yerine sadece `class_ids = :class_id_exact` kullanılır.
-			];
-
-			$stmt->execute($params);
+		
+			$stmt->execute([
+				'content_type' => $targetContentType,
+				'class_id' => '%' . $safeClassId . '%'
+				
+			]);
 			$contentData = $stmt->fetch(PDO::FETCH_ASSOC);
 
 			if (!$contentData) {
 				return false; // İçerik bulunamadı veya gelecekteki bir zoom yok
 			}
-
+		
 			return $contentData;
 		} catch (PDOException $e) {
 			// Hata kaydı tutulabilir
