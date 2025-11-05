@@ -14,11 +14,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
 
 ?>
-<<<<<<< HEAD
+
     <style>
-=======
-<style>
->>>>>>> 4430a13068072d7918c35abf5bf148d8dd1089f6
+
         /* Minimal custom style for colors not in Bootstrap's palette, 
            or for specific border widths if Bootstrap's are not enough. */
         .bg-custom-light {
