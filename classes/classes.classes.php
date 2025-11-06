@@ -1653,7 +1653,7 @@ WHERE mc.school_id = 1
         WHERE 
             kkz.konusma_kulup_id = ?  AND kkz.status=1
         AND 
-            kkz.class_ids LIKE ?;
+            kkz.class_ids LIKE ?   order by kkz.zoom_date asc;
     ';
 
 		$stmt = $this->connect()->prepare($sql);
