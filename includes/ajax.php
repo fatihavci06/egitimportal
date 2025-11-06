@@ -35,7 +35,7 @@ function jsonResponse(int $statusCode, string $status, string $message): void
     echo json_encode(['status' => $status, 'message' => $message]);
     exit();
 }
-function createLiveZoomMeeting($pdo, $title, $date, $userId, $classIds, $role)
+function createLiveZoomMeeting($pdo, $title, $date, $userId, $classIds, $role, $contentId = null)
 {
     if (!$title || !$date || !$userId || !$classIds) {
         return ['success' => false, 'message' => 'Eksik bilgi gönderildi.'];
@@ -53,7 +53,7 @@ function createLiveZoomMeeting($pdo, $title, $date, $userId, $classIds, $role)
             'topic' => $title,
             'type' => 2,
             'start_time' => $start_time,
-            'duration' => 60,
+            'duration' => 120,
             'timezone' => 'Europe/Istanbul',
             'settings' => [
                 'host_video' => true,
@@ -97,6 +97,17 @@ function createLiveZoomMeeting($pdo, $title, $date, $userId, $classIds, $role)
         if (empty($classIdArray)) {
             return ['success' => false, 'message' => 'Geçerli bir sınıf ID bulunamadı.'];
         }
+        if (!empty($contentId) && is_numeric($contentId)) {
+            $stmt0 = $pdo->prepare("SELECT zoom_join_url FROM konusma_kulupleri_zoom_lnp WHERE id = ?");
+            $stmt0->execute([$contentId]);
+            $zoomJoinUrl = $stmt0->fetchColumn();
+
+            if ($zoomJoinUrl) {
+                $stmt01 = $pdo->prepare("DELETE FROM meetings_lnp WHERE zoom_join_url = ?");
+                $stmt01->execute([$zoomJoinUrl]);
+            }
+        }
+
 
         $stmt = $pdo->prepare("
             INSERT INTO meetings_lnp 
@@ -8954,6 +8965,399 @@ ORDER BY msu.unit_order asc
         }
         exit;
 
+
+    case 'clupContentCreate':
+
+        // DİKKAT: Upload dizinini kontrol et ve ayarla
+        $uploadDir = '../uploads/kulup_content/'; // Kulüp içerikleri için yeni bir dizin önerilir
+        $dbPathPrefix = 'uploads/kulup_content/'; // DB'de saklanacak prefix
+
+        if (!is_dir($uploadDir)) {
+            if (!mkdir($uploadDir, 0777, true) && !is_dir($uploadDir)) {
+                echo json_encode(['status' => 'error', 'message' => 'Yükleme dizini oluşturulamadı. İzinleri kontrol edin.']);
+                exit;
+            }
+        }
+
+        // POST ve FILES verilerini al
+        $subject = $_POST['subject'] ?? null;
+        $class_ids = $_POST['class_ids'] ?? null; // Noktalı virgülle ayrılmış ID'ler (örn: 10;11;12)
+        $content_type = $_POST['content_type'] ?? null; // konusma_kulupleri_lnp.id (Main Club ID)
+        $zoom_date = $_POST['zoom_date'] ?? null;
+        $zoom_time = $_POST['zoom_time'] ?? null;
+        $zoom_join_url = null;
+        $zoom_start_url = null;
+        if ($zoom_date != null && $zoom_time != null) {
+            $zoom_date = date('Y-m-d', strtotime($zoom_date));
+            $zoom_time = date('H:i:s', strtotime($zoom_time));
+            $combinedDateTime = $zoom_date . ' ' . $zoom_time;
+
+            // Fonksiyona gönder
+            $getResult = createLiveZoomMeeting($pdo, $subject, $combinedDateTime, $_SESSION['id'],  $class_ids, $_SESSION['role']);
+            $zoom_start_url = $getResult['zoom_start_url'];
+            $zoom_join_url = $getResult['zoom_join_url'];
+        }
+
+        $coverImgFile = $_FILES['cover_img'] ?? null;
+        $multiFiles = $_FILES['multi_files'] ?? null; // Çoklu dosyalar
+
+        // 1. Zorunlu Alan Validasyonu
+        if (empty($subject) || empty($class_ids) || empty($content_type) ) {
+            echo json_encode(['status' => 'error', 'message' => 'Lütfen zorunlu alanları (Başlık, Yaş Grubu, Kulüp Türü ) doldurun.']);
+            exit;
+        }
+
+        // 2. Kapak Resmi Yükleme İşlemi
+        $coverImgPath = null;
+        if ($coverImgFile!=null && $coverImgFile['error'] === UPLOAD_ERR_OK) {
+            $imgExtension = strtolower(pathinfo($coverImgFile['name'], PATHINFO_EXTENSION));
+            $newImgName = uniqid('cover_') . '.' . $imgExtension;
+            $imgDestination = $uploadDir . $newImgName;
+
+            if (move_uploaded_file($coverImgFile['tmp_name'], $imgDestination)) {
+                $coverImgPath = $dbPathPrefix . $newImgName; // DB için yolu ayarla
+            } else {
+                echo json_encode(['status' => 'error', 'message' => "Kapak resmi yükleme başarısız oldu. Sunucu izinlerini kontrol edin."]);
+                exit;
+            }
+        } 
+
+        // 3. Tarih/Saat Formatlama (Eğer boş değilse)
+        if (!empty($zoom_date) && !empty($zoom_time)) {
+            $zoom_date = date('Y-m-d', strtotime($zoom_date));
+            $zoom_time = date('H:i:s', strtotime($zoom_time));
+        } else {
+            $zoom_date = null;
+            $zoom_time = null;
+        }
+
+        // 4. Transaction Başlat
+        try {
+            $pdo->beginTransaction();
+
+            // ----------------------------------------------------------------------
+            // A) konusma_kulupleri_zoom_lnp Tablosuna Kayıt (Ana İçerik Kaydı)
+            // ----------------------------------------------------------------------
+            // Not: Burada 'title' alanına $subject'i, 'konusma_kulup_id' alanına $content_type'u (Kulüp ID) ekliyoruz.
+            $zoomInsertSql = "INSERT INTO konusma_kulupleri_zoom_lnp 
+                            (konusma_kulup_id, class_ids, title, zoom_date, zoom_time,zoom_start_url,zoom_join_url, cover_img, status) 
+                            VALUES (:konusma_kulup_id, :class_ids, :title, :zoom_date, :zoom_time, :zoom_start_url,:zoom_join_url, :cover_img, 1)";
+
+            $stmt = $pdo->prepare($zoomInsertSql);
+            $stmt->execute([
+                'konusma_kulup_id' => $content_type, // Kulüp Türü ID'si
+                'class_ids'        => $class_ids,    // Yaş Grubu ID'leri (10;11;12)
+                'title'            => $subject,      // Konu Başlığı
+                'zoom_date'        => $zoom_date,    // Tarih (YYYY-MM-DD)
+                'zoom_time'        => $zoom_time,    // Saat (HH:MM:SS)
+                'zoom_start_url'        => $zoom_start_url,    // Zoom URL
+                'zoom_join_url'        => $zoom_join_url,    // Zoom URL
+                'cover_img'        => $coverImgPath  // Kapak Resmi Yolu
+            ]);
+
+            $konusmaKulupZoomId = $pdo->lastInsertId();
+
+
+            // ----------------------------------------------------------------------
+            // B) konusma_kulupleri_files_lnp Tablosuna Kayıt (Çoklu Dosyalar)
+            // ----------------------------------------------------------------------
+            if ($multiFiles && isset($multiFiles['name']) && count($multiFiles['name']) > 0) {
+                $fileCount = count($multiFiles['name']);
+
+                for ($i = 0; $i < $fileCount; $i++) {
+                    // Sadece hata kodu 0 (UPLOAD_ERR_OK) olanları işlemeye devam et
+                    if ($multiFiles['error'][$i] === UPLOAD_ERR_OK) {
+                        $fileName = $multiFiles['name'][$i];
+                        $fileTmpName = $multiFiles['tmp_name'][$i];
+                        $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+                        $newFileName = uniqid('file_') . '.' . $fileExtension;
+                        $fileDestination = $uploadDir . $newFileName;
+                        $fileStoragePath = $dbPathPrefix . $newFileName; // DB'de saklanacak yol
+
+                        if (move_uploaded_file($fileTmpName, $fileDestination)) {
+
+                            // Veritabanına kaydet
+                            $fileInsertSql = "INSERT INTO konusma_kulupleri_files_lnp 
+                                          (konusma_kulupleri_zoom_id, file_path) 
+                                          VALUES (:zoom_id, :file_path)";
+
+                            $stmt = $pdo->prepare($fileInsertSql);
+                            $stmt->execute([
+                                'zoom_id'    => $konusmaKulupZoomId,
+                                'file_path'  => $fileStoragePath
+                            ]);
+                        } else {
+                            // Dosya yükleme hatasında rollback yap
+                            $pdo->rollBack();
+                            echo json_encode(['status' => 'error', 'message' => "Dosya yükleme başarısız oldu: $fileName. Sunucu izinlerini kontrol edin."]);
+                            exit;
+                        }
+                    } else if ($multiFiles['error'][$i] !== UPLOAD_ERR_NO_FILE) {
+                        // Diğer dosya hatalarını raporla (Dosya seçilmeme hatası hariç)
+                        $pdo->rollBack();
+                        echo json_encode(['status' => 'error', 'message' => "Dosya yükleme hatası ($fileName): Hata kodu " . $multiFiles['error'][$i]]);
+                        exit;
+                    }
+                }
+            }
+
+            // 5. Her şey başarılıysa Transaction'ı onayla
+            $pdo->commit();
+            echo json_encode(['status' => 'success', 'message' => 'Kulüp İçeriği başarıyla oluşturuldu.', 'id' => $konusmaKulupZoomId]);
+        } catch (PDOException $e) {
+            // Hata olursa Transaction'ı geri al
+            $pdo->rollBack();
+            http_response_code(500);
+            // Debug için detaylı, kullanıcıya gösterim için sade mesaj
+            error_log("Veritabanı Hatası (clupContentCreate): " . $e->getMessage());
+            echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası oluştu. Lütfen tablo/sütun isimlerini kontrol edin.', 'debug' => $e->getMessage()]);
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            http_response_code(500);
+            error_log("Genel Hata (clupContentCreate): " . $e->getMessage());
+            echo json_encode(['status' => 'error', 'message' => 'Beklenmeyen bir hata oluştu.']);
+        }
+        exit;
+        break;
+    case 'clubContentStatusChange':
+        // Gerekli sınıfı ve PDO bağlantısını varsayıyoruz.
+        // $pdo ve $contentList nesnelerinin tanımlı olduğunu varsayıyoruz.
+
+        $contentId = $_POST['id'] ?? null;
+        $newStatus = $_POST['status'] ?? null;
+
+        if (!is_numeric($contentId) || !in_array($newStatus, [0, 1])) {
+            echo json_encode(['status' => 'error', 'message' => 'Geçersiz ID veya durum bilgisi.']);
+            exit;
+        }
+
+        try {
+            $updateSql = "UPDATE konusma_kulupleri_zoom_lnp SET status = :status WHERE id = :id";
+            $stmt = $pdo->prepare($updateSql);
+            $stmt->execute([':status' => $newStatus, ':id' => $contentId]);
+
+            if ($stmt->rowCount() > 0) {
+                $statusText = ($newStatus == 1) ? 'Aktif' : 'Pasif';
+                echo json_encode(['status' => 'success', 'message' => "İçerik başarıyla $statusText yapıldı."]);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'İçerik bulunamadı veya durum zaten günceldi.']);
+            }
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası: ' . $e->getMessage()]);
+        }
+        exit;
+
+        // includes/ajax.php içerisindeki switch bloğuna ekle
+    case 'clubContentUpdate':
+
+        // Yükleme Ayarları
+        $uploadDir = '../uploads/kulup_content/';
+        $dbPathPrefix = 'uploads/kulup_content/';
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'];
+
+        // 0. Yükleme Dizini Kontrolü
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+
+        // POST ve FILES verilerini al
+        $contentId = $_POST['id'] ?? null;
+        $subject = $_POST['subject'] ?? null;
+        $class_ids = $_POST['class_ids'] ?? null;
+        $content_type = $_POST['content_type'] ?? null;
+        $zoom_date = $_POST['zoom_date'] ?? null;
+        $zoom_time = $_POST['zoom_time'] ?? null;
+
+        $zoom_join_url = null;
+        $zoom_start_url = null;
+
+        $coverImgFile = $_FILES['cover_img'] ?? null;
+        $multiFiles = $_FILES['multi_files'] ?? null;
+
+        // 1. Zorunlu Alan Validasyonu
+        if (empty($contentId) || empty($subject) || empty($class_ids) || empty($content_type)) {
+            echo json_encode(['status' => 'error', 'message' => 'Lütfen zorunlu alanları (ID, Başlık, Yaş Grubu, Kulüp Türü) doldurun.']);
+            exit;
+        }
+
+        // 2. Tarih/Saat Formatlama ve Zoom Entegrasyonu (Fonksiyon Kullanımı ŞİDDETLE TAVSİYE EDİLİR)
+        $zoom_date_formatted = null;
+        $zoom_time_formatted = null;
+
+        if (!empty($zoom_date) && !empty($zoom_time)) {
+            $zoom_date_formatted = date('Y-m-d', strtotime($zoom_date));
+            $zoom_time_formatted = date('H:i:s', strtotime($zoom_time));
+            $combinedDateTime = $zoom_date_formatted . ' ' . $zoom_time_formatted;
+
+
+            $getResult = createLiveZoomMeeting($pdo, $subject, $combinedDateTime, $_SESSION['id'], $class_ids, $_SESSION['role'], $contentId);
+
+            if (isset($getResult['error'])) {
+                echo json_encode(['status' => 'error', 'message' => 'Zoom Toplantısı oluşturulurken/güncellenirken hata oluştu: ' . $getResult['error']]);
+                exit;
+            }
+
+            $zoom_start_url = $getResult['zoom_start_url'] ?? null;
+            $zoom_join_url = $getResult['zoom_join_url'] ?? null;
+        }
+
+        // 3. KAPAK RESMİ YÜKLEME (Fonksiyonsuz Mantık)
+        $updateCoverImgSqlPart = "";
+        $coverImgPath = null;
+
+        if ($coverImgFile && $coverImgFile['error'] === UPLOAD_ERR_OK) {
+
+            $fileExtension = strtolower(pathinfo($coverImgFile['name'], PATHINFO_EXTENSION));
+            if (!in_array($fileExtension, $allowedExtensions)) {
+                echo json_encode(['status' => 'error', 'message' => 'Kapak resmi için geçersiz dosya türü.']);
+                exit;
+            }
+
+            $newFileName = uniqid('cover_', true) . '.' . $fileExtension;
+            $targetPath = $uploadDir . $newFileName;
+
+            if (move_uploaded_file($coverImgFile['tmp_name'], $targetPath)) {
+                $coverImgPath = $dbPathPrefix . $newFileName;
+                $updateCoverImgSqlPart = ", cover_img = :cover_img";
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Kapak resmi yüklenirken taşıma hatası oluştu.']);
+                exit;
+            }
+        }
+
+        // 4. Transaction Başlat
+        try {
+            $pdo->beginTransaction();
+
+            // ----------------------------------------------------------------------
+            // A) konusma_kulupleri_zoom_lnp Tablosunu Güncelleme (Ana İçerik Güncelleme)
+            // ----------------------------------------------------------------------
+            $zoomUpdateSql = "UPDATE konusma_kulupleri_zoom_lnp SET
+                            konusma_kulup_id = :konusma_kulup_id,
+                            class_ids = :class_ids,
+                            title = :title,
+                            zoom_date = :zoom_date,
+                            zoom_time = :zoom_time,
+                            zoom_start_url = :zoom_start_url,
+                            zoom_join_url = :zoom_join_url
+                            {$updateCoverImgSqlPart}
+                        WHERE id = :id";
+
+            $stmt = $pdo->prepare($zoomUpdateSql);
+            $params = [
+                'id' => $contentId,
+                'konusma_kulup_id' => $content_type,
+                'class_ids' => $class_ids,
+                'title' => $subject,
+                'zoom_date' => $zoom_date_formatted,
+                'zoom_time' => $zoom_time_formatted,
+                'zoom_start_url' => $zoom_start_url,
+                'zoom_join_url' => $zoom_join_url
+            ];
+
+            if (!empty($updateCoverImgSqlPart)) {
+                $params['cover_img'] = $coverImgPath;
+            }
+
+            $stmt->execute($params);
+
+
+            // ----------------------------------------------------------------------
+            // B) ÇOKLU EK DOSYA YÜKLEME (Fonksiyonsuz Mantık)
+            // ----------------------------------------------------------------------
+            if ($multiFiles && count($multiFiles['name']) > 0) {
+
+                $fileInsertSql = "INSERT INTO konusma_kulupleri_files_lnp (konusma_kulupleri_zoom_id, file_path) VALUES (:konusma_kulupleri_zoom_id, :file_path)";
+                $fileStmt = $pdo->prepare($fileInsertSql);
+
+                for ($i = 0; $i < count($multiFiles['name']); $i++) {
+                    if ($multiFiles['error'][$i] === UPLOAD_ERR_OK) {
+
+                        $currentFileExtension = strtolower(pathinfo($multiFiles['name'][$i], PATHINFO_EXTENSION));
+                        if (!in_array($currentFileExtension, $allowedExtensions)) {
+                            // Eğer dosya türü geçersizse, bu dosyayı atla veya hatayı döndür
+                            continue;
+                        }
+
+                        $currentNewFileName = uniqid('file_', true) . '.' . $currentFileExtension;
+                        $currentTargetPath = $uploadDir . $currentNewFileName;
+
+                        if (move_uploaded_file($multiFiles['tmp_name'][$i], $currentTargetPath)) {
+                            $dbFilePath = $dbPathPrefix . $currentNewFileName;
+                            // Veritabanına kaydet
+                            $fileStmt->execute(['konusma_kulupleri_zoom_id' => $contentId, 'file_path' => $dbFilePath]);
+                        } else {
+                            // Bir dosya yüklenemezse bile diğerlerinin kaydedilmeye devam etmesi için burada exit yapmıyoruz.
+                            error_log("Çoklu dosya yükleme hatası: " . $multiFiles['name'][$i]);
+                        }
+                    }
+                }
+            }
+
+            // 5. Her şey başarılıysa Transaction'ı onayla
+            $pdo->commit();
+            echo json_encode(['status' => 'success', 'message' => 'Kulüp İçeriği başarıyla güncellendi.', 'id' => $contentId]);
+        } catch (PDOException $e) {
+            $pdo->rollBack();
+            error_log("Veritabanı Hatası (clubContentUpdate): " . $e->getMessage());
+            echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası oluştu. Lütfen sistem yöneticisine başvurun.']);
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            error_log("Genel Hata (clubContentUpdate): " . $e->getMessage());
+            echo json_encode(['status' => 'error', 'message' => 'Beklenmeyen bir hata oluştu: ' . $e->getMessage()]);
+        }
+        exit;
+        break;
+    case 'deleteClubContentFile':
+        $fileId = $_POST['file_id'] ?? null;
+
+        if (empty($fileId)) {
+            echo json_encode(['status' => 'error', 'message' => 'Dosya ID eksik.']);
+            exit;
+        }
+
+        try {
+            // 1. Dosya yolunu veritabanından çek
+            $sql = "SELECT file_path FROM konusma_kulupleri_files_lnp WHERE id = :id";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(['id' => $fileId]);
+            $file = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$file) {
+                echo json_encode(['status' => 'error', 'message' => 'Dosya veritabanında bulunamadı.']);
+                exit;
+            }
+
+            $filePath = '../' . $file['file_path']; // Kök dizine göre tam yolu oluştur
+
+            $pdo->beginTransaction();
+
+            // 2. Veritabanından kaydı sil
+            $deleteDbSql = "DELETE FROM konusma_kulupleri_files_lnp WHERE id = :id";
+            $stmt = $pdo->prepare($deleteDbSql);
+            $stmt->execute(['id' => $fileId]);
+
+            // 3. Fiziksel dosyayı sil
+            if (file_exists($filePath) && is_file($filePath)) {
+                if (!unlink($filePath)) {
+                    $pdo->rollBack();
+                    echo json_encode(['status' => 'error', 'message' => 'Fiziksel dosya silinemedi. İzinleri kontrol edin.']);
+                    exit;
+                }
+            }
+
+            $pdo->commit();
+            echo json_encode(['status' => 'success', 'message' => 'Dosya başarıyla silindi.']);
+        } catch (PDOException $e) {
+            $pdo->rollBack();
+            http_response_code(500);
+            error_log("Veritabanı Hatası (deleteClubContentFile): " . $e->getMessage());
+            echo json_encode(['status' => 'error', 'message' => 'Veritabanı hatası oluştu. Silme başarısız.']);
+        }
+        exit;
+        break;
     default:
         echo json_encode(['status' => 'error', 'message' => 'Geçersiz servis']);
         break;

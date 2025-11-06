@@ -48,10 +48,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             <?php include_once "views/toolbar.php"; ?>
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <div id="kt_app_content_container" class="app-container container-fluid">
-                                    <div class="card-body pt-5">
+                                    <div class="card-body ">
                                         <form class="form" action="#" id="ContentForm">
 
-                                            <div class="row mt-4">
+                                            <div class="row ">
                                                 <div class="col-lg-6">
                                                     <label class="fs-6 fw-semibold mb-2" for="main_school_class_id">Yaş Grubu </label>
                                                     <select class="form-select" id="main_school_class_id" name="main_school_class_id[]" multiple required data-control="select2" data-placeholder="Yaş Grupları Seçiniz">

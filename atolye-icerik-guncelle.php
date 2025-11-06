@@ -30,7 +30,7 @@ if (!empty($contentData['zoom_url'])) {
         Swal.fire({
             icon: 'warning',
             title: 'Toplantı düzenlenemez',
-            text: 'Bu bir toplantıdır ve düzenlenemez.',
+            text: 'Planlanmış toplantı düzenlenemez.Toplantı durumunu pasife çekip yeni bir toplantı oluşturabilirsiniz.',
             confirmButtonText: 'Tamam'
         }).then(() => {
             window.location.href = 'atolye-yonetimi';

@@ -21,6 +21,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     }
 
 
+    $pageId=$_GET['page_id'] ?? null;
+    $contentList= $unit->getClubContentListByPageId($pageId, $class_idsi);
+  
 
     include_once "views/pages-head.php";
 ?>
@@ -206,7 +209,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <i class="fas fa-bullseye fa-2x text-white"></i>
                                                     </div>
 
-                                                    <h1 class="fs-3 fw-bold text-dark mb-0">Konuşma Kulübü Konular</h1>
+                                                    <h1 class="fs-3 fw-bold text-dark mb-0"><?= isset($_GET['page_name'])? $_GET['page_name'] : '-' ?></h1>
                                                 </div>
                                             </header>
                                         </div>
@@ -264,98 +267,23 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <tr>
                                                         <th style="width: 45%; text-align: center"><img style="max-width: 100%; height: 55px; width: auto" src="uploads/konusma-kulubu-basliklar/konular.png"></th>
                                                         <th style="width: 35%; text-align: center"><img style="max-width: 100%; height: 55px; width: auto" src="uploads/konusma-kulubu-basliklar/tarihler.png"></th>
-                                                        <th style="width: 20%; text-align: center"><img style="max-width: 100%; height: 55px; width: auto" src="uploads/konusma-kulubu-basliklar/katilma-durumu.png"></th>
+                                                        <th style="width: 20%; text-align: center"><img style="max-width: 100%; height: 55px; width: auto" ></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody style="text-align: center;">
-                                                    <tr>
+                                                    <?php foreach($contentList as $c){ ?>
+                                                    <tr style="font-size:15px!important;">
                                                         <td>
-                                                            <p><a href="my-family-and-me-ailem-ve-ben" style="color: #071437">My Family and Me &ndash; Ailem ve Ben</a></p>
+                                                            <p><a href="konusma_kulubu-detay.php?id=<?=$c['id']?>&page_name=<?= $c['title'] ?>" style="color: #071437"><?= $c['title'] ?> </a></p>
                                                         </td>
                                                         <td>
-                                                            <p>03.10.2025 SAAT 16.00</p>
+                                                            <p><?=$c['zoom_date'].' '.$c['zoom_time']?></p>
                                                         </td>
                                                         <td>
-                                                            <p><a href="my-family-and-me-ailem-ve-ben"><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"></a></p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <p>Colors and Shapes &ndash; Renkler ve Şekiller</p>
-                                                        </td>
-                                                        <td>
-                                                            <p>07.10.2025 SAAT 16.00</p>
-                                                        </td>
-                                                        <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"></p>
+                                                            <p ><a href="konusma_kulubu-detay.php?id=<?=$c['id']?>&page_name=<?= $c['title'] ?>"  style="width: 55px; padding: 0 10px;"  class="btn btn-primary">Katıl</a></p>
                                                         </td>
                                                     </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <p>Animals Around Us &ndash; &Ccedil;evremizdeki Hayvanlar</p>
-                                                        </td>
-                                                        <td>
-                                                            <p>15.10.2025 SAAT 16.00</p>
-                                                        </td>
-                                                        <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"></p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <p>Fruits and Vegetables &ndash; Meyveler ve Sebzeler</p>
-                                                        </td>
-                                                        <td>
-                                                            <p>03.10.2025 SAAT 16.00</p>
-                                                        </td>
-                                                        <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"></p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <p>At the Zoo &ndash; Hayvanat Bah&ccedil;esinde</p>
-                                                        </td>
-                                                        <td>
-                                                            <p>07.10.2025 SAAT 16.00</p>
-                                                        </td>
-                                                        <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"></p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <p>My Toys &ndash; Oyuncaklarım</p>
-                                                        </td>
-                                                        <td>
-                                                            <p>15.10.2025 SAAT 16.00</p>
-                                                        </td>
-                                                        <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"></p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <p>Weather and Seasons &ndash; Hava Durumu ve Mevsimler</p>
-                                                        </td>
-                                                        <td>
-                                                            <p>03.10.2025 SAAT 16.00</p>
-                                                        </td>
-                                                        <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"></p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <p>At the Farm &ndash; &Ccedil;iftlikte</p>
-                                                        </td>
-                                                        <td>
-                                                            <p>07.10.2025 SAAT 16.00</p>
-                                                        </td>
-                                                        <td>
-                                                            <p><img src="uploads/konusma-kulubu-basliklar/tik.png" style="width: 55px; padding: 0 10px;"></p>
-                                                        </td>
-                                                    </tr>
+                                                   <?php } ?>
                                                 </tbody>
                                             </table>
 

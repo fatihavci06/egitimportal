@@ -1569,7 +1569,7 @@ WHERE mc.school_id = 1
 	{
 		// Not: 'school_id' sütunu tablonuzda yoksa WHERE koşulunu kaldırın.
 		// Güvenliğiniz için sadece ihtiyacınız olan sütunları çekmek en iyisidir.
-		$stmt = $this->connect()->prepare('SELECT id, class_ids, subject, content_type, secim_type,status, created_at FROM atolye_contents ORDER BY id DESC');
+		$stmt = $this->connect()->prepare('SELECT id, class_ids, subject, content_type, secim_type,status, zoom_date,zoom_time FROM atolye_contents ORDER BY id DESC');
 
 		if (!$stmt->execute()) {
 			$stmt = null;
@@ -1581,22 +1581,157 @@ WHERE mc.school_id = 1
 
 		return $contentData;
 	}
-	public function getKulupList()
+	public function getKulupList($class_id = null)
 	{
-		// Not: 'school_id' sütunu tablonuzda yoksa WHERE koşulunu kaldırın.
-		// Güvenliğiniz için sadece ihtiyacınız olan sütunları çekmek en iyisidir.
-		$stmt = $this->connect()->prepare('SELECT * FROM konusma_kulupleri_lnp ORDER BY id DESC');
+		try {
+			$pdo = $this->connect();
+
+			// Eğer class_id doluysa filtre ekle
+			if (!empty($class_id)) {
+				$stmt = $pdo->prepare("
+                SELECT * 
+                FROM konusma_kulupleri_lnp 
+                WHERE class_ids LIKE :class_id 
+                ORDER BY id DESC
+            ");
+				// 10;11;12 gibi kayıtlar için güvenli arama
+				$stmt->bindValue(':class_id', "%$class_id%");
+			} else {
+				// class_id verilmemişse filtre olmadan çek
+				$stmt = $pdo->prepare("
+                SELECT * 
+                FROM konusma_kulupleri_lnp 
+                ORDER BY id DESC
+            ");
+			}
+
+			$stmt->execute();
+			$contentData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+			return $contentData ?: [];
+		} catch (PDOException $e) {
+			error_log("Kulüp listesi çekilirken hata: " . $e->getMessage());
+			return [];
+		}
+	}
+	public function clubContentList()
+	{
+		$stmt = $this->connect()->prepare('SELECT kk.name_tr,kk.name_en ,kkz.id,kkz.class_ids,kkz.title,kkz.zoom_date,kkz.zoom_time,kkz.zoom_start_url,kkz.zoom_join_url,kkz.status FROM `konusma_kulupleri_zoom_lnp` kkz inner JOIN konusma_kulupleri_lnp kk on kk.id=kkz.konusma_kulup_id;');
 
 		if (!$stmt->execute()) {
 			$stmt = null;
-			error_log("Kulup Listesi çekilirken hata oluştu.");
-			return [];
+			exit();
 		}
 
-		$contentData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-		return $contentData;
+		return $classData;
 	}
+	public function getClubContentListByPageId($konusma_kulup_id, $class_id)
+	{
+		// SQL sorgusunu hazırla.
+		// 1. konusma_kulup_id'ye göre filtrele.
+		// 2. class_ids sütununda (noktalı virgülle ayrılmış string) belirli bir class_id'yi arar.
+		//    Örnek: '%12;%', '12;%', '%;12', '12'
+
+		$sql = '
+        SELECT 
+            kk.name_tr,
+            kk.name_en,
+            kkz.id,
+            kkz.class_ids,
+            kkz.title,
+            kkz.zoom_date,
+            kkz.zoom_time,
+            kkz.zoom_start_url,
+            kkz.zoom_join_url,
+            kkz.status 
+        FROM 
+            `konusma_kulupleri_zoom_lnp` kkz 
+        INNER JOIN 
+            konusma_kulupleri_lnp kk on kk.id = kkz.konusma_kulup_id
+        WHERE 
+            kkz.konusma_kulup_id = ?  AND kkz.status=1
+        AND 
+            kkz.class_ids LIKE ?;
+    ';
+
+		$stmt = $this->connect()->prepare($sql);
+
+		// Class ID için arama paterni oluşturma
+		// Bu, "12", "12;...", "...;12", "...;12;..." gibi tüm durumları yakalar.
+		$classIdPattern = "%" . $class_id . "%";
+		// Daha spesifik ve doğru bir yöntem:
+		// class_ids genellikle '1;2;3' şeklinde olduğu için, tam eşleşmeleri kontrol etmek için
+		// '%[class_id]%' yerine daha kesin bir arama yapılabilir:
+		// Örneğin: '1;2;3' içinde '2' aramak için: '%;2;%' VEYA '2;%' VEYA '%;2' VEYA '2'
+
+		// Basit ve geniş kapsamlı çözüm:
+		$classIdPattern = "%" . $class_id . "%";
+
+		// Bind edilecek parametreler
+		$params = [$konusma_kulup_id, $classIdPattern];
+
+
+		if (!$stmt->execute($params)) {
+			$stmt = null;
+			exit();
+		}
+
+		$classData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $classData;
+	}
+	public function getKonusmaKulubuContentById($contentId)
+{
+    // 1. Ana İçeriği (konusma_kulupleri_zoom_lnp) Çekme Sorgusu
+    $sql_content = "SELECT * FROM konusma_kulupleri_zoom_lnp 
+                    WHERE id = :id AND status = 1";
+    
+    $stmt_content = $this->connect()->prepare($sql_content);
+    $stmt_content->execute(['id' => $contentId]);
+    
+    // Yalnızca bir kayıt (içerik) döndürülür
+    $data = $stmt_content->fetch(PDO::FETCH_ASSOC);
+    
+    // Eğer içerik bulunamazsa null döndür
+    if (!$data) {
+        return null;
+    }
+
+    // 2. Dosyaları (konusma_kulupleri_files_lnp) Çekme Sorgusu
+    $sql_files = "SELECT * FROM konusma_kulupleri_files_lnp 
+                  WHERE konusma_kulupleri_zoom_id = :id";
+    
+    $stmt_files = $this->connect()->prepare($sql_files);
+    $stmt_files->execute(['id' => $contentId]);
+    
+    // İlgili TÜM dosya kayıtlarını dizi olarak çek
+    $files = $stmt_files->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Çekilen dosyaları ana içeriğin 'files' anahtarına ekle
+    $data['files'] = $files;
+    
+    return $data;
+}
+
+	public function getClubContentById($contentId)
+	{
+		$sql = "SELECT * FROM konusma_kulupleri_zoom_lnp WHERE id = :id";
+		$stmt = $this->connect()->prepare($sql);
+		$stmt->execute(['id' => $contentId]);
+		return $stmt->fetch(PDO::FETCH_ASSOC);
+	}
+
+	// 2. İçeriğe ait ek dosyaları çeker
+	public function getClubContentFiles($contentId)
+	{
+		$sql = "SELECT id, file_path FROM konusma_kulupleri_files_lnp WHERE konusma_kulupleri_zoom_id = :id ORDER BY id ASC";
+		$stmt = $this->connect()->prepare($sql);
+		$stmt->execute(['id' => $contentId]);
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
+
 
 
 
@@ -1706,13 +1841,13 @@ WHERE mc.school_id = 1
 
 		return $stmt->fetch(PDO::FETCH_ASSOC); // Tek bir içerik kaydını döndürür
 	}
-	public function getZoomDetail($class_id,$targetContentType)
+	public function getZoomDetail($class_id, $targetContentType)
 	{
 		// 1. Güvenlik ve Doğrulama
 		$safeClassId = filter_var($class_id, FILTER_VALIDATE_INT);
-		
+
 		if (!$safeClassId) {
-			
+
 			return false; // Geçersiz ID
 		}
 
@@ -1720,7 +1855,7 @@ WHERE mc.school_id = 1
 
 		try {
 
-		
+
 			$sql = "
 					SELECT zoom_url, zoom_date, zoom_time
 					FROM atolye_contents
@@ -1736,18 +1871,18 @@ WHERE mc.school_id = 1
 			$stmt = $pdo->prepare($sql);
 
 			// Parametreleri hazırla
-		
+
 			$stmt->execute([
 				'content_type' => $targetContentType,
 				'class_id' => '%' . $safeClassId . '%'
-				
+
 			]);
 			$contentData = $stmt->fetch(PDO::FETCH_ASSOC);
 
 			if (!$contentData) {
 				return false; // İçerik bulunamadı veya gelecekteki bir zoom yok
 			}
-		
+
 			return $contentData;
 		} catch (PDOException $e) {
 			// Hata kaydı tutulabilir
@@ -2501,5 +2636,18 @@ INNER JOIN users_lnp AS u ON u.id = pst.user_id;');
 		}
 
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
+	public function getClubList()
+	{
+		$stmt = $this->connect()->prepare('SELECT id,name_tr,name_en FROM konusma_kulupleri_lnp where status=1');
+
+		if (!$stmt->execute(array())) {
+			$stmt = null;
+			exit();
+		}
+
+		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $data;
 	}
 }

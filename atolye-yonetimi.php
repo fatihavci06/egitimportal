@@ -81,7 +81,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <th class="min-w-150px">Atölye Türü</th>
                                                         <th class="min-w-150px">İçerik Tipi</th>
                                                         <th class="min-w-200px">Başlık</th>
-                                                        <th class="min-w-125px">Oluşturulma Tarihi</th>
+                                                        <th class="min-w-125px">Zoom Tarihi</th>
                                                         <th class="min-w-100px">Durum</th>
                                                         <th class="text-end min-w-70px">İşlemler</th>
                                                     </tr>
@@ -116,7 +116,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             $status_text = $is_active ? 'Aktif' : 'Pasif';
 
                                                             // Tarihi düzenleme
-                                                            $createdAt = (new DateTime($content['created_at']))->format('d.m.Y H:i');
+                                                         
 
                                                     ?>
                                                             <tr>
@@ -125,7 +125,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                 <td><?= htmlspecialchars($content['content_type']) ?></td>
                                                                 <td><span class="badge badge-light-primary fw-bold"><?= $displaySecimType ?></span></td>
                                                                 <td><?= htmlspecialchars($content['subject']) ?></td>
-                                                                <td><?= $createdAt ?></td>
+                                                                <td><?= $content['zoom_date'].' '.$content['zoom_time'] ?></td>
 
                                                                 <td><span class="badge <?= $status_badge_class ?> fw-bold" data-filter="<?= $status_text ?>"><?= $status_text ?></span></td>
 

@@ -9,7 +9,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     require_once "classes/student.classes.php";
     $unit = new Classes();
     $studentInfo = new Student();
-
+    $contentLists = $unit->getKulupList($_SESSION['class_id']); // İçerik listesini çekiyoruz
 
     if ($_SESSION['role'] == 10005) {
         $getPreSchoolStudent = $studentInfo->getPreSchoolStudentsInfoForParents($_SESSION['id']);
@@ -19,8 +19,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         $class_idsi = $_SESSION['class_id'];
         $studentidsi = $_SESSION['id'];
     }
-
-
 
     include_once "views/pages-head.php";
 ?>
@@ -258,46 +256,19 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         </style>
 
                                         <div class="row container-fluid d-flex justify-content-center">
-
+                                            <?php foreach($contentLists as $c){ ?>
                                             <div class="col-xl-6 col-lg-6 col-md-2 col-sm-12 mb-5 d-flex justify-content-center">
                                                 <div class="card w-100 border-0">
-                                                    <a href="konusma-kulubu-konulari" class="text-decoration-none w-100">
+                                                    <a href="konusma-kulubu-konulari.php?page_id=<?=$c['id']?>&page_name=<?=$c['name_tr']?>" class="text-decoration-none w-100">
                                                         <div class="card-overlay d-flex align-items-center justify-content-center">
-                                                            <img src="uploads/tematik-ingilizce-konusma-kulubu/smart-kids-club.png" class="img-fluid">
+                                                            <img src="<?=$c['cover_img']?>" class="img-fluid">
                                                         </div>
                                                     </a>
                                                 </div>
                                             </div>
+                                            <?php } ?>
 
-                                            <div class="col-xl-6 col-lg-6 col-md-2 col-sm-12 mb-5 d-flex justify-content-center">
-                                                <div class="card w-100 border-0">
-                                                    <a href="#" class="text-decoration-none w-100">
-                                                        <div class="card-overlay d-flex align-items-center justify-content-center">
-                                                            <img src="uploads/tematik-ingilizce-konusma-kulubu/art-and-talk-club.png" class="img-fluid">
-                                                        </div>
-                                                    </a>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-xl-6 col-lg-6 col-md-2 col-sm-12 mb-5 d-flex justify-content-center">
-                                                <div class="card w-100 border-0">
-                                                    <a href="#" class="text-decoration-none w-100">
-                                                        <div class="card-overlay d-flex align-items-center justify-content-center">
-                                                            <img src="uploads/tematik-ingilizce-konusma-kulubu/drama-role-play-club.png" class="img-fluid">
-                                                        </div>
-                                                    </a>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-xl-6 col-lg-6 col-md-2 col-sm-12 mb-5 d-flex justify-content-center">
-                                                <div class="card w-100 border-0">
-                                                    <a href="#" class="text-decoration-none w-100">
-                                                        <div class="card-overlay d-flex align-items-center justify-content-center">
-                                                            <img src="uploads/tematik-ingilizce-konusma-kulubu/sign-and-talk-club.png" class="img-fluid">
-                                                        </div>
-                                                    </a>
-                                                </div>
-                                            </div>
+                                            
 
 
                                         </div>
@@ -323,23 +294,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         </script>
         <script src="assets/plugins/global/plugins.bundle.js"></script>
         <script src="assets/js/scripts.bundle.js"></script>
-        <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
-        <script src="assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
-        <script src="assets/js/custom/apps/subtopics/list/export.js"></script>
-        <script src="assets/js/custom/apps/subtopics/list/list.js"></script>
-        <script src="assets/js/custom/apps/subtopics/list/topicadd.js"></script>
-        <script src="assets/js/custom/apps/subtopics/add.js"></script>
-        <script src="assets/js/custom/apps/subtopics/create.js"></script>
-        <script src="assets/js/widgets.bundle.js"></script>
-        <script src="assets/js/custom/widgets.js"></script>
-        <script src="assets/js/custom/apps/chat/chat.js"></script>
-        <script src="assets/js/custom/utilities/modals/upgrade-plan.js"></script>
-        <script src="assets/js/custom/utilities/modals/create-account.js"></script>
-        <script src="assets/js/custom/utilities/modals/create-app.js"></script>
-        <script src="assets/js/custom/utilities/modals/users-search.js"></script>
-        <script>
-
-        </script>
+ 
+  
+        
 
     </body>
 

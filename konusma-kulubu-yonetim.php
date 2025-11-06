@@ -12,11 +12,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     include "classes/classes.classes.php";
 
     include_once "views/pages-head.php";
-    $contentList = new Classes();
-    $contentLists = $contentList->getKulupList(); // İçerik listesini çekiyoruz
-    
-    // Sınıf listesini çekme (Çoklu seçim için)
-    $class = new Classes(); 
+    $class = new Classes();
+    $contentLists = $class->getKulupList(); // İçerik listesini çekiyoruz
+ 
     $mainSchoolClasses = $class->getAgeGroup(); 
 ?>
 
@@ -91,7 +89,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 if (!empty($contentLists)) {
                                                     foreach ($contentLists as $club) {
                                                         // Sınıf ID'lerinden sınıf adlarını çekme (varsayılan: Bilinmiyor)
-                                                        $classNames = $club['class_ids'] ? $contentList->getClassNamesByIds($club['class_ids']) : 'Bilinmiyor';
+                                                        $classNames = $club['class_ids'] ? $class->getClassNamesByIds($club['class_ids']) : 'Bilinmiyor';
                                                         
                                                         // Durum etiketi oluşturma
                                                         $statusClass = $club['status'] == 1 ? 'badge-light-success' : 'badge-light-danger';
@@ -207,62 +205,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="kt_modal_update_club" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered mw-650px">
-                <div class="modal-content">
-                    <form class="form" action="#" id="kt_modal_update_club_form" enctype="multipart/form-data">
-                        <div class="modal-header" id="kt_modal_update_club_header">
-                            <h2 class="fw-bold">Kulüp Güncelle</h2>
-                            <div id="kt_modal_update_club_close" class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
-                                <i class="ki-duotone ki-cross fs-1">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                </i>
-                            </div>
-                        </div>
-                        <div class="modal-body py-10 px-lg-17">
-                            <input type="hidden" name="club_id" id="update_club_id">
-                            <input type="hidden" name="existing_cover_img" id="update_existing_cover_img">
-                            
-                            <div class="fv-row mb-7">
-                                <label class="required fs-6 fw-semibold mb-2">Sınıflar</label>
-                                <select name="class_ids[]" id="update_class_ids" class="form-select form-select-solid fw-bold" data-control="select2" data-placeholder="Sınıf Seçiniz (Çoklu Seçim)" multiple="multiple" required>
-                                    <?php if (!empty($mainSchoolClasses)): ?>
-                                        <?php foreach ($mainSchoolClasses as $schoolClass): ?>
-                                            <option value="<?php echo $schoolClass['id']; ?>">
-                                                <?php echo htmlspecialchars($schoolClass['name']); ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </select>
-                            </div>
-
-                            <div class="fv-row mb-7">
-                                <label class="required fs-6 fw-semibold mb-2">Kulüp Adı (TR)</label>
-                                <input type="text" class="form-control form-control-solid" placeholder="Türkçe Adı" name="name_tr" id="update_name_tr" required />
-                            </div>
-                            <div class="fv-row mb-7">
-                                <label class="required fs-6 fw-semibold mb-2">Kulüp Adı (EN)</label>
-                                <input type="text" class="form-control form-control-solid" placeholder="İngilizce Adı" name="name_en" id="update_name_en" required />
-                            </div>
-                            <div class="fv-row mb-7">
-                                <label class="fs-6 fw-semibold mb-2">Kapak Görseli</label>
-                                <div id="update_cover_img_preview" class="mb-3"></div>
-                                <input type="file" class="form-control form-control-solid" name="cover_img" id="update_cover_img" accept=".png, .jpg, .jpeg" />
-                                <div class="form-text">Yeni görsel yüklemek için seçiniz. Mevcut görsel güncellenir.</div>
-                            </div>
-                        </div>
-                        <div class="modal-footer flex-center">
-                            <button type="reset" id="kt_modal_update_club_cancel" class="btn btn-light me-3" data-bs-dismiss="modal">İptal</button>
-                            <button type="submit" id="kt_modal_update_club_submit" class="btn btn-primary">
-                                <span class="indicator-label">Güncelle</span>
-                                <span class="indicator-progress">Lütfen bekleyin... <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+      
         <script>
             var hostUrl = "assets/";
         </script>
@@ -270,15 +213,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/js/scripts.bundle.js"></script>
         <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
 
-        <script src="assets/js/custom/apps/class/add_week.js"></script>
-        <script src="assets/js/widgets.bundle.js"></script>
-        <script src="assets/js/custom/widgets.js"></script>
-        <script src="assets/js/custom/apps/chat/chat.js"></script>
-        <script src="assets/js/custom/utilities/modals/upgrade-plan.js"></script>
-        <script src="assets/js/custom/utilities/modals/create-account.js"></script>
-        <script src="assets/js/custom/utilities/modals/create-app.js"></script>
-        <script src="assets/js/custom/utilities/modals/users-search.js"></script>
-        <script src="assets/js/fatih.js"></script>
+  
         
         <script>
             $(document).ready(function() {
@@ -303,243 +238,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     table.search(this.value).draw();
                 });
             
-                // Select2'yi modal açıldığında yeniden başlat (Gerekli olabilir)
-                $('#kt_modal_add_club').on('shown.bs.modal', function () {
-                    $('#add_class_ids').select2({dropdownParent: $('#kt_modal_add_club')});
-                });
-                $('#kt_modal_update_club').on('shown.bs.modal', function () {
-                    $('#update_class_ids').select2({dropdownParent: $('#kt_modal_update_club')});
-                });
-
-                // KULÜP EKLEME FORM GÖNDERİMİ (FormData ve JSON Response İşleme)
-                $('#kt_modal_add_club_form').on('submit', function(e) {
-                    e.preventDefault();
-                    
-                    var submitButton = $('#kt_modal_add_club_submit');
-                    submitButton.attr('data-kt-indicator', 'on').prop('disabled', true);
-                    
-                    // FormData nesnesi oluştur ve tüm form verilerini topla (Dosya dahil)
-                    var formData = new FormData(this);
-                    
-                    // Select2 değerlerini al ve ; ile birleştir (10;11;12 formatı)
-                    var classIdsArray = $('#add_class_ids').val();
-                    var class_ids_post = classIdsArray.join(';');
-                    
-                    // Form Data'ya class_ids'in son halini ekle/güncelle
-                    formData.set('class_ids', class_ids_post); // set() var olanı günceller/yoksa ekler
-                    
-                    // name="class_ids[]" olan form data girdisini kaldır (Select2'nin default gönderdiği)
-                    // FormData ile çalışırken bu gerekli olmayabilir, ancak temizlik için ekleyebiliriz.
-
-                    $.ajax({
-                        url: "includes/ajax.php?service=kulupEkle",
-                        type: "POST",
-                        data: formData,
-                        processData: false, // FormData kullanılırken zorunlu
-                        contentType: false, // FormData kullanılırken zorunlu
-                        dataType: 'json', // Cevabın JSON olacağını belirtiyoruz
-                        success: function(response) {
-                            submitButton.removeAttr('data-kt-indicator').prop('disabled', false);
-
-                            var iconType = response.status === 'success' ? 'success' : 'error';
-
-                            Swal.fire({
-                                text: response.message,
-                                icon: iconType,
-                                buttonsStyling: false,
-                                confirmButtonText: "Tamam",
-                                customClass: {
-                                    confirmButton: "btn btn-primary"
-                                }
-                            }).then(function() {
-                                if(response.status === 'success') {
-                                    $('#kt_modal_add_club').modal('hide');
-                                    location.reload(); 
-                                }
-                            });
-                        },
-                        error: function(xhr, status, error) {
-                            submitButton.removeAttr('data-kt-indicator').prop('disabled', false);
-                            
-                            // Hata durumunda bile JSON parse etmeye çalış
-                            var errorMessage = "Bir hata oluştu. Sunucu yanıtını kontrol edin.";
-                            try {
-                                var response = JSON.parse(xhr.responseText);
-                                if (response.message) {
-                                    errorMessage = response.message;
-                                }
-                            } catch (e) {
-                                console.error("AJAX Error: ", xhr.responseText);
-                            }
-
-                            Swal.fire({
-                                text: "İşlem sırasında beklenmeyen bir hata oluştu: " + errorMessage,
-                                icon: "error",
-                                buttonsStyling: false,
-                                confirmButtonText: "Tamam",
-                                customClass: {
-                                    confirmButton: "btn btn-primary"
-                                }
-                            });
-                        }
-                    });
-                });
-
-                // KULÜP GÜNCELLEME MODALI AÇILIRKEN VERİLERİ DOLDURMA
-                $('#kt_modal_update_club').on('show.bs.modal', function(event) {
-                    var button = $(event.relatedTarget); 
-                    var club_id = button.data('club-id');
-                    var class_ids_string = button.data('class-ids'); 
-                    var name_tr = button.data('name-tr');
-                    var name_en = button.data('name-en');
-                    var cover_img_url = button.data('cover-img'); // Mevcut görselin URL'si
-
-                    var modal = $(this);
-                    modal.find('#update_club_id').val(club_id);
-                    modal.find('#update_name_tr').val(name_tr);
-                    modal.find('#update_name_en').val(name_en);
-                    modal.find('#update_existing_cover_img').val(cover_img_url); // Mevcut görseli hidden inputa sakla
-
-                    // Mevcut görsel önizlemesi
-                    var previewDiv = modal.find('#update_cover_img_preview');
-                    previewDiv.empty();
-                    if (cover_img_url) {
-                        previewDiv.append('<img src="' + cover_img_url + '" class="img-fluid rounded mb-2" style="max-height: 100px;" alt="Mevcut Görsel" />');
-                    }
-                    
-                    // Sınıf ID'lerini ayır ve Select2'de seçili yap
-                    var selectedClasses = class_ids_string ? class_ids_string.toString().split(';') : [];
-                    $('#update_class_ids').val(selectedClasses).trigger('change'); 
-                });
-
-                // KULÜP GÜNCELLEME FORM GÖNDERİMİ (FormData ve JSON Response İşleme)
-                $('#kt_modal_update_club_form').on('submit', function(e) {
-                    e.preventDefault();
-                    
-                    var submitButton = $('#kt_modal_update_club_submit');
-                    submitButton.attr('data-kt-indicator', 'on').prop('disabled', true);
-
-                    // FormData nesnesi oluştur
-                    var formData = new FormData(this);
-                    
-                    // Select2 değerlerini al ve ; ile birleştir (10;11;12 formatı)
-                    var classIdsArray = $('#update_class_ids').val();
-                    var class_ids_post = classIdsArray.join(';');
-
-                    // Form Data'ya class_ids'in son halini ekle/güncelle
-                    formData.set('class_ids', class_ids_post);
-
-                    $.ajax({
-                        url: "includes/ajax.php?service=kulupGuncelle",
-                        type: "POST",
-                        data: formData,
-                        processData: false, // FormData kullanılırken zorunlu
-                        contentType: false, // FormData kullanılırken zorunlu
-                        dataType: 'json', 
-                        success: function(response) {
-                            submitButton.removeAttr('data-kt-indicator').prop('disabled', false);
-
-                            var iconType = response.status === 'success' ? 'success' : 'error';
-                            
-                            Swal.fire({
-                                text: response.message,
-                                icon: iconType,
-                                buttonsStyling: false,
-                                confirmButtonText: "Tamam",
-                                customClass: {
-                                    confirmButton: "btn btn-primary"
-                                }
-                            }).then(function() {
-                                if(response.status === 'success') {
-                                    $('#kt_modal_update_club').modal('hide');
-                                    location.reload(); 
-                                }
-                            });
-                        },
-                        error: function(xhr, status, error) {
-                            submitButton.removeAttr('data-kt-indicator').prop('disabled', false);
-                            
-                            var errorMessage = "Bir hata oluştu. Sunucu yanıtını kontrol edin.";
-                            try {
-                                var response = JSON.parse(xhr.responseText);
-                                if (response.message) {
-                                    errorMessage = response.message;
-                                }
-                            } catch (e) {
-                                console.error("AJAX Error: ", xhr.responseText);
-                            }
-
-                            Swal.fire({
-                                text: "İşlem sırasında beklenmeyen bir hata oluştu: " + errorMessage,
-                                icon: "error",
-                                buttonsStyling: false,
-                                confirmButtonText: "Tamam",
-                                customClass: {
-                                    confirmButton: "btn btn-primary"
-                                }
-                            });
-                        }
-                    });
-                });
-
-                // KULÜP DURUM DEĞİŞTİRME FONKSİYONU (JSON Response İşleme)
-                window.changeClubStatus = function(clubId, currentStatus) {
-                    var newStatus = currentStatus == 1 ? 0 : 1;
-                    var statusText = newStatus == 1 ? 'Aktif' : 'Pasif';
-
-                    Swal.fire({
-                        text: clubId + " ID'li kulübü " + statusText + " yapmak istediğinizden emin misiniz?",
-                        icon: "warning",
-                        showCancelButton: true,
-                        buttonsStyling: false,
-                        confirmButtonText: "Evet, Değiştir!",
-                        cancelButtonText: "Hayır",
-                        customClass: {
-                            confirmButton: "btn btn-danger",
-                            cancelButton: "btn btn-light"
-                        }
-                    }).then(function (result) {
-                        if (result.isConfirmed) {
-                            $.ajax({
-                                url: "includes/ajax.php?service=kulupStatusChange",
-                                type: "POST",
-                                data: { id: clubId, status: newStatus },
-                                dataType: 'json', 
-                                success: function(response) {
-                                    var iconType = response.status === 'success' ? 'success' : 'error';
-                                    
-                                    Swal.fire({
-                                        text: response.message,
-                                        icon: iconType,
-                                        buttonsStyling: false,
-                                        confirmButtonText: "Tamam",
-                                        customClass: {
-                                            confirmButton: "btn btn-primary"
-                                        }
-                                    }).then(function() {
-                                        if(response.status === 'success') {
-                                            location.reload(); 
-                                        }
-                                    });
-                                },
-                                error: function(xhr, status, error) {
-                                    var errorMessage = "Bir hata oluştu. Sunucu yanıtını kontrol edin.";
-                                    // ... (hata mesajı yakalama)
-
-                                    Swal.fire({
-                                        text: "Durum değiştirilirken bir hata oluştu.",
-                                        icon: "error",
-                                        buttonsStyling: false,
-                                        confirmButtonText: "Tamam",
-                                        customClass: {
-                                            confirmButton: "btn btn-primary"
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    });
-                }
+               
             
             });
         </script>
