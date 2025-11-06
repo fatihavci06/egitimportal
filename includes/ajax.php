@@ -8943,9 +8943,9 @@ ORDER BY msu.unit_order asc
 
         // YENİ SERVİS: KULÜP DURUM DEĞİŞTİRME
     case 'kulupStatusChange':
-        $club_id = $_POST['club_id'] ?? null;
-        $status = $_POST['new_status'] ?? null; // 0 veya 1
-    
+        $club_id = $_POST['id'] ?? null;
+        $status = $_POST['status'] ?? null; // 0 veya 1
+
         if (empty($club_id) || !is_numeric($status) || ($status != 0 && $status != 1)) {
             http_response_code(400);
             echo json_encode(['status' => 'error', 'message' => 'Geçersiz kulüp ID veya durum değeri.']);
