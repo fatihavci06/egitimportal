@@ -14,8 +14,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     include_once "views/pages-head.php";
     $class = new Classes();
     $contentLists = $class->getKulupList(); // İçerik listesini çekiyoruz
- 
-    $mainSchoolClasses = $class->getAgeGroup(); 
+
+    $mainSchoolClasses = $class->getAgeGroup();
 ?>
 
     <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true" data-kt-app-aside-push-footer="true" class="app-default">
@@ -60,7 +60,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 </div>
                                             </div>
                                             <div class="card-toolbar">
-                                                
+
 
                                                 <div class="d-flex justify-content-end me-2" data-kt-customer-table-toolbar="base">
                                                     <a href="#" data-bs-toggle="modal" data-bs-target="#kt_modal_add_club" class="btn btn-primary btn-sm">
@@ -84,58 +84,58 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     </tr>
                                                 </thead>
                                                 <tbody class="fw-semibold text-gray-600">
-                                                <?php
-                                                // TABLO İÇERİĞİ PHP DÖNGÜSÜ
-                                                if (!empty($contentLists)) {
-                                                    foreach ($contentLists as $club) {
-                                                        // Sınıf ID'lerinden sınıf adlarını çekme (varsayılan: Bilinmiyor)
-                                                        $classNames = $club['class_ids'] ? $class->getClassNamesByIds($club['class_ids']) : 'Bilinmiyor';
-                                                        
-                                                        // Durum etiketi oluşturma
-                                                        $statusClass = $club['status'] == 1 ? 'badge-light-success' : 'badge-light-danger';
-                                                        $statusText = $club['status'] == 1 ? 'Aktif' : 'Pasif';
-                                                ?>
-                                                    <tr>
-                                                        <td><?php echo $club['id']; ?></td>
-                                                        <td><?php echo $classNames; ?></td>
-                                                        <td><?php echo htmlspecialchars($club['name_tr']); ?></td>
-                                                        <td><?php echo htmlspecialchars($club['name_en']); ?></td>
-                                                        <td><?php echo date('d.m.Y H:i', strtotime($club['created_at'])); ?></td>
-                                                        <td>
-                                                            <div class="badge <?php echo $statusClass; ?> fw-bold"><?php echo $statusText; ?></div>
-                                                        </td>
-                                                        <td class="text-end">
-                                                            <a href="#" class="btn btn-icon btn-active-light-primary w-30px h-30px me-3" data-bs-toggle="modal" data-bs-target="#kt_modal_update_club" 
-                                                                data-club-id="<?php echo $club['id']; ?>" 
-                                                                data-class-ids="<?php echo $club['class_ids']; ?>" 
-                                                                data-name-tr="<?php echo htmlspecialchars($club['name_tr']); ?>" 
-                                                                data-name-en="<?php echo htmlspecialchars($club['name_en']); ?>" 
-                                                                data-cover-img="<?php echo htmlspecialchars($club['cover_img']); ?>">
-                                                                <i class="ki-duotone ki-pencil fs-3">
-                                                                    <span class="path1"></span>
-                                                                    <span class="path2"></span>
-                                                                </i>
-                                                            </a>
-                                                            <button type="button" class="btn btn-icon btn-active-light-primary w-30px h-30px" onclick="changeClubStatus(<?php echo $club['id']; ?>, <?php echo $club['status']; ?>)">
-                                                                <i class="fas <?php echo $club['status'] == 1 ? 'fa-toggle-on text-success' : 'fa-toggle-off text-danger'; ?>"></i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                <?php
+                                                    <?php
+                                                    // TABLO İÇERİĞİ PHP DÖNGÜSÜ
+                                                    if (!empty($contentLists)) {
+                                                        foreach ($contentLists as $club) {
+                                                            // Sınıf ID'lerinden sınıf adlarını çekme (varsayılan: Bilinmiyor)
+                                                            $classNames = $club['class_ids'] ? $class->getClassNamesByIds($club['class_ids']) : 'Bilinmiyor';
+
+                                                            // Durum etiketi oluşturma
+                                                            $statusClass = $club['status'] == 1 ? 'badge-light-success' : 'badge-light-danger';
+                                                            $statusText = $club['status'] == 1 ? 'Aktif' : 'Pasif';
+                                                    ?>
+                                                            <tr>
+                                                                <td><?php echo $club['id']; ?></td>
+                                                                <td><?php echo $classNames; ?></td>
+                                                                <td><?php echo htmlspecialchars($club['name_tr']); ?></td>
+                                                                <td><?php echo htmlspecialchars($club['name_en']); ?></td>
+                                                                <td><?php echo date('d.m.Y H:i', strtotime($club['created_at'])); ?></td>
+                                                                <td>
+                                                                    <div class="badge <?php echo $statusClass; ?> fw-bold"><?php echo $statusText; ?></div>
+                                                                </td>
+                                                                <td class="text-end">
+                                                                    <a href="#" class="btn btn-icon btn-active-light-primary w-30px h-30px me-3" data-bs-toggle="modal" data-bs-target="#kt_modal_update_club"
+                                                                        data-club-id="<?php echo $club['id']; ?>"
+                                                                        data-class-ids="<?php echo $club['class_ids']; ?>"
+                                                                        data-name-tr="<?php echo htmlspecialchars($club['name_tr']); ?>"
+                                                                        data-name-en="<?php echo htmlspecialchars($club['name_en']); ?>"
+                                                                        data-cover-img="<?php echo htmlspecialchars($club['cover_img']); ?>">
+                                                                        <i class="ki-duotone ki-pencil fs-3">
+                                                                            <span class="path1"></span>
+                                                                            <span class="path2"></span>
+                                                                        </i>
+                                                                    </a>
+                                                                    <button type="button" class="btn btn-icon btn-active-light-primary w-30px h-30px" onclick="changeClubStatus(<?php echo $club['id']; ?>, <?php echo $club['status']; ?>)">
+                                                                        <i class="fas <?php echo $club['status'] == 1 ? 'fa-toggle-on text-success' : 'fa-toggle-off text-danger'; ?>"></i>
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        <?php
+                                                        }
+                                                    } else {
+                                                        ?>
+                                                        <tr>
+                                                            <td colspan="7" class="text-center">Henüz tanımlı bir konuşma kulübü bulunmamaktadır.</td>
+                                                        </tr>
+                                                    <?php
                                                     }
-                                                } else {
-                                                ?>
-                                                    <tr>
-                                                        <td colspan="7" class="text-center">Henüz tanımlı bir konuşma kulübü bulunmamaktadır.</td>
-                                                    </tr>
-                                                <?php
-                                                }
-                                                ?>
+                                                    ?>
                                                 </tbody>
                                             </table>
                                         </div>
                                     </div>
-                                    
+
                                 </div>
                             </div>
                         </div>
@@ -166,7 +166,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             </div>
                         </div>
                         <div class="modal-body py-10 px-lg-17">
-                            
+
                             <div class="fv-row mb-7">
                                 <label class="required fs-6 fw-semibold mb-2">Sınıflar</label>
                                 <select name="class_ids[]" id="add_class_ids" class="form-select form-select-solid fw-bold" data-control="select2" data-placeholder="Sınıf Seçiniz (Çoklu Seçim)" multiple="multiple" required>
@@ -205,7 +205,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 </div>
             </div>
         </div>
-      
+
         <script>
             var hostUrl = "assets/";
         </script>
@@ -213,8 +213,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/js/scripts.bundle.js"></script>
         <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
 
-  
-        
+
+
         <script>
             $(document).ready(function() {
                 // Datatable'ı başlatma
@@ -237,10 +237,69 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 $('[data-kt-customer-table-filter="search"]').on('keyup', function() {
                     table.search(this.value).draw();
                 });
-            
-               
-            
+                // changeClubStatus fonksiyonunun bir örneği
+
+
+
             });
+
+            function changeClubStatus(clubId, currentStatus) {
+    const newStatus = currentStatus === 1 ? 0 : 1;
+    const statusText = newStatus === 1 ? 'Aktif' : 'Pasif';
+    const confirmText = `Kulüp ID: ${clubId} durumunu <b>${statusText}</b> yapmak istediğinize emin misiniz?`;
+
+    Swal.fire({
+        title: 'Durum Değişikliği Onayı',
+        html: confirmText,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Evet, değiştir',
+        cancelButtonText: 'Vazgeç',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // AJAX isteği
+            $.ajax({
+                url: './includes/ajax.php?service=kulupStatusChange',
+                type: 'POST',
+                data: {
+                    club_id: clubId,
+                    new_status: newStatus
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status=='success') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Başarılı!',
+                            text: response.message,
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Hata!',
+                            text: response.message
+                        });
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Sunucu Hatası',
+                        text: 'Durum değişikliği sırasında bir hata oluştu.'
+                    });
+                }
+            });
+        }
+    });
+}
+
         </script>
 
     </body>

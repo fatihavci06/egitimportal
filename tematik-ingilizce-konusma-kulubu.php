@@ -256,7 +256,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         </style>
 
                                         <div class="row container-fluid d-flex justify-content-center">
-                                            <?php foreach($contentLists as $c){ ?>
+                                            <?php foreach($contentLists as $c){
+                                                if(!$c['status']) continue;
+                                                ?>
                                             <div class="col-xl-6 col-lg-6 col-md-2 col-sm-12 mb-5 d-flex justify-content-center">
                                                 <div class="card w-100 border-0">
                                                     <a href="konusma-kulubu-konulari.php?page_id=<?=$c['id']?>&page_name=<?=$c['name_tr']?>" class="text-decoration-none w-100">
