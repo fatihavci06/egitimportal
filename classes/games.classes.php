@@ -81,7 +81,7 @@ class Games extends Dbh
 
 	protected function getGamesListStudentShow($class_id)
 	{
-		$stmt = $this->connect()->prepare('SELECT * FROM games_lnp WHERE class_id = ?');
+		$stmt = $this->connect()->prepare('SELECT * FROM games_lnp WHERE class_id = ? and is_active=1');
 
 		if (!$stmt->execute(array($class_id))) {
 			$stmt = null;

@@ -33,6 +33,22 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                 document.documentElement.setAttribute("data-bs-theme", themeMode);
             }
         </script>
+        <div id="full-screen-loader" style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8); /* Arka plan rengi */
+    z-index: 10000; /* Diğer tüm elementlerin üstünde olması için */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Yükleniyor...</span>
+    </div>
+</div>
         <!--end::Theme mode setup on page load-->
         <!--begin::App-->
         <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
@@ -71,6 +87,16 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     </i>
                                                     <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder="İçerik Ara" />
                                                 </div>
+                                                <!--begin::Filters-->
+<div class="d-flex flex-wrap align-items-center gap-3 ml-4" style="margin-left: 20px!important;">
+    <input type="text" id="filterClass" class="form-control form-control-solid w-200px"
+        placeholder="Yaş Grubu Filtrele" />
+
+    <input type="text" id="filterLesson" class="form-control form-control-solid w-200px"
+        placeholder="Ders Filtrele" />
+</div>
+<!--end::Filters-->
+
                                                 <!--end::Search-->
                                             </div>
                                             <!--begin::Card title-->
@@ -97,7 +123,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         </div>
                                         <!--end::Card header-->
                                         <!--begin::Card body-->
-                                        <div class="card-body pt-0">
+                                        <div class="card-body pt-0" id="datatable-container" style="display: none;">
                                             <!-- Button trigger modal -->
 
 
@@ -124,23 +150,22 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <tbody class="fw-semibold text-gray-600">
                                                     <?php
                                                     $class = new Classes();
-                                                    if(@$_GET['week_id']){
-                                                       $weekList = $class->getMainSchoolContentList($_GET['week_id']);
-                                                    }else if(@$_GET['category_id']){
-                                                        $weekList = $class->getMainSchoolContentList('',@$_GET['category_id']);
-                                                    }
-                                                    else{
+                                                    if (@$_GET['week_id']) {
+                                                        $weekList = $class->getMainSchoolContentList($_GET['week_id']);
+                                                    } else if (@$_GET['category_id']) {
+                                                        $weekList = $class->getMainSchoolContentList('', @$_GET['category_id']);
+                                                    } else {
                                                         $weekList = $class->getMainSchoolContentList();
                                                     }
-                                            
-                                                    
+
+
                                                     foreach ($weekList as $key => $value): ?>
                                                         <tr>
                                                             <td>
                                                                 <?= htmlspecialchars($value['class_name']) ?>
                                                             </td>
                                                             <td>
-                                                               <?= htmlspecialchars($value['lesson_name']) ?>
+                                                                <?= htmlspecialchars($value['lesson_name']) ?>
                                                             </td>
                                                             <td>
                                                                 <a href="ana-okulu-icerik-detay.php?id=<?= $value['id'] ?>" class="text-gray-800 text-hover-primary mb-1">
@@ -162,7 +187,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                                 </a>
                                                                 <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
                                                                     data-kt-menu="true">
-                                                                    
+
                                                                     <div class="menu-item px-3">
                                                                         <a class="menu-link px-3" href="ana-okulu-icerik-guncelle?id=<?= htmlspecialchars($value['id']) ?>">
                                                                             Güncelle
@@ -353,13 +378,45 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/js/custom/utilities/modals/users-search.js"></script>
         <script src="assets/js/fatih.js"></script>
         <script>
-            $(document).ready(function() {
-                $('#anaOkuluIcerikleri').DataTable({
-                    // DataTables'ın varsayılan ayarlarını burada özelleştirebilirsiniz
-                   
+    // Tabloyu global/erişilebilir yapın
+    var table; 
+    $('#filterClass').on('keyup', function() {
+    table.column(0).search(this.value).draw();
+});
+
+// 🔹 Ders filtresi (2. sütun)
+$('#filterLesson').on('keyup', function() {
+    table.column(1).search(this.value).draw();
+});
+    $(document).ready(function() {
+        const loader = $('#full-screen-loader');
+        const datatableContainer = $('#datatable-container');
+
+        // DataTables'ı başlat
+        table = $('#anaOkuluIcerikleri').DataTable({
+            "processing": true,
+            "serverSide": false,
+            // ... Diğer DataTables Ayarlarınız ...
+            
+            "initComplete": function(settings, json) {
+                // 1. Tablonun Kapsayıcısını Görünür Yap
+                datatableContainer.fadeIn(300, function() {
+                    
+                    // ⭐️ KRİTİK ADIM: Tablo göründükten sonra yeniden çiz
+                    // Bu, DataTables'ın tüm sütun ve sayfalama genişliklerini doğru hesaplamasını sağlar.
+                    table.columns.adjust().draw(); 
+
+                    // 2. Kapsayıcı göründükten sonra yükleyiciyi gizle
+                    loader.fadeOut(500); 
                 });
-            });
-        </script>
+            },
+        });
+        
+        $('[data-kt-customer-table-filter="search"]').on('keyup', function() {
+            table.search(this.value).draw();
+        });
+    });
+</script>
 
         <!--end::Custom Javascript-->
         <!--end::Javascript-->

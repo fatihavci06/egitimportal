@@ -32,7 +32,7 @@ class ShowPackage extends Packages
                             <div class="card card-flush shadow-sm list-group-item-action">
                                 <div class="card-body text-center">
                                     <h3 class="mb-5">' . $package['name'] . '</h3>
-                                    <div class="text-gray-600 mb-2" id="monthly_fee"> Fiyat: ' .  number_format($this->getPackagePrice($package['id'])[0]['credit_card_fee'] , 2, '.', '')  . '₺</div>
+                                    <div class="text-gray-600 mb-2" id="monthly_fee"> Yıllık Fiyat: ' .  number_format($this->getPackagePrice($package['id'])[0]['credit_card_fee'] , 2, '.', '')  . '₺</div>
                                    
                                 </div>
                             </div>
