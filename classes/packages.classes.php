@@ -10,7 +10,7 @@ class Packages extends Dbh
 			$class = 2;
 		} */
 
-		$stmt = $this->connect()->prepare('SELECT id, name, image,bank_transfer_fee,credit_card_fee FROM packages_lnp WHERE class_id = ? AND status = ? AND pack_type IS ?');
+		$stmt = $this->connect()->prepare('SELECT id, name, image,bank_transfer_fee,credit_card_fee,class_id FROM packages_lnp WHERE class_id = ? AND status = ? AND pack_type IS ?');
 
 		if (!$stmt->execute(array($class, 1, NULL))) {
 			$stmt = null;

@@ -24,14 +24,31 @@ class ShowPackage extends Packages
                 <div class="row fv-row mb-7 fv-plugins-icon-container">';
             }
             $taxRate = $this->getVat();
-            $packages .= '
+            if ($class == 10 || $class == 11 || $class == 12) {
+                $packages .= '
                         <div class="col-xl-6 mb-10">
                             <label role="button">
                             <input type="radio" id="pack" name="pack" value="' . $package['id'] . '">
                             <div class="card card-flush shadow-sm list-group-item-action">
                                 <div class="card-body text-center">
                                     <h3 class="mb-5">' . $package['name'] . '</h3>
-                                    <div class="text-gray-600 mb-2" id="monthly_fee">Aylık Birim Fiyat: ' .  number_format($this->getPackagePrice($package['id'])[0]['credit_card_fee']/$this->getPackagePrice($package['id'])[0]['subscription_period'] , 2, '.', '')  . '₺</div>
+                                    <div class="text-gray-600 mb-2" id="monthly_fee"> Fiyat: ' .  number_format($this->getPackagePrice($package['id'])[0]['credit_card_fee'] , 2, '.', '')  . '₺</div>
+                                   
+                                </div>
+                            </div>
+                            </label>
+                        </div>
+
+            ';
+            } else {
+                $packages .= '
+                        <div class="col-xl-6 mb-10">
+                            <label role="button">
+                            <input type="radio" id="pack" name="pack" value="' . $package['id'] . '">
+                            <div class="card card-flush shadow-sm list-group-item-action">
+                                <div class="card-body text-center">
+                                    <h3 class="mb-5">' . $package['name'] . '</h3>
+                                    <div class="text-gray-600 mb-2" id="monthly_fee">Aylık Birim Fiyat: ' .  number_format($this->getPackagePrice($package['id'])[0]['credit_card_fee'] / $this->getPackagePrice($package['id'])[0]['subscription_period'], 2, '.', '')  . '₺</div>
                                     <div class="text-gray-600 mb-2" id="subscription_period">Kaç Aylık: ' . $this->getPackagePrice($package['id'])[0]['subscription_period'] . ' </div>
                                 </div>
                             </div>
@@ -39,7 +56,7 @@ class ShowPackage extends Packages
                         </div>
 
             ';
-
+            }
             if ($i === ($total - 1)) {
                 $packages .= '</div>
                 ';
@@ -124,7 +141,7 @@ class ShowPackage extends Packages
             $priceTotal = '
                         <h2 class="text-black-500 fw-semibold fs-12">Paket Ücreti: <span id="PriceWOVat">' . number_format($package['credit_card_fee'] / (1 + ($kdv / 100)), 2, '.', '') . '</span>₺</h2>
                         <h2 class="text-black-500 fw-semibold fs-12">KDV Oranı: %<span id="vatPercentage">' . $kdv . '</span></h2>
-                        <h2 class="text-black-500 fw-semibold fs-12">Toplam Ücret: <span id="PriceWVat" value="' .$package['credit_card_fee'] . '">' . $package['credit_card_fee'] . '</span>₺</h2>
+                        <h2 class="text-black-500 fw-semibold fs-12">Toplam Ücret: <span id="PriceWVat" value="' . $package['credit_card_fee'] . '">' . $package['credit_card_fee'] . '</span>₺</h2>
             ';
         }
 
@@ -150,19 +167,19 @@ class ShowPackage extends Packages
 
     // GET Money Transfer Discount
 
-    public function getTransferDiscountInfo($packageId=null)
+    public function getTransferDiscountInfo($packageId = null)
     {
         $dicountInfo = $this->getTransferDiscount();
         $packageInfo = $this->getPackagePrice($packageId);
         $packagePrice = $packageInfo[0]['bank_transfer_fee'];
         if ($dicountInfo) {
             $discount = $dicountInfo['discount_rate'];
-            echo json_encode(["status" => "success", "message" => " Havale İndirimi Uygulandı!", "discount" => $discount, "bank_transfer_fee" =>$packagePrice]);
+            echo json_encode(["status" => "success", "message" => " Havale İndirimi Uygulandı!", "discount" => $discount, "bank_transfer_fee" => $packagePrice]);
         } else {
             echo json_encode(["status" => "error", "message" => "İndirim Uygulanamadı!"]);
         }
     }
-   
+
 
     // Get Coupon Info Price
 
