@@ -50,6 +50,8 @@ if (str_contains($currentUrl, 'ana-okulu-icerikler_icerik')) {
     $page = 'İçerikler';
 }elseif (str_contains($currentUrl, 'ana-okulu-icerikler?lesson_id=9')) {
     $page = 'İngilizce';
+}elseif (str_contains($currentUrl, 'ana-okulu-icerikler_konu')) {
+    $page = 'Konular';
 }
 
 // 🔟 Özel Türkçe kelime dönüştürme (manuel çeviri listesi)
@@ -90,6 +92,7 @@ $custom_words = [
 	'ozel'=>'Özel',
 	'koc'=>'Koç',
 	'canli'=>'Canlı',
+	''
 ];
 
 

@@ -391,7 +391,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
             <?php
             if ($todaysKnow['body'] == NULL) {
             ?>
-                <img src="<?= $todaysKnow['image'] ?>" alt="Karakter" class="character-img" style="width: 310px;max-height: 400px; object-fit: cover;margin-top:15px">
+                <img src="<?= $todaysKnow['image'] ?>" alt="Karakter" class="character-img" style="min-width: 100%; object-fit: cover;margin-top:15px">
             <?php
             } else {
             ?>
