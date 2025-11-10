@@ -19,7 +19,8 @@ class LoginLogs extends Dbh
         li.loginTime, 
         li.logoutTime, 
         u.name,
-        u.surname
+        u.surname,
+        u.email
         FROM logininfo_lnp li
         INNER JOIN users_lnp u ON u.id = li.user_id';
 

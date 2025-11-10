@@ -7,7 +7,113 @@ if (!defined('GUARD')) {
 
 <head>
 	<base href="http://localhost/lineup_campus/" />
-	<title>LineUp Campus</title>
+<?php
+// 1️⃣ Mevcut URL'yi al
+$currentUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http");
+$currentUrl .= "://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+
+// 2️⃣ Base URL'yi ortama göre belirle
+if (strpos($currentUrl, 'localhost') !== false) {
+    // Local ortam
+    $base = "http://localhost/lineup_campus/";
+} else {
+    // Canlı ortam
+    $base = "https://lineupcampus.com/online/";
+}
+
+// 3️⃣ Base kısmı kaldır
+$page = str_replace($base, '', $currentUrl);
+
+// 4️⃣ Sondaki / karakterlerini temizle
+$page = trim($page, '/');
+
+// 5️⃣ .php ve sonrasını tamamen kaldır (örnek: odev-listele.php?id=5 → odev-listele)
+$page = preg_replace('/\.php.*/i', '', $page);
+
+// 6️⃣ Eğer / varsa sadece son kısmı al (örnek: ders/turkce → turkce)
+if (str_contains($page, '/')) {
+    $parts = explode('/', $page);
+    $page = end($parts);
+}
+
+// 7️⃣ Tireleri boşlukla değiştir
+$page = str_replace('-', ' ', $page);
+
+// 8️⃣ lesson_name parametresi varsa onu başlık olarak kullan
+$lessonName = isset($_GET['lesson_name']) ? trim($_GET['lesson_name']) : null;
+if (!empty($lessonName)) {
+    $page = $lessonName;
+}
+
+// 9️⃣ Özel durum: ana-okulu-icerikler_icerik sayfası → “İçerikler”
+if (str_contains($currentUrl, 'ana-okulu-icerikler_icerik')) {
+    $page = 'İçerikler';
+}elseif (str_contains($currentUrl, 'ana-okulu-icerikler?lesson_id=9')) {
+    $page = 'İngilizce';
+}
+
+// 🔟 Özel Türkçe kelime dönüştürme (manuel çeviri listesi)
+$custom_words = [
+    'turkce' => 'Türkçe',
+    'matematik' => 'Matematik',
+	'ingilizce' => 'İngilizce',
+    'odev' => 'Ödev',
+    'listele' => 'Listele',
+    'profilim' => 'Profilim',
+    'etkinlikler' => 'Etkinlikler',
+    'anasayfa' => 'Ana Sayfa',
+	'ogrenci' => 'Öğrenci',
+	'haftalik' => 'Haftalık',
+	'gorev' => 'Görev',
+	'ogretimi' => 'Öğretimi',
+	'ogrenen' => 'Öğrenen',
+	'toplantilar' => 'Toplantılar',
+	'icerikler' => 'İçerikler',
+	'yazili'=>'Yazılı',
+	'Ilerleme'=>'İlerleme',
+	'kutuphane'=>'Kütüphane',
+	'konusma'=>'Konuşma',
+	'kulubu'=>'Kulübü',
+	'dashboard'=>'Anasayfa',
+	'giris'=>'Giriş',
+	'suphe'=>'Şüphe',
+	'veritabani'=>'Veritabanı',
+	'yas'=>'Yaş',
+	'onem'=>'Önem',
+	'basliklari'=>'Başlıkları',
+	'icerik'=>'İçerik',
+	'yonetimi'=>'Yönetimi',
+	'unite'=>'Ünite',
+	'kuponlari'=>'Kuponları',
+	'satin'=>'Satın',
+	'ogretmen'=>'Öğretmen',
+	'ozel'=>'Özel',
+	'koc'=>'Koç',
+	'canli'=>'Canlı',
+];
+
+
+// 1️⃣1️⃣ lesson_name parametresi varsa özel çeviriyi atla
+if (empty($lessonName) && $page !== 'İçerikler') {
+    $lower = mb_strtolower($page, 'UTF-8');
+    foreach ($custom_words as $key => $val) {
+        $lower = str_replace($key, $val, $lower);
+    }
+    $page = ucwords($lower, " \t\r\n\f\v");
+}
+
+// 1️⃣2️⃣ Boşsa varsayılan başlık
+if (trim($page) === '') {
+    $page = 'Ana Sayfa';
+}
+
+// 1️⃣3️⃣ Güvenli yazdır
+?>
+<title><?php echo htmlspecialchars($page); ?> - LineUp Campus</title>
+
+
+
+
 	<meta charset="utf-8" />
 	<meta name="description" content="LineUp Campus" />
 	<meta name="keywords" content="Saul, bootstrap, bootstrap 5, dmin themes, free admin themes, bootstrap admin, bootstrap dashboard" />

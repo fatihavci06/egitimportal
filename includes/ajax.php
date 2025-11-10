@@ -6054,7 +6054,7 @@ ORDER BY msu.unit_order asc
             exit;
         }
 
-        $required_fields = ['meaning', 'classes', 'start_date', 'end_date'];
+        $required_fields = ['classes', 'start_date', 'end_date'];
         foreach ($required_fields as $field) {
             if (empty($_POST[$field])) {
                 echo json_encode(['success' => false, 'message' => 'Tüm zorunlu alanları doldurunuz!']);
@@ -6196,7 +6196,7 @@ ORDER BY msu.unit_order asc
     case 'addDoyouKnow':
         try {
             // Gerekli alanları kontrol et
-            $required_fields = ['meaning', 'classes', 'start_date', 'end_date'];
+            $required_fields = ['classes', 'start_date', 'end_date'];
             foreach ($required_fields as $field) {
                 if (empty($_POST[$field])) {
                     echo json_encode(['success' => false, 'message' => 'Tüm zorunlu alanları doldurunuz!']);
@@ -6253,7 +6253,7 @@ ORDER BY msu.unit_order asc
 
                 // Dosyayı yükle
                 if (move_uploaded_file($file_tmp, $upload_path)) {
-                    $image_path = 'uploads/words/' . $new_file_name;
+                    $image_path = 'uploads/doyouknow/' . $new_file_name;
                 } else {
                     echo json_encode(['success' => false, 'message' => 'Dosya yüklenirken hata oluştu!']);
                     exit;

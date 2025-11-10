@@ -72,16 +72,25 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <div class="card">
                                         <div class="card-header border-0 pt-6">
-                                            <div class="card-title">
-                                                <div class="d-flex align-items-center position-relative my-1">
-                                                    <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5">
-                                                        <span class="path1"></span>
-                                                        <span class="path2"></span>
-                                                    </i>
-                                                    <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder=" Kelime/Sınıf Ara" />
-                                                </div>
-                                            </div>
-                                            <div class="card-toolbar">
+    <div class="card-title">
+        <div class="d-flex align-items-center position-relative my-1 me-3">
+            <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5">
+                <span class="path1"></span>
+                <span class="path2"></span>
+            </i>
+            <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder=" Kelime/Sınıf Ara" />
+        </div>
+        <div class="min-w-150px">
+            <select class="form-select form-select-solid" data-kt-customer-table-filter="class" data-placeholder="Sınıf Filtrele">
+                
+                <option value="" data-kt-select2-enabled="true">Tüm Sınıflar</option>
+                <?php foreach ($class_options as $id => $name): ?>
+                    <option value="<?php echo htmlspecialchars($name); ?>"><?php echo htmlspecialchars($name); ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        </div>
+    <div class="card-toolbar">
                                                 <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
                                                     <button type="button" class="btn btn-primary btn-sm mb-3" data-bs-toggle="modal" data-bs-target="#addPackageModal">
                                                         Kelime Ekle
@@ -353,38 +362,56 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
 
         <script>
             // Datatables başlatma
-            var KTDatatables = (function() {
-                var table;
+           // Datatables başlatma
+var KTDatatables = (function() {
+    var table;
 
-                var initDatatable = function() {
-                    table = $('#kt_datatable_words').DataTable({
-                        info: false,
-                        order: [],
-                        paging: true,
-                        searching: true,
-                        columnDefs: [{
-                            targets: 8,
-                            orderable: false,
-                            searchable: false,
-                            className: 'text-end',
-                        }],
-                        initComplete: function() {
-                            const searchInput = document.querySelector('[data-kt-customer-table-filter="search"]');
-                            if (searchInput) {
-                                searchInput.addEventListener('keyup', function(e) {
-                                    table.search(e.target.value).draw();
-                                });
-                            }
-                        }
+    var initDatatable = function() {
+        table = $('#kt_datatable_words').DataTable({
+            info: false,
+            order: [],
+            paging: true,
+            searching: true,
+            columnDefs: [{
+                targets: 8,
+                orderable: false,
+                searchable: false,
+                className: 'text-end',
+            }],
+            initComplete: function() {
+                const searchInput = document.querySelector('[data-kt-customer-table-filter="search"]');
+                if (searchInput) {
+                    searchInput.addEventListener('keyup', function(e) {
+                        table.search(e.target.value).draw();
                     });
-                };
+                }
+            }
+        });
 
-                return {
-                    init: function() {
-                        initDatatable();
-                    },
-                };
-            })();
+        // Sınıf Filtresi Ekleme
+        const classFilter = document.querySelector('[data-kt-customer-table-filter="class"]');
+        if (classFilter) {
+            $(classFilter).on('change', function() {
+                const classValue = $(this).val();
+
+                // 4. sütun (Sınıf) üzerinde arama yap
+                if (classValue === '') {
+                    table.column(4).search('').draw(); // Tüm sınıfları göster
+                } else {
+                    // Seçilen sınıf adını içerenleri bul (regex tabanlı arama, index 4)
+                    // Not: Sınıf adı virgülle ayrılmış bir listede olduğu için regex kullanımı uygundur.
+                    table.column(4).search(classValue, true, false).draw();
+                }
+            });
+        }
+    };
+
+    return {
+        init: function() {
+            initDatatable();
+        },
+    };
+})();
 
             // Sayfa yüklendiğinde çalışacak kod
             $(document).ready(function() {

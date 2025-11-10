@@ -137,14 +137,15 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_logs_table">
                                                     <thead>
                                                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                            <th class="min-w-125px">Ad Soyad</th>
-                                                            <th class="min-w-125px">Cihaz Tipi</th>
-                                                            <th class="min-w-125px">İşletim Sistemi</th>
-                                                            <th class="min-w-125px">Tarayıcı</th>
-                                                            <th class="min-w-125px">Çözünürlük</th>
-                                                            <th class="min-w-125px">IP Adresi</th>
-                                                            <th class="min-w-125px">Giriş Saati</th>
-                                                            <th class="min-w-125px">Çıkış Saati</th>
+                                                            <th class="min-w-100px">Ad Soyad</th>
+                                                            <th class="min-w-100px">Email</th>
+                                                            <th class="min-w-100px">Cihaz Tipi</th>
+                                                            <th class="min-w-100px">İşletim Sistemi</th>
+                                                            <th class="min-w-100px">Tarayıcı</th>
+                                                            <th class="min-w-100px">Çözünürlük</th>
+                                                            <th class="min-w-100px">IP Adresi</th>
+                                                            <th class="min-w-100px">Giriş Saati</th>
+                                                            <th class="min-w-100px">Çıkış Saati</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody class="fw-semibold text-gray-600">

@@ -12,6 +12,7 @@ class SuspiciousLogs extends Dbh
         browser,
         resolution, 
         ipAddress, 
+        email,
         attempt_time FROM suspicious_attempts_lnp ORDER BY attempt_time DESC');
 
         if (!$stmt->execute()) {

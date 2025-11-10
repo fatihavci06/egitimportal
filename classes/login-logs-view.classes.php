@@ -24,6 +24,9 @@ class ShowLogs extends LoginLogs
                         <td>
                             ' . $value['name'] . ' ' . $value['surname'] . '
                         </td>
+                         <td>
+                            ' . $value['email'] . ' 
+                        </td>
                         <td>
                             ' . $value['deviceType'] . '
                         </td>

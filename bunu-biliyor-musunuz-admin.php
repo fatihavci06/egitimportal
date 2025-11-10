@@ -72,15 +72,24 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <div class="card">
                                         <div class="card-header border-0 pt-6">
-                                            <div class="card-title">
-                                                <div class="d-flex align-items-center position-relative my-1">
-                                                    <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5">
-                                                        <span class="path1"></span>
-                                                        <span class="path2"></span>
-                                                    </i>
-                                                    <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder=" Bilgi/Sınıf Ara" />
-                                                </div>
-                                            </div>
+    <div class="card-title">
+        <div class="d-flex align-items-center position-relative my-1 me-3">
+            <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5">
+                <span class="path1"></span>
+                <span class="path2"></span>
+            </i>
+            <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder=" Bilgi/Sınıf Ara" />
+        </div>
+        <div class="min-w-150px">
+            <select class="form-select form-select-solid" data-kt-customer-table-filter="class" data-placeholder="Sınıf Filtrele">
+              
+                <option value="" data-kt-select2-enabled="true">Tüm Sınıflar</option>
+                <?php foreach ($class_options as $id => $name): ?>
+                    <option value="<?php echo htmlspecialchars($name); ?>"><?php echo htmlspecialchars($name); ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        </div>
                                             <div class="card-toolbar">
                                                 <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
                                                     <button type="button" class="btn btn-primary btn-sm mb-3" data-bs-toggle="modal" data-bs-target="#addPackageModal">
@@ -202,8 +211,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
                     <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
                         <form id="addPackageForm" class="form" action="api/add-word.php" method="POST" enctype="multipart/form-data">
                             <div class="fv-row mb-7">
-                                <label class="required fw-semibold fs-6 mb-2">Bilgi</label>
-                                <textarea name="meaning" id="add_meaning" class="form-control form-control-solid mb-3 mb-lg-0" rows="4" placeholder="İçeriği yazın..." required></textarea>
+                                <label class=" fw-semibold fs-6 mb-2">Bilgi</label>
+                                <textarea name="meaning" id="add_meaning" class="form-control form-control-solid mb-3 mb-lg-0" rows="4" placeholder="İçeriği yazın..." ></textarea>
                             </div>
 
                             <div class="fv-row mb-7">
@@ -277,8 +286,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
                             <input type="hidden" name="id" id="update_id" />
 
                             <div class="fv-row mb-7">
-                                <label class="required fw-semibold fs-6 mb-2">Bilgi</label>
-                                <textarea name="meaning" id="update_meaning" class="form-control form-control-solid mb-3 mb-lg-0" rows="4" placeholder="Bilgi" required></textarea>
+                                <label class=" fw-semibold fs-6 mb-2">Bilgi</label>
+                                <textarea name="meaning" id="update_meaning" class="form-control form-control-solid mb-3 mb-lg-0" rows="4" placeholder="Bilgi" ></textarea>
                             </div>
 
                             <div class="fv-row mb-7">
@@ -347,37 +356,57 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1)) {
         <script>
             // Datatables başlatma
             var KTDatatables = (function() {
-                var table;
+    var table;
+    var datatable; // DataTable instance için yeni değişken
 
-                var initDatatable = function() {
-                    table = $('#kt_datatable_words').DataTable({
-                        info: false,
-                        order: [],
-                        paging: true,
-                        searching: true,
-                        columnDefs: [{
-                            targets: 7,
-                            orderable: false,
-                            searchable: false,
-                            className: 'text-end',
-                        }],
-                        initComplete: function() {
-                            const searchInput = document.querySelector('[data-kt-customer-table-filter="search"]');
-                            if (searchInput) {
-                                searchInput.addEventListener('keyup', function(e) {
-                                    table.search(e.target.value).draw();
-                                });
-                            }
-                        }
+    var initDatatable = function() {
+        datatable = $('#kt_datatable_words').DataTable({
+            info: false,
+            order: [],
+            paging: true,
+            searching: true,
+            columnDefs: [{
+                targets: 7,
+                orderable: false,
+                searchable: false,
+                className: 'text-end',
+            }],
+            initComplete: function() {
+                const searchInput = document.querySelector('[data-kt-customer-table-filter="search"]');
+                if (searchInput) {
+                    searchInput.addEventListener('keyup', function(e) {
+                        datatable.search(e.target.value).draw();
                     });
-                };
+                }
+            }
+        });
+        
+        // Sınıf Filtresi Ekleme
+        const classFilter = document.querySelector('[data-kt-customer-table-filter="class"]');
+        if (classFilter) {
+            $(classFilter).on('change', function() {
+                const classValue = $(this).val();
+                
+                // 3. sütun (Sınıf) üzerinde arama yap
+                // Not: Sınıf sütununda birden fazla sınıf adı (virgülle ayrılmış) bulunabilir.
+                // Bu arama, seçilen sınıf adını içeren tüm satırları bulur.
+                if (classValue === '') {
+                    datatable.column(3).search('').draw(); // Tüm sınıfları göster
+                } else {
+                    // Seçilen sınıf adını içerenleri bul (regex tabanlı arama)
+                    // `true` (regex) ve `false` (smart search kapalı) ayarları
+                    datatable.column(3).search(classValue, true, false).draw();
+                }
+            });
+        }
+    };
 
-                return {
-                    init: function() {
-                        initDatatable();
-                    },
-                };
-            })();
+    return {
+        init: function() {
+            initDatatable();
+        },
+    };
+})();
 
             // Sayfa yüklendiğinde çalışacak kod
             $(document).ready(function() {

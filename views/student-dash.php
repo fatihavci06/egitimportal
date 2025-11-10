@@ -85,6 +85,7 @@ $todaysWord = $todayWordObj->getTodaysOrRandomWord($_SESSION['school_id'], $_SES
 
 $knowObj = new DoYouKnow();
 $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION['class_id']);
+$todaysKnow['body'] ?? 'Bir deniz yıldızının beyni yoktur. Ancak, kolları sayesinde yönünü bulabilir.';
 
 ?>
 <div id="kt_app_content_container" class="app-container container-fluid student-dashboard"
@@ -591,151 +592,202 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($_SESSION['school_id'], $_SESSION[
                 </div>
             </div>
 
-            <div class="col-xxl-12 mb-5 mb-xl-10">
-                <div class="fact-wrapper p-4 mb-5" style="
-        background: linear-gradient(135deg, #a8ff78 0%, #ffeb4d 100%);
-        border-radius: 10px;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-    ">
-                    <style>
-                        .fact-wrapper::before {
-                            content: '';
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            width: 100%;
-                            height: 100%;
-                            background-image: radial-gradient(circle, rgba(0, 0, 0, 0.15) 1px, transparent 1px);
-                            background-size: 20px 20px;
-                            z-index: 1;
-                            opacity: 0.8;
-                        }
-
-                        .image-frame-wrapper {
-                            position: relative;
-                            z-index: 3;
-                            padding: 5px;
-                            background-color: white;
+            
+            <?php
+            if ($todaysKnow['body'] == NULL) {
+            ?>
+                <img src="<?= $todaysKnow['image'] ?>" alt="Karakter" class="character-img" style="width: 310px;max-height: 400px; object-fit: cover;margin-top:15px">
+            <?php
+            } else {
+            ?>
+                <div class="col-xxl-12 mb-5 mb-xl-10" style="margin-top:20px;">
+                    <div class="fact-wrapper p-4 mb-5" style="
+                            background: linear-gradient(135deg, #af5fbf 0%, #ff69b4 100%); /* Mor-Pembe Gradyan */
                             border-radius: 10px;
-                            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-                        }
-
-                        .push-pin {
-                            position: absolute;
-                            width: 25px;
-                            height: 25px;
-                            background-color: #4CAF50;
-                            border-radius: 50%;
-                            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-                            z-index: 10;
-                        }
-
-                        .push-pin.top-left {
-                            top: -12px;
-                            left: -12px;
-                        }
-
-                        .push-pin.top-right {
-                            top: -12px;
-                            right: -12px;
-                        }
-
-                        .fact-content-area {
                             position: relative;
-                            z-index: 5;
-                            margin-top: -35px;
-                            /* Görselle çakışma (overlap) */
-                        }
+                            overflow: hidden;
+                            box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+                        ">
+                        <style>
+                            /* Arka plan noktalı deseni */
+                            .fact-wrapper::before {
+                                content: '';
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                width: 100%;
+                                height: 100%;
+                                background-image: radial-gradient(circle, rgba(255, 255, 255, 0.2) 1px, transparent 1px);
+                                background-size: 25px 25px;
+                                /* Noktalar arası mesafe */
+                                z-index: 1;
+                                opacity: 0.9;
+                            }
 
-                        .fact-box {
-                            background: linear-gradient(180deg, #ffffff 0%, #ffefe6 100%);
-                            border-radius: 10px;
-                            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-                            padding: 20px;
-                            padding-left: 20px;
-                            /* Karakterin kapladığı alan */
-                            min-height: 150px;
-                        }
+                            /* Resim çerçevesi */
+                            .image-frame-wrapper {
+                                position: relative;
+                                z-index: 3;
+                                padding: 6px;
+                                /* Beyaz çerçeve kalınlığı */
+                                background-color: white;
+                                border-radius: 10px;
+                                box-shadow: 0 5px 18px rgba(0, 0, 0, 0.4);
+                            }
 
-                        .character-img {
-                            position: absolute;
-                            bottom: -5px;
-                            /* Karakterin biraz dışarı taşması */
-                            left: -35px;
-                            /* Sol dışarı taşması */
-                            height: 160px;
-                            /* Görseldeki boyuta uygun ayar */
-                            width: auto;
-                            z-index: 6;
-                        }
+                            /* Raptiye (Push Pin) stili */
+                            .push-pin {
+                                position: absolute;
+                                width: 28px;
+                                /* Raptiye boyutu */
+                                height: 28px;
+                                background-color: #32CD32;
+                                /* Canlı yeşil renk */
+                                border-radius: 50%;
+                                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+                                z-index: 10;
+                                transform: rotate(20deg);
+                                /* Hafif açılı duruş */
+                            }
 
-                        .fact-box h2 {
-                            font-size: 26px;
-                            font-weight: 900;
-                            color: #663300;
-                            /* Koyu kahve/kırmızımsı ton */
-                            line-height: 1.1;
-                        }
+                            .push-pin.top-left {
+                                top: -14px;
+                                left: -14px;
+                            }
 
-                        .fact-box p {
-                            font-size: 13px;
-                            font-weight: 500;
-                            line-height: 1.5;
-                        }
-                    </style>
+                            .push-pin.top-right {
+                                top: -14px;
+                                right: -14px;
+                            }
 
-                    <div class="image-frame-wrapper mb-3" style="position: relative;">
-                      
-                        <div class="image-frame-inner">
-                            <?php
-                            $imagePath = $todaysKnow['image'] ?? 'image_fba94a.jpg';
-                            ?>
-                            <img src="<?php echo htmlspecialchars($imagePath) ?>"
-                                alt="Deniz Yıldızı"
+                            /* Bilgi içeriği alanı ve karakter-kutu çakışması */
+                            .fact-content-area {
+                                position: relative;
+                                z-index: 5;
+                                margin-top: 0px;
+                                /* Resimle çakışma miktarını artırdım */
+                            }
+
+                            /* Bilgi kutusu (konuşma balonu) */
+                            .fact-box {
+                                background: linear-gradient(180deg, #ffffff 0%, #fff8e1 100%);
+                                /* Hafif sarımsı beyaz gradyan */
+                                border-radius: 10px;
+                                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                                padding: 25px;
+                                padding-left: 20px;
+                                /* Karakterin yerleşimi için daha fazla boşluk */
+                                min-height: 160px;
+                                /* Kutu yüksekliği */
+                                border: 1px solid #e0e0e0;
+                            }
+
+                            /* Bilgi kutusunun "kuyruk" kısmı */
+                            .fact-box::before {
+                                content: '';
+                                position: absolute;
+                                bottom: 100%;
+                                /* Kutunun üzerine yerleştir */
+                                left: 100px;
+                                /* Görseldeki gibi sola kaydır */
+                                width: 0;
+                                height: 0;
+                                border-left: 18px solid transparent;
+                                border-right: 18px solid transparent;
+                                border-bottom: 25px solid #fff8e1;
+                                /* Kutunun alt gradyan rengiyle eşleşmeli */
+                                z-index: 4;
+                            }
+
+                            .fact-box::after {
+                                /* Kutunun kuyruğuna ince bir çizgi efekti */
+                                content: '';
+                                position: absolute;
+                                bottom: 100%;
+                                left: 100px;
+                                width: 0;
+                                height: 0;
+                                border-left: 18px solid transparent;
+                                border-right: 18px solid transparent;
+                                border-bottom: 26px solid #e0e0e0;
+                                /* Kutu kenarlık rengi */
+                                z-index: 3;
+                            }
+
+
+                            /* Karakter görseli */
+                            .character-img {
+                                position: absolute;
+                                bottom: -15px;
+                                /* Kutunun altından biraz dışarıda */
+                                left: -40px;
+                                /* Sol kenardan dışarıda */
+                                height: 170px;
+                                /* Karakterin boyutu */
+                                width: auto;
+                                z-index: 6;
+                            }
+
+                            /* Başlık stili */
+                            .fact-box h2 {
+                                font-size: 28px;
+                                font-weight: 900;
+                                color: #8B0000;
+                                /* Koyu kırmızı/bordo tonu */
+                                line-height: 1.1;
+                                margin-top: 0;
+                                margin-bottom: 10px;
+                            }
+
+                            /* Paragraf metni stili */
+                            .fact-box p {
+                                font-size: 13px;
+                                font-weight: 500;
+                                line-height: 1.5;
+                                color: #444;
+                            }
+                        </style>
+
+
+                        <div class="image-frame-wrappers">
+
+                            <div>
+                                <?php
+                                // Resim yolu, eğer boşsa varsayılan veya bir placeholder kullanabilirsiniz
+                                $imagePath = $todaysKnow['image'] ?? 'ahtapot.jpg'; // Lütfen bu path'i kendi ahtapot resminizle değiştirin
+                                ?>
+                                <!-- <img src="<?php echo htmlspecialchars($imagePath) ?>"
+                                alt="Ahtapot"
                                 class="img-fluid rounded-2"
-                                style="width: 100%; max-height: 200px; object-fit: cover;">
+                                style="width: 100%; max-height: 250px; object-fit: cover;"> -->
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="fact-content-area">
-                        <div class="fact-box position-relative">
+                        <div class="fact-content-area">
+                            <div class="fact-box position-relative">
 
 
+                                <div class="d-flex flex-column">
+                                    <h3>Bunu Biliyor musunuz?</h3>
 
-                            <div class="d-flex flex-column">
-                                <h3 class="mt-0">Bunu Biliyor musunuz?</h3>
+                                    <p class="mb-3">
+                                        <?php
+                                        // PHP'den gelen içerik, eğer boşsa varsayılan metin
+                                        $content = $todaysKnow['body'] ?? 'Ahtapotların üç kalbi vardır. İki tanesi solungaçlarına kan pompalarken, bir tanesi vücudunun geri kalanına kan gönderir.';
+                                        echo nl2br(htmlspecialchars($content));
+                                        ?>
+                                    </p>
 
-                                <p class="mb-3">
-                                    <?php
-                                    $content = $todaysKnow['body'] ?? 'Bir deniz yıldızının beyni yoktur. Ancak, kolları sayesinde yönünü bulabilir.';
-                                    echo nl2br(htmlspecialchars($content));
-                                    ?>
-                                </p>
-
+                                    <div class="text-end mt-2">
+                                        <span style="font-size: 30px; line-height: 1; display: inline-block;">💡</span>
+                                    </div>
+                                </div>
 
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
 
-            <div class="modal fade" id="wordImageModal" tabindex="-1" aria-labelledby="wordImageModalLabel" aria-hidden="true"
-                data-bs-backdrop="true"
-                data-bs-keyboard="true">
-                <div class="modal-dialog modal-dialog-centered modal-xl">
-                    <div class="modal-content bg-transparent border-0 shadow-none">
-                        <div class="modal-header border-0 p-0 position-relative">
-                            <button type="button" class="btn-close btn-close-white position-absolute end-0 me-4 mt-3"
-                                data-bs-dismiss="modal" aria-label="Kapat" style="z-index: 1056; opacity: 1;"></button>
-                        </div>
-                        <div class="modal-body p-0 text-center">
-                            <img id="modalWordImage" src="" alt="Büyütülmüş Kelime Görseli" class="img-fluid rounded shadow-lg" style="max-height: 90vh;">
-                        </div>
                     </div>
                 </div>
-            </div>
+            <?php } ?>
 
             <div class="modal fade" id="knowImageModal" tabindex="-1" aria-labelledby="knowImageModalLabel" aria-hidden="true"
                 data-bs-backdrop="true"

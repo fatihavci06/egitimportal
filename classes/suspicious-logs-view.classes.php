@@ -13,6 +13,9 @@ class ShowLogs extends SuspiciousLogs
         foreach ($logsInfo as $key => $value):
             $logList = '
              <tr>
+               <td>
+                            ' . $value['email'] . '
+                        </td>
                         <td>
                             ' . $value['deviceType'] . '
                         </td>

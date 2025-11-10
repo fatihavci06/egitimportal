@@ -293,7 +293,7 @@ $chartData = [
 			</div>
 		</div>
 		<!--begin::Col-->
-		<div class="col-xxl-6 mb-5 mb-xl-10">
+		<div class="col-xxl-6 col-6 mb-5 mb-xl-10">
 			<!--begin::Chart widget 8-->
 			<div class="card card-flush h-xl-100">
 				<!--begin::Header-->
@@ -314,19 +314,26 @@ $chartData = [
 							<!--begin::Statistics-->
 							<div class="mb-5">
 								<!--begin::Statistics-->
-								<div class="d-flex align-items-center mb-2">
-									<span
-										class="fs-3x fw-bold text-gray-800 me-2 lh-1 ls-n2"><?php echo count($getAllStudents); ?></span>
-									<span class="fs-1 fw-semibold text-gray-500 me-1 mt-n1">Öğrenci</span>
-									<span class="badge badge-light-success fs-base">
-										<i class="ki-duotone ki-arrow-up fs-5 text-success ms-n1">
-										</i><?php echo $getActiveStudents; ?> Aktif
+								<div class="d-flex align-items-center mb-2 gap-2">
+									<!-- Toplam Öğrenci -->
+									<div class="d-flex align-items-baseline">
+										<span class="fs-5 fw-bold text-gray-800 me-1"><?= count($getAllStudents); ?></span>
+										<span class="fs-5 fw-semibold text-gray-600">Öğrenci</span>
+									</div>
+
+									<!-- Aktif Öğrenci -->
+									<span class="badge badge-light-success fs-6 d-flex align-items-center">
+										<i class="ki-duotone ki-arrow-up fs-6 text-success me-1"></i>
+										<?= $getActiveStudents; ?> Aktif
 									</span>
-									<span class="badge badge-light-danger ms-3 fs-base">
-										<i class="ki-duotone ki-arrow-up fs-5 text-danger ms-n1">
-										</i><?php echo $getPassiveStudents; ?> Pasif
+
+									<!-- Pasif Öğrenci -->
+									<span class="badge badge-light-danger fs-6 d-flex align-items-center">
+										<i class="ki-duotone ki-arrow-down fs-6 text-danger me-1"></i>
+										<?= $getPassiveStudents; ?> Pasif
 									</span>
 								</div>
+
 								<!--end::Statistics-->
 								<!--begin::Description-->
 								<span class="fs-6 fw-semibold text-gray-500">Üye olan son 5 öğrenci</span>
@@ -395,7 +402,7 @@ $chartData = [
 		</div>
 		<!--end::Col-->
 		<!--begin::Col-->
-		<div class="col-xxl-6 mb-5 mb-xl-10">
+		<div class="col-xxl-6 col-6 mb-5 mb-xl-10">
 			<!--begin::Chart widget 8-->
 			<div class="card card-flush h-xl-100">
 				<!--begin::Header-->
@@ -416,16 +423,18 @@ $chartData = [
 							<!--begin::Statistics-->
 							<div class="mb-5">
 								<!--begin::Statistics-->
-								<div class="d-flex align-items-center mb-2">
-									<span
-										class="fs-3x fw-bold text-gray-800 me-2 lh-1 ls-n2"><?php echo count($getAllPackages); ?></span>
-									<span class="fs-1 fw-semibold text-gray-500 me-1 mt-n1">Paket Sayısı</span>
+								<div class="d-flex align-items-baseline gap-2 mb-2">
+									<span class="fs-5 fw-semibold text-gray-600">Paket Sayısı :</span>
+									<span class="fs-5 fw-bold text-gray-800"><?= count($getAllPackages); ?></span>
+									
 								</div>
 								<!--end::Statistics-->
+
 								<!--begin::Description-->
 								<span class="fs-6 fw-semibold text-gray-500">En çok tercih edilen 5 paket</span>
 								<!--end::Description-->
 							</div>
+
 							<!--end::Statistics-->
 							<!--begin::Table container-->
 							<div class="table-responsive">
@@ -488,7 +497,7 @@ $chartData = [
 		</div>
 		<!--end::Col-->
 		<!--begin::Col-->
-		<div class="col-xxl-6 mb-5 mb-xl-10">
+		<div class="col-xxl-6 col-6 mb-5 mb-xl-10">
 			<!--begin::Chart widget 8-->
 			<div class="card card-flush h-xl-100">
 				<!--begin::Header-->
@@ -509,11 +518,11 @@ $chartData = [
 							<!--begin::Statistics-->
 							<div class="mb-5">
 								<!--begin::Statistics-->
-								<div class="d-flex align-items-center mb-2">
-									<span
-										class="fs-3x fw-bold text-gray-800 me-2 lh-1 ls-n2"><?php echo count($getTests); ?></span>
-									<span class="fs-1 fw-semibold text-gray-500 me-1 mt-n1">Test Sayısı</span>
-								</div>
+								<div class="d-flex align-items-baseline gap-2 mb-2">
+    <span class="fs-5 fw-bold text-gray-800"><?= count($getTests); ?></span>
+    <span class="fs-5 fw-semibold text-gray-600">Test Sayısı</span>
+</div>
+
 								<!--end::Statistics-->
 								<!--begin::Description-->
 								<span class="fs-6 fw-semibold text-gray-500">En son eklenen 5 test</span>
@@ -581,7 +590,7 @@ $chartData = [
 		</div>
 		<!--end::Col-->
 		<!--begin::Col-->
-		<div class="col-xxl-6 mb-5 mb-xl-10">
+		<div class="col-xxl-6 col-6 mb-5 mb-xl-10">
 			<!--begin::Chart widget 8-->
 			<div class="card card-flush h-xl-100">
 				<!--begin::Header-->
@@ -602,11 +611,12 @@ $chartData = [
 							<!--begin::Statistics-->
 							<div class="mb-5">
 								<!--begin::Statistics-->
-								<div class="d-flex align-items-center mb-2">
-									<span
-										class="fs-3x fw-bold text-gray-800 me-2 lh-1 ls-n2"><?php echo count($getHomeworks); ?></span>
-									<span class="fs-1 fw-semibold text-gray-500 me-1 mt-n1">Ödev Sayısı</span>
-								</div>
+								<div class="d-flex align-items-baseline gap-2 mb-2">
+									   <span class="fs-5 fw-semibold text-gray-600">Ödev Sayısı :</span>
+    <span class="fs-5 fw-bold text-gray-800"><?= count($getHomeworks); ?></span>
+ 
+</div>
+
 								<!--end::Statistics-->
 								<!--begin::Description-->
 								<span class="fs-6 fw-semibold text-gray-500">En son eklenen 5 ödev</span>
@@ -621,8 +631,8 @@ $chartData = [
 									<thead>
 										<tr class="fs-7 fw-bold text-gray-500 border-bottom-0">
 											<th class="p-0 pb-3 min-w-150px text-start">ÖDEV ADI</th>
-											<th class="p-0 pb-3 min-w-100px text-end pe-13">SINIFI</th>
-											<th class="p-0 pb-3 min-w-100px text-end">EKLENME TARİHİ</th>
+											<th class="p-0 pb-3 min-w-150px text-end pe-13">SINIFI</th>
+											<th class="p-0 pb-3 min-w-50px text-end">EKLENME TARİHİ</th>
 										</tr>
 									</thead>
 									<!--end::Table head-->
@@ -674,7 +684,7 @@ $chartData = [
 		</div>
 		<!--end::Col-->
 		<!--begin::Col-->
-		<div class="col-xxl-6 mb-5 mb-xl-10">
+		<div class="col-xxl-6 col-6 mb-5 mb-xl-10">
 			<!--begin::Chart widget 8-->
 			<div class="card card-flush h-xl-100">
 				<!--begin::Header-->
@@ -695,11 +705,12 @@ $chartData = [
 							<!--begin::Statistics-->
 							<div class="mb-5">
 								<!--begin::Statistics-->
-								<div class="d-flex align-items-center mb-2">
-									<span
-										class="fs-3x fw-bold text-gray-800 me-2 lh-1 ls-n2"><?php echo $getPayments[0]['total_count']; ?></span>
-									<span class="fs-1 fw-semibold text-gray-500 me-1 mt-n1">Paket Satış Sayısı</span>
-								</div>
+								<div class="d-flex align-items-baseline gap-2 mb-2">
+									 <span class="fs-5 fw-bold text-gray-600">Paket Satış Sayısı:</span>
+    <span class="fs-5 fw-bold text-gray-800"><?= $getPayments[0]['total_count']; ?></span>
+   
+</div>
+
 								<!--end::Statistics-->
 							</div>
 							<!--end::Statistics-->
@@ -762,7 +773,7 @@ $chartData = [
 		</div>
 		<!--end::Col-->
 
-		<div class="col-xxl-6 mb-5 mb-xl-10">
+		<div class="col-xxl-6 col-6 mb-5 mb-xl-10">
 			<div class="card card-flush h-xl-100">
 				<div class="card-header pt-5">
 					<h3 class="card-title align-items-start flex-column">
@@ -813,7 +824,7 @@ $chartData = [
 													</td>
 													<td class="text-end pe-13">
 														<span
-															class="text-gray-600 fw-bold fs-6"><?php echo $student['average_score']; ?>%</span>
+															class="text-gray-600 fw-bold fs-6"><?php echo round($student['average_score'],2); ?>%</span>
 													</td>
 												</tr>
 										<?php }
@@ -831,7 +842,7 @@ $chartData = [
 		</div>
 
 
-		<div class="col-xxl-6 mb-5 mb-xl-10">
+		<div class="col-xxl-6 col-6 mb-5 mb-xl-10">
 			<div class="card card-flush h-xl-100">
 				<div class="card-header pt-5">
 					<h3 class="card-title align-items-start flex-column">
@@ -866,7 +877,7 @@ $chartData = [
 		</div>
 
 
-		<div class="col-xxl-6 mb-5 mb-xl-10">
+		<div class="col-xxl-6 col-6 mb-5 mb-xl-10">
 			<div class="card card-flush h-xl-100">
 				<div class="card-header pt-5">
 					<h3 class="card-title align-items-start flex-column">
@@ -934,7 +945,7 @@ $chartData = [
 			</div>
 		</div>
 
-		<div class="col-xxl-6 mb-5 mb-xl-10">
+		<div class="col-xxl-6 col-6 mb-5 mb-xl-10">
 			<div class="card card-flush h-xl-100">
 				<div class="card-header pt-5">
 					<h3 class="card-title align-items-start flex-column">
@@ -977,7 +988,7 @@ $chartData = [
 													</td>
 													<td class="text-end">
 														<span
-															class="text-gray-600 fw-bold fs-6"><?php echo $tests['total']; ?>%</span>
+															class="text-gray-600 fw-bold fs-6"><?php echo round($tests['total'],2); ?>%</span>
 													</td>
 												</tr>
 										<?php }
@@ -993,7 +1004,7 @@ $chartData = [
 			</div>
 		</div>
 
-		<div class="col-xxl-6 mb-5 mb-xl-10">
+		<div class="col-xxl-6 col-6 mb-5 mb-xl-10">
 			<div class="card card-flush h-xl-100">
 				<div class="card-header pt-5">
 					<h3 class="card-title align-items-start flex-column">
@@ -1009,8 +1020,8 @@ $chartData = [
 									<thead>
 										<tr class="fs-7 fw-bold text-gray-500 border-bottom-0">
 											<th class="p-0 pb-3 min-w-150px text-start">TEST ADI</th>
-											<th class="p-0 pb-3 min-w-100px text-end pe-13">SINIFI</th>
-											<th class="p-0 pb-3 min-w-100px text-end">ORTALAMA</th>
+											<th class="p-0 pb-3 min-w-150px text-end pe-13">SINIFI</th>
+											<th class="p-0 pb-3 min-w-50px text-end">ORTALAMA</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -1036,7 +1047,7 @@ $chartData = [
 													</td>
 													<td class="text-end">
 														<span
-															class="text-gray-600 fw-bold fs-6"><?php echo $tests['total']; ?>%</span>
+															class="text-gray-600 fw-bold fs-6"><?php echo round($tests['total'],2); ?>%</span>
 													</td>
 												</tr>
 										<?php }

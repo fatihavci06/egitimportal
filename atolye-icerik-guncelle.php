@@ -158,7 +158,7 @@ if (!empty($contentData['zoom_url'])) {
 
                         <div id="videoInput" class="mb-4" style="display:none;">
                           <label for="video_url">Video Link (Youtube, Vimeo, vb.):</label>
-                          <input type="text" class="form-control" name="video_url" id="video_url" value="<?= $secimType == 'video_link' ? htmlspecialchars($contentData['content'] ?? '') : '' ?>">
+                          <input type="text" class="form-control" name="video_url" id="video_url" value="<?= $secimType == 'video_link' ? htmlspecialchars($contentData['video_url'] ?? '') : '' ?>">
                         </div>
 
                         <div id="fileInput" class="mb-4" style="display:none;">

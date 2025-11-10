@@ -52,7 +52,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                         $content_type = $data['content_type'] ?? '';
                                         ?>
                                         <form class="form" action="#" id="ContentForm">
-                                            <div class="row">
+                                            <!-- <div class="row">
                                                 <div class="col-lg-6">
                                                     <label class="required fs-6 fw-semibold mb-2" for="roles">Görüntüleme Yetkisi</label>
                                                     <select class="form-select" id="roles" multiple aria-label="multiple select example">
@@ -63,7 +63,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <?php } ?>
                                                     </select>
                                                 </div>
-                                            </div>
+                                            </div> -->
 
                                             <div class="row mt-4">
                                                 <div class="row ">
@@ -577,16 +577,16 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     e.preventDefault();
 
                     // ✅ roles kontrolü (en az 1 seçim)
-                    const selectedRoles = $('#roles option:selected');
-                    if (selectedRoles.length === 0) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Uyarı',
-                            text: 'Lütfen en az bir görüntüleme yetkisi seçin.',
-                            confirmButtonText: 'Tamam'
-                        });
-                        return;
-                    }
+                    // const selectedRoles = $('#roles option:selected');
+                    // if (selectedRoles.length === 0) {
+                    //     Swal.fire({
+                    //         icon: 'warning',
+                    //         title: 'Uyarı',
+                    //         text: 'Lütfen en az bir görüntüleme yetkisi seçin.',
+                    //         confirmButtonText: 'Tamam'
+                    //     });
+                    //     return;
+                    // }
 
                     // subject kontrolü
                     if ($('#subject').val().trim() === '') {
@@ -615,9 +615,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     let formData = new FormData();
 
                     // roles (çoklu)
-                    selectedRoles.each(function() {
-                        formData.append('roles[]', $(this).val());
-                    });
+                    // selectedRoles.each(function() {
+                    //     formData.append('roles[]', $(this).val());
+                    // });
                     let isValid = true;
                     let errorMessage = '';
 

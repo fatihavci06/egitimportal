@@ -41,7 +41,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <div class="card-body pt-5">
                                         <form class="form" action="#" id="ContentForm">
-                                            <div class="row">
+                                            <!-- <div class="row">
                                                 <div class="col-lg-6">
                                                     <label class="required fs-6 fw-semibold mb-2" for="roles">Görüntüleme Yetkisi</label>
                                                     <?php
@@ -55,7 +55,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                                     </select>
                                                 </div>
-                                            </div>
+                                            </div> -->
                                             <div class="row mt-4">
                                                 <div class="col-lg-4">
                                                     <label class="fs-6 fw-semibold mb-2" for="main_school_class_id">Yaş Grubu </label>
@@ -276,13 +276,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         <script src="assets/js/custom/apps/subtopics/list/topicadd.js"></script>
         <script src="assets/js/custom/apps/subtopics/add.js"></script>
         <script src="assets/js/custom/apps/subtopics/create.js"></script>
-        <script src="assets/js/widgets.bundle.js"></script>
-        <script src="assets/js/custom/widgets.js"></script>
-        <script src="assets/js/custom/apps/chat/chat.js"></script>
-        <script src="assets/js/custom/utilities/modals/upgrade-plan.js"></script>
-        <script src="assets/js/custom/utilities/modals/create-account.js"></script>
-        <script src="assets/js/custom/utilities/modals/create-app.js"></script>
-        <script src="assets/js/custom/utilities/modals/users-search.js"></script>
+       
         <script>
             $(document).ready(function() {
                 $('#main_school_class_id').on('change', function () {
@@ -479,16 +473,16 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     const content = tinymce.get('mcontent').getContent();
 
                     // ✅ roles kontrolü (en az 1 seçim)
-                    const selectedRoles = $('#roles option:selected');
-                    if (selectedRoles.length === 0) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Uyarı',
-                            text: 'Lütfen en az bir görüntüleme yetkisi seçin.',
-                            confirmButtonText: 'Tamam'
-                        });
-                        return;
-                    }
+                    // const selectedRoles = $('#roles option:selected');
+                    // if (selectedRoles.length === 0) {
+                    //     Swal.fire({
+                    //         icon: 'warning',
+                    //         title: 'Uyarı',
+                    //         text: 'Lütfen en az bir görüntüleme yetkisi seçin.',
+                    //         confirmButtonText: 'Tamam'
+                    //     });
+                    //     return;
+                    // }
 
 
 
@@ -519,9 +513,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                     let formData = new FormData();
 
                     // roles (çoklu)
-                    selectedRoles.each(function() {
-                        formData.append('roles[]', $(this).val());
-                    });
+                    // selectedRoles.each(function() {
+                    //     formData.append('roles[]', $(this).val());
+                    // });
                     let isValid = true;
                     let errorMessage = '';
 

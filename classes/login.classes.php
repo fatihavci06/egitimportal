@@ -9,7 +9,7 @@ class Login extends Dbh
 	protected $deviceModel;
 	protected $ip_address;
 	protected $attempt_time;
-
+private $email;
 	public function __construct()
 	{
 		date_default_timezone_set('Europe/Istanbul');
@@ -24,6 +24,7 @@ class Login extends Dbh
 		$this->os = $this->os;
 		$this->browser = $this->browser;
 		$this->deviceType = $this->deviceType;
+		$this->email=$this->email;
 	}
 
 	protected function getIpAddr()
@@ -118,13 +119,14 @@ class Login extends Dbh
 		$timeofTry = $timeofTry + 600;
 		$timeofTry = $timeofTry - time();
 		$this->ip_address = $this->getIpAddr();
+		$this->email=$email;
 
 		// print($this->attempt_time);
 		// die();
 
 
 
-		$stmt = $this->connect()->prepare('SELECT password FROM users_lnp WHERE email = ? OR username = ?');
+		$stmt = $this->connect()->prepare('SELECT password,email FROM users_lnp WHERE email = ? OR username = ?');
 
 		if (!$stmt->execute([$email, $email])) {
 			$stmt = null;
@@ -307,6 +309,7 @@ class Login extends Dbh
         deviceType = :deviceType,
         deviceModel = :deviceModel,
 		ipAddress = :ip_address,
+		email = :email,
 		attempt_time = :attempt_time');
 
 
@@ -317,6 +320,7 @@ class Login extends Dbh
 		$stmt->bindValue(':deviceModel', $this->deviceModel);
 		$stmt->bindValue(':ip_address', $this->ip_address);
 		$stmt->bindValue(':attempt_time', $this->attempt_time);
+		$stmt->bindValue(':email', $this->email);
 
 		if (!$stmt->execute()) {
 			$stmt = null;
