@@ -60,7 +60,9 @@ $priceWithoutVat = $price / (1 + ($vat / 100)); // KDV'siz Fiyatı Bulma
 $vatAmount = $price - $priceWithoutVat; // KDV tutarın
 
 
-$_SESSION['vatAmount'] = $vatAmount;
+$priceWithoutVat = round($priceWithoutVat, 2); // 2 basamaklı yuvarla
+
+$_SESSION['vatAmount'] = round($vatAmount, 2);
 $_SESSION['vat'] = $vat;
 
 
@@ -348,7 +350,7 @@ $commissionFee = NULL;
 
     $gonderVeli = $kisiekle->setParent($veli_ad, $veli_soyad, $username2, $password2, $parentRole);
 
-    $odemeBilgisiGonder = $kisiekle->setPaymentInfo($kullanici_tckn, $pack, $siparis_numarasi, $isinstallment, $paidPrice, $commissionRate, $commissionFee, $couponCode, $vatAmount, $vat);
+    $odemeBilgisiGonder = $kisiekle->setPaymentInfo($kullanici_tckn, $pack, $siparis_numarasi, $isinstallment, $priceWithoutVat, $commissionRate, $commissionFee, $couponCode, $vatAmount, $vat);
 
     $error = "";
 

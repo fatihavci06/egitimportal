@@ -6,7 +6,7 @@ if (!defined('GUARD')) {
 <!--begin::Head-->
 
 <head>
-	<base href="http://localhost/lineup_campus/" />
+	<base href="https://lineupcampus.com/online/" />
 <?php
 // 1️⃣ Mevcut URL'yi al
 $currentUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http");
@@ -50,6 +50,8 @@ if (str_contains($currentUrl, 'ana-okulu-icerikler_icerik')) {
     $page = 'İçerikler';
 }elseif (str_contains($currentUrl, 'ana-okulu-icerikler?lesson_id=9')) {
     $page = 'İngilizce';
+}elseif (str_contains($currentUrl, 'ana-okulu-icerikler_konu')) {
+    $page = 'Konular';
 }
 
 // 🔟 Özel Türkçe kelime dönüştürme (manuel çeviri listesi)

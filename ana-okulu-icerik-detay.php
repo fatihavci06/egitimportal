@@ -288,7 +288,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 </div>
                                                 <?php if (isset($data['video_url']) && $data['video_url'] != null) {   ?>
                                                     <div class="row mt-4" id="videoContent"
-                                                        style="justify-content: center; margin-top: -35px !important;">
+                                                        style="justify-content: center; margin-top: 0px !important;">
                                                         <div class="video-responsive" style="background: none; max-width: 95%;">
 
                                                             <?php
