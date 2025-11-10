@@ -92,6 +92,7 @@ $custom_words = [
 	'ozel'=>'Özel',
 	'koc'=>'Koç',
 	'canli'=>'Canlı',
+	''
 ];
 
 
