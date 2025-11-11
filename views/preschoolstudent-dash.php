@@ -353,7 +353,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
                                                         src="<?php echo htmlspecialchars($todaysWord['image']) ?>"
                                                         alt="<?php echo htmlspecialchars($todaysWord['word']) ?> görseli"
                                                         class="img-fluid  shadow-lg border border-5 border-light"
-                                                        style="max-height: 240; width: 250px; object-fit: cover; cursor: pointer;"
+                                                        style="width: 100%; object-fit: cover; cursor: pointer;"
                                                         loading="lazy"
                                                         onerror="this.style.display='none';">
                                                 </a>
@@ -391,7 +391,7 @@ $todaysKnow = $knowObj->getTodaysOrRandomKnow($school_idsi, $class_idsi);
             <?php
             if ($todaysKnow['body'] == NULL) {
             ?>
-                <img src="<?= $todaysKnow['image'] ?>" alt="Karakter" class="character-img" style="min-width: 100%; object-fit: cover;margin-top:15px">
+                <img src="<?= $todaysKnow['image'] ?>" alt="Karakter" class="character-img" style="width: 100%; object-fit: cover;margin-top:15px">
             <?php
             } else {
             ?>
