@@ -569,7 +569,7 @@ $todaysKnow['body'] ?? 'Bir deniz yıldızının beyni yoktur. Ancak, kolları s
                                                     src="<?php echo htmlspecialchars($todaysWord['image']) ?>"
                                                     alt="<?php echo htmlspecialchars($todaysWord['word']) ?> görseli"
                                                     class="img-fluid rounded-circle shadow-lg border border-5 border-light"
-                                                    style="max-height: 200px; width: 200px; object-fit: cover; cursor: pointer;"
+                                                    style="width: 100%; object-fit: cover; cursor: pointer;"
                                                     loading="lazy"
                                                     onerror="this.style.display='none';">
                                             </a>
@@ -596,7 +596,7 @@ $todaysKnow['body'] ?? 'Bir deniz yıldızının beyni yoktur. Ancak, kolları s
             <?php
             if ($todaysKnow['body'] == NULL) {
             ?>
-                <img src="<?= $todaysKnow['image'] ?>" alt="Karakter" class="character-img" style="min-width: 100%; object-fit: cover;margin-top:15px">
+                <img src="<?= $todaysKnow['image'] ?>" alt="Karakter" class="character-img" style="width: 100%; object-fit: cover;margin-top:15px">
             <?php
             } else {
             ?>
