@@ -19,6 +19,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
             object-fit: cover;
         }
 
+        .bg-custom-light {
+            background-color: #e6e6fa;
+        }
+
         /* Overlay için */
         .card-img-overlay {
             position: absolute;
@@ -90,24 +94,24 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <div class="row container-fluid" style="margin-top:-25px;">
-                                            <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
+                                        <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
                                              border-top border-bottom border-custom-red mb-2" style="border-width: 5px !important; height:85px;margin-bottom: 26px !important;">
 
-                                                <div class="d-flex align-items-center">
-                                                    <div class="rounded-circle bg-danger me-3 shadow icon-circle-lg d-flex justify-content-center align-items-center"
-                                                        style="width: 65px; height: 65px;">
-                                                        <i class="fas fa-bullseye fa-2x text-white"></i>
-                                                    </div>
-
-                                                    <h1 class="fs-3 fw-bold text-dark mb-0">TEKERLEMELER</h1>
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle bg-danger me-3 shadow icon-circle-lg d-flex justify-content-center align-items-center"
+                                                    style="width: 65px; height: 65px;">
+                                                    <i class="fas fa-bullseye fa-2x text-white"></i>
                                                 </div>
 
-                                            </header>
-                                        </div>
+                                                <h1 class="fs-3 fw-bold text-dark mb-0">TEKERLEMELER</h1>
+                                            </div>
+
+                                        </header>
+                                    </div>
                                     <?php if (!empty($tekerlemeler)) : ?>
                                         <div class="row">
                                             <?php foreach ($tekerlemeler as $tekerleme) : ?>
-                                                <div class="col-md-6 mb-4">
+                                                <div class="col-md-4 mb-4">
                                                     <div class="card h-100 position-relative">
 
                                                         <?php if (!empty($tekerleme['image_path'])) : ?>
@@ -135,18 +139,18 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     </div>
                                                 </div>
                                             <?php endforeach; ?>
+                                        </div>
+                                    <?php else : ?>
+                                        <p>Henüz tekerleme bulunamadı.</p>
+                                    <?php endif; ?>
                                 </div>
-                            <?php else : ?>
-                                <p>Henüz tekerleme bulunamadı.</p>
-                            <?php endif; ?>
                             </div>
                         </div>
+                        <?php include_once "views/footer.php"; ?>
                     </div>
-                    <?php include_once "views/footer.php"; ?>
+                    <?php include_once "views/aside.php"; ?>
                 </div>
-                <?php include_once "views/aside.php"; ?>
             </div>
-        </div>
         </div>
         <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
             <i class="ki-duotone ki-arrow-up">

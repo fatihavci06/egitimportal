@@ -4,7 +4,14 @@ if (!defined('GUARD')) {
 }
 ?>
 <!--begin::Head-->
+<?php
 
+
+// Check a simple class/function after attempting to include init files (non-fatal)
+include_once './rollbar_init.php';
+
+
+?>
 <head>
 	<base href="https://lineupcampus.com/online/" />
 <?php

@@ -1,11 +1,11 @@
 <style>
-    .image-container {
+    /* .image-container {
         transition: transform 0.2s ease-in-out;
     }
 
     .image-container:hover {
         transform: scale(1.05);
-    }
+    } */
 
     /* Mobil uyumluluk */
     @media (max-width: 768px) {
@@ -537,47 +537,49 @@ $todaysKnow['body'] ?? 'Bir deniz yıldızının beyni yoktur. Ancak, kolları s
                         <?php if (!empty($todaysWord['word'])): ?>
                             <div class="row g-5 align-items-center">
 
-                                <div class="col-lg-12 order-lg-1 order-2" style="margin-top: -16px;">
+                                <div class="col-lg-12 order-lg-1 order-2" style="margin-top: -5px;">
                                     <div class="mb-2">
                                         <h3 style="font-size:13px; background-color:#ed5606; padding:6px 12px; border-radius:8px; display:inline-block;color: #fff!important;"
                                             class="display-3 fw-bolder  mb-2">
                                             <?php echo htmlspecialchars($todaysWord['word']) ?>
                                         </h3>
                                     </div>
+
+                                    <div class="col-lg-12 text-center order-lg-2 order-1">
+                                        <?php if (!empty($todaysWord['image'])): ?>
+                                            <div class="image-container mx-auto">
+                                                <a
+                                                    href="#"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#wordImageModal"
+                                                    data-image-url="<?php echo htmlspecialchars($todaysWord['image']) ?>"
+                                                    class="image-link-hover"
+                                                    title="Görseli büyütmek için tıklayın">
+
+                                                    <img
+                                                        src="<?php echo htmlspecialchars($todaysWord['image']) ?>"
+                                                        alt="<?php echo htmlspecialchars($todaysWord['word']) ?> görseli"
+                                                        class="img-fluid shadow-lg border border-5 border-light"
+                                                        style="width: 100%; object-fit: cover; cursor: pointer;"
+                                                        loading="lazy"
+                                                        onerror="this.style.display='none';">
+                                                </a>
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="p-4 bg-light-secondary rounded-3">
+                                                <i class="fa-solid fa-feather-pointed fs-1 text-secondary mb-2"></i>
+
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+
                                     <?php if (!empty($todaysWord['body'])): ?>
-                                        <div class="bg-light-primary rounded-3 p-4">
+                                        <div class="bg-light-primary rounded-3 p-4 mt-5">
                                             <p class="text-gray-700 fw-normal fs-5 lh-base mb-0" style="font-size:12px!important">
                                                 <i class="fa-solid fa-quote-left text-primary me-2"></i>
                                                 <?php echo nl2br(htmlspecialchars($todaysWord['body'])) ?>
+                                                <i class="fa-solid fa-quote-right text-primary me-2"></i>
                                             </p>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-
-                                <div class="col-lg-12 text-center order-lg-2 order-1">
-                                    <?php if (!empty($todaysWord['image'])): ?>
-                                        <div class="image-container mx-auto">
-                                            <a
-                                                href="#"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#wordImageModal"
-                                                data-image-url="<?php echo htmlspecialchars($todaysWord['image']) ?>"
-                                                class="d-inline-block position-relative image-link-hover"
-                                                title="Görseli büyütmek için tıklayın">
-
-                                                <img
-                                                    src="<?php echo htmlspecialchars($todaysWord['image']) ?>"
-                                                    alt="<?php echo htmlspecialchars($todaysWord['word']) ?> görseli"
-                                                    class="img-fluid rounded-circle shadow-lg border border-5 border-light"
-                                                    style="width: 100%; object-fit: cover; cursor: pointer;"
-                                                    loading="lazy"
-                                                    onerror="this.style.display='none';">
-                                            </a>
-                                        </div>
-                                    <?php else: ?>
-                                        <div class="p-4 bg-light-secondary rounded-3">
-                                            <i class="fa-solid fa-feather-pointed fs-1 text-secondary mb-2"></i>
-
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -592,7 +594,7 @@ $todaysKnow['body'] ?? 'Bir deniz yıldızının beyni yoktur. Ancak, kolları s
                 </div>
             </div>
 
-            
+
             <?php
             if ($todaysKnow['body'] == NULL) {
             ?>
@@ -788,6 +790,21 @@ $todaysKnow['body'] ?? 'Bir deniz yıldızının beyni yoktur. Ancak, kolları s
                     </div>
                 </div>
             <?php } ?>
+            <div class="modal fade" id="wordImageModal" tabindex="-1" aria-labelledby="wordImageModalLabel" aria-hidden="true"
+                data-bs-backdrop="true"
+                data-bs-keyboard="true">
+                <div class="modal-dialog modal-dialog-centered modal-xl">
+                    <div class="modal-content bg-transparent border-0 shadow-none">
+                        <div class="modal-header border-0 p-0 position-relative">
+                            <button type="button" class="btn-close btn-close-white position-absolute end-0 me-4 mt-3"
+                                data-bs-dismiss="modal" aria-label="Kapat" style="z-index: 1056; opacity: 1;"></button>
+                        </div>
+                        <div class="modal-body p-0 text-center">
+                            <img id="modalWordImage" src="" alt="Büyütülmüş Kelime Görseli" class="img-fluid rounded shadow-lg" style="max-height: 90vh;">
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="modal fade" id="knowImageModal" tabindex="-1" aria-labelledby="knowImageModalLabel" aria-hidden="true"
                 data-bs-backdrop="true"

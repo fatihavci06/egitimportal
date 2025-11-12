@@ -29,6 +29,7 @@ class ComposerStaticInita51e5526f2c51bccf4fc9bb53a92f0e6
         ),
         'R' => 
         array (
+            'Rollbar\\' => 8,
             'Rize\\' => 5,
             'Ramsey\\Uuid\\' => 12,
             'Ramsey\\Collection\\' => 18,
@@ -118,6 +119,10 @@ class ComposerStaticInita51e5526f2c51bccf4fc9bb53a92f0e6
         'Symfony\\Polyfill\\Ctype\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
+        ),
+        'Rollbar\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/rollbar/rollbar/src',
         ),
         'Rize\\' => 
         array (

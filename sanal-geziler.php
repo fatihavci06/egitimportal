@@ -17,6 +17,26 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
     include_once "views/pages-head.php";
 ?>
 
+    <style>
+        .text-hover-primary:hover {
+            color: #1b5900 !important;
+        }
+
+        .btn-sanal-gezi {
+            background-color: #ed5606;
+            color: #fff;
+        }
+
+        .btn-sanal-gezi:hover {
+            background-color: #1b5900;
+            color: #fff;
+        }
+
+        .bg-custom-light {
+            background-color: #e6e6fa;
+        }
+    </style>
+
     <body id="kt_app_body" data-kt-app-header-fixed="true" data-kt-app-header-fixed-mobile="true"
         data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true"
         data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-toolbar="true"
@@ -88,21 +108,21 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 1 || $_SESSION['role'] == 
                                                                     <span class="symbol-label bg-light-primary d-flex justify-content-center align-items-center">
                                                                         <?php if (!empty($gezi['icon'])): ?>
                                                                             <img src="./uploads/icons/<?php echo htmlspecialchars($gezi['icon']); ?>"
-                                                                                alt="icon" width="30" height="30">
+                                                                                alt="icon" width="30" height="30" style="filter: invert(32%) sepia(72%) saturate(1819%) hue-rotate(71deg) brightness(97%) contrast(104%);">
                                                                         <?php else: ?>
-                                                                            <i class="ki-duotone ki-map fs-2 text-primary"></i>
+                                                                            <i class="ki-duotone ki-map fs-2 text-primary text-hover-primary"></i>
                                                                         <?php endif; ?>
                                                                     </span>
                                                                 </div>
 
-                                                                <div class="fw-bold text-gray-700 fs-4 text-hover-primary">
+                                                                <div class="fw-bold text-700 fs-7 text-hover-primary" style="color:#2b8c01">
                                                                     <?php echo htmlspecialchars($gezi['title']); ?>
                                                                 </div>
                                                             </div>
 
                                                             <div>
                                                                 <a href="<?php echo htmlspecialchars($gezi['link']); ?>" target="_blank"
-                                                                    class="btn btn-sm btn-primary fw-bold" style="min-width: 150px;">
+                                                                    class="btn btn-sm btn-sanal-gezi fw-bold" style="min-width: 150px;">
                                                                     BAĞLANTIYA GİT
                                                                 </a>
                                                             </div>

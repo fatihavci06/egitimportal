@@ -40946,8 +40946,8 @@ h6,
 }
 
 .card .card-body {
-  /* padding: 2rem 2.25rem; */
-  padding: 5rem 2.25rem;
+  padding: 2rem 2.25rem;
+  /* padding: 5rem 2.25rem; */
   color: var(--bs-card-color);
 }
 
@@ -60428,6 +60428,7 @@ body,
     left: 0;
     right: 0;
     top: 0;
+    background-color: #f7f7f7;
   }
 
   [data-kt-app-header-static=true] .app-header {
@@ -60528,6 +60529,7 @@ body,
     left: 0;
     right: 0;
     top: 0;
+    background-color: #f7f7f7;
   }
 
   [data-kt-app-header-sticky=on] .app-header {
@@ -62754,7 +62756,7 @@ body,
   }
 
   [data-kt-app-aside-enabled=true] .app-header-separator {
-    margin-right: 80px;
+    /* margin-right: 80px; */
     /* border-top: 2px solid #fa6000; */
   }
 

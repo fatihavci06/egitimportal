@@ -38,19 +38,25 @@ $menu1 = new ShowMenu();
                     </span>
                 </span>
                 <div style="display: flex; justify-content: space-around; width: 100%; padding: 20px 0;">
-                    <div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px;">
-                        <i class="fa-solid fa-hourglass fs-1 mb-3" style="color:black"></i>
-                        <p class="mb-0"><?php echo $timeSpend->dakikayaCevir($timeSpendInfo); ?></p>
+                    <div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; background-color: #a4e6da">
+                        <div style="display: flex; justify-content: center; align-items: center; ">
+                            <i class="fa-solid fa-hourglass fs-7" style="color:black; margin-right: 5px;"></i>
+                            <span class="mb-0"><?php echo $timeSpend->dakikayaCevir($timeSpendInfo); ?></span>
+                        </div>
                         <p class="mb-0" style="font-size: 11px;">dakika geçirdin</p>
                     </div>
-                    <div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px;">
-                        <i class="fa-solid fa-check fs-1 mb-3" style="color:black"></i>
-                        <p class="mb-0"><?php echo $student->getStudentProgressForSidebar($_SESSION['id'], $_SESSION['class_id']); ?></p>
+                    <div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; background-color: #5a9b9d">
+                        <div style="display: flex; justify-content: center; align-items: center; ">
+                            <i class="fa-solid fa-check fs-7" style="color:black; margin-right: 5px;"></i>
+                            <span class="mb-0"><?php echo $student->getStudentProgressForSidebar($_SESSION['id'], $_SESSION['class_id']); ?></span>
+                        </div>
                         <p class="mb-0" style="font-size: 11px;">materyali tamamladın</p>
                     </div>
-                    <div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px;">
-                        <i class="fa-solid fa-question fs-1 mb-3" style="color:black"></i>
-                        <p class="mb-0"><?php echo $student->getStudentTestNumberForSidebar($_SESSION['id']); ?></p>
+                    <div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; background-color: #a6e5e7">
+                        <div style="display: flex; justify-content: center; align-items: center; ">
+                            <i class="fa-solid fa-question fs-7" style="color:black; margin-right: 5px;"></i>
+                            <span class="mb-0"><?php echo $student->getStudentTestNumberForSidebar($_SESSION['id']); ?></span>
+                        </div>
                         <p class="mb-0" style="font-size: 11px;">sınav çözdün</p>
                     </div>
                 </div>
@@ -73,14 +79,18 @@ $menu1 = new ShowMenu();
                     </span>
                 </span>
                 <div style="display: flex; justify-content: space-around; width: 100%; padding: 5px 0;">
-                    <div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px;">
-                        <i class="fa-solid fa-hourglass fs-1 mb-3" style="color:black"></i>
-                        <p class="mb-0"><?php echo $timeSpend->dakikayaCevir($timeSpendInfo); ?></p>
+                    <div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; background-color: #a4e6da">
+                        <div style="display: flex; justify-content: center; align-items: center; ">
+                            <i class="fa-solid fa-hourglass fs-7" style="color:black; margin-right: 5px;"></i>
+                            <span class="mb-0"><?php echo $timeSpend->dakikayaCevir($timeSpendInfo); ?></span>
+                        </div>
                         <p class="mb-0" style="font-size: 11px;">dakika geçirdin</p>
                     </div>
-                    <div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px;">
-                        <i class="fa-solid fa-check fs-1 mb-3" style="color:black"></i>
-                        <p class="mb-0"><?php echo $student->getStudentProgressForSidebarPreschool($_SESSION['id'], $_SESSION['class_id']); ?></p>
+                    <div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; background-color: #5a9b9d">
+                        <div style="display: flex; justify-content: center; align-items: center; ">
+                            <i class="fa-solid fa-check fs-7" style="color:black; margin-right: 5px;"></i>
+                            <span class="mb-0"><?php echo $student->getStudentProgressForSidebarPreschool($_SESSION['id'], $_SESSION['class_id']); ?></span>
+                        </div>
                         <p class="mb-0" style="font-size: 11px;">materyali tamamladın</p>
                     </div>
                 </div>
@@ -357,7 +367,7 @@ $menu1 = new ShowMenu();
             } elseif ($_SESSION['role'] == 10001) {
 
                 $menu1->showMenuSuperAdminList();
-            } elseif ($_SESSION['role'] == 10002 OR $_SESSION['role'] == 10005) {
+            } elseif ($_SESSION['role'] == 10002 or $_SESSION['role'] == 10005) {
                 $menu1->showMenuPreschoolStudentList();
             } elseif ($_SESSION['role'] == 8) {
                 $menu1->showMenuSuperAdminList();
@@ -365,7 +375,7 @@ $menu1 = new ShowMenu();
                 $menu1->showMenuSuperAdminList();
             } elseif ($_SESSION['role'] == 10) {
                 $menu1->showMenuSuperAdminList();
-            }elseif ($_SESSION['role'] == 20001) {
+            } elseif ($_SESSION['role'] == 20001) {
                 $menu1->showMenuSuperAdminList();
             }
             ?>
