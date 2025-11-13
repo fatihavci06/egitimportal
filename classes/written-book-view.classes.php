@@ -547,7 +547,7 @@ class ShowWrittenBookStudent extends WrittenBookStudent
             foreach ($audioBookInfo as $key => $value) {
                 $audioBookList = '
                     <div class="col-12 col-sm-6 col-md-5 col-lg-4 col-xl-3  p-3">
-                        <div class=" card-xl-stretch border p-3 rounded bg-white me-md-6">
+                        <div class=" card-xl-stretch border p-3 rounded bg-white me-md-6" style="background-color: #f1f1f1 !important;">
                             <a class="d-block overlay mb-4" href="./yazili-kitap-oku/' . $value['slug'] . '">
                               <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-175px"
                                     style="background-image:url(\'assets/media/sesli-kitap/' . $value['cover_img'] . '\'); 
@@ -557,7 +557,7 @@ class ShowWrittenBookStudent extends WrittenBookStudent
                             </a>
                             <div class="m-0">
                                 <a href="./yazili-kitap-oku/' . $value['slug'] . '" 
-                                class="fs-5 text-gray-700 fw-bold text-hover-primary lh-base">' . $value['name'] . '</a>
+                                class="fs-7 text-gray-700 fw-bold text-hover-primary lh-base green-title">' . $value['name'] . '</a>
                             </div>
                         </div>
                     </div>

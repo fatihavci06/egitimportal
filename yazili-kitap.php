@@ -27,6 +27,21 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 2 or $_SESSION['role'] ==
 		data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true"
 		data-kt-app-aside-enabled="true" data-kt-app-aside-fixed="true" data-kt-app-aside-push-toolbar="true"
 		data-kt-app-aside-push-footer="true" class="app-default">
+		<style>
+		
+			.green-title{
+				color: #2b8c01 !important;
+			}
+
+			.green-title:hover{
+				color: #1a5700 !important;
+			}
+
+			.card-xl-stretch:hover a{
+				color: #1a5700 !important;
+			}
+
+		</style>
 		<!--begin::Theme mode setup on page load-->
 		<script>
 			var defaultThemeMode = "light";

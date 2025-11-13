@@ -261,7 +261,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                             <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mb-5 d-flex justify-content-center">
                                                 <div class="card w-100 border-0">
-                                                    <a href="#" class="text-decoration-none w-100">
+                                                    <a href="yazili-kitap" class="text-decoration-none w-100">
                                                         <div class="card-overlay d-flex align-items-center justify-content-center">
                                                             <img src="uploads/e-kutuphane/sesli-kitaplar.png" class="img-fluid">
                                                         </div>

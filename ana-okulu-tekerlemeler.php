@@ -103,7 +103,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <i class="fas fa-bullseye fa-2x text-white"></i>
                                                 </div>
 
-                                                <h1 class="fs-3 fw-bold text-dark mb-0">TEKERLEMELER</h1>
+                                                <h1 class="fs-3 fw-bold text-dark mb-0">Tekerlemeler</h1>
                                             </div>
 
                                         </header>

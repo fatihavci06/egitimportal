@@ -28,7 +28,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     $classesObj = null;
 
     if (!empty($userClassId)) {
-   
+
         // Verileri çek
         $classesObj = new Classes();
 
@@ -41,9 +41,8 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
         // 3. TÜM Dosya/Görsel yollarını çek (Liste Modal için)
         $allFilesAndImages = $classesObj->getAllFilesAndImagesByContentTypeAndClass($targetContentType, $userClassId);
         // 3. TÜM Dosya/Görsel yollarını çek (Liste Modal için)
-        
-        $zoomDetail = $classesObj->getZoomDetail($userClassId,$targetContentType);
-        
+
+        $zoomDetail = $classesObj->getZoomDetail($userClassId, $targetContentType);
     }
     // ----------------------------------------------------
 ?>
@@ -155,7 +154,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                     <div class="card-body pt-5 ">
                                         <div class="row container-fluid" style="margin-top:-25px;">
                                             <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
- border-top border-bottom border-custom-red mb-2" style="border-width: 5px !important; height:85px;margin-bottom: 26px !important;">
+ border-top border-bottom border-custom-red mb-2" style="border-width: 5px !important; height:85px;margin-bottom: 26px !important;background-color: #e6e6fa !important;">
 
                                                 <div class="d-flex align-items-center">
                                                     <div class="rounded-circle bg-danger me-3 shadow icon-circle-lg d-flex justify-content-center align-items-center"
@@ -213,29 +212,29 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     target="_blank"
                                                     style="cursor: pointer; color: inherit;">
 
-                                                   <div class="tabela-top-white" style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-    <div class="ikon-ve-baslik" style="display: flex; align-items: center; flex-wrap: wrap;">
-        <div style="flex-grow: 1;">
-            <span class="d-block fw-bold" style="font-size: 1.8rem; color: #007bff; display: flex; align-items: center;">
-                <i class="fa-solid fa-video me-2" style="font-size: 1.8rem; color: #007bff; margin-right: 12px;"></i>
-                Canlı Ders
-            </span>
-            <hr style="border-top: 1px solid #dee2e6; margin-top: 10px; margin-bottom: 10px;">
-            
-            <span class="d-block mt-2" style="font-size: 1.1rem; color: #343a40;">
-                **📅 Tarih:** <?php 
-                    $date = $zoomDetail['zoom_date'] ?? 'Tarih Bilgisi Yok';
-                    // Tarih bilgisini d-m-Y formatına çevir (Varsayım: $date Y-m-d formatında geliyor)
-                    echo ($date !== 'Tarih Bilgisi Yok') ? htmlspecialchars(date('d-m-Y', strtotime($date))) : $date; 
-                ?>
-            </span>
-            
-            <span class="d-block" style="font-size: 1.1rem; color: #343a40; margin-top: 5px;">
-                **🕒 Saat:** <?php echo htmlspecialchars($zoomDetail['zoom_time'] ?? 'Saat Bilgisi Yok'); ?>
-            </span>
-        </div>
-    </div>
-</div>
+                                                    <div class="tabela-top-white" style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                                                        <div class="ikon-ve-baslik" style="display: flex; align-items: center; flex-wrap: wrap;">
+                                                            <div style="flex-grow: 1;">
+                                                                <span class="d-block fw-bold" style="font-size: 1.8rem; color: #007bff; display: flex; align-items: center;">
+                                                                    <i class="fa-solid fa-video me-2" style="font-size: 1.8rem; color: #007bff; margin-right: 12px;"></i>
+                                                                    Canlı Ders
+                                                                </span>
+                                                                <hr style="border-top: 1px solid #dee2e6; margin-top: 10px; margin-bottom: 10px;">
+
+                                                                <span class="d-block mt-2" style="font-size: 1.1rem; color: #343a40;">
+                                                                    **📅 Tarih:** <?php
+                                                                                    $date = $zoomDetail['zoom_date'] ?? 'Tarih Bilgisi Yok';
+                                                                                    // Tarih bilgisini d-m-Y formatına çevir (Varsayım: $date Y-m-d formatında geliyor)
+                                                                                    echo ($date !== 'Tarih Bilgisi Yok') ? htmlspecialchars(date('d-m-Y', strtotime($date))) : $date;
+                                                                                    ?>
+                                                                </span>
+
+                                                                <span class="d-block" style="font-size: 1.1rem; color: #343a40; margin-top: 5px;">
+                                                                    **🕒 Saat:** <?php echo htmlspecialchars($zoomDetail['zoom_time'] ?? 'Saat Bilgisi Yok'); ?>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
                                                     <div class="tabela-bottom-green" style="background-color: #dc3545; padding: 5px;">
                                                         <span class="text-white fw-bold" style="font-size: 1rem;">Derse Git</span>

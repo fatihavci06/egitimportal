@@ -9,8 +9,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
     // Sınıf dosyalarının dahil edildiği varsayılır. (classes/dbh.classes.php vb.)
     include_once "classes/dbh.classes.php";
     include "classes/classes.classes.php";
+    include_once "classes/dateformat.classes.php";
     require_once "classes/student.classes.php";
 
+    $dateFormat = new DateFormat();
     $class = new Classes();
     $studentInfo = new Student();
 
@@ -201,7 +203,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                     <div class="card-body pt-5 ">
                                         <div class="row container-fluid" style="margin-top:-25px;">
                                             <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
-                                             border-top border-bottom border-custom-red mb-2" style="border-width: 5px !important; height:85px;margin-bottom: 26px !important;">
+                                             border-top border-bottom border-custom-red mb-2" style="border-width: 5px !important; height:85px;">
 
                                                 <div class="d-flex align-items-center">
                                                     <div class="rounded-circle bg-danger me-3 shadow icon-circle-lg d-flex justify-content-center align-items-center"
@@ -215,26 +217,45 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </header>
                                         </div>
                                     </div>
-                                    <div class="row container-fluid">
+                                    <div class="row container-fluid" style="margin-top: -10px;">
                                         <div class="col-md-5">
                                             <div class="month-block" style="
-                                                /* Ana arkaplan görseli: Karakter ve ahşap tabela */
-                                                background-image: url('uploads/aile-atolyeleri/baslik-sablon.png');
+                                            /* Ana arkaplan görseli: Karakter ve ahşap tabela */
+                                                background-image: url(uploads/aile-atolyeleri/baslik-sablon.png);
                                                 background-repeat: no-repeat;
-                                                position: relative;
-                                                min-height: 340px;
+                                                /* position: relative; */
+                                                /* min-height: 340px; */
+                                                /* height: 50vh; */
                                                 background-size: contain;
-                                                background-position: center;
+                                                /* background-position: center; */
+                                                display: flex;
+                                                justify-content: center;
+                                                align-items: center;
+                                                /* width: 90%; */
+                                                height: 36vh;
+                                                margin: 0rem auto;
                                             ">
 
                                                 <div class="tabela-content" style="
-                                                    position: absolute;
-                                                    top: 180px; /* Ahşap tabelanın görünen kısmına göre pozisyon */
-                                                    left: 50%;
-                                                    transform: translate(-50%, -50%);
-                                                    width: 250px; 
-                                                    border-radius: 5px; 
-                                                    overflow: hidden; 
+                                                /* position: absolute; */
+                                                /* top: 180px; */
+                                                /* left: 50%; */
+                                                /* height: auto; */
+                                                /* text-align: center; */
+                                                /* transform: translate(-50%, -50%); */
+                                                /* width: 250px; */
+                                                /* border-radius: 5px; */
+                                                /* overflow: hidden; */
+                                                width: 50%;
+                                                max-width: 250px;
+                                                height: auto;
+                                                min-height: 5rem;
+                                                color: white;
+                                                text-align: center;
+                                                padding: 1rem;
+                                                font-size: 1.25rem;
+                                                font-family: sans-serif;
+                                                font-weight: bold;
                                                 ">
 
                                                     <div class="tabela-top-white" style="
@@ -255,15 +276,15 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
 
                                             </div>
 
-                                            <div style="background-color: #ffbb05;display: flex;column-gap: 20px;" class="rounded display-6 shadow p-4">
-                                                <i class="fa-solid fa-calendar-days ps-5" style="color: #000; font-size:3rem !important"></i>
-                                                <?= htmlspecialchars($content['zoom_date'] . ' ' . $content['zoom_time']) ?>
+                                            <div style="background-color: #ffbb05;display: flex;column-gap: 20px; font-size: 1.5rem; font-weight: 700;" class="rounded shadow p-3">
+                                                <i class="fa-solid fa-calendar-days ps-5" style="color: #000; font-size:2rem !important"></i>
+                                                <?= htmlspecialchars($dateFormat->changeDate($content['zoom_date']) . ' ' . $content['zoom_time']) ?>
                                             </div>
 
-                                            <div style="background-color: #ffbb05;display: flex;column-gap: 20px;" class="rounded display-6 shadow p-4 mt-10">
-                                                <i class="fa-solid fa-hourglass-half ps-5" style="color: #000; font-size:3rem !important"></i>
+                                            <div style="background-color: #ffbb05;display: flex;column-gap: 20px; font-size: 1.5rem; font-weight: 700;" class="rounded shadow p-3 mt-10">
+                                                <i class="fa-solid fa-hourglass-half ps-5" style="color: #000; font-size:2rem !important"></i>
                                                 <div id="geri_sayim" style="font-weight: bold;">
-                                                    <span id="geri_sayim_sure"></span>
+                                                    <span id="geri_sayim_sure">Kalan Süre</span>
                                                 </div>
                                             </div>
 
@@ -278,18 +299,18 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </script>
                                         </div>
 
-                                        <div class="col-md-7">
+                                        <div class="col-md-7" style="margin-top: 20px;">
 
                                             <div class="tabela-content" style="
-    width: 50%; 
-    border-radius: 5px; 
-    overflow: hidden; 
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-">
+                                                width: 50%; 
+                                                border-radius: 5px; 
+                                                overflow: hidden; 
+                                                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+                                            ">
                                                 <div class="tabela-top-white" style="
-        background-color: white;
-        padding: 10px;
-    ">
+                                                    background-color: white;
+                                                    padding: 10px;
+                                                ">
                                                     <div class="ikon-ve-baslik" style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap;">
                                                         <div style="flex-grow: 1;">
                                                             <span class="d-block fw-bold" style="font-size: 2rem; color: #0ab1b9;">
@@ -313,15 +334,15 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </div>
 
                                             <div class="tabela-content mt-10" style="
-    width: 50%; 
-    border-radius: 5px; 
-    overflow: hidden; 
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-">
+                                                width: 50%; 
+                                                border-radius: 5px; 
+                                                overflow: hidden; 
+                                                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+                                            ">
                                                 <div class="tabela-top-white" style="
-        background-color: white;
-        padding: 10px;
-    ">
+                                                    background-color: white;
+                                                    padding: 10px;
+                                                ">
                                                     <div class="ikon-ve-baslik" style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap;">
                                                         <div style="flex-grow: 1;">
                                                             <span class="d-block fw-bold" style="font-size: 2rem; color: #0ab1b9;">
@@ -332,10 +353,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                 </div>
 
                                                 <div class="tabela-bottom-green" style="
-        background-color: #0ab1b9; 
-        padding: 0; /* İç dolguyu linke taşıyoruz */
-        text-align: center; /* Butonu ortalamak için */
-    ">
+                                                    background-color: #0ab1b9; 
+                                                    padding: 0; /* İç dolguyu linke taşıyoruz */
+                                                    text-align: center; /* Butonu ortalamak için */
+                                                ">
                                                     <a href="<?= htmlspecialchars($content['zoom_join_url']) ?>" target="_blank"
                                                         class="btn btn-sm text-white fw-bold p-3 w-100"
                                                         style="font-size: 1rem; background: none; border: none; display: block; height: 100%;">

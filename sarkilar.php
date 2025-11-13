@@ -77,7 +77,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <div class="row container-fluid" style="margin-top:-25px;">
                                         <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
-                                         border-top border-bottom border-custom-red mb-2" style="border-width: 5px !important; height:85px;margin-bottom: 26px !important;">
+                                         border-top border-bottom border-custom-red mb-2" style="border-width: 5px !important; height:85px;margin-bottom: 26px !important;background-color: #e6e6fa !important;">
 
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle bg-danger me-3 shadow icon-circle-lg d-flex justify-content-center align-items-center"
@@ -85,7 +85,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <i class="fas fa-bullseye fa-2x text-white"></i>
                                                 </div>
 
-                                                <h1 class="fs-3 fw-bold text-dark mb-0">ŞARKILAR</h1>
+                                                <h1 class="fs-3 fw-bold text-dark mb-0">Şarkılar</h1>
                                             </div>
                                         </header>
                                     </div>

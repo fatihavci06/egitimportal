@@ -5,8 +5,10 @@ session_start();
 define('GUARD', true);
 if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] == 10001 or $_SESSION['role'] == 10002 or $_SESSION['role'] == 10005)) {
     include_once "classes/dbh.classes.php";
+    include_once "classes/dateformat.classes.php";
     include "classes/classes.classes.php";
     require_once "classes/student.classes.php";
+    $dateFormat = new DateFormat();
     $unit = new Classes();
     $studentInfo = new Student();
 
@@ -277,7 +279,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                             <p><a href="konusma_kulubu-detay.php?id=<?=$c['id']?>&page_name=<?= $c['title'] ?>" style="color: #071437"><?= $c['title'] ?> </a></p>
                                                         </td>
                                                         <td>
-                                                            <p><?=$c['zoom_date'].' '.$c['zoom_time']?></p>
+                                                            <p><?= $dateFormat->changeDate($c['zoom_date']).' '.$c['zoom_time']?></p>
                                                         </td>
                                                         <td>
                                                             <p ><a href="konusma_kulubu-detay.php?id=<?=$c['id']?>&page_name=<?= $c['title'] ?>"  style="width: 55px; padding: 0 10px;"  class="btn btn-primary">Katıl</a></p>
