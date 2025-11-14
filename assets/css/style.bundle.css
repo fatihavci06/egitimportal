@@ -60311,7 +60311,7 @@ body,
 @media (min-width: 992px) {
   .app-container {
     padding-left: 10px !important;
-    padding-right: 35px !important;
+    padding-right: 20px !important;
   }
 
   .app-container-fit-desktop {
@@ -62777,7 +62777,7 @@ body,
 
   body:not([data-kt-app-aside-enabled=true]) .app-main {
     /* margin-right: 20px; */
-    margin-right: 80px;
+    margin-right: 0px;
   }
 }
 

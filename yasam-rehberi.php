@@ -58,9 +58,9 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <div id="kt_app_content_container" class="app-container container-fluid">
                                     <div class="card-body pt-5 ">
-                                        <div class="row container-fluid" style="margin-top:-25px;">
+                                        <div class="row container-fluid" style="margin-top:-25px; padding: 0">
                                             <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
-                    border-top border-bottom border-custom-red mb-2" style="border-width: 5px !important; height:85px;margin-bottom: 26px !important;background-color: #e6e6fa !important;">
+                    border-top border-bottom border-custom-red mb-2" style="border-width: 5px !important; height:85px;background-color: #e6e6fa !important;">
 
                                                 <div class="d-flex align-items-center">
                                                     <div class="rounded-circle bg-danger me-3 shadow icon-circle-lg d-flex justify-content-center align-items-center"
@@ -68,19 +68,19 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                         <i class="fas fa-bullseye fa-2x text-white"></i>
                                                     </div>
 
-                                                    <h1 class="fs-3 fw-bold text-dark mb-0">Aile Atölyeleri</h1>
+                                                    <h1 class="fs-3 fw-bold text-dark mb-0">Yaşam Rehberi</h1>
                                                 </div>
                                             </header>
                                         </div>
 
-
+                                        
                                         <div class="row justify-content-start">
 
                                             <div class="col-8">
-                                                <div class=" custom-card card-psikoloji p-4">
-                                                    <a href="aile-atolyesi" class="text-decoration-none text-dark text-hover-primary">
+                                                <div class="custom-card card-psikoloji p-4">
+                                                    <a href="psikolojik-test-listesi" class="text-decoration-none text-dark text-hover-primary">
                                                         <div class="d-flex align-items-center">
-                                                            <img src="uploads/aile-atolyeleri/aile-atolyeleri.png" alt="Aile Atölyeleri Görseli" style="max-width: 100%; height: auto; object-fit: contain;">
+                                                            <img src="includes/uploads/psikologkosesi/psikolojik-testler.jpg" alt="Psikolojik Testler Görseli" style="max-width: 100%; height: auto; object-fit: contain;">
 
                                                         </div>
                                                     </a>
@@ -88,22 +88,20 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                             </div>
 
                                             <div class="col-8">
-                                                <div class=" custom-card card-tavsiye p-4">
-                                                    <a href="global-kids-events" class="text-decoration-none text-dark text-hover-primary">
+                                                <div class="custom-card card-tavsiye p-4">
+                                                    <a href="uzman-psikologdan-aileye-tavsiyeler" class="text-decoration-none text-dark text-hover-primary">
                                                         <div class="d-flex align-items-center">
-                                                            <img src="uploads/aile-atolyeleri/global-kids-events.png" alt="Global Kids Events Görseli" style="max-width: 100%; height: auto; object-fit: contain;">
+                                                            <img src="includes/uploads/psikologkosesi/uzman-psikologdan-aileye-tavsiyeler.jpg" alt="Tavsiyeler Görseli" style="max-width: 100%; height: auto; object-fit: contain;">
                                                         </div>
                                                     </a>
                                                 </div>
                                             </div>
 
                                             <div class="col-8">
-                                                <div class=" custom-card  p-4">
-                                                    <a href="family-game-nights" class="text-decoration-none text-dark text-hover-primary">
-                                                        <div class="d-flex align-items-center">
-                                                            <img src="uploads/aile-atolyeleri/family-game-nights.png" alt="Family Game Nights Görseli" style="max-width: 100%; height: auto; object-fit: contain;">
-                                                        </div>
-                                                    </a>
+                                                <div class="custom-card  p-4">
+                                                    <div class="d-flex align-items-center">
+                                                        <a href="aile-atolyeleri"><img src="includes/uploads/psikologkosesi/aile-atolyeleri.jpg" alt="Aile Atölyeleri Görseli" style="max-width: 100%; height: auto; object-fit: contain;"></a>
+                                                    </div>
                                                 </div>
                                             </div>
 

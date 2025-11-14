@@ -75,7 +75,7 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                             <?php include_once "views/toolbar.php"; ?>
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <div id="kt_app_content_container" class="app-container container-fluid">
-                                    <div class="row container-fluid" style="margin-top:-25px;">
+                                    <div class="row container-fluid" style="margin-top:-25px;padding:0">
                                         <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
                                          border-top border-bottom border-custom-red mb-2" style="border-width: 5px !important; height:85px;margin-bottom: 26px !important;background-color: #e6e6fa !important;">
 

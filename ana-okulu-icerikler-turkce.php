@@ -193,12 +193,10 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                         <div class="d-flex flex-column flex-column-fluid">
                             <?php include_once "views/toolbar.php"; ?>
 
-                            <div id="kt_app_content" class="app-content flex-column-fluid">
+                            <div id="kt_app_content" class="app-content flex-column-fluid" style="padding-top: 0px;">
                                 <div id="kt_app_content_container" class="app-container container-fluid">
-                                    <div class="card-body pt-5 ">
-                                        <div class="row container-fluid" style="margin-top:-25px;">
-                                            <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
-                    border-top border-bottom border-custom-red mb-2" style="border-width: 5px !important; height:85px;margin-bottom: 26px !important;">
+                                    <div class="card-body col-12 row pt-5">
+                                            <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center border-top border-bottom border-custom-red mb-2" style="border-width: 5px !important; height:85px;margin-bottom: 26px !important;">
 
                                                 <div class="d-flex align-items-center">
                                                     <div class="rounded-circle bg-danger me-3 shadow icon-circle-lg d-flex justify-content-center align-items-center"
@@ -209,7 +207,6 @@ if (isset($_SESSION['role']) and ($_SESSION['role'] == 1 or $_SESSION['role'] ==
                                                     <h1 class="fs-3 fw-bold text-dark mb-0">Türkçe</h1>
                                                 </div>
                                             </header>
-                                        </div>
 
                                         <style>
                                             /* Fotoğraftaki ana turuncu arka plan rengi */

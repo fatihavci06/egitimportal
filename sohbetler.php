@@ -207,7 +207,7 @@ include_once "classes/dateformat.classes.php";
                                 <div id="kt_app_content" class="app-content flex-column-fluid">
                                     <div id="kt_app_content_container" class="app-container container-fluid">
                                         
-                                        <div class="row container-fluid" style="margin-top:-19px; padding-right:0px;margin-right:0px !important;">
+                                        <div class="row container-fluid" style="margin-top:-19px; padding-right:0px; padding-left:0px;margin-right:0px !important;">
                                             <header class="container-fluid bg-custom-light py-3 d-flex justify-content-between align-items-center
                                              border-top border-bottom border-custom-red mb-2" style="border-width: 5px !important; height:85px;margin-bottom: 26px !important;">
 

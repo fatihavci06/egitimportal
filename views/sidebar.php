@@ -84,7 +84,7 @@ $menu1 = new ShowMenu();
                             <i class="fa-solid fa-hourglass fs-7" style="color:black; margin-right: 5px;"></i>
                             <span class="mb-0"><?php echo $timeSpend->dakikayaCevir($timeSpendInfo); ?></span>
                         </div>
-                        <p class="mb-0" style="font-size: 11px;">dakika geçirdin</p>
+                        <p class="mb-0" style="font-size: 11px;">dakika <br> geçirdin</p>
                     </div>
                     <div style="flex: 1; text-align: center; padding: 10px; border: 1px solid #eee; margin: 0 5px; border-radius: 5px; background-color: #5a9b9d">
                         <div style="display: flex; justify-content: center; align-items: center; ">

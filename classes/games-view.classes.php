@@ -22,6 +22,7 @@ class ShowGame extends Games
                         border-top: 5px solid #d22b2b !important;
                         border-bottom: 5px solid #d22b2b !important;
                         height:85px;
+                        margin-left: -9px;
                     ">
                     <div class="d-flex align-items-center">
                         <div class="">
@@ -212,6 +213,7 @@ class ShowGame extends Games
                         border-top: 5px solid #d22b2b !important;
                         border-bottom: 5px solid #d22b2b !important;
                         height:85px;
+                        margin-left: -9px;
                     ">
                     <div class="d-flex align-items-center">
                         <div class="">

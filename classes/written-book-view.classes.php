@@ -120,6 +120,7 @@ class ShowWrittenBook extends WrittenBook
                         border-top: 5px solid #d22b2b !important;
                         border-bottom: 5px solid #d22b2b !important;
                         height:85px;
+                        margin-left: -9px;
                     ">
                     <div class="d-flex align-items-center">
                         <div class="">
@@ -658,6 +659,7 @@ class ShowWrittenBookStudent extends WrittenBookStudent
                         border-top: 5px solid #d22b2b !important;
                         border-bottom: 5px solid #d22b2b !important;
                         height:85px;
+                        margin-left: -9px;
                     ">
                     <div class="d-flex align-items-center">
                         <div class="">
